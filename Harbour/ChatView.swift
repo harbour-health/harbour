@@ -52,7 +52,7 @@ struct ChatView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { focused = false } }
-            ToolbarItem(placement: .principal) { Text("Harbour").font(.body.weight(.medium)) }
+            ToolbarItem(placement: .principal) { Text(store.chatTitle).font(.body.weight(.medium)).lineLimit(1).accessibilityIdentifier("chatTitle") }
             ToolbarItem(placement: .topBarTrailing) { Button { cancel(); focused = false; draft = ""; hint = nil; store.newChat() } label: { Image(systemName: "square.and.pencil") }.accessibilityLabel("New chat") }
         }
         .sheet(isPresented: $modelSheet) { NavigationStack { ModelsView() } }
@@ -60,7 +60,7 @@ struct ChatView: View {
         .confirmationDialog("Delete all records and chat?", isPresented: $deleteConfirmation, titleVisibility: .visible) { Button("Delete all", role: .destructive) { store.clear() }; Button("Cancel", role: .cancel) {} }
         .confirmationDialog("Remove \(removal?.name ?? "medicine") from your list?", isPresented: Binding(get: { removal != nil }, set: { if !$0 { removal = nil } }), titleVisibility: .visible) { Button("Remove", role: .destructive) { if let removal { store.removeMedicine(removal.id); store.append(ChatMessage(text: "Removed \(removal.name) from your list.")) }; removal = nil } }
         .alert("Voice input", isPresented: Binding(get: { voice.error != nil }, set: { if !$0 { voice.error = nil } })) { Button("OK") { voice.error = nil } } message: { Text(voice.error ?? "") }
-        .onDisappear { voice.stop() }
+        .onDisappear { cancel() }
     }
     private func starter(_ title: String, symbol: String, colour: Color, hint: String) -> some View {
         Button { self.hint = hint; focused = true } label: {
@@ -115,7 +115,9 @@ struct ChatView: View {
         let input = draft.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !input.isEmpty else { return }
         voice.stop(); focused = false; draft = ""
-        store.append(ChatMessage(isUser: true, text: input))
+        let firstMessage = !store.messages.contains(where: \.isUser)
+        let message = ChatMessage(isUser: true, text: input)
+        store.append(message)
         // Emergency wording is checked before any download or model inference.
         if HealthRules.emergencyCue(input) {
             store.append(ChatMessage(text: HealthRules.guidance(Symptom(text: input))))
@@ -132,8 +134,9 @@ struct ChatView: View {
                 let decision = try ToolPlanner.parse(output)
                 let action = try ToolPlanner.validate(decision, original: input, records: store.records)
                 execute(action)
+                if firstMessage, let title = try? await models.title(for: input), !Task.isCancelled, operationID == currentID { store.nameChat(title, firstMessage: message.id) }
             } catch is CancellationError { }
-            catch { if !Task.isCancelled { store.append(ChatMessage(text: error.localizedDescription)) } }
+            catch { if !Task.isCancelled { store.append(ChatMessage(text: error.localizedDescription)); if firstMessage, let title = try? await models.title(for: input), !Task.isCancelled, operationID == currentID { store.nameChat(title, firstMessage: message.id) } } }
         }
     }
     private func execute(_ action: ValidatedAction) {

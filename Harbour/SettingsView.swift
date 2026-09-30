@@ -6,12 +6,14 @@ struct SettingsView: View {
     @EnvironmentObject var store: AppStore
     @EnvironmentObject var models: ModelManager
     @EnvironmentObject var health: HealthService
+    @EnvironmentObject var lock: AppLock
     @Environment(\.dismiss) private var dismiss
     @State private var importing = false
     @State private var deleting = false
     var body: some View {
         List {
             Section {
+                NavigationLink { AppLockSettings() } label: { HStack { Label("App lock", systemImage: "lock"); Spacer(); Text(lock.modeName).foregroundStyle(Palette.muted) } }
                 NavigationLink { AppearanceView() } label: { Label("Appearance", systemImage: "circle.lefthalf.filled") }
                 NavigationLink { ModelsView() } label: { Label("Models", systemImage: "cpu") }
                 Button { Task { await health.sync(into: store) } } label: { HStack { Label("Import from Apple Health", systemImage: "heart.fill").foregroundStyle(Palette.ink); Spacer(); if health.busy { ProgressView() } } }.disabled(health.busy)

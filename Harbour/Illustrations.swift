@@ -30,8 +30,9 @@ struct HarbourIllustration: View {
             }
         }
         .offset(y: shouldFloat && floating ? -3 : 0)
-        .animation(shouldFloat ? .easeInOut(duration: 3.4).repeatForever(autoreverses: true) : nil, value: floating)
+        .animation(shouldFloat && floating ? .easeInOut(duration: 3.4).repeatForever(autoreverses: true) : nil, value: floating)
         .onAppear { floating = shouldFloat }
+        .onDisappear { floating = false }
         .onChange(of: shouldFloat) { _, enabled in floating = enabled }
         .accessibilityHidden(true)
         .allowsHitTesting(false)

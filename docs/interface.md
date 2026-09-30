@@ -6,11 +6,15 @@ A native SwiftUI health companion with Today, Chat, and Records destinations. Th
 
 ## How it works
 
-Today opens first. A large latest reading comes directly from saved records, followed by two illustrated shortcuts, a chat action, and open rows for readings, interactions, appointment notes, and recent symptoms. No health score or trend is inferred. The medicine shortcut opens its record list, while Symptoms opens capture. The two shortcuts are the only dashboard tiles; secondary actions have no containers. Native iOS 26 navigation retains its detached, rounded bottom bar.
+Today opens first. Its reading summary groups the latest value, unit, recorded date, and sample count in one surface. A chart appears only when at least two saved readings of the same kind exist, using the most recent 30 samples in date order. Blood pressure plots systolic pressure and labels that series. No health score, invented sample, or clinical interpretation is added.
+
+Medicines and Symptoms use equal-width, equal-height shortcuts (250 points at normal text sizes). Their original illustrations extend beyond the bottom/right edges and are clipped; a contrasting circular arrow sits at the bottom left. Artwork is an overlay so its fixed drawing width cannot force the tiles or dashboard beyond the phone's margins. The medicine shortcut opens its record list, while Symptoms opens capture. Secondary actions and recent symptoms remain open rows. Rounded bold system type is reserved for shortcut titles, metric values, and PIN headings; ordinary labels use the system typeface.
+
+A detached capsule dock contains only Today, Chat, and Records icons. Accessible names and selected traits remain. Native labelled tabs are hidden within each navigation stack, while `TabView` preserves destination state. The dock occupies its own row below `TabView`, rather than overlaying the composer; an inset on the outer tab container did not reliably resize its child controllers. The dock disappears while the keyboard is shown so the chat composer and editors retain space.
 
 Warm cream and charcoal canvases replace gray on white. Semantic ink, secondary text, divider, and accent colours have separate light and dark values. Settings → Appearance offers System (default), Light, and Dark. The choice persists across launches and applies to navigation, chat, and sheets. System leaves SwiftUI's preferred colour scheme unset so subsequent phone appearance changes still apply.
 
-Chat has an original animated conversation illustration, three open starter rows, and a high-contrast composer. Model name, lighter effort label, and chevron remain immediately left of the microphone. A selected topic appears on its own line. Selecting a starter or topic preserves the draft, executes no action, and adds only an optional model prompt hint.
+Chat has an original animated conversation illustration, three open starter rows, and a high-contrast composer. Model name, lighter effort label, and chevron remain immediately left of the microphone. A selected topic appears on its own line. Selecting a starter or topic preserves the draft, executes no action, and adds only an optional model prompt hint. The navigation title starts with “New chat” and uses [local title generation](chat-titles.md) after the first message.
 
 Assistant tool results have a single illustrated surface per result. Medicines, readings, and cited interaction findings render as structured content inside that surface, without nested cards. Unsupported interaction pairs remain explicitly unassessed. Record mutations still require their existing confirmation sheets. The waiting mark spins and new messages appear with a short transition; Reduce Motion disables these effects and the illustration float. Buttons have restrained press feedback.
 
@@ -18,9 +22,9 @@ Records retain flat lists for scanning and native swipe deletion. Illustrated em
 
 ## How to change it
 
-`HarbourApp.swift` owns navigation, Today, shared rows, and the mark. `ChatView.swift` owns the composer, optional topics, transcript, and structured tool-result presentation. `RecordsView.swift` owns record lists and editors. `Appearance.swift` contains semantic colours, the appearance setting, and press feedback. See [Artwork](artwork.md) for illustration changes.
+`HarbourApp.swift` owns navigation, Today, shared rows, and the mark. `Dashboard.swift` owns the icon dock and saved-reading summary/chart. `ChatView.swift` owns the composer, optional topics, transcript, and structured tool-result presentation. `RecordsView.swift` owns record lists and editors. `Appearance.swift` contains semantic colours, the appearance setting, and press feedback. See [Artwork](artwork.md) for illustration changes and [App lock](app-lock.md) for protected entry.
 
-Keep whole-row hit areas with `contentShape`, use system text styles for labels, and preserve at least 44-point control targets. Today stacks the illustrated shortcuts vertically at accessibility text sizes. Test narrow screens and large text before changing composer spacing. Do not add a success badge when an interaction has not been assessed. Presentation changes must not bypass the deterministic rules or original-message tool validation.
+Keep whole-row hit areas with `contentShape`, use system text styles for labels, and preserve at least 44-point control targets. Today stacks equal-height 320-point shortcuts vertically at accessibility text sizes. Test narrow screens and large text before changing composer spacing. Derive charts only from actual records and identify partial metrics, such as systolic-only blood pressure. Do not add a success badge when an interaction has not been assessed. Presentation changes must not bypass the deterministic rules or original-message tool validation.
 
 ## Configuration
 
@@ -30,4 +34,4 @@ The app icon is original Harbour geometry, generated by `scripts/generate-icon.s
 
 ## Dependencies
 
-SwiftUI, UIKit dynamic colours, SF Symbols, native tab navigation, and the original vector [artwork](artwork.md). No remote design assets or UI libraries are required.
+SwiftUI, Swift Charts, UIKit dynamic colours and keyboard notifications, SF Symbols, native tab state, and the original vector [artwork](artwork.md). No remote design assets or UI libraries are required.

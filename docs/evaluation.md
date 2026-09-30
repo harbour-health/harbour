@@ -46,6 +46,18 @@ The richer interface was checked with actual simulator interaction. `HarbourAppe
 
 All four presentation flows passed across the final capture/navigation runs. The signed simulator and unsigned iPhone targets compiled. Original vector artwork, light/dark screenshots, and the structured result displays were visually inspected. The inference runtime, grounding checks, and clinical rules were not changed, so the earlier 72-case routing matrix remains the model evidence rather than a newly rerun result.
 
+### September 30 dashboard, chat titles, and app lock
+
+The final `HarbourDashboardTests` flow passed: equal shortcut dimensions, visible content margins, the hidden native tab bar, a usable composer above the icon dock, an actual local-model title, title persistence after relaunch, and resetting to New chat. `HarbourNavigationTests` subsequently passed with System appearance following the simulator's Dark setting. Decorative artwork has intentionally cropped bounds; margin assertions inspect visible headings rather than the artwork's larger accessibility rectangle.
+
+`HarbourLockTests` passed with the four-digit keypad: four masked slots without a text field, confirmation mismatch, deletion, automatic verification, wrong/correct credentials, locking with an open editor on background, five-attempt retry delay surviving relaunch, and current-PIN verification before disabling the lock. The PIN flow passed in its original capture bundle; that bundle's separate dashboard assertion was corrected and the final dashboard flow passed separately.
+
+The refreshed appearance and entry flows passed before the main capture run was interrupted during a chat animation wait. The subsequent completed chat run passed real medicine, reading, and interaction tool results in both appearances. Repeating illustrations now stop when their views disappear, and tests wait for both tool execution and title generation before starting another chat.
+
+The completed Evaluation screen showed 36/36 selected-model routing cases across three efforts. This is a new UI result capture, not a rerun of both models' earlier 72-case matrix. A separate fresh simulator flow passed genuine download progress/cancellation, the unavailable Face ID error without enabling a lock, native Health permission denial and its reminder, and opening/cancelling the record import picker. That fixture simulator was deleted after capture.
+
+The final signed simulator and unsigned physical-iPhone builds compiled. The gallery contains 63 genuine native captures, including the new PIN screens. Physical biometric matching and device-passcode fallback were not exercised.
+
 ### Model matrix and prompt experiments
 
 The first full simulator matrix passed 33/36 cases on each model. All six failures were the medicine-list request being misrouted to readings and rejected by validation. The original reports are preserved as [Small baseline](results/baseline-small.json) and [Balanced baseline](results/baseline-balanced.json). A broader prompt rewrite regressed to 7/12 on the Mac Small probe and was discarded. Separating only the medicine/reading list descriptions improved tool choice, then exposed an early-generation-stop bug for nested argument objects. The corrected runtime waits for the completed outer JSON object; four independent regression tests cover it.
@@ -62,7 +74,7 @@ All 72 final simulator cases passed. These are CPU simulator measurements on thi
 
 ## Outstanding evidence
 
-Physical-device signing/install, actual HealthKit populated-store and denial/revocation cases, on-device speech accuracy and permissions, offline relaunch, foreground/background cancellation, low-storage behaviour, thermal/battery/peak-memory measurements, iPad, VoiceOver, and largest text sizes remain to be tested. Small samples of correct tool choices do not establish broad LLM reliability. Medical source review and a maintained interaction dataset remain research requirements before any real-user claim.
+Physical-device signing/install, Face ID matching and device-passcode fallback, actual HealthKit populated-store and revocation cases, on-device speech accuracy and permissions, offline relaunch, voice/inference cancellation on physical hardware, low-storage behaviour, thermal/battery/peak-memory measurements, iPad, VoiceOver, largest text sizes, and legacy six-digit credential migration remain to be tested. Native Health denial/reminder and PIN background locking were exercised on the simulator. Small samples of correct tool choices do not establish broad LLM reliability. Medical source review and a maintained interaction dataset remain research requirements before any real-user claim.
 
 ## Dependencies
 

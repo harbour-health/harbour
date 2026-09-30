@@ -20,6 +20,8 @@ For additional speech locales, check on-device support before starting. Keep tra
 
 Voice starts carry a generation ID. Stopping or leaving chat invalidates pending permission requests and queued recognition callbacks, so granting a delayed permission cannot start recording after navigation or update a later draft.
 
+When an enabled app lock replaces the navigation tree, chat teardown stops voice and cancels its model task. Returning from the background requires unlocking before another microphone request. The app lock's privacy curtain also covers any open entry or permission-adjacent screen while backgrounded; physical-device speech and snapshot behaviour still need acceptance testing.
+
 ## Configuration
 
 `Harbour.entitlements` enables HealthKit. `Info.plist` supplies microphone, speech, and health-read usage descriptions. A development team and a provisioned HealthKit capability are needed for signed device installs. English locale is `en-CA`; device language assets determine availability. Read horizon and limits are constants in `HealthService.query`.

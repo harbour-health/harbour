@@ -14,6 +14,7 @@ struct Archive: Codable {
     var version = 1
     var records = Records()
     var messages: [ChatMessage] = []
+    var chatTitle: String?
 }
 struct ShareFile: Identifiable { let id = UUID(); let url: URL }
 
@@ -25,6 +26,15 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
     private var loadFailed = false
     var records: Records { archive.records }
     var messages: [ChatMessage] { archive.messages }
+    var chatTitle: String {
+        if let title = archive.chatTitle { return title }
+        guard let first = messages.first(where: \.isUser) else { return "New chat" }
+        return String(first.text.split(whereSeparator: \.isWhitespace).prefix(6).joined(separator: " ").prefix(60))
+    }
+    func nameChat(_ title: String, firstMessage: UUID) {
+        guard messages.first(where: \.isUser)?.id == firstMessage else { return }
+        update { $0.chatTitle = title }
+    }
     init() {
         let folder = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("Harbour")
         file = folder.appendingPathComponent("records.json")
@@ -61,7 +71,7 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
     func add(_ symptom: Symptom) { update { $0.records.symptoms.insert(symptom, at: 0) } }
     func removeSymptom(_ id: UUID) { update { $0.records.symptoms.removeAll { $0.id == id } } }
     func append(_ message: ChatMessage) { update { $0.messages.append(message) } }
-    func newChat() { update { $0.messages.removeAll() } }
+    func newChat() { update { $0.messages.removeAll(); $0.chatTitle = nil } }
     func clear() {
         if loadFailed {
             do { try FileManager.default.copyItem(at: file, to: file.deletingLastPathComponent().appendingPathComponent("unreadable-\(UUID().uuidString).json")); loadFailed = false }

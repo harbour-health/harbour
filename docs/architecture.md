@@ -14,6 +14,10 @@ Symptom, medicine, and reading calls open editable confirmation sheets. Interact
 
 `AppStore` stores confirmed records and chat together in Application Support as versioned JSON, atomically written with complete file protection. A failed save leaves the visible state unchanged and surfaces an error. A failed decode blocks writes; a confirmed reset preserves the unreadable file before creating a new archive. There is no iCloud sync. iOS backup may include the protected record archive; downloaded weights are excluded from backup.
 
+`LockShell` gates the navigation tree using the optional [app lock](app-lock.md), whose credential verifier lives separately in Keychain. Backgrounding replaces protected navigation and revokes pending authentication. A scene-level privacy curtain also covers presented sheets. This gate does not add PIN-derived archive encryption.
+
+The optional archive field `chatTitle` stores [locally generated conversation metadata](chat-titles.md). Its absence in older version-1 archives uses a heading derived from the first message. Tool execution and emergency handling precede naming.
+
 JSON export uses ISO-8601 dates. JSON import validates the version and readings, merges records, and rebuilds medicine ingredient mappings from the catalog. File-supplied ingredient claims are not trusted. Unknown names remain unconfirmed. Appointment notes use recorded facts and can be edited before sharing.
 
 ## How to change it

@@ -10,6 +10,8 @@ Harbour's four original vector illustrations add colour and depth to health reco
 
 Solid offset edges, highlights, and small shadows create depth. The pale support shapes adapt to the current colour scheme. The illustration is decorative, hidden from accessibility, and ignores taps so the containing control owns its label and interaction.
 
+Today's shortcuts deliberately offset their 195 × 163-point illustrations beyond the bottom/right edge and clip them to the tile's rounded boundary. A contrasting circular arrow occupies the opposite corner. Change placement in `TodayView.illustratedShortcut`, not the drawing coordinates, so full illustrations in chat and empty states remain intact.
+
 ```swift
 HarbourIllustration(kind: .medicines)
     .frame(width: 150, height: 125)
@@ -26,7 +28,7 @@ To add artwork, add a case to `IllustrationKind`, a matching switch branch, and 
 
 ## Configuration
 
-`kind` selects `.readings`, `.medicines`, `.symptoms`, or `.conversation`. `animated` defaults to `false`; only conversation supports a gentle three-point vertical float. The system Reduce Motion setting disables that animation. Keep dashboard thumbnails static. Colours are local constants in `IllustrationBoard`; there are no environment variables, gradient assets, or remote asset requests.
+`kind` selects `.readings`, `.medicines`, `.symptoms`, or `.conversation`. `animated` defaults to `false`; only conversation supports a gentle three-point vertical float. The system Reduce Motion setting disables that animation. Repeating animations stop when their view disappears, including the waiting mark, so switching chats does not retain an invisible animation. Keep dashboard thumbnails static. Colours are local constants in `IllustrationBoard`; there are no environment variables, gradient assets, or remote asset requests.
 
 ## Dependencies
 

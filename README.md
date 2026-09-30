@@ -19,9 +19,9 @@ Qwen Small downloads when the first chat message is sent, or from **Settings →
 ## Screens
 
 - **Today:** recent readings and entry points to symptoms, medicines, interactions, and appointment notes.
-- **Chat:** freeform messages; optional topic hints; model and effort controls beside the microphone; model-selected, validated tool calls.
+- **Chat:** freeform messages; optional topic hints; model and effort controls beside the microphone; validated tool calls and locally generated conversation titles.
 - **Records:** saved symptoms, medicines, and readings, with native entry sheets and swipe deletion.
-- **Settings:** model downloads, Apple Health import, record import/export, reset, and evaluation.
+- **Settings:** appearance, optional Face ID or app PIN lock, model downloads, Apple Health import, record import/export, reset, and evaluation.
 
 The current medicine catalog maps 11 names to ingredients and checks four cited pairs. Other pairs are unassessed. Symptom guidance uses fixed Ontario wording and does not establish a diagnosis. This is the existing honours-project scope carried into native code.
 
@@ -42,4 +42,4 @@ The Xcode project is checked in. If adding source files, regenerate with `python
 
 See [docs/README.md](docs/README.md).
 
-See the [native screenshot gallery](docs/screenshots/index.html) for the current interface and entry/confirmation sheets. Today opens with an illustrated summary. Appearance can follow the phone or be set to Light or Dark in Settings; chat tool results use original vector artwork.
+See the [native screenshot gallery](docs/screenshots/index.html) for the current interface and entry/confirmation sheets. Today uses a recorded-value summary and equally sized illustrated shortcuts; the floating dock has icon-only buttons with accessible names. Appearance can follow the phone or be set to Light or Dark. See [app lock](docs/app-lock.md) for authentication, PIN retry behaviour, and protection limits.

@@ -4,5 +4,6 @@
     <key>NSMicrophoneUsageDescription</key><string>Record a message for on-device transcription. You can edit it before sending.</string>
     <key>NSSpeechRecognitionUsageDescription</key><string>Transcribe your voice on this device into an editable message.</string>
     <key>NSHealthShareUsageDescription</key><string>Import heart rate, blood pressure, and temperature readings that you choose to share.</string>
+    <key>NSFaceIDUsageDescription</key><string>Use Face ID to unlock your Harbour health records.</string>
     <key>ITSAppUsesNonExemptEncryption</key><false/>
 </dict></plist>

@@ -10,13 +10,27 @@ enum AppSheet: Identifiable {
     @StateObject private var store = AppStore()
     @StateObject private var models = ModelManager()
     @StateObject private var health = HealthService()
+    @StateObject private var lock = AppLock()
     @AppStorage("appearance") private var appearance = AppearanceChoice.system.rawValue
     var body: some Scene {
         WindowGroup {
-            RootView().environmentObject(store).environmentObject(models).environmentObject(health)
+            LockShell().environmentObject(lock).environmentObject(store).environmentObject(models).environmentObject(health)
                 .tint(Palette.ink)
                 .preferredColorScheme((AppearanceChoice(rawValue: appearance) ?? .system).scheme)
         }
+    }
+}
+
+struct LockShell: View {
+    @EnvironmentObject var lock: AppLock
+    @EnvironmentObject var store: AppStore
+    @Environment(\.scenePhase) private var phase
+    var body: some View {
+        Group { if lock.locked { LockScreen() } else { RootView() } }
+            .background(PrivacyCurtain(covered: phase != .active && !(phase == .inactive && lock.presentingAuthentication)))
+            .accessibilityHidden(phase != .active)
+            .transaction { if lock.locked { $0.disablesAnimations = true } }
+            .onChange(of: phase) { if phase == .background { lock.lock(); store.shareFile = nil } }
     }
 }
 
@@ -26,15 +40,22 @@ struct RootView: View {
     @State private var tab = 0
     @State private var sheet: AppSheet?
     @State private var recordCategory = 0
+    @State private var keyboardVisible = false
     var body: some View {
+        VStack(spacing: 0) {
         TabView(selection: $tab) {
-            NavigationStack { TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1; tab = 2 }) }
+            NavigationStack { TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1; tab = 2 }).toolbar(.hidden, for: .tabBar) }
                 .tabItem { Label("Today", systemImage: "house") }.tag(0)
-            NavigationStack { ChatView(sheet: $sheet) }
+            NavigationStack { ChatView(sheet: $sheet).toolbar(.hidden, for: .tabBar) }
                 .tabItem { Label("Chat", systemImage: "bubble.left.and.bubble.right") }.tag(1)
-            NavigationStack { RecordsView(sheet: $sheet, category: $recordCategory) }
+            NavigationStack { RecordsView(sheet: $sheet, category: $recordCategory).toolbar(.hidden, for: .tabBar) }
                 .tabItem { Label("Records", systemImage: "heart.text.square") }.tag(2)
         }
+        .toolbar(.hidden, for: .tabBar)
+            if !keyboardVisible { NavigationDock(selection: $tab) }
+        }.background(Palette.canvas)
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardVisible = true }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in keyboardVisible = false }
         .sheet(item: $sheet) { item in
             NavigationStack {
                 switch item {
@@ -71,8 +92,9 @@ struct HarbourMark: View {
         }
         .frame(width: size, height: size)
         .rotationEffect(.degrees(animate && spinning && !reduceMotion ? 348 : -12))
-        .animation(spinning && !reduceMotion ? .linear(duration: 2.8).repeatForever(autoreverses: false) : nil, value: animate)
+        .animation(animate && spinning && !reduceMotion ? .linear(duration: 2.8).repeatForever(autoreverses: false) : nil, value: animate)
         .onAppear { animate = true }
+        .onDisappear { animate = false }
         .accessibilityHidden(true)
     }
 }
@@ -111,24 +133,11 @@ struct TodayView: View {
     @Binding var sheet: AppSheet?
     var openChat: () -> Void
     var openMedicines: () -> Void
-    private var latest: Reading? { store.records.readings.first }
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 32) {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text(Date.now, format: .dateTime.weekday(.wide).month(.wide).day()).font(.body).foregroundStyle(Palette.muted)
-                    if let latest {
-                        Text(latest.kind.rawValue).font(.title3)
-                        HStack(alignment: .firstTextBaseline, spacing: 8) {
-                            Text(latest.value).font(.system(size: 56, weight: .medium, design: .rounded)).minimumScaleFactor(0.7)
-                            Text(latest.kind.unit).font(.title2).foregroundStyle(Palette.muted)
-                        }
-                        Text(latest.date, format: .dateTime.month(.abbreviated).day().hour().minute()).foregroundStyle(Palette.muted)
-                    } else {
-                        Text("No readings yet").font(.largeTitle.weight(.medium)).fixedSize(horizontal: false, vertical: true)
-                        Button { sheet = .reading(nil) } label: { Label("Add a reading", systemImage: "plus").font(.title3.weight(.medium)).padding(.vertical, 6) }.accessibilityIdentifier("addReading")
-                    }
-                }.foregroundStyle(Palette.ink).padding(.top, 8)
+                Text(Date.now, format: .dateTime.weekday(.wide).month(.wide).day()).font(.body).foregroundStyle(Palette.muted).padding(.top, 2)
+                ReadingSummary(readings: store.records.readings) { sheet = .reading(nil) }
                 Group {
                     if typeSize.isAccessibilitySize { VStack(spacing: 16) { shortcuts } }
                     else { HStack(alignment: .top, spacing: 14) { shortcuts } }
@@ -168,12 +177,22 @@ struct TodayView: View {
     }
     private func illustratedShortcut(_ title: String, detail: String, kind: IllustrationKind, colour: Color, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(alignment: .top) { Text(title).font(.title3.weight(.semibold)); Spacer(minLength: 0); Image(systemName: "arrow.up.right").font(.body) }
-                Text(detail).font(.body).fixedSize(horizontal: false, vertical: true)
-                HarbourIllustration(kind: kind).frame(height: 110).padding(.horizontal, -18).padding(.bottom, -16)
-            }.padding(18).frame(maxWidth: .infinity, alignment: .leading).foregroundStyle(Palette.ink)
-                .background(colour, in: RoundedRectangle(cornerRadius: 28)).clipShape(RoundedRectangle(cornerRadius: 28))
+            ZStack(alignment: .topLeading) {
+                colour
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(title).font(.system(.title3, design: .rounded, weight: .bold))
+                    Text(detail).font(.body).lineLimit(2)
+                }.padding(18)
+            }.frame(maxWidth: .infinity).frame(height: typeSize.isAccessibilitySize ? 320 : 250)
+                .overlay(alignment: .topLeading) {
+                HarbourIllustration(kind: kind).frame(width: 195, height: 163).offset(x: 48, y: 122)
+                }
+                .overlay(alignment: .bottomLeading) {
+                Image(systemName: "arrow.up.right").font(.body.weight(.semibold)).foregroundStyle(Palette.canvas)
+                    .frame(width: 44, height: 44).background(Palette.ink, in: Circle()).padding(18)
+                }.foregroundStyle(Palette.ink)
+                .clipShape(RoundedRectangle(cornerRadius: 28))
+                .contentShape(RoundedRectangle(cornerRadius: 28))
         }.buttonStyle(PressFeedback())
     }
 }

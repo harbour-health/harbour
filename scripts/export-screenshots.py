@@ -16,15 +16,15 @@ TITLES = {
     '08-symptom-intake': 'Symptom entry', '09-symptom-review': 'Symptom review',
     '10-chat-conversation': 'Chat conversation', '11-chat-empty': 'New chat',
     '12-topics': 'Chat topics', '13-chat-topic': 'Selected topic',
-    '14-models': 'Models and effort', '15-model-download': 'Model download · Earlier capture',
+    '14-models': 'Models and effort', '15-model-download': 'Model download',
     '16-settings': 'Settings', '17-evaluation': 'Evaluation', '18-export': 'Export records',
     '19-appointment-note': 'Appointment note', '20-interactions': 'Medicine interactions',
     '21-emergency-review': 'Emergency review', '22-symptom-detail': 'Saved symptom',
     '23-blood-pressure': 'Blood pressure entry', '24-temperature': 'Temperature entry',
-    '25-manual-medicine': 'Unlisted medicine', '26-health-access': 'Apple Health access · Earlier capture',
+    '25-manual-medicine': 'Unlisted medicine', '26-health-access': 'Apple Health access',
     '27-delete-confirmation': 'Delete confirmation', '28-chat-keyboard': 'Chat with keyboard',
     '29-evaluation-results': 'Evaluation results',
-    '30-health-permission': 'Apple Health permission · Earlier capture',
+    '30-health-permission': 'Apple Health permission',
     '31-today-dark': 'Today · Dark', '32-chat-dark': 'New chat · Dark',
     '33-symptoms-dark': 'Symptoms · Dark', '34-medicines-dark': 'Medicines · Dark',
     '35-readings-dark': 'Readings · Dark', '36-topics-dark': 'Topics · Dark',
@@ -37,7 +37,12 @@ TITLES = {
     '49-catalog-dark': 'Medicine catalogue · Dark', '50-confirm-medicine-dark': 'Medicine confirmation · Dark',
     '51-symptom-entry-dark': 'Symptom entry · Dark', '52-symptom-review-dark': 'Symptom review · Dark',
     '53-selected-topic-dark': 'Selected topic · Dark',
-
+    '54-app-lock-settings': 'App lock', '55-pin-setup': 'Set PIN',
+    '56-pin-lock': 'Locked app', '57-pin-retry-delay': 'PIN retry delay',
+    '58-generated-chat-title': 'Generated chat title',
+    '59-current-pin': 'Confirm current PIN', '60-import-records': 'Import records',
+    '61-pin-mismatch': 'PIN mismatch', '62-face-id-unavailable': 'Face ID unavailable',
+    '63-health-access-reminder': 'Apple Health access reminder',
 }
 
 parser = argparse.ArgumentParser()
@@ -88,10 +93,10 @@ try:
             overview.paste(screenshot, (x + (304 - screenshot.width) // 2, y))
             draw.text((x, y + 742), TITLES.get(path.stem, path.stem), font=font, fill='#141414')
         overview.save(args.output / f'overview-{offset // 9 + 1}.jpg', quality=90)
-    preview_files = ['01-today.png', '31-today-dark.png', '11-chat-empty.png', '42-chat-result-dark.png']
+    preview_files = ['01-today.png', '31-today-dark.png', '11-chat-empty.png', '58-generated-chat-title.png']
     if all((args.output / name).exists() for name in preview_files):
         preview = Image.new('RGB', (1440, 900), '#eee9df')
-        labels = ['Today', 'Today · Dark', 'Chat', 'Chat result · Dark']
+        labels = ['Today', 'Today · Dark', 'New chat', 'Generated chat title']
         painter = ImageDraw.Draw(preview)
         for index, name in enumerate(preview_files):
             shot = Image.open(args.output / name).convert('RGB')
