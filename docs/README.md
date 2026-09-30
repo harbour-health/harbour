@@ -4,6 +4,7 @@
 - [Local models](local-models.md) — runtime setup, pinned weights, downloads, and cancellation.
 - [Health and voice](health-and-voice.md) — native permissions, HealthKit queries, and speech.
 - [Interface](interface.md) — navigation, composer behaviour, and accessibility.
+- [Artwork](artwork.md) — original vector imagery, palettes, and motion.
 - [Evaluation](evaluation.md) — reproducible checks, observed results, and outstanding device evidence.
 - [Screenshots](screenshots.md) — full-resolution native captures and the review gallery.
 

@@ -12,9 +12,10 @@ struct SettingsView: View {
     var body: some View {
         List {
             Section {
+                NavigationLink { AppearanceView() } label: { Label("Appearance", systemImage: "circle.lefthalf.filled") }
                 NavigationLink { ModelsView() } label: { Label("Models", systemImage: "cpu") }
-                Button { Task { await health.sync(into: store) } } label: { HStack { Label("Import from Apple Health", systemImage: "heart.fill").foregroundStyle(.primary); Spacer(); if health.busy { ProgressView() } } }.disabled(health.busy)
-                if !health.status.isEmpty { Text(health.status).font(.subheadline).foregroundStyle(.secondary) }
+                Button { Task { await health.sync(into: store) } } label: { HStack { Label("Import from Apple Health", systemImage: "heart.fill").foregroundStyle(Palette.ink); Spacer(); if health.busy { ProgressView() } } }.disabled(health.busy)
+                if !health.status.isEmpty { Text(health.status).font(.subheadline).foregroundStyle(Palette.muted) }
             }
             Section("Data") {
                 Button { store.export() } label: { Label("Export records", systemImage: "square.and.arrow.up") }
@@ -22,7 +23,7 @@ struct SettingsView: View {
                 Button("Delete all records and chat", role: .destructive) { deleting = true }
             }
             Section { NavigationLink { EvaluationView() } label: { Label("Evaluation", systemImage: "checkmark.seal") } }
-        }.navigationTitle("Settings").navigationBarTitleDisplayMode(.inline)
+        }.scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle("Settings").navigationBarTitleDisplayMode(.inline)
         .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
         .fileImporter(isPresented: $importing, allowedContentTypes: [.json]) { result in switch result { case .success(let url): store.importFile(url); case .failure(let error): store.error = error.localizedDescription } }
         .alert("Delete all records and chat?", isPresented: $deleting) { Button("Delete all", role: .destructive) { store.clear() }; Button("Cancel", role: .cancel) {} }
@@ -39,16 +40,16 @@ struct ModelsView: View {
                 ForEach(ModelChoice.allCases) { choice in
                     Button { models.selection = choice } label: {
                         HStack {
-                            VStack(alignment: .leading, spacing: 5) { Text(choice.title).fontWeight(.medium); Text(choice == .automatic ? "For this device: \(models.resolved.title)" : ByteCountFormatter.string(fromByteCount: choice.size, countStyle: .file)).font(.subheadline).foregroundStyle(.secondary) }
+                            VStack(alignment: .leading, spacing: 5) { Text(choice.title).fontWeight(.medium); Text(choice == .automatic ? "For this device: \(models.resolved.title)" : ByteCountFormatter.string(fromByteCount: choice.size, countStyle: .file)).font(.subheadline).foregroundStyle(Palette.muted) }
                             Spacer(); if models.selection == choice { Image(systemName: "checkmark").fontWeight(.semibold) }
-                        }.foregroundStyle(.primary).padding(.vertical, 5)
+                        }.foregroundStyle(Palette.ink).padding(.vertical, 5)
                     }.disabled(models.downloading != nil || models.generating)
                 }
             }
             Section {
                 Text(models.effort.rawValue).font(.headline)
-                Slider(value: Binding(get: { Double(Effort.allCases.firstIndex(of: models.effort) ?? 1) }, set: { models.effort = Effort.allCases[Int($0.rounded())] }), in: 0...2, step: 1).accessibilityLabel("Generation effort")
-                HStack { Text("Quick"); Spacer(); Text("Extended") }.font(.subheadline).foregroundStyle(.secondary)
+                EffortSlider(value: Binding(get: { Double(Effort.allCases.firstIndex(of: models.effort) ?? 1) }, set: { models.effort = Effort.allCases[Int($0.rounded())] })).frame(height: 48).padding(.vertical, 6)
+                HStack { Text("Quick"); Spacer(); Text("Extended") }.font(.subheadline).foregroundStyle(Palette.muted)
             } header: { Text("Effort") } footer: { Text("Effort changes the maximum output length. It does not establish better medical judgement.") }
             Section("Downloads") {
                 ForEach([ModelChoice.small, .balanced]) { choice in
@@ -63,11 +64,11 @@ struct ModelsView: View {
                                 Button("Download") { downloadTask = Task { do { _ = try await models.ensure(choice) } catch { if !Task.isCancelled { store.error = error.localizedDescription } } } }.disabled(models.downloading != nil)
                             }
                         }
-                        if models.downloading == choice { ProgressView(value: models.progress); Text(models.status == "Verifying download" ? models.status : "\(Int(models.progress * 100))%").font(.caption).foregroundStyle(.secondary) }
+                        if models.downloading == choice { ProgressView(value: models.progress); Text(models.status == "Verifying download" ? models.status : "\(Int(models.progress * 100))%").font(.caption).foregroundStyle(Palette.muted) }
                     }.padding(.vertical, 8)
                 }
             }
-        }.navigationTitle("Models").navigationBarTitleDisplayMode(.inline)
+        }.scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle("Models").navigationBarTitleDisplayMode(.inline)
         .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
     }
 }

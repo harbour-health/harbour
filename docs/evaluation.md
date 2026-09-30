@@ -40,6 +40,12 @@ On this Mac on 30 September 2026:
 - Signed simulator UI: all six full-suite flows passed. The additional Health permission capture also passed in a subsequent two-flow run, reaching the native Allow button without granting access. The final delete-cancellation flow also passed and preserved the medicine list. Eight distinct UI test flows are covered across these runs. Xcode result-bundle cleanup can take substantially longer than the test run itself.
 - Actual in-app Qwen Small download and sourced Advil/warfarin result were visually inspected. The completed model UI test confirmed a heart-rate reading and symptom record through native confirmation sheets.
 
+### September 30 presentation update
+
+The richer interface was checked with actual simulator interaction. `HarbourAppearanceTests` verified Light/Dark selection across relaunch, optional topics preserving a typed draft, record forms/review, export, and model controls. `HarbourRichResultsTests` (originally grouped with the appearance flow) exercised actual local Qwen tool calls for medicine lists, readings, and sourced interactions in both appearances. `HarbourDetailRefreshTests` captured emergency review, saved symptoms, blood pressure/temperature entry, unconfirmed medicines, and the keyboard. `HarbourNavigationTests` verified the dashboard medicine shortcut, native effort slider snapping, and System appearance with the simulator set to Dark.
+
+All four presentation flows passed across the final capture/navigation runs. The signed simulator and unsigned iPhone targets compiled. Original vector artwork, light/dark screenshots, and the structured result displays were visually inspected. The inference runtime, grounding checks, and clinical rules were not changed, so the earlier 72-case routing matrix remains the model evidence rather than a newly rerun result.
+
 ### Model matrix and prompt experiments
 
 The first full simulator matrix passed 33/36 cases on each model. All six failures were the medicine-list request being misrouted to readings and rejected by validation. The original reports are preserved as [Small baseline](results/baseline-small.json) and [Balanced baseline](results/baseline-balanced.json). A broader prompt rewrite regressed to 7/12 on the Mac Small probe and was discarded. Separating only the medicine/reading list descriptions improved tool choice, then exposed an early-generation-stop bug for nested argument objects. The corrected runtime waits for the completed outer JSON object; four independent regression tests cover it.

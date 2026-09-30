@@ -42,4 +42,4 @@ The Xcode project is checked in. If adding source files, regenerate with `python
 
 See [docs/README.md](docs/README.md).
 
-See the [native screenshot gallery](docs/screenshots/index.html) for the current interface and entry/confirmation sheets. Chat opens by default; the health and records screens use plain lists.
+See the [native screenshot gallery](docs/screenshots/index.html) for the current interface and entry/confirmation sheets. Today opens with an illustrated summary. Appearance can follow the phone or be set to Light or Dark in Settings; chat tool results use original vector artwork.

@@ -2,28 +2,32 @@
 
 ## What it is
 
-A native, neutral SwiftUI interface with three destinations: Today, Chat, and Records. Chat opens by default. Conversation and composer follow the supplied ChatGPT reference; navigation and record sheets use familiar Apple Health, Messages, and Notes conventions.
+A native SwiftUI health companion with Today, Chat, and Records destinations. The summary hierarchy and floating navigation take inspiration from the supplied Wealthsimple reference, with original Harbour artwork and familiar iOS controls.
 
 ## How it works
 
-Large titles, plain lists, system typography, native sheets, and SF Symbols provide the structure. Today and Records have no card containers. Empty chat has one prompt and three unboxed actions without descriptions; assistant responses are not nested in cards. Entry and settings forms retain standard native grouping for related controls. Backgrounds follow system light/dark appearance. Colour identifies a few tool icons and warnings; it does not replace a label. There are no marketing sections or prototype disclaimers in the navigation.
+Today opens first. A large latest reading comes directly from saved records, followed by two illustrated shortcuts, a chat action, and open rows for readings, interactions, appointment notes, and recent symptoms. No health score or trend is inferred. The medicine shortcut opens its record list, while Symptoms opens capture. The two shortcuts are the only dashboard tiles; secondary actions have no containers. Native iOS 26 navigation retains its detached, rounded bottom bar.
 
-The chat composer remains above the keyboard and tab bar. Model name, lighter effort label, and chevron sit immediately left of the microphone. A selected topic appears in the composer on its own line, avoiding horizontal overflow on a small phone. Selecting a topic or starter row preserves the draft, performs no tool action, and adds an optional prompt hint. The model may ignore that hint.
+Warm cream and charcoal canvases replace gray on white. Semantic ink, secondary text, divider, and accent colours have separate light and dark values. Settings → Appearance offers System (default), Light, and Dark. The choice persists across launches and applies to navigation, chat, and sheets. System leaves SwiftUI's preferred colour scheme unset so subsequent phone appearance changes still apply.
 
-User messages have a restrained neutral bubble. Assistant content uses open spacing with inline readings and cited interaction results. The four-part Harbour mark animates while waiting and respects Reduce Motion. Emergency options use lightly filled, rounded selection buttons; there is an explicit “None of these apply” choice. Clinical next steps remain visible where needed. Deleting all records uses a native alert with explicit Cancel and Delete actions.
+Chat has an original animated conversation illustration, three open starter rows, and a high-contrast composer. Model name, lighter effort label, and chevron remain immediately left of the microphone. A selected topic appears on its own line. Selecting a starter or topic preserves the draft, executes no action, and adds only an optional model prompt hint.
+
+Assistant tool results have a single illustrated surface per result. Medicines, readings, and cited interaction findings render as structured content inside that surface, without nested cards. Unsupported interaction pairs remain explicitly unassessed. Record mutations still require their existing confirmation sheets. The waiting mark spins and new messages appear with a short transition; Reduce Motion disables these effects and the illustration float. Buttons have restrained press feedback.
+
+Records retain flat lists for scanning and native swipe deletion. Illustrated empty states expose a direct add action. Input forms retain native grouping for familiar pickers, keyboard handling, and confirmation controls. Emergency options use rounded, lightly coloured selection buttons. There are no marketing sections or prototype disclaimers in navigation; clinical instructions and provenance remain visible where needed.
 
 ## How to change it
 
-`HarbourApp.swift` contains navigation, shared rows, and the vector mark. `ChatView.swift` owns the composer, topic menu, and transcript. `RecordsView.swift` contains entry/review sheets. Keep full-row hit areas (`contentShape`) on plain buttons: initial UI tests caught gaps where a tap in the centre of a row did nothing.
+`HarbourApp.swift` owns navigation, Today, shared rows, and the mark. `ChatView.swift` owns the composer, optional topics, transcript, and structured tool-result presentation. `RecordsView.swift` owns record lists and editors. `Appearance.swift` contains semantic colours, the appearance setting, and press feedback. See [Artwork](artwork.md) for illustration changes.
 
-Use system text styles and keep text wrapping enabled. Maintain 44-point control targets; inspect the composer at narrow widths and with larger text. Add accessibility labels for icon-only controls and identifiers for tested actions. Do not turn unassessed interactions into a success state.
+Keep whole-row hit areas with `contentShape`, use system text styles for labels, and preserve at least 44-point control targets. Today stacks the illustrated shortcuts vertically at accessibility text sizes. Test narrow screens and large text before changing composer spacing. Do not add a success badge when an interaction has not been assessed. Presentation changes must not bypass the deterministic rules or original-message tool validation.
 
 ## Configuration
 
-The app follows the device appearance; no custom theme is stored. Native Dynamic Type, VoiceOver labels, keyboard avoidance, and Reduce Motion are used. iPad layouts share the same tabs with constrained chat content width. Full iPad, VoiceOver, and largest-accessibility-text acceptance remains a device testing task.
+`@AppStorage("appearance")` stores `AppearanceChoice.rawValue`; invalid values fall back to System. `Palette` uses adaptive UIKit colours resolved against the active appearance. `accessibilityReduceMotion` controls optional animation. Illustration frames and dashboard spacing are local SwiftUI constants.
 
-The icon is original Harbour geometry, generated by `scripts/generate-icon.swift`; it is not copied from another company's assets. The checked-in PNG avoids a build-time graphics dependency.
+The app icon is original Harbour geometry, generated by `scripts/generate-icon.swift`. The effort control wraps `UISlider` with a 28-point rounded track and matching thumb, retains native dragging/accessibility, and snaps to three values. Its 48-point view frame keeps the hit area larger than the artwork. New top-level Swift source files require `python3 scripts/generate-project.py` to refresh the checked-in Xcode project. iPad, VoiceOver, and largest-accessibility-text acceptance remain device testing tasks.
 
 ## Dependencies
 
-SwiftUI, UIKit system colours, SF Symbols, and [Apple’s Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/).
+SwiftUI, UIKit dynamic colours, SF Symbols, native tab navigation, and the original vector [artwork](artwork.md). No remote design assets or UI libraries are required.

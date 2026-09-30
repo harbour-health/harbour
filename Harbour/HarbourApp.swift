@@ -10,10 +10,12 @@ enum AppSheet: Identifiable {
     @StateObject private var store = AppStore()
     @StateObject private var models = ModelManager()
     @StateObject private var health = HealthService()
+    @AppStorage("appearance") private var appearance = AppearanceChoice.system.rawValue
     var body: some Scene {
         WindowGroup {
             RootView().environmentObject(store).environmentObject(models).environmentObject(health)
-                .tint(.primary)
+                .tint(Palette.ink)
+                .preferredColorScheme((AppearanceChoice(rawValue: appearance) ?? .system).scheme)
         }
     }
 }
@@ -21,15 +23,16 @@ enum AppSheet: Identifiable {
 struct RootView: View {
     @EnvironmentObject var store: AppStore
     @EnvironmentObject var models: ModelManager
-    @State private var tab = 1
+    @State private var tab = 0
     @State private var sheet: AppSheet?
+    @State private var recordCategory = 0
     var body: some View {
         TabView(selection: $tab) {
-            NavigationStack { TodayView(sheet: $sheet, openChat: { tab = 1 }) }
+            NavigationStack { TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1; tab = 2 }) }
                 .tabItem { Label("Today", systemImage: "house") }.tag(0)
             NavigationStack { ChatView(sheet: $sheet) }
                 .tabItem { Label("Chat", systemImage: "bubble.left.and.bubble.right") }.tag(1)
-            NavigationStack { RecordsView(sheet: $sheet) }
+            NavigationStack { RecordsView(sheet: $sheet, category: $recordCategory) }
                 .tabItem { Label("Records", systemImage: "heart.text.square") }.tag(2)
         }
         .sheet(item: $sheet) { item in
@@ -43,6 +46,7 @@ struct RootView: View {
                 case .note: NoteView()
                 }
             }
+            .background(Palette.canvas)
             .sheet(item: $store.shareFile) { ShareView(url: $0.url) }
         }
         .sheet(item: Binding(get: { if case nil = sheet { return store.shareFile }; return nil }, set: { store.shareFile = $0 })) { ShareView(url: $0.url) }
@@ -76,8 +80,8 @@ struct FeatureIcon: View {
     var symbol: String
     var colour: Color
     var body: some View {
-        Image(systemName: symbol).font(.system(size: 20, weight: .medium)).foregroundStyle(colour)
-            .frame(width: 30, height: 42)
+        Image(systemName: symbol).font(.system(size: 24, weight: .medium)).foregroundStyle(colour)
+            .frame(width: 32, height: 48)
     }
 }
 struct FeatureRow: View {
@@ -89,48 +93,88 @@ struct FeatureRow: View {
         HStack(spacing: 14) {
             FeatureIcon(symbol: symbol, colour: colour)
             VStack(alignment: .leading, spacing: 4) {
-                Text(title).font(.body.weight(.medium)).foregroundStyle(.primary)
-                if let subtitle { Text(subtitle).font(.subheadline).foregroundStyle(.secondary) }
+                Text(title).font(.title3.weight(.medium)).foregroundStyle(Palette.ink)
+                if let subtitle { Text(subtitle).font(.subheadline).foregroundStyle(Palette.muted) }
             }
             Spacer(minLength: 8)
-            Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(.tertiary)
+            Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Palette.muted)
         }.padding(.vertical, 6).contentShape(Rectangle())
     }
 }
 struct SettingsButton: View {
     @Binding var sheet: AppSheet?
-    var body: some View { Button { sheet = .settings } label: { Image(systemName: "gearshape").frame(width: 36, height: 36) }.accessibilityLabel("Settings") }
+    var body: some View { Button { sheet = .settings } label: { Image(systemName: "gearshape").frame(width: 44, height: 44) }.accessibilityLabel("Settings") }
 }
 struct TodayView: View {
     @EnvironmentObject var store: AppStore
+    @Environment(\.dynamicTypeSize) private var typeSize
     @Binding var sheet: AppSheet?
     var openChat: () -> Void
+    var openMedicines: () -> Void
+    private var latest: Reading? { store.records.readings.first }
     var body: some View {
-        List {
-            Section("Readings") {
-                if store.records.readings.isEmpty {
-                    Button { sheet = .reading(nil) } label: { FeatureRow(title: "Add a reading", subtitle: nil, symbol: "waveform.path.ecg", colour: .red) }.accessibilityIdentifier("addReading")
-                } else {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 32) {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(Date.now, format: .dateTime.weekday(.wide).month(.wide).day()).font(.body).foregroundStyle(Palette.muted)
+                    if let latest {
+                        Text(latest.kind.rawValue).font(.title3)
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
+                            Text(latest.value).font(.system(size: 56, weight: .medium, design: .rounded)).minimumScaleFactor(0.7)
+                            Text(latest.kind.unit).font(.title2).foregroundStyle(Palette.muted)
+                        }
+                        Text(latest.date, format: .dateTime.month(.abbreviated).day().hour().minute()).foregroundStyle(Palette.muted)
+                    } else {
+                        Text("No readings yet").font(.largeTitle.weight(.medium)).fixedSize(horizontal: false, vertical: true)
+                        Button { sheet = .reading(nil) } label: { Label("Add a reading", systemImage: "plus").font(.title3.weight(.medium)).padding(.vertical, 6) }.accessibilityIdentifier("addReading")
+                    }
+                }.foregroundStyle(Palette.ink).padding(.top, 8)
+                Group {
+                    if typeSize.isAccessibilitySize { VStack(spacing: 16) { shortcuts } }
+                    else { HStack(alignment: .top, spacing: 14) { shortcuts } }
+                }
+                Button(action: openChat) {
+                    HStack(spacing: 18) {
+                        HarbourMark(size: 30).foregroundStyle(Palette.blue)
+                        Text("Ask Harbour").font(.title3.weight(.medium))
+                        Spacer(); Image(systemName: "arrow.up.right").font(.title3)
+                    }.foregroundStyle(Palette.ink).padding(.vertical, 16).contentShape(Rectangle())
+                }.buttonStyle(PressFeedback())
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack { Text("Readings").font(.title2.weight(.semibold)); Spacer(); Button { sheet = .reading(nil) } label: { Image(systemName: "plus").frame(width: 44, height: 44) }.accessibilityLabel("Add a reading") }
                     ForEach(ReadingKind.allCases, id: \.self) { kind in
-                        if let reading = store.records.readings.first(where: { $0.kind == kind }) { ReadingRow(reading: reading) }
+                        if let reading = store.records.readings.first(where: { $0.kind == kind }) { ReadingRow(reading: reading); Divider().overlay(Palette.line) }
+                    }
+                    Button { sheet = .interactions(store.records.medicines) } label: { FeatureRow(title: "Check interactions", symbol: "arrow.triangle.branch", colour: Palette.blue) }.buttonStyle(PressFeedback())
+                    Button { sheet = .note } label: { FeatureRow(title: "Appointment note", symbol: "note.text", colour: Palette.coral) }.buttonStyle(PressFeedback())
+                }
+                if !store.records.symptoms.isEmpty {
+                    VStack(alignment: .leading, spacing: 14) {
+                        Text("Recent symptoms").font(.title2.weight(.semibold))
+                        ForEach(store.records.symptoms.prefix(2)) { symptom in
+                            NavigationLink { SymptomDetail(symptom: symptom) } label: { SymptomRow(symptom: symptom).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.plain)
+                            Divider().overlay(Palette.line)
+                        }
                     }
                 }
-            }
-            Section("Health") {
-                Button { sheet = .symptom("") } label: { FeatureRow(title: "Record a symptom", subtitle: nil, symbol: "cross.case", colour: .orange) }.accessibilityIdentifier("addSymptom")
-                Button { sheet = .medicine(nil) } label: { FeatureRow(title: "Add a medicine", subtitle: nil, symbol: "pills", colour: .indigo) }
-                Button { sheet = .interactions(store.records.medicines) } label: { FeatureRow(title: "Check interactions", subtitle: nil, symbol: "arrow.triangle.branch", colour: .blue) }
-                Button { sheet = .note } label: { FeatureRow(title: "Appointment note", subtitle: nil, symbol: "note.text", colour: .purple) }
-            }
-            if !store.records.symptoms.isEmpty {
-                Section("Recent symptoms") {
-                    ForEach(store.records.symptoms.prefix(3)) { symptom in SymptomRow(symptom: symptom) }
-                }
-            }
-        }
-        .listStyle(.plain).listSectionSpacing(28)
-        .navigationTitle("Today")
-        .toolbar { ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) } }
+            }.padding(.horizontal, 24).padding(.bottom, 32).frame(maxWidth: 760).frame(maxWidth: .infinity)
+        }.background(Palette.canvas).foregroundStyle(Palette.ink)
+            .navigationTitle("Today").toolbar { ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) } }
+    }
+    @ViewBuilder private var shortcuts: some View {
+        illustratedShortcut("Medicines", detail: "\(store.records.medicines.count) recorded", kind: .medicines, colour: Palette.blueWash, action: openMedicines).accessibilityIdentifier("openMedicines")
+        illustratedShortcut("Symptoms", detail: "Record a symptom", kind: .symptoms, colour: Palette.coralWash) { sheet = .symptom("") }
+            .accessibilityIdentifier("addSymptom")
+    }
+    private func illustratedShortcut(_ title: String, detail: String, kind: IllustrationKind, colour: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .top) { Text(title).font(.title3.weight(.semibold)); Spacer(minLength: 0); Image(systemName: "arrow.up.right").font(.body) }
+                Text(detail).font(.body).fixedSize(horizontal: false, vertical: true)
+                HarbourIllustration(kind: kind).frame(height: 110).padding(.horizontal, -18).padding(.bottom, -16)
+            }.padding(18).frame(maxWidth: .infinity, alignment: .leading).foregroundStyle(Palette.ink)
+                .background(colour, in: RoundedRectangle(cornerRadius: 28)).clipShape(RoundedRectangle(cornerRadius: 28))
+        }.buttonStyle(PressFeedback())
     }
 }
 struct ReadingRow: View {
@@ -138,10 +182,10 @@ struct ReadingRow: View {
     var body: some View {
         HStack(spacing: 14) {
             Image(systemName: reading.kind.symbol).foregroundStyle(.red).frame(width: 24)
-            VStack(alignment: .leading, spacing: 5) { Text(reading.kind.rawValue).font(.subheadline.weight(.medium)); Text(reading.date, format: .dateTime.month(.abbreviated).day().hour().minute()).font(.caption).foregroundStyle(.secondary) }
+            VStack(alignment: .leading, spacing: 5) { Text(reading.kind.rawValue).font(.body.weight(.medium)); Text(reading.date, format: .dateTime.month(.abbreviated).day().hour().minute()).font(.subheadline).foregroundStyle(Palette.muted) }
             Spacer()
-            HStack(alignment: .firstTextBaseline, spacing: 4) { Text(reading.value).font(.title2.weight(.semibold)); Text(reading.kind.unit).font(.caption).foregroundStyle(.secondary) }
-        }.padding(.vertical, 8).accessibilityElement(children: .combine)
+            HStack(alignment: .firstTextBaseline, spacing: 4) { Text(reading.value).font(.title2.weight(.semibold)); Text(reading.kind.unit).font(.subheadline).foregroundStyle(Palette.muted) }
+        }.foregroundStyle(Palette.ink).padding(.vertical, 12).listRowBackground(Color.clear).accessibilityElement(children: .combine)
     }
 }
 struct SymptomRow: View {
@@ -149,9 +193,9 @@ struct SymptomRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(symptom.text).font(.body).fixedSize(horizontal: false, vertical: true)
-            HStack { Text(symptom.date, style: .date); if !symptom.onset.isEmpty { Text("· " + symptom.onset) } }.font(.caption).foregroundStyle(.secondary)
+            HStack { Text(symptom.date, style: .date); if !symptom.onset.isEmpty { Text("· " + symptom.onset) } }.font(.subheadline).foregroundStyle(Palette.muted)
             if HealthRules.isEmergency(symptom) { Label("Emergency sign recorded", systemImage: "exclamationmark.circle").font(.subheadline).foregroundStyle(.red) }
-        }.padding(.vertical, 10)
+        }.foregroundStyle(Palette.ink).padding(.vertical, 14).listRowBackground(Color.clear)
     }
 }
 
