@@ -1,0 +1,522 @@
+{
+  "checks" : [
+    {
+      "name" : "Emergency sign: Loss of consciousness",
+      "passed" : true
+    },
+    {
+      "name" : "Emergency sign: New confusion",
+      "passed" : true
+    },
+    {
+      "name" : "Emergency sign: Persistent, severe chest pain",
+      "passed" : true
+    },
+    {
+      "name" : "Emergency sign: Difficulty breathing",
+      "passed" : true
+    },
+    {
+      "name" : "Emergency sign: Severe pain not relieved by pain medicine",
+      "passed" : true
+    },
+    {
+      "name" : "Emergency phrase",
+      "passed" : true
+    },
+    {
+      "name" : "Emergency before model",
+      "passed" : true
+    },
+    {
+      "name" : "Negated emergency",
+      "passed" : true
+    },
+    {
+      "name" : "Negated then affirmative",
+      "passed" : true
+    },
+    {
+      "name" : "No false all-clear",
+      "passed" : true
+    },
+    {
+      "name" : "Brand maps to ingredient",
+      "passed" : true
+    },
+    {
+      "name" : "Listed pair has source",
+      "passed" : true
+    },
+    {
+      "name" : "Unknown pair remains unassessed",
+      "passed" : true
+    },
+    {
+      "name" : "Unknown product remains unresolved",
+      "passed" : true
+    },
+    {
+      "name" : "Duplicate ingredient",
+      "passed" : true
+    },
+    {
+      "name" : "Pair direction is symmetric",
+      "passed" : true
+    },
+    {
+      "name" : "Multiple ingredients enumerated",
+      "passed" : true
+    },
+    {
+      "name" : "Heart rate extracted",
+      "passed" : true
+    },
+    {
+      "name" : "Pressure extracted",
+      "passed" : true
+    },
+    {
+      "name" : "Temperature extracted",
+      "passed" : true
+    },
+    {
+      "name" : "Invalid pressure rejected",
+      "passed" : true
+    },
+    {
+      "name" : "Nonfinite reading rejected",
+      "passed" : true
+    },
+    {
+      "name" : "Prompt control token escaped",
+      "passed" : true
+    },
+    {
+      "name" : "Invalid tool rejected",
+      "passed" : true
+    },
+    {
+      "name" : "Malformed JSON rejected",
+      "passed" : true
+    },
+    {
+      "name" : "Known alias accepted",
+      "passed" : true
+    },
+    {
+      "name" : "Wrong tool rejected",
+      "passed" : true
+    },
+    {
+      "name" : "Invented medicine rejected",
+      "passed" : true
+    },
+    {
+      "name" : "Reply cannot give clinical advice",
+      "passed" : true
+    }
+  ],
+  "date" : 812487868.319998,
+  "device" : "Version 26.5 (Build 23F77)",
+  "memoryBytes" : 17179869184,
+  "runs" : [
+    {
+      "effort" : "Quick",
+      "elapsedSeconds" : 2.570183038711548,
+      "expected" : "check_interactions",
+      "id" : "37B12675-6E03-4ADA-9F09-50C11C613EEE",
+      "input" : "Can I take Advil and warfarin together?",
+      "model" : "small",
+      "observed" : "check_interactions",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"check_interactions\",\"arg\":{\"drug1\":\"Advil\",\"drug2\":\"warfarin\"}}"
+    },
+    {
+      "effort" : "Quick",
+      "elapsedSeconds" : 2.2717080116271973,
+      "expected" : "capture_symptom",
+      "id" : "3DE425E1-D66B-4D5A-8FD9-78B2B39FB4CF",
+      "input" : "My knee has been sore since Tuesday",
+      "model" : "small",
+      "observed" : "capture_symptom",
+      "passed" : true,
+      "rawOutput" : "\n{\"tool\":\"capture_symptom\",\"arg\":{\"symptom\":\"sore knee\",\"date\":\"Tuesday\"}}"
+    },
+    {
+      "effort" : "Quick",
+      "elapsedSeconds" : 2.112818956375122,
+      "expected" : "log_reading",
+      "id" : "78D0DEC0-2D7D-472E-B588-870984788493",
+      "input" : "Please save my heart rate of 72",
+      "model" : "small",
+      "observed" : "log_reading",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"log_reading\",\"arg\":{\"measurement\":\"heart_rate\",\"value\":72}}"
+    },
+    {
+      "effort" : "Quick",
+      "elapsedSeconds" : 2.5217620134353638,
+      "expected" : "add_medication",
+      "id" : "808B1FDA-9B43-4903-92C3-3CC052E92011",
+      "input" : "Add metformin to my medicines",
+      "model" : "small",
+      "observed" : "add_medication",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"add_medication\",\"arg\":{\"drug\":\"metformin\", \"dosage\":\"100mg\", \"frequency\":\"daily\", \"duration\":\"24 hours\"}}"
+    },
+    {
+      "effort" : "Quick",
+      "elapsedSeconds" : 1.9035669565200806,
+      "expected" : "list_readings",
+      "id" : "9FEC99AE-45D9-4F23-870D-F46097F7B9AE",
+      "input" : "Show my readings",
+      "model" : "small",
+      "observed" : "list_readings",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"list_readings\",\"arg\":\"show\"}"
+    },
+    {
+      "effort" : "Quick",
+      "elapsedSeconds" : 1.952096939086914,
+      "expected" : "copy_note",
+      "id" : "01236B6F-60C6-453B-A991-0823462733F8",
+      "input" : "Make an appointment note",
+      "model" : "small",
+      "observed" : "copy_note",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"copy_note\",\"arg\":\"make an appointment note\"}"
+    },
+    {
+      "effort" : "Quick",
+      "elapsedSeconds" : 2.128253936767578,
+      "expected" : "log_reading",
+      "id" : "6C0D46C7-6DDA-44BD-9E3F-B29F4E4F8EB2",
+      "input" : "My temperature is 36.8",
+      "model" : "small",
+      "observed" : "log_reading",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"log_reading\",\"arg\":{\"measurement\":\"temperature\",\"value\":36.8}}"
+    },
+    {
+      "effort" : "Quick",
+      "elapsedSeconds" : 2.202957034111023,
+      "expected" : "log_reading",
+      "id" : "BCD1F126-0744-498F-9515-FCA19937129E",
+      "input" : "My blood pressure is 120\/80",
+      "model" : "small",
+      "observed" : "log_reading",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"log_reading\",\"arg\":{\"measurement\":\"blood pressure\",\"value\":\"120\\\/80\"}}"
+    },
+    {
+      "effort" : "Quick",
+      "elapsedSeconds" : 1.8895739316940308,
+      "expected" : "export_data",
+      "id" : "D3E03070-E02E-4304-8A21-9162D2CE7E87",
+      "input" : "Export my records",
+      "model" : "small",
+      "observed" : "export_data",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"export_data\",\"arg\":\"records\"}"
+    },
+    {
+      "effort" : "Quick",
+      "elapsedSeconds" : 1.9473450183868408,
+      "expected" : "import_readings",
+      "id" : "4BF3E4F2-B03F-4FD7-8564-41D826CED55B",
+      "input" : "Import readings from Apple Health",
+      "model" : "small",
+      "observed" : "import_readings",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"import_readings\",\"arg\":\"Apple Health\"}"
+    },
+    {
+      "effort" : "Quick",
+      "elapsedSeconds" : 1.9552470445632935,
+      "expected" : "clear_data",
+      "id" : "92F28ABD-C591-4769-9632-5C0A130D4054",
+      "input" : "Clear all records",
+      "model" : "small",
+      "observed" : "clear_data",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"clear_data\",\"arg\":\"all\"}"
+    },
+    {
+      "effort" : "Quick",
+      "elapsedSeconds" : 2.0779080390930176,
+      "expected" : "list_medications",
+      "id" : "2B100D5A-BB86-49A4-9589-46E8BC4B3635",
+      "input" : "Show my medicines",
+      "model" : "small",
+      "observed" : "That response didn’t match your request. Please rephrase it.",
+      "passed" : false,
+      "rawOutput" : " {\"tool\":\"list_readings\",\"arg\":\"medicines\"}"
+    },
+    {
+      "effort" : "Standard",
+      "elapsedSeconds" : 2.2437100410461426,
+      "expected" : "check_interactions",
+      "id" : "4E896A9D-FAAA-4922-9259-1E71B559CEB7",
+      "input" : "Can I take Advil and warfarin together?",
+      "model" : "small",
+      "observed" : "check_interactions",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"check_interactions\",\"arg\":{\"drug1\":\"Advil\",\"drug2\":\"warfarin\"}}"
+    },
+    {
+      "effort" : "Standard",
+      "elapsedSeconds" : 2.16769802570343,
+      "expected" : "capture_symptom",
+      "id" : "E84B6F0A-0F2E-4CD7-8813-FBE74872FE74",
+      "input" : "My knee has been sore since Tuesday",
+      "model" : "small",
+      "observed" : "capture_symptom",
+      "passed" : true,
+      "rawOutput" : "\n{\"tool\":\"capture_symptom\",\"arg\":{\"symptom\":\"sore knee\",\"date\":\"Tuesday\"}}"
+    },
+    {
+      "effort" : "Standard",
+      "elapsedSeconds" : 2.2566579580307007,
+      "expected" : "log_reading",
+      "id" : "A6CAD59B-C267-48C5-B0EB-3A24BE74EDA6",
+      "input" : "Please save my heart rate of 72",
+      "model" : "small",
+      "observed" : "log_reading",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"log_reading\",\"arg\":{\"measurement\":\"heart_rate\",\"value\":72}}"
+    },
+    {
+      "effort" : "Standard",
+      "elapsedSeconds" : 2.642536997795105,
+      "expected" : "add_medication",
+      "id" : "C5FA5012-EEB5-4D4F-875C-829D6C9E3D80",
+      "input" : "Add metformin to my medicines",
+      "model" : "small",
+      "observed" : "add_medication",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"add_medication\",\"arg\":{\"drug\":\"metformin\", \"dosage\":\"100mg\", \"frequency\":\"daily\", \"duration\":\"24 hours\"}}"
+    },
+    {
+      "effort" : "Standard",
+      "elapsedSeconds" : 1.9774179458618164,
+      "expected" : "list_readings",
+      "id" : "870CC59E-B33F-4F45-B040-949EA386A93A",
+      "input" : "Show my readings",
+      "model" : "small",
+      "observed" : "list_readings",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"list_readings\",\"arg\":\"show\"}"
+    },
+    {
+      "effort" : "Standard",
+      "elapsedSeconds" : 2.007035970687866,
+      "expected" : "copy_note",
+      "id" : "0CDD9074-499F-492C-8E3F-42D300EE76ED",
+      "input" : "Make an appointment note",
+      "model" : "small",
+      "observed" : "copy_note",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"copy_note\",\"arg\":\"make an appointment note\"}"
+    },
+    {
+      "effort" : "Standard",
+      "elapsedSeconds" : 2.2003350257873535,
+      "expected" : "log_reading",
+      "id" : "A7D9702C-1E8E-4D2F-9074-9C6003C267BC",
+      "input" : "My temperature is 36.8",
+      "model" : "small",
+      "observed" : "log_reading",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"log_reading\",\"arg\":{\"measurement\":\"temperature\",\"value\":36.8}}"
+    },
+    {
+      "effort" : "Standard",
+      "elapsedSeconds" : 2.3222349882125854,
+      "expected" : "log_reading",
+      "id" : "36F943A7-FA0C-4B2B-91D5-7AAFCEC99109",
+      "input" : "My blood pressure is 120\/80",
+      "model" : "small",
+      "observed" : "log_reading",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"log_reading\",\"arg\":{\"measurement\":\"blood pressure\",\"value\":\"120\\\/80\"}}"
+    },
+    {
+      "effort" : "Standard",
+      "elapsedSeconds" : 1.9547739028930664,
+      "expected" : "export_data",
+      "id" : "29C11288-56EA-4121-9D4F-566396D876D1",
+      "input" : "Export my records",
+      "model" : "small",
+      "observed" : "export_data",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"export_data\",\"arg\":\"records\"}"
+    },
+    {
+      "effort" : "Standard",
+      "elapsedSeconds" : 1.9869680404663086,
+      "expected" : "import_readings",
+      "id" : "3DD77A5E-4BD4-49A0-902B-8046C68BCDB5",
+      "input" : "Import readings from Apple Health",
+      "model" : "small",
+      "observed" : "import_readings",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"import_readings\",\"arg\":\"Apple Health\"}"
+    },
+    {
+      "effort" : "Standard",
+      "elapsedSeconds" : 1.943593978881836,
+      "expected" : "clear_data",
+      "id" : "5F1E6278-0566-4B59-96C9-7D39A60FCCBE",
+      "input" : "Clear all records",
+      "model" : "small",
+      "observed" : "clear_data",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"clear_data\",\"arg\":\"all\"}"
+    },
+    {
+      "effort" : "Standard",
+      "elapsedSeconds" : 2.1261370182037354,
+      "expected" : "list_medications",
+      "id" : "4EA6B01A-7622-4184-9F6F-D2BA5BFD9754",
+      "input" : "Show my medicines",
+      "model" : "small",
+      "observed" : "That response didn’t match your request. Please rephrase it.",
+      "passed" : false,
+      "rawOutput" : " {\"tool\":\"list_readings\",\"arg\":\"medicines\"}"
+    },
+    {
+      "effort" : "Extended",
+      "elapsedSeconds" : 2.3484179973602295,
+      "expected" : "check_interactions",
+      "id" : "85C49E8E-E14A-4030-B4BE-FEBD0404E9F2",
+      "input" : "Can I take Advil and warfarin together?",
+      "model" : "small",
+      "observed" : "check_interactions",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"check_interactions\",\"arg\":{\"drug1\":\"Advil\",\"drug2\":\"warfarin\"}}"
+    },
+    {
+      "effort" : "Extended",
+      "elapsedSeconds" : 2.2579280138015747,
+      "expected" : "capture_symptom",
+      "id" : "2450B2E0-8A85-4D7E-A2CD-ED25082AE928",
+      "input" : "My knee has been sore since Tuesday",
+      "model" : "small",
+      "observed" : "capture_symptom",
+      "passed" : true,
+      "rawOutput" : "\n{\"tool\":\"capture_symptom\",\"arg\":{\"symptom\":\"sore knee\",\"date\":\"Tuesday\"}}"
+    },
+    {
+      "effort" : "Extended",
+      "elapsedSeconds" : 2.392793893814087,
+      "expected" : "log_reading",
+      "id" : "951C2752-B9B4-4767-A422-3FBE1FAF9765",
+      "input" : "Please save my heart rate of 72",
+      "model" : "small",
+      "observed" : "log_reading",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"log_reading\",\"arg\":{\"measurement\":\"heart_rate\",\"value\":72}}"
+    },
+    {
+      "effort" : "Extended",
+      "elapsedSeconds" : 2.725417971611023,
+      "expected" : "add_medication",
+      "id" : "B8A77241-852F-4C5E-9A20-93F967F177CD",
+      "input" : "Add metformin to my medicines",
+      "model" : "small",
+      "observed" : "add_medication",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"add_medication\",\"arg\":{\"drug\":\"metformin\", \"dosage\":\"100mg\", \"frequency\":\"daily\", \"duration\":\"24 hours\"}}"
+    },
+    {
+      "effort" : "Extended",
+      "elapsedSeconds" : 2.069501042366028,
+      "expected" : "list_readings",
+      "id" : "54CBD08F-861F-4F71-B020-850D16C5D18E",
+      "input" : "Show my readings",
+      "model" : "small",
+      "observed" : "list_readings",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"list_readings\",\"arg\":\"show\"}"
+    },
+    {
+      "effort" : "Extended",
+      "elapsedSeconds" : 2.093098998069763,
+      "expected" : "copy_note",
+      "id" : "910DF001-DF05-43D5-8778-2B3269585C52",
+      "input" : "Make an appointment note",
+      "model" : "small",
+      "observed" : "copy_note",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"copy_note\",\"arg\":\"make an appointment note\"}"
+    },
+    {
+      "effort" : "Extended",
+      "elapsedSeconds" : 2.268213987350464,
+      "expected" : "log_reading",
+      "id" : "928EBB9F-AB98-42A3-9618-7F51B3D3418D",
+      "input" : "My temperature is 36.8",
+      "model" : "small",
+      "observed" : "log_reading",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"log_reading\",\"arg\":{\"measurement\":\"temperature\",\"value\":36.8}}"
+    },
+    {
+      "effort" : "Extended",
+      "elapsedSeconds" : 2.3411710262298584,
+      "expected" : "log_reading",
+      "id" : "941AA8EF-E24D-46CD-9BB1-1D62A3B72EBF",
+      "input" : "My blood pressure is 120\/80",
+      "model" : "small",
+      "observed" : "log_reading",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"log_reading\",\"arg\":{\"measurement\":\"blood pressure\",\"value\":\"120\\\/80\"}}"
+    },
+    {
+      "effort" : "Extended",
+      "elapsedSeconds" : 1.9941649436950684,
+      "expected" : "export_data",
+      "id" : "1985FA99-DFE3-42F3-BBCA-3BF93B1D3BCA",
+      "input" : "Export my records",
+      "model" : "small",
+      "observed" : "export_data",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"export_data\",\"arg\":\"records\"}"
+    },
+    {
+      "effort" : "Extended",
+      "elapsedSeconds" : 2.0937999486923218,
+      "expected" : "import_readings",
+      "id" : "D6A0E816-6932-4340-8874-44A515A904CE",
+      "input" : "Import readings from Apple Health",
+      "model" : "small",
+      "observed" : "import_readings",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"import_readings\",\"arg\":\"Apple Health\"}"
+    },
+    {
+      "effort" : "Extended",
+      "elapsedSeconds" : 1.9985949993133545,
+      "expected" : "clear_data",
+      "id" : "9AE89BA9-B2C2-491D-8E6D-724D458F7710",
+      "input" : "Clear all records",
+      "model" : "small",
+      "observed" : "clear_data",
+      "passed" : true,
+      "rawOutput" : " {\"tool\":\"clear_data\",\"arg\":\"all\"}"
+    },
+    {
+      "effort" : "Extended",
+      "elapsedSeconds" : 2.261584997177124,
+      "expected" : "list_medications",
+      "id" : "BD7C37C8-103F-486C-9740-4340F571B9E0",
+      "input" : "Show my medicines",
+      "model" : "small",
+      "observed" : "That response didn’t match your request. Please rephrase it.",
+      "passed" : false,
+      "rawOutput" : " {\"tool\":\"list_readings\",\"arg\":\"medicines\"}"
+    }
+  ],
+  "thermalState" : 0
+}

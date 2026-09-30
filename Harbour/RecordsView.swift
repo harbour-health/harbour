@@ -1,0 +1,240 @@
+import SwiftUI
+import HarbourCore
+
+struct RecordsView: View {
+    @EnvironmentObject var store: AppStore
+    @Binding var sheet: AppSheet?
+    @State private var category = 0
+    var body: some View {
+        List {
+            Section {
+                Picker("Record type", selection: $category) { Text("Symptoms").tag(0); Text("Medicines").tag(1); Text("Readings").tag(2) }.pickerStyle(.segmented).listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0)).listRowBackground(Color.clear)
+            }
+            if category == 0 {
+                Section {
+                    if store.records.symptoms.isEmpty { ContentUnavailableView("No symptoms", systemImage: "cross.case") }
+                    ForEach(store.records.symptoms) { symptom in
+                        NavigationLink { SymptomDetail(symptom: symptom) } label: { SymptomRow(symptom: symptom) }
+                    }.onDelete { indexes in let ids = indexes.map { store.records.symptoms[$0].id }; for id in ids { store.removeSymptom(id) } }
+                }
+            } else if category == 1 {
+                Section {
+                    if store.records.medicines.isEmpty { ContentUnavailableView("No medicines", systemImage: "pills") }
+                    ForEach(store.records.medicines) { medicine in
+                        Button { sheet = .medicine(medicine) } label: {
+                            HStack(spacing: 14) {
+                                FeatureIcon(symbol: "pills", colour: .indigo)
+                                VStack(alignment: .leading, spacing: 5) { Text(medicine.name).foregroundStyle(.primary).fontWeight(.medium); Text(medicine.ingredients.isEmpty ? "Ingredients unconfirmed" : medicine.ingredients.joined(separator: ", ")).font(.subheadline).foregroundStyle(.secondary); if !medicine.instructions.isEmpty { Text(medicine.instructions).font(.subheadline).foregroundStyle(.secondary) } }
+                            }.padding(.vertical, 6)
+                        }
+                    }.onDelete { indexes in let ids = indexes.map { store.records.medicines[$0].id }; for id in ids { store.removeMedicine(id) } }
+                }
+                if !store.records.medicines.isEmpty { Section { Button { sheet = .interactions(store.records.medicines) } label: { Label("Check interactions", systemImage: "arrow.triangle.branch") } } }
+            } else {
+                Section {
+                    if store.records.readings.isEmpty { ContentUnavailableView("No readings", systemImage: "waveform.path.ecg") }
+                    ForEach(store.records.readings) { reading in ReadingRow(reading: reading) }
+                        .onDelete { indexes in let ids = indexes.map { store.records.readings[$0].id }; for id in ids { store.removeReading(id) } }
+                }
+            }
+        }
+        .listStyle(.plain).listSectionSpacing(20).navigationTitle("Records")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) { Button { switch category { case 0: sheet = .symptom(""); case 1: sheet = .medicine(nil); default: sheet = .reading(nil) } } label: { Image(systemName: "plus") }.accessibilityLabel("Add record") }
+        }
+    }
+}
+
+struct SymptomEditor: View {
+    let initial: String
+    @EnvironmentObject var store: AppStore
+    @Environment(\.dismiss) private var dismiss
+    @State private var text = ""
+    @State private var onset = ""
+    @State private var severity = "Not specified"
+    @State private var signs = Set<EmergencySign>()
+    @State private var none = false
+    @State private var reviewed = false
+    @FocusState private var editing: Bool
+    private var symptom: Symptom { Symptom(text: text.trimmingCharacters(in: .whitespacesAndNewlines), onset: onset, severity: severity, signs: EmergencySign.allCases.filter { signs.contains($0) }) }
+    var body: some View {
+        Form {
+            Section("What’s happening?") {
+                TextField("Describe the symptom", text: $text, axis: .vertical).lineLimit(3...7).focused($editing).accessibilityIdentifier("symptomText")
+                TextField("When did it start?", text: $onset).focused($editing).accessibilityIdentifier("symptomOnset")
+                Picker("Severity", selection: $severity) { ForEach(["Not specified", "Mild", "Moderate", "Severe"], id: \.self) { Text($0) } }
+            }
+            Section("Emergency signs") {
+                VStack(alignment: .leading, spacing: 10) {
+                    ForEach(EmergencySign.allCases) { sign in
+                        choice(sign.rawValue, selected: signs.contains(sign)) { none = false; if signs.contains(sign) { signs.remove(sign) } else { signs.insert(sign) }; reviewed = false }
+                    }
+                    choice("None of these apply", selected: none) { signs.removeAll(); none.toggle(); reviewed = false }
+                }.padding(.vertical, 8)
+            }
+            if reviewed { Section("Next step") { GuidanceView(symptom: symptom) } }
+        }
+        .navigationTitle("Symptom").navigationBarTitleDisplayMode(.inline)
+        .onAppear { text = initial }
+        .onChange(of: text) { reviewed = false }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { editing = false } }
+            ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+            ToolbarItem(placement: .confirmationAction) {
+                Button(reviewed ? "Save" : "Review") {
+                    editing = false
+                    if reviewed { store.add(symptom); store.append(ChatMessage(text: "Symptom saved. " + HealthRules.guidance(symptom))); dismiss() }
+                    else { withAnimation { reviewed = true } }
+                }.disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || (signs.isEmpty && !none)).accessibilityIdentifier("saveSymptom")
+            }
+        }
+    }
+    private func choice(_ title: String, selected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 12) { Text(title).font(.body).multilineTextAlignment(.leading); Spacer(); Image(systemName: selected ? "checkmark.circle.fill" : "circle").foregroundStyle(selected ? .primary : .tertiary) }
+                .foregroundStyle(.primary).padding(14).frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.primary.opacity(selected ? 0.09 : 0.03), in: RoundedRectangle(cornerRadius: 15))
+        }.buttonStyle(.plain).accessibilityAddTraits(selected ? .isSelected : []).accessibilityIdentifier(title == "None of these apply" ? "noEmergencySigns" : title)
+    }
+}
+struct GuidanceView: View {
+    let symptom: Symptom
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Label(HealthRules.isEmergency(symptom) ? "Emergency care" : "Health811", systemImage: HealthRules.isEmergency(symptom) ? "exclamationmark.circle.fill" : "phone").font(.headline).foregroundStyle(HealthRules.isEmergency(symptom) ? Color.red : Color.primary)
+            Text(HealthRules.guidance(symptom)).fixedSize(horizontal: false, vertical: true)
+            HStack(spacing: 24) {
+                Link(HealthRules.isEmergency(symptom) ? "Call 911" : "Call 811", destination: URL(string: HealthRules.isEmergency(symptom) ? "tel:911" : "tel:811")!)
+                Link("Ontario source", destination: URL(string: HealthRules.isEmergency(symptom) ? HealthRules.emergencySource : HealthRules.helpSource)!).foregroundStyle(.secondary)
+            }.font(.subheadline.weight(.medium))
+        }.padding(.vertical, 8)
+    }
+}
+struct SymptomDetail: View {
+    let symptom: Symptom
+    var body: some View {
+        List {
+            Section { SymptomRow(symptom: symptom); LabeledContent("Started", value: symptom.onset.isEmpty ? "Not recorded" : symptom.onset); LabeledContent("Severity", value: symptom.severity) }
+            if !symptom.signs.isEmpty { Section("Signs recorded") { ForEach(symptom.signs) { Text($0.rawValue) } } }
+            Section("Next step") { GuidanceView(symptom: symptom) }
+        }.navigationTitle("Symptom").navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct MedicineEditor: View {
+    let initial: Medicine?
+    @EnvironmentObject var store: AppStore
+    @Environment(\.dismiss) private var dismiss
+    @State private var query = ""
+    @State private var chosen: Medicine?
+    @State private var instructions = ""
+    @State private var confirmed = false
+    var body: some View {
+        Form {
+            if let chosen {
+                Section {
+                    Text(chosen.name).font(.title3.weight(.semibold))
+                    LabeledContent("Active ingredients", value: chosen.ingredients.isEmpty ? "Unconfirmed" : chosen.ingredients.joined(separator: ", "))
+                    if initial == nil { Button("Choose another medicine") { self.chosen = nil; confirmed = false } }
+                }
+                Section("Instructions from your label") { TextField("Dose or notes (optional)", text: $instructions, axis: .vertical).lineLimit(2...4) }
+                Section {
+                    Button { confirmed.toggle() } label: {
+                        HStack(spacing: 14) {
+                            Text("I checked the exact product and ingredients").foregroundStyle(.primary)
+                            Spacer(minLength: 8)
+                            Image(systemName: confirmed ? "checkmark.circle.fill" : "circle").foregroundStyle(.primary)
+                        }.padding(.vertical, 8).contentShape(Rectangle())
+                    }.buttonStyle(.plain).accessibilityIdentifier("confirmMedicine").accessibilityValue(confirmed ? "Confirmed" : "Not confirmed")
+                } footer: { Text(chosen.ingredients.isEmpty ? "This medicine will be saved with unconfirmed ingredients. Its interactions cannot be assessed." : "Brand formulations can differ. Check the active ingredients on your package.") }
+            } else {
+                Section {
+                    TextField("Medicine name", text: $query).autocorrectionDisabled().accessibilityIdentifier("medicineSearch")
+                }
+                Section("Medicines") {
+                    ForEach(Catalog.medicines.filter { query.isEmpty || $0.name.localizedCaseInsensitiveContains(query) }) { medicine in
+                        Button { chosen = medicine } label: { VStack(alignment: .leading, spacing: 4) { Text(medicine.name).foregroundStyle(.primary); Text(medicine.ingredients.joined(separator: ", ")).font(.subheadline).foregroundStyle(.secondary) } }.accessibilityIdentifier("catalog-" + medicine.id)
+                    }
+                    if !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !Catalog.medicines.contains(where: { $0.name.caseInsensitiveCompare(query) == .orderedSame }) {
+                        Button("Add \(query) with unconfirmed ingredients") { chosen = Medicine(name: query.trimmingCharacters(in: .whitespacesAndNewlines)) }.accessibilityIdentifier("addUnlistedMedicine")
+                    }
+                }
+            }
+        }
+        .navigationTitle(initial == nil ? "Add medicine" : "Medicine").navigationBarTitleDisplayMode(.inline)
+        .onAppear { chosen = initial; instructions = initial?.instructions ?? "" }
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+            ToolbarItem(placement: .confirmationAction) { Button("Save") { if var chosen { chosen.instructions = instructions; store.add(chosen); dismiss() } }.disabled(chosen == nil || !confirmed).accessibilityIdentifier("saveMedicine") }
+        }
+    }
+}
+
+struct ReadingEditor: View {
+    let initial: Reading?
+    @EnvironmentObject var store: AppStore
+    @Environment(\.dismiss) private var dismiss
+    @State private var kind: ReadingKind = .heartRate
+    @State private var value = ""
+    @State private var date = Date.now
+    @FocusState private var editing: Bool
+    init(initial: Reading?) {
+        self.initial = initial
+        _kind = State(initialValue: initial?.kind ?? .heartRate)
+        _value = State(initialValue: initial?.value ?? "")
+        _date = State(initialValue: initial?.date ?? .now)
+    }
+    var body: some View {
+        Form {
+            Section {
+                Picker("Type", selection: $kind) { ForEach(ReadingKind.allCases, id: \.self) { Text($0.rawValue).tag($0) } }.accessibilityIdentifier("readingKind")
+                HStack { TextField(kind == .bloodPressure ? "120/80" : kind == .temperature ? "36.8" : "72", text: $value).focused($editing).keyboardType(kind == .bloodPressure ? .numbersAndPunctuation : .decimalPad).accessibilityIdentifier("readingValue"); Text(kind.unit).foregroundStyle(.secondary) }
+                DatePicker("Recorded", selection: $date, in: ...Date.now)
+            }
+            if !value.isEmpty && !ReadingParser.valid(value, kind: kind) { Section { Text(kind == .bloodPressure ? "Enter systolic/diastolic, such as 120/80." : "Check the number and unit.").foregroundStyle(.secondary) } }
+        }
+        .navigationTitle("Add reading").navigationBarTitleDisplayMode(.inline)
+        .onChange(of: kind) { value = "" }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { editing = false } }
+            ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+            ToolbarItem(placement: .confirmationAction) { Button("Save") { store.add(Reading(kind: kind, value: value, date: date)); dismiss() }.disabled(!ReadingParser.valid(value, kind: kind)).accessibilityIdentifier("saveReading") }
+        }
+    }
+}
+
+struct InteractionView: View {
+    let report: InteractionReport
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            ForEach(report.alerts.indices, id: \.self) { index in
+                let alert = report.alerts[index]
+                VStack(alignment: .leading, spacing: 10) {
+                    Label(alert.pair.map { $0.capitalized }.joined(separator: " + "), systemImage: "exclamationmark.circle.fill").font(.headline).foregroundStyle(.orange)
+                    Text(alert.summary).fixedSize(horizontal: false, vertical: true)
+                    Link("NHS source", destination: URL(string: alert.source)!).font(.subheadline).foregroundStyle(.secondary).accessibilityIdentifier("interactionSource")
+                }
+            }
+            if !report.duplicates.isEmpty { Label("Repeated ingredients: " + report.duplicates.joined(separator: ", "), systemImage: "pills.fill").foregroundStyle(.orange) }
+            if !report.unresolved.isEmpty { VStack(alignment: .leading, spacing: 6) { Text("Unconfirmed ingredients").font(.headline); Text(report.unresolved.joined(separator: ", ")).foregroundStyle(.secondary) } }
+            if !report.unassessed.isEmpty { VStack(alignment: .leading, spacing: 10) { Text("Not assessed").font(.headline); ForEach(report.unassessed.indices, id: \.self) { Text(report.unassessed[$0].joined(separator: " + ")).foregroundStyle(.secondary) } } }
+            if report.alerts.isEmpty && report.unassessed.isEmpty && report.duplicates.isEmpty && report.unresolved.isEmpty { Text("Add at least two medicines to compare.").foregroundStyle(.secondary) }
+            Text("Coverage: four source-listed ingredient pairs. An absent alert does not establish safety. Ask a pharmacist before changing medicines.").font(.footnote).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+        }.frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+struct NoteView: View {
+    @EnvironmentObject var store: AppStore
+    @Environment(\.dismiss) private var dismiss
+    @State private var text = ""
+    @State private var copied = false
+    var body: some View {
+        TextEditor(text: $text).padding(16).navigationTitle("Appointment note").navigationBarTitleDisplayMode(.inline)
+            .onAppear { text = store.records.appointmentNote }
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) { Button("Done") { dismiss() } }
+                ToolbarItemGroup(placement: .topBarTrailing) { Button { UIPasteboard.general.string = text; copied = true } label: { Image(systemName: copied ? "checkmark" : "doc.on.doc") }.accessibilityLabel("Copy note"); ShareLink(item: text) }
+            }
+    }
+}
