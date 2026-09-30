@@ -39,7 +39,7 @@ struct RootView: View {
     @EnvironmentObject var models: ModelManager
     @State private var tab = 0
     @State private var sheet: AppSheet?
-    @State private var recordCategory = 0
+    @State private var recordCategory: Int?
     @State private var keyboardVisible = false
     var body: some View {
         VStack(spacing: 0) {
@@ -137,8 +137,8 @@ struct TodayView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 32) {
                 Text(Date.now, format: .dateTime.weekday(.wide).month(.wide).day()).font(.body).foregroundStyle(Palette.muted).padding(.top, 2)
-                ReadingSummary(readings: store.records.readings) { sheet = .reading(nil) }
-                Group {
+                VStack(spacing: 14) {
+                    ReadingSummary(readings: store.records.readings) { sheet = .reading(nil) }
                     if typeSize.isAccessibilitySize { VStack(spacing: 16) { shortcuts } }
                     else { HStack(alignment: .top, spacing: 14) { shortcuts } }
                 }
@@ -183,9 +183,9 @@ struct TodayView: View {
                     Text(title).font(.system(.title3, design: .rounded, weight: .bold))
                     Text(detail).font(.body).lineLimit(2)
                 }.padding(18)
-            }.frame(maxWidth: .infinity).frame(height: typeSize.isAccessibilitySize ? 320 : 250)
-                .overlay(alignment: .topLeading) {
-                HarbourIllustration(kind: kind).frame(width: 195, height: 163).offset(x: 48, y: 122)
+            }.frame(maxWidth: .infinity).frame(height: typeSize.isAccessibilitySize ? 320 : 210)
+                .overlay(alignment: .bottomTrailing) {
+                HarbourIllustration(kind: kind).frame(width: 180, height: 150).offset(x: 56, y: 32)
                 }
                 .overlay(alignment: .bottomLeading) {
                 Image(systemName: "arrow.up.right").font(.body.weight(.semibold)).foregroundStyle(Palette.canvas)

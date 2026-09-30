@@ -10,7 +10,7 @@ Harbour's four original vector illustrations add colour and depth to health reco
 
 Solid offset edges, highlights, and small shadows create depth. The pale support shapes adapt to the current colour scheme. The illustration is decorative, hidden from accessibility, and ignores taps so the containing control owns its label and interaction.
 
-Today's shortcuts deliberately offset their 195 × 163-point illustrations beyond the bottom/right edge and clip them to the tile's rounded boundary. A contrasting circular arrow occupies the opposite corner. Change placement in `TodayView.illustratedShortcut`, not the drawing coordinates, so full illustrations in chat and empty states remain intact.
+Today's shortcuts deliberately offset their 180 × 150-point illustrations from the bottom-right anchor beyond the tile's edge and clip them to its rounded boundary. This keeps the composition aligned when the tile height changes. A contrasting circular arrow occupies the opposite corner. Change placement in `TodayView.illustratedShortcut`, not the drawing coordinates, so full illustrations in chat and empty states remain intact.
 
 ```swift
 HarbourIllustration(kind: .medicines)

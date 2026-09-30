@@ -2,11 +2,11 @@ import SwiftUI
 
 // Semantic colours resolve against the active appearance, including a user override.
 enum Palette {
-    static let canvas = adaptive(0xF7F3EB, 0x191816)
-    static let surface = adaptive(0xFFFDFA, 0x2B2926)
-    static let ink = adaptive(0x24211E, 0xF8F4EC)
-    static let muted = adaptive(0x645D54, 0xC8C1B7)
-    static let line = adaptive(0xDED8CD, 0x47413A)
+    static let canvas = adaptive(0xFFFFFF, 0x171717)
+    static let surface = adaptive(0xF5F5F5, 0x262626)
+    static let ink = adaptive(0x181818, 0xF7F7F7)
+    static let muted = adaptive(0x606060, 0xBFBFBF)
+    static let line = adaptive(0xE5E5E5, 0x404040)
     static let blue = adaptive(0x365DCE, 0xA0B6FF)
     static let coral = adaptive(0xB94831, 0xFFAE98)
     static let blueWash = adaptive(0xE3E9FC, 0x303C5B)

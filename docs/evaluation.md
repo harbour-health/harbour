@@ -58,6 +58,14 @@ The completed Evaluation screen showed 36/36 selected-model routing cases across
 
 The final signed simulator and unsigned physical-iPhone builds compiled. The gallery contains 63 genuine native captures, including the new PIN screens. Physical biometric matching and device-passcode fallback were not exercised.
 
+### Later September 30 layout refinement
+
+Records now has a category browser and dedicated list destinations. The refreshed appearance, entry/review, and navigation flows passed, including category changes via the native back button, Add record sheets, and the dashboard's direct Medicines shortcut. The final dashboard flow also passed equal shortcut dimensions, content margins, a two-line draft area with a larger distance to its controls, model-selector access above the dock, and actual local chat-title persistence/reset. PIN lifecycle and retry checks passed again with the neutral palette.
+
+An initial capture run revealed that a parent composer accessibility identifier replaced its children's identifiers; removing that parent identifier restored independently addressable controls. A subsequent size assertion incorrectly expected the inner accessibility text view to include its containing writing area's reserved space. The final check measures its two lines and the distance to the model control separately. These failures were resolved rather than counted as successful runs.
+
+The final rich-result flow passed actual local medicine-list, reading-list, and sourced interaction requests in both appearances. The updated dashboard, category browser, composer, keyboard, and entry screens were visually reviewed. Six distinct updated UI flows passed across the corrected capture and final runs. The unsigned iPhone target compiled. Earlier model-routing reports remain unchanged; this visual refinement does not add clinical coverage or physical-device performance evidence.
+
 ### Model matrix and prompt experiments
 
 The first full simulator matrix passed 33/36 cases on each model. All six failures were the medicine-list request being misrouted to readings and rejected by validation. The original reports are preserved as [Small baseline](results/baseline-small.json) and [Balanced baseline](results/baseline-balanced.json). A broader prompt rewrite regressed to 7/12 on the Mac Small probe and was discarded. Separating only the medicine/reading list descriptions improved tool choice, then exposed an early-generation-stop bug for nested argument objects. The corrected runtime waits for the completed outer JSON object; four independent regression tests cover it.

@@ -20,7 +20,7 @@ Qwen Small downloads when the first chat message is sent, or from **Settings →
 
 - **Today:** recent readings and entry points to symptoms, medicines, interactions, and appointment notes.
 - **Chat:** freeform messages; optional topic hints; model and effort controls beside the microphone; validated tool calls and locally generated conversation titles.
-- **Records:** saved symptoms, medicines, and readings, with native entry sheets and swipe deletion.
+- **Records:** a large category browser leading to dedicated symptom, medicine, and reading lists, with native entry sheets and swipe deletion.
 - **Settings:** appearance, optional Face ID or app PIN lock, model downloads, Apple Health import, record import/export, reset, and evaluation.
 
 The current medicine catalog maps 11 names to ingredients and checks four cited pairs. Other pairs are unassessed. Symptom guidance uses fixed Ontario wording and does not establish a diagnosis. This is the existing honours-project scope carried into native code.

@@ -43,6 +43,7 @@ TITLES = {
     '59-current-pin': 'Confirm current PIN', '60-import-records': 'Import records',
     '61-pin-mismatch': 'PIN mismatch', '62-face-id-unavailable': 'Face ID unavailable',
     '63-health-access-reminder': 'Apple Health access reminder',
+    '64-records': 'Records', '65-records-dark': 'Records · Dark',
 }
 
 parser = argparse.ArgumentParser()
@@ -93,10 +94,10 @@ try:
             overview.paste(screenshot, (x + (304 - screenshot.width) // 2, y))
             draw.text((x, y + 742), TITLES.get(path.stem, path.stem), font=font, fill='#141414')
         overview.save(args.output / f'overview-{offset // 9 + 1}.jpg', quality=90)
-    preview_files = ['01-today.png', '31-today-dark.png', '11-chat-empty.png', '58-generated-chat-title.png']
+    preview_files = ['01-today.png', '64-records.png', '11-chat-empty.png', '31-today-dark.png']
     if all((args.output / name).exists() for name in preview_files):
-        preview = Image.new('RGB', (1440, 900), '#eee9df')
-        labels = ['Today', 'Today · Dark', 'New chat', 'Generated chat title']
+        preview = Image.new('RGB', (1440, 900), '#f7f7f7')
+        labels = ['Today', 'Records', 'New chat', 'Today · Dark']
         painter = ImageDraw.Draw(preview)
         for index, name in enumerate(preview_files):
             shot = Image.open(args.output / name).convert('RGB')

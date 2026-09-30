@@ -4,12 +4,43 @@ import HarbourCore
 struct RecordsView: View {
     @EnvironmentObject var store: AppStore
     @Binding var sheet: AppSheet?
-    @Binding var category: Int
+    @Binding var category: Int?
     var body: some View {
         List {
-            Section {
-                Picker("Record type", selection: $category) { Text("Symptoms").tag(0); Text("Medicines").tag(1); Text("Readings").tag(2) }.pickerStyle(.segmented).listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0)).listRowBackground(Color.clear)
-            }
+            categoryRow("Symptoms", count: store.records.symptoms.count, symbol: "cross.case.fill", colour: Palette.coral, index: 0)
+            categoryRow("Medicines", count: store.records.medicines.count, symbol: "pills.fill", colour: Palette.blue, index: 1)
+            categoryRow("Readings", count: store.records.readings.count, symbol: "waveform.path.ecg", colour: Palette.coral, index: 2)
+        }
+        .listStyle(.plain).scrollContentBackground(.hidden).background(Palette.canvas)
+        .navigationTitle("Records")
+        .navigationDestination(item: $category) { selected in
+            RecordList(sheet: $sheet, category: selected)
+        }
+    }
+    private func categoryRow(_ title: String, count: Int, symbol: String, colour: Color, index: Int) -> some View {
+        Button { category = index } label: {
+            HStack(spacing: 18) {
+                Image(systemName: symbol).font(.system(size: 27, weight: .medium)).foregroundStyle(colour).frame(width: 36)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(title).font(.title2.weight(.semibold)).foregroundStyle(Palette.ink)
+                    Text("\(count) \(count == 1 ? "record" : "records")").font(.body).foregroundStyle(Palette.muted)
+                }
+                Spacer(minLength: 12)
+                Image(systemName: "chevron.right").font(.body.weight(.medium)).foregroundStyle(Palette.muted)
+            }.padding(.vertical, 22).contentShape(Rectangle())
+        }.buttonStyle(.plain).accessibilityIdentifier("record-category-\(index)")
+            .listRowInsets(EdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24))
+            .listRowBackground(Color.clear)
+    }
+}
+
+private struct RecordList: View {
+    @EnvironmentObject var store: AppStore
+    @Binding var sheet: AppSheet?
+    let category: Int
+    private var title: String { ["Symptoms", "Medicines", "Readings"][category] }
+    var body: some View {
+        List {
             if category == 0 {
                 Section {
                     if store.records.symptoms.isEmpty { RecordEmptyState(kind: .symptoms, title: "No symptoms", action: "Record a symptom") { sheet = .symptom("") } }
@@ -38,7 +69,7 @@ struct RecordsView: View {
                 }
             }
         }
-        .listStyle(.plain).listSectionSpacing(24).scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle("Records")
+        .listStyle(.plain).listSectionSpacing(24).scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle(title)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) { Button { switch category { case 0: sheet = .symptom(""); case 1: sheet = .medicine(nil); default: sheet = .reading(nil) } } label: { Image(systemName: "plus") }.accessibilityLabel("Add record") }
         }

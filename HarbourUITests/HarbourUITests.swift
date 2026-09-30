@@ -1,15 +1,26 @@
 import XCTest
 
+@MainActor private func selectRecords(_ app: XCUIApplication, _ name: String) {
+    if app.navigationBars[name].exists { return }
+    for _ in 0..<3 {
+        if app.navigationBars["Records"].exists { break }
+        app.navigationBars.buttons.firstMatch.tap()
+    }
+    let index = ["Symptoms": 0, "Medicines": 1, "Readings": 2][name]!
+    app.buttons["record-category-\(index)"].tap()
+    XCTAssertTrue(app.navigationBars[name].waitForExistence(timeout: 5))
+}
+
 @MainActor final class HarbourConfirmationTests: XCTestCase {
     func testDeleteCancellationPreservesRecords() {
         let app = XCUIApplication(); app.launch()
-        app.buttons["nav-records"].tap(); app.buttons["Medicines"].tap()
+        app.buttons["nav-records"].tap(); selectRecords(app, "Medicines")
         XCTAssertTrue(app.staticTexts["Warfarin"].firstMatch.exists)
         app.buttons["nav-today"].tap(); app.buttons["Settings"].tap(); app.buttons["Delete all records and chat"].tap()
         XCTAssertTrue(app.alerts.firstMatch.waitForExistence(timeout: 5))
         let screenshot = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); screenshot.name = "27-delete-confirmation"; screenshot.lifetime = .keepAlways; add(screenshot)
         app.alerts.buttons["Cancel"].tap(); app.buttons["Done"].tap()
-        app.buttons["nav-records"].tap(); app.buttons["Medicines"].tap()
+        app.buttons["nav-records"].tap(); selectRecords(app, "Medicines")
         XCTAssertTrue(app.staticTexts["Warfarin"].firstMatch.exists)
     }
 }
@@ -18,7 +29,7 @@ import XCTest
     override func setUpWithError() throws { continueAfterFailure = false }
     func testMedicineConfirmationAndExport() {
         let app = XCUIApplication(); app.launch()
-        app.buttons["nav-records"].tap(); app.buttons["Medicines"].tap()
+        app.buttons["nav-records"].tap(); selectRecords(app, "Medicines")
         for medicine in ["warfarin", "advil"] {
             app.buttons["Add record"].tap(); app.buttons["catalog-" + medicine].tap()
             XCTAssertFalse(app.buttons["saveMedicine"].isEnabled)
@@ -53,12 +64,12 @@ import XCTest
     }
     func testRecordsAndPersistence() {
         let app = XCUIApplication(); app.launch()
-        app.buttons["nav-records"].tap(); app.buttons["Readings"].tap(); app.buttons["Add record"].tap()
+        app.buttons["nav-records"].tap(); selectRecords(app, "Readings"); app.buttons["Add record"].tap()
         let value = app.textFields["readingValue"]
         XCTAssertTrue(value.waitForExistence(timeout: 5)); value.tap(); value.typeText("72")
         app.buttons["saveReading"].tap()
         XCTAssertTrue(app.staticTexts["72"].firstMatch.waitForExistence(timeout: 5))
-        app.buttons["Symptoms"].tap(); app.buttons["Add record"].tap()
+        selectRecords(app, "Symptoms"); app.buttons["Add record"].tap()
         let symptom = app.textFields["symptomText"]
         XCTAssertTrue(symptom.waitForExistence(timeout: 5)); symptom.tap(); symptom.typeText("Sore knee since Tuesday")
         app.buttons["Done"].tap()
@@ -69,7 +80,7 @@ import XCTest
         app.terminate(); app.launch()
         app.buttons["nav-today"].tap()
         XCTAssertTrue(app.staticTexts["72"].firstMatch.waitForExistence(timeout: 5))
-        app.buttons["nav-records"].tap()
+        app.buttons["nav-records"].tap(); selectRecords(app, "Symptoms")
         XCTAssertTrue(app.staticTexts["Sore knee since Tuesday"].firstMatch.exists)
     }
     func testChatHintPreservesDraftAndModelSelector() {
@@ -88,13 +99,13 @@ import XCTest
         let app = XCUIApplication(); app.launch()
         app.buttons["nav-today"].tap()
         capture(app, "01-today")
-        app.buttons["nav-records"].tap(); capture(app, "02-symptoms")
-        app.buttons["Medicines"].tap(); capture(app, "03-medicines")
-        app.buttons["Readings"].tap(); capture(app, "04-readings")
+        app.buttons["nav-records"].tap(); capture(app, "64-records"); selectRecords(app, "Symptoms"); capture(app, "02-symptoms")
+        selectRecords(app, "Medicines"); capture(app, "03-medicines")
+        selectRecords(app, "Readings"); capture(app, "04-readings")
         app.buttons["Add record"].tap(); capture(app, "05-add-reading"); app.buttons["Cancel"].tap()
-        app.buttons["Medicines"].tap(); app.buttons["Add record"].tap(); capture(app, "06-medicine-catalog")
+        selectRecords(app, "Medicines"); app.buttons["Add record"].tap(); capture(app, "06-medicine-catalog")
         app.buttons["catalog-advil"].tap(); capture(app, "07-medicine-details"); app.buttons["Cancel"].tap()
-        app.buttons["Symptoms"].tap(); app.buttons["Add record"].tap()
+        selectRecords(app, "Symptoms"); app.buttons["Add record"].tap()
         let text = app.textFields["symptomText"]; text.tap(); text.typeText("My knee has been sore since Tuesday")
         app.buttons["Done"].tap(); capture(app, "08-symptom-intake")
         app.buttons["noEmergencySigns"].tap(); app.buttons["saveSymptom"].tap(); app.swipeUp(); capture(app, "09-symptom-review"); app.buttons["Cancel"].tap()
@@ -136,7 +147,7 @@ import XCTest
     }
     func testScreenshotDetails() {
         let app = XCUIApplication(); app.launch()
-        app.buttons["nav-records"].tap(); app.buttons["Medicines"].tap()
+        app.buttons["nav-records"].tap(); selectRecords(app, "Medicines")
         app.buttons["Check interactions"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["interactionSource"].firstMatch.waitForExistence(timeout: 5))
         capture(app, "20-interactions"); app.buttons["Done"].tap(); app.buttons["nav-today"].tap()
@@ -144,15 +155,15 @@ import XCTest
         let symptom = app.textFields["symptomText"]; symptom.tap(); symptom.typeText("Severe chest pain")
         app.buttons["Done"].tap(); app.buttons["Persistent, severe chest pain"].tap(); app.buttons["saveSymptom"].tap(); app.swipeUp()
         XCTAssertTrue(app.staticTexts["Emergency care"].waitForExistence(timeout: 5)); capture(app, "21-emergency-review"); app.buttons["Cancel"].tap()
-        app.buttons["nav-records"].tap(); app.buttons["Symptoms"].tap(); app.staticTexts["Sore knee since Tuesday"].firstMatch.tap()
+        app.buttons["nav-records"].tap(); selectRecords(app, "Symptoms"); app.staticTexts["Sore knee since Tuesday"].firstMatch.tap()
         capture(app, "22-symptom-detail"); app.navigationBars["Symptom"].buttons.firstMatch.tap()
-        app.buttons["Readings"].tap(); app.buttons["Add record"].tap()
+        selectRecords(app, "Readings"); app.buttons["Add record"].tap()
         app.buttons["readingKind"].tap(); app.buttons["Blood pressure"].tap()
         let value = app.textFields["readingValue"]; value.tap(); value.typeText("120/80"); app.buttons["Done"].tap()
         capture(app, "23-blood-pressure"); app.buttons["Cancel"].tap()
         app.buttons["Add record"].tap(); app.buttons["readingKind"].tap(); app.buttons["Temperature"].tap()
         value.tap(); value.typeText("36.8"); app.buttons["Done"].tap(); capture(app, "24-temperature"); app.buttons["Cancel"].tap()
-        app.buttons["Medicines"].tap(); app.buttons["Add record"].tap()
+        selectRecords(app, "Medicines"); app.buttons["Add record"].tap()
         let medicine = app.textFields["medicineSearch"]; medicine.tap(); medicine.typeText("Unlisted medicine")
         app.buttons["addUnlistedMedicine"].tap()
         capture(app, "25-manual-medicine"); app.buttons["Cancel"].tap()
@@ -217,13 +228,13 @@ import XCTest
             capture(dark ? "41-appearance-dark" : "40-appearance-light")
             app.navigationBars["Appearance"].buttons.firstMatch.tap(); app.buttons["Done"].tap()
             capture(dark ? "31-today-dark" : "01-today")
-            app.buttons["nav-records"].tap(); capture(dark ? "33-symptoms-dark" : "02-symptoms")
-            app.buttons["Medicines"].tap(); capture(dark ? "34-medicines-dark" : "03-medicines")
-            app.buttons["Readings"].tap(); capture(dark ? "35-readings-dark" : "04-readings")
+            app.buttons["nav-records"].tap(); capture(dark ? "65-records-dark" : "64-records"); selectRecords(app, "Symptoms"); capture(dark ? "33-symptoms-dark" : "02-symptoms")
+            selectRecords(app, "Medicines"); capture(dark ? "34-medicines-dark" : "03-medicines")
+            selectRecords(app, "Readings"); capture(dark ? "35-readings-dark" : "04-readings")
             app.buttons["Add record"].tap(); capture(dark ? "48-add-reading-dark" : "05-add-reading"); app.buttons["Cancel"].tap()
-            app.buttons["Medicines"].tap(); app.buttons["Add record"].tap(); capture(dark ? "49-catalog-dark" : "06-medicine-catalog")
+            selectRecords(app, "Medicines"); app.buttons["Add record"].tap(); capture(dark ? "49-catalog-dark" : "06-medicine-catalog")
             app.buttons["catalog-advil"].tap(); capture(dark ? "50-confirm-medicine-dark" : "07-medicine-details"); app.buttons["Cancel"].tap()
-            app.buttons["Symptoms"].tap(); app.buttons["Add record"].tap()
+            selectRecords(app, "Symptoms"); app.buttons["Add record"].tap()
             let text = app.textFields["symptomText"]; text.tap(); text.typeText("My knee has been sore since Tuesday"); app.buttons["Done"].tap()
             capture(dark ? "51-symptom-entry-dark" : "08-symptom-intake")
             app.buttons["noEmergencySigns"].tap(); app.buttons["saveSymptom"].tap(); app.swipeUp()
@@ -259,19 +270,19 @@ import XCTest
         let app = XCUIApplication(); app.launch()
         app.buttons["Settings"].tap(); app.buttons["Appearance"].tap(); app.buttons["appearance-light"].tap()
         app.navigationBars["Appearance"].buttons.firstMatch.tap(); app.buttons["Done"].tap()
-        app.buttons["nav-records"].tap(); app.buttons["Medicines"].tap(); app.buttons["Check interactions"].tap()
+        app.buttons["nav-records"].tap(); selectRecords(app, "Medicines"); app.buttons["Check interactions"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["interactionSource"].firstMatch.waitForExistence(timeout: 5)); capture("20-interactions"); app.buttons["Done"].tap()
         app.buttons["nav-today"].tap(); app.buttons["addSymptom"].tap()
         let symptom = app.textFields["symptomText"]; symptom.tap(); symptom.typeText("Severe chest pain"); app.buttons["Done"].tap()
         app.buttons["Persistent, severe chest pain"].tap(); app.buttons["saveSymptom"].tap(); app.swipeUp()
         XCTAssertTrue(app.staticTexts["Emergency care"].exists); capture("21-emergency-review"); app.buttons["Cancel"].tap()
-        app.buttons["nav-records"].tap(); app.buttons["Symptoms"].tap(); app.staticTexts["Sore knee since Tuesday"].firstMatch.tap()
+        app.buttons["nav-records"].tap(); selectRecords(app, "Symptoms"); app.staticTexts["Sore knee since Tuesday"].firstMatch.tap()
         capture("22-symptom-detail"); app.navigationBars["Symptom"].buttons.firstMatch.tap()
-        app.buttons["Readings"].tap(); app.buttons["Add record"].tap(); app.buttons["readingKind"].tap(); app.buttons["Blood pressure"].tap()
+        selectRecords(app, "Readings"); app.buttons["Add record"].tap(); app.buttons["readingKind"].tap(); app.buttons["Blood pressure"].tap()
         let value = app.textFields["readingValue"]; value.tap(); value.typeText("120/80"); app.buttons["Done"].tap(); capture("23-blood-pressure"); app.buttons["Cancel"].tap()
         app.buttons["Add record"].tap(); app.buttons["readingKind"].tap(); app.buttons["Temperature"].tap()
         value.tap(); value.typeText("36.8"); app.buttons["Done"].tap(); capture("24-temperature"); app.buttons["Cancel"].tap()
-        app.buttons["Medicines"].tap(); app.buttons["Add record"].tap()
+        selectRecords(app, "Medicines"); app.buttons["Add record"].tap()
         let medicine = app.textFields["medicineSearch"]; medicine.tap(); medicine.typeText("Unlisted medicine"); app.buttons["addUnlistedMedicine"].tap()
         capture("25-manual-medicine"); app.buttons["Cancel"].tap()
         app.buttons["nav-chat"].tap(); app.buttons["New chat"].tap(); app.textFields["chatInput"].tap(); app.textFields["chatInput"].typeText("What can you help me record?")
@@ -285,7 +296,7 @@ import XCTest
         let app = XCUIApplication(); app.launch()
         app.buttons["openMedicines"].tap()
         XCTAssertTrue(app.staticTexts["Warfarin"].firstMatch.waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["Medicines"].isSelected)
+        XCTAssertTrue(app.navigationBars["Medicines"].exists)
         app.buttons["Add record"].tap()
         XCTAssertTrue(app.buttons["catalog-advil"].waitForExistence(timeout: 5)); app.buttons["Cancel"].tap()
         app.buttons["nav-today"].tap(); app.buttons["Settings"].tap(); app.buttons["Appearance"].tap(); app.buttons["appearance-system"].tap()
@@ -417,6 +428,9 @@ import XCTest
         XCTAssertEqual(app.staticTexts["chatTitle"].label, "New chat"); capture("32-chat-dark")
         XCTAssertLessThanOrEqual(app.buttons["modelSelector"].frame.maxY, app.buttons["nav-chat"].frame.minY)
         XCTAssertTrue(app.buttons["modelSelector"].isHittable)
+        // The AX text view covers its two lines; the containing draft area reserves extra space.
+        XCTAssertGreaterThanOrEqual(app.textFields["chatInput"].frame.height, 46)
+        XCTAssertGreaterThanOrEqual(app.buttons["modelSelector"].frame.maxY - app.textFields["chatInput"].frame.minY, 130)
         let input = app.textFields["chatInput"]; input.tap(); input.typeText("Could you show me the medicines I recorded?"); app.buttons["Send message"].tap()
         XCTAssertTrue(app.staticTexts["Your medicines"].waitForExistence(timeout: 120))
         XCTAssertTrue(app.buttons["Send message"].waitForExistence(timeout: 60))

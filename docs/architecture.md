@@ -16,6 +16,8 @@ Symptom, medicine, and reading calls open editable confirmation sheets. Interact
 
 `LockShell` gates the navigation tree using the optional [app lock](app-lock.md), whose credential verifier lives separately in Keychain. Backgrounding replaces protected navigation and revokes pending authentication. A scene-level privacy curtain also covers presented sheets. This gate does not add PIN-derived archive encryption.
 
+Records category navigation uses an optional in-memory destination inside its native navigation stack. Returning to the browser clears that destination; no record schema change is needed for this navigation redesign.
+
 The optional archive field `chatTitle` stores [locally generated conversation metadata](chat-titles.md). Its absence in older version-1 archives uses a heading derived from the first message. Tool execution and emergency handling precede naming.
 
 JSON export uses ISO-8601 dates. JSON import validates the version and readings, merges records, and rebuilds medicine ingredient mappings from the catalog. File-supplied ingredient claims are not trusted. Unknown names remain unconfirmed. Appointment notes use recorded facts and can be edited before sharing.

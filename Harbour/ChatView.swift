@@ -18,6 +18,7 @@ struct ChatView: View {
     @State private var removal: Medicine?
     @FocusState private var focused: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.verticalSizeClass) private var verticalSize
     var body: some View {
         VStack(spacing: 0) {
         ScrollViewReader { proxy in
@@ -72,8 +73,9 @@ struct ChatView: View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 12) {
                 TextField("Ask, record, or check something…", text: $draft, prompt: Text("Ask, record, or check something…").foregroundStyle(Palette.muted), axis: .vertical)
-                    .lineLimit(1...6).font(.title3).focused($focused).accessibilityIdentifier("chatInput")
+                    .lineLimit(2...6).font(.title3).focused($focused).accessibilityIdentifier("chatInput")
                     .padding(.horizontal, 6).padding(.top, 6)
+                    .frame(minHeight: verticalSize == .compact ? 54 : 82, alignment: .topLeading)
                 if let hint {
                     Button { self.hint = nil } label: { HStack(spacing: 5) { Text(hint).font(.subheadline); Image(systemName: "xmark").font(.caption2) }.padding(.horizontal, 10).padding(.vertical, 7).background(Palette.blueWash, in: Capsule()).foregroundStyle(Palette.ink) }.accessibilityLabel("Clear \(hint) topic")
                 }
@@ -96,7 +98,7 @@ struct ChatView: View {
                     }.accessibilityLabel(busy ? "Stop" : "Send message").disabled(!busy && draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
-            .padding(14).background(Palette.surface, in: RoundedRectangle(cornerRadius: 28))
+            .padding(16).background(Palette.surface, in: RoundedRectangle(cornerRadius: 28))
             .overlay(RoundedRectangle(cornerRadius: 28).strokeBorder(Palette.line.opacity(0.7)))
             .padding(.horizontal, 12).padding(.top, 8).padding(.bottom, 8)
             .frame(maxWidth: 760)
