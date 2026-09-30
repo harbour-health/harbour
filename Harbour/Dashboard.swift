@@ -2,6 +2,16 @@ import SwiftUI
 import Charts
 import HarbourCore
 
+private struct FloatingDockClearance: EnvironmentKey {
+    static let defaultValue: CGFloat = 0
+}
+extension EnvironmentValues {
+    var floatingDockClearance: CGFloat {
+        get { self[FloatingDockClearance.self] }
+        set { self[FloatingDockClearance.self] = newValue }
+    }
+}
+
 struct NavigationDock: View {
     @Binding var selection: Int
     var body: some View {
@@ -9,9 +19,8 @@ struct NavigationDock: View {
             item("Today", symbol: "house", selectedSymbol: "house.fill", index: 0)
             item("Chat", symbol: "bubble.left.and.bubble.right", selectedSymbol: "bubble.left.and.bubble.right.fill", index: 1)
             item("Records", symbol: "heart.text.square", selectedSymbol: "heart.text.square.fill", index: 2)
-        }.padding(7).background(Palette.surface, in: Capsule()).overlay(Capsule().strokeBorder(Palette.line.opacity(0.6)))
-            .shadow(color: .black.opacity(0.07), radius: 16, y: 6).padding(.horizontal, 24).padding(.top, 6).padding(.bottom, 8)
-            .frame(maxWidth: .infinity).background(Palette.canvas.opacity(0.94))
+        }.padding(7).background(.regularMaterial, in: Capsule()).overlay(Capsule().strokeBorder(Palette.line.opacity(0.6)))
+            .shadow(color: .black.opacity(0.10), radius: 16, y: 6).padding(.bottom, 12)
     }
     private func item(_ title: String, symbol: String, selectedSymbol: String, index: Int) -> some View {
         Button { selection = index } label: {

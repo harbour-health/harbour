@@ -3,6 +3,7 @@ import HarbourCore
 
 struct RecordsView: View {
     @EnvironmentObject var store: AppStore
+    @Environment(\.floatingDockClearance) private var dockClearance
     @Binding var sheet: AppSheet?
     @Binding var category: Int?
     var body: some View {
@@ -11,6 +12,7 @@ struct RecordsView: View {
             categoryRow("Medicines", count: store.records.medicines.count, symbol: "pills.fill", colour: Palette.blue, index: 1)
             categoryRow("Readings", count: store.records.readings.count, symbol: "waveform.path.ecg", colour: Palette.coral, index: 2)
         }
+        .contentMargins(.bottom, dockClearance, for: .scrollContent)
         .listStyle(.plain).scrollContentBackground(.hidden).background(Palette.canvas)
         .navigationTitle("Records")
         .navigationDestination(item: $category) { selected in
@@ -36,6 +38,7 @@ struct RecordsView: View {
 
 private struct RecordList: View {
     @EnvironmentObject var store: AppStore
+    @Environment(\.floatingDockClearance) private var dockClearance
     @Binding var sheet: AppSheet?
     let category: Int
     private var title: String { ["Symptoms", "Medicines", "Readings"][category] }
@@ -69,6 +72,7 @@ private struct RecordList: View {
                 }
             }
         }
+        .contentMargins(.bottom, dockClearance, for: .scrollContent)
         .listStyle(.plain).listSectionSpacing(24).scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle(title)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) { Button { switch category { case 0: sheet = .symptom(""); case 1: sheet = .medicine(nil); default: sheet = .reading(nil) } } label: { Image(systemName: "plus") }.accessibilityLabel("Add record") }
@@ -144,12 +148,14 @@ struct GuidanceView: View {
 }
 struct SymptomDetail: View {
     let symptom: Symptom
+    @Environment(\.floatingDockClearance) private var dockClearance
     var body: some View {
         List {
             Section { SymptomRow(symptom: symptom); LabeledContent("Started", value: symptom.onset.isEmpty ? "Not recorded" : symptom.onset); LabeledContent("Severity", value: symptom.severity) }
             if !symptom.signs.isEmpty { Section("Signs recorded") { ForEach(symptom.signs) { Text($0.rawValue) } } }
             Section("Next step") { GuidanceView(symptom: symptom) }
-        }.scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle("Symptom").navigationBarTitleDisplayMode(.inline)
+        }.contentMargins(.bottom, dockClearance, for: .scrollContent)
+            .scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle("Symptom").navigationBarTitleDisplayMode(.inline)
     }
 }
 

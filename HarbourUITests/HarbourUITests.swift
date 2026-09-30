@@ -443,3 +443,48 @@ import XCTest
         app.buttons["nav-chat"].tap(); capture("11-chat-empty")
     }
 }
+
+@MainActor final class HarbourFloatingDockTests: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+    func testSupplementaryCapturePages() {
+        let app = XCUIApplication(); app.launch(); app.buttons["Settings"].tap()
+        app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "App lock")).firstMatch.tap()
+        app.buttons["lock-option-biometrics"].tap()
+        XCTAssertTrue(app.staticTexts["lockSettingsError"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["lock-option-off"].isSelected)
+        var shot = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); shot.name = "62-face-id-unavailable"; shot.lifetime = .keepAlways; add(shot)
+        app.navigationBars["App lock"].buttons.firstMatch.tap()
+        app.buttons["Import records"].tap(); XCTAssertTrue(app.buttons["Cancel"].waitForExistence(timeout: 5))
+        shot = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); shot.name = "60-import-records"; shot.lifetime = .keepAlways; add(shot)
+        app.buttons["Cancel"].tap(); app.buttons["Done"].tap()
+    }
+
+    func testScrollableContentAndKeyboardClearance() {
+        let app = XCUIApplication(); app.launch()
+        app.buttons["Settings"].tap(); app.buttons["Appearance"].tap(); app.buttons["appearance-light"].tap()
+        app.navigationBars["Appearance"].buttons.firstMatch.tap(); app.buttons["Done"].tap()
+        XCTAssertFalse(app.tabBars.firstMatch.exists)
+        let note = app.buttons["Appointment note"]
+        for _ in 0..<4 {
+            if note.isHittable && note.frame.maxY < app.buttons["nav-today"].frame.minY { break }
+            app.scrollViews.firstMatch.swipeUp()
+        }
+        XCTAssertTrue(note.isHittable)
+        XCTAssertLessThan(note.frame.maxY, app.buttons["nav-today"].frame.minY)
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = "66-floating-navigation"; attachment.lifetime = .keepAlways; add(attachment)
+        note.tap(); XCTAssertTrue(app.navigationBars["Appointment note"].waitForExistence(timeout: 5)); app.buttons["Done"].tap()
+        app.buttons["nav-chat"].tap(); app.buttons["New chat"].tap()
+        XCTAssertLessThanOrEqual(app.buttons["modelSelector"].frame.maxY, app.buttons["nav-chat"].frame.minY)
+        app.textFields["chatInput"].tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["nav-chat"].exists)
+        XCTAssertTrue(app.buttons["modelSelector"].isHittable)
+        app.buttons["Done"].tap()
+        XCTAssertTrue(app.buttons["nav-chat"].waitForExistence(timeout: 5))
+        app.buttons["nav-records"].tap(); selectRecords(app, "Readings")
+        for _ in 0..<4 { app.swipeUp() }
+        XCTAssertTrue(app.buttons["Add record"].isHittable)
+        app.buttons["Add record"].tap(); XCTAssertTrue(app.textFields["readingValue"].waitForExistence(timeout: 5)); app.buttons["Cancel"].tap()
+    }
+}

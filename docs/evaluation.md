@@ -66,6 +66,12 @@ An initial capture run revealed that a parent composer accessibility identifier 
 
 The final rich-result flow passed actual local medicine-list, reading-list, and sourced interaction requests in both appearances. The updated dashboard, category browser, composer, keyboard, and entry screens were visually reviewed. Six distinct updated UI flows passed across the corrected capture and final runs. The unsigned iPhone target compiled. Earlier model-routing reports remain unchanged; this visual refinement does not add clinical coverage or physical-device performance evidence.
 
+### Floating navigation and inline capture
+
+The dock now overlays the tab content rather than occupying an opaque full-width row. The refreshed appearance, dashboard, entry/review, and real local-model chat flows passed. `HarbourFloatingDockTests` also passed lower-action reachability, composer/dock separation, keyboard-driven hiding/restoration, and adding a reading after scrolling to the end of its list. Its supplementary flow captured the unavailable Face ID error and native import picker. The current unsigned iPhone target compiled.
+
+Material is confined to the capsule. Each scrolling destination consumes the bottom clearance so its last controls can move above the overlay; Chat reserves it beneath the fixed composer. Actual Today and reading-list captures were inspected to confirm content is visible around and behind the dock. Captures are embedded directly for mobile review, since the localhost gallery is limited to the development computer.
+
 ### Model matrix and prompt experiments
 
 The first full simulator matrix passed 33/36 cases on each model. All six failures were the medicine-list request being misrouted to readings and rejected by validation. The original reports are preserved as [Small baseline](results/baseline-small.json) and [Balanced baseline](results/baseline-balanced.json). A broader prompt rewrite regressed to 7/12 on the Mac Small probe and was discarded. Separating only the medicine/reading list descriptions improved tool choice, then exposed an early-generation-stop bug for nested argument objects. The corrected runtime waits for the completed outer JSON object; four independent regression tests cover it.

@@ -44,6 +44,7 @@ TITLES = {
     '61-pin-mismatch': 'PIN mismatch', '62-face-id-unavailable': 'Face ID unavailable',
     '63-health-access-reminder': 'Apple Health access reminder',
     '64-records': 'Records', '65-records-dark': 'Records · Dark',
+    '66-floating-navigation': 'Floating navigation · scrolled',
 }
 
 parser = argparse.ArgumentParser()

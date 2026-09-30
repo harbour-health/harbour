@@ -19,6 +19,7 @@ struct ChatView: View {
     @FocusState private var focused: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.verticalSizeClass) private var verticalSize
+    @Environment(\.floatingDockClearance) private var dockClearance
     var body: some View {
         VStack(spacing: 0) {
         ScrollViewReader { proxy in
@@ -49,6 +50,7 @@ struct ChatView: View {
         }
             composer
         }
+        .padding(.bottom, dockClearance)
         .background(Palette.canvas).foregroundStyle(Palette.ink)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

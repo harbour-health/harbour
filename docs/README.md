@@ -3,7 +3,7 @@
 - [Architecture](architecture.md) — modules, persistence, tool execution, and change points.
 - [Local models](local-models.md) — runtime setup, pinned weights, downloads, and cancellation.
 - [Health and voice](health-and-voice.md) — native permissions, HealthKit queries, and speech.
-- [Interface](interface.md) — dashboard spacing, Records browser, chat composer, and accessibility.
+- [Interface](interface.md) — floating navigation, dashboard spacing, Records browser, chat composer, and accessibility.
 - [App lock](app-lock.md) — Face ID, Keychain-backed PIN, retry delays, and lifecycle gating.
 - [Chat titles](chat-titles.md) — local generation, fallback headings, and persistence.
 - [Artwork](artwork.md) — original vector imagery, palettes, and motion.

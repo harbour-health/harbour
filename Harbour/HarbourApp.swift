@@ -42,7 +42,6 @@ struct RootView: View {
     @State private var recordCategory: Int?
     @State private var keyboardVisible = false
     var body: some View {
-        VStack(spacing: 0) {
         TabView(selection: $tab) {
             NavigationStack { TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1; tab = 2 }).toolbar(.hidden, for: .tabBar) }
                 .tabItem { Label("Today", systemImage: "house") }.tag(0)
@@ -52,8 +51,11 @@ struct RootView: View {
                 .tabItem { Label("Records", systemImage: "heart.text.square") }.tag(2)
         }
         .toolbar(.hidden, for: .tabBar)
+        .environment(\.floatingDockClearance, keyboardVisible ? 0 : 86)
+        .overlay(alignment: .bottom) {
             if !keyboardVisible { NavigationDock(selection: $tab) }
-        }.background(Palette.canvas)
+        }
+        .background(Palette.canvas)
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardVisible = true }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in keyboardVisible = false }
         .sheet(item: $sheet) { item in
@@ -130,6 +132,7 @@ struct SettingsButton: View {
 struct TodayView: View {
     @EnvironmentObject var store: AppStore
     @Environment(\.dynamicTypeSize) private var typeSize
+    @Environment(\.floatingDockClearance) private var dockClearance
     @Binding var sheet: AppSheet?
     var openChat: () -> Void
     var openMedicines: () -> Void
@@ -167,7 +170,8 @@ struct TodayView: View {
                     }
                 }
             }.padding(.horizontal, 24).padding(.bottom, 32).frame(maxWidth: 760).frame(maxWidth: .infinity)
-        }.background(Palette.canvas).foregroundStyle(Palette.ink)
+        }.contentMargins(.bottom, dockClearance, for: .scrollContent)
+            .background(Palette.canvas).foregroundStyle(Palette.ink)
             .navigationTitle("Today").toolbar { ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) } }
     }
     @ViewBuilder private var shortcuts: some View {
