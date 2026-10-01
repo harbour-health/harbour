@@ -2,7 +2,7 @@
 
 ## What it is
 
-HarbourCore accepts a bounded set of French phrases for symptom cues, tool requests, dose records, literal schedule times, label instructions and source-grounded visit medicine proposals. This is prototype heuristic coverage, not a diagnosis, a complete clinical language model or evidence that an unrecognized description is safe.
+HarbourCore accepts a bounded set of French phrases for symptom cues, dose records, literal schedule times, label instructions and source-grounded visit medicine proposals. This is prototype heuristic coverage, not a diagnosis, a complete clinical language model or evidence that an unrecognized description is safe.
 
 ## How it works
 
@@ -10,7 +10,7 @@ HarbourCore accepts a bounded set of French phrases for symptom cues, tool reque
 
 `HealthRules.emergencyCue` recognizes French equivalents of the existing emergency examples: persistent severe chest pain, difficulty breathing, loss of consciousness, new confusion and pain not relieved by medicine. Local explicit prefix negation such as `pas de`, `aucune` or `sans` suppresses that cue; a later affirmative cue still matches. History and third-person mentions remain conservative matches because the heuristic cannot establish who is affected now. The app presents conditional emergency guidance. Explicitly selected emergency signs always retain escalation, even when free text is negated.
 
-`ToolPlanner` gives an affirmative emergency cue precedence over other request keywords, including medicine words inside a pain description. It maps French requests to the existing tool identifiers, validates against the original request and resolves medicine names through `Catalog`. Negated and hypothetical French medicine mutation requests are rejected. A dose request requires one saved medicine and exactly one explicit status. French `pris`, `sauté` and `rappelle plus tard` map to existing dose statuses without changing their serialized values.
+The model selects French app actions from the full tool catalog, using the same conversation pipeline as English. `ToolPlanner` validates source facts after selection and resolves medicine names through `Catalog`; it does not select or filter tools by French keywords. Negated and hypothetical French medicine mutation proposals remain rejected by the source validator. A dose proposal requires one saved medicine and exactly one explicit status. French `pris`, `sauté` and `rappelle plus tard` map to existing dose statuses without changing their serialized values.
 
 `CareRules.times` accepts literal `8 h`, `20h30`, `20 h 30` and `20:30` times alongside existing English `am`/`pm` syntax. It does not infer a schedule from `le matin`, `deux fois par jour` or other frequency descriptions. OCR directions are copied from bounded French instruction lines; recognizing a label does not prescribe a regimen.
 
@@ -18,7 +18,7 @@ HarbourCore accepts a bounded set of French phrases for symptom cues, tool reque
 
 ## How to change it
 
-Extend cue patterns in `HealthRules.swift`, intent/status patterns in `ToolPlanner.swift`, literal time/question/label parsing in `Care.swift`, or source instruction/context patterns in `Visits.swift`. Keep the phrase list bounded and add positive, negated and contradictory fixtures in `FrenchInputTests.swift`. In particular, negation inside a breathing cue such as `je ne peux pas respirer` expresses inability to breathe and must not suppress the cue.
+Extend cue patterns in `HealthRules.swift`, source/status validators in `ToolPlanner.swift`, literal time/question/label parsing in `Care.swift`, or source instruction/context patterns in `Visits.swift`. Keep the phrase list bounded and add positive, negated and contradictory fixtures in `FrenchInputTests.swift`. In particular, negation inside a breathing cue such as `je ne peux pas respirer` expresses inability to breathe and must not suppress the cue.
 
 Add spelling aliases through `Catalog.names(for:)` and `Catalog.resolve(_:saved:)` in `Records.swift`. An alias may refer only to an existing canonical catalog medicine. Keep custom saved medicine names literal, and never add ingredient or interaction claims from model output.
 

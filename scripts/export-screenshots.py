@@ -85,6 +85,10 @@ TITLES = {
     '139-french-model-readings': 'Relevés dans la conversation · Français',
     '140-french-model-symptom-review': 'Symptôme dans la conversation · Français',
     '141-french-model-reminder-review': 'Rappel dans la conversation · Français',
+    '143-freeform-chat': 'Model conversation and follow-up context',
+    '144-voice': 'Voice selection and preview',
+    '145-french-voice': 'Voix et aperçu · Français',
+
 }
 
 parser = argparse.ArgumentParser()
@@ -174,8 +178,8 @@ if args.update_readme:
         'Health permissions': {26, 30, 63},
         'Evaluation': {17, 29, 86},
         'Reminders, schedules, and preparation': set(range(91, 104)),
-        'Voice and care tools in chat': set(range(104, 116)),
-        'Canadian French': set(range(117, 142)),
+        'Voice and care tools in chat': set(range(104, 116)) | {143, 144},
+        'Canadian French': set(range(117, 142)) | {145},
     }
     sections = {name: [] for name in groups}
     for entry in entries:

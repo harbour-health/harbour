@@ -1289,3 +1289,52 @@ import XCTest
         app.terminate()
     }
 }
+
+
+@MainActor final class HarbourConversationTests: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+    private func capture(_ name: String) {
+        let image = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); image.name = name; image.lifetime = .keepAlways; add(image)
+    }
+    private func idle(_ app: XCUIApplication) {
+        let ready = NSPredicate { _, _ in !app.buttons["Stop"].exists }
+        XCTAssertEqual(XCTWaiter.wait(for: [expectation(for: ready, evaluatedWith: nil)], timeout: 240), .completed)
+    }
+    func testFreeformConversationAndToolReview() {
+        let app = XCUIApplication(); app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]; app.launch()
+        app.buttons["nav-chat"].tap()
+        app.buttons["modelSelector"].tap(); app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Qwen Balanced")).firstMatch.tap(); app.buttons["Done"].tap()
+        let input = app.textFields["chatInput"]
+        func send(_ text: String) { input.tap(); input.typeText(text); app.buttons["Send message"].tap(); idle(app) }
+        send("My favourite colour is purple. What is two plus two?")
+        let first = app.staticTexts["chatReply"].firstMatch
+        XCTAssertTrue(first.waitForExistence(timeout: 60))
+        XCTAssertTrue(first.label.contains("4") || first.label.lowercased().contains("four"), first.label)
+        XCTAssertFalse(first.label.contains("I can help record symptoms"))
+        send("What is my favourite colour?")
+        XCTAssertTrue(app.staticTexts.matching(identifier: "chatReply").allElementsBoundByIndex.contains { $0.label.lowercased().contains("purple") })
+        capture("143-freeform-chat")
+        send("Please save my heart rate of 72")
+        XCTAssertTrue(app.textFields["readingValue"].waitForExistence(timeout: 45))
+        XCTAssertEqual(app.textFields["readingValue"].value as? String, "72")
+        app.buttons["Cancel"].tap()
+    }
+    func testVoiceSelectionPreviewAndFrenchLabels() {
+        for french in [false, true] {
+            let app = XCUIApplication(); app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", french ? "(fr-CA)" : "(en)", "-AppleLocale", french ? "fr_CA" : "en_CA"]; app.launch()
+            app.buttons["nav-today"].tap(); app.buttons[french ? "Réglages" : "Settings"].tap(); app.buttons["voiceSettings"].tap()
+            XCTAssertTrue(app.buttons["automaticVoice"].waitForExistence(timeout: 5))
+            XCTAssertTrue(app.sliders["voiceSpeed"].exists)
+            let preview = app.buttons["previewVoice"]
+            XCTAssertTrue(preview.exists)
+            if preview.isEnabled {
+                preview.tap()
+                let stop = NSPredicate(format: "label CONTAINS %@", french ? "Arrêter" : "Stop")
+                XCTAssertEqual(XCTWaiter.wait(for: [expectation(for: stop, evaluatedWith: preview)], timeout: 5), .completed)
+                preview.tap()
+            }
+            capture(french ? "145-french-voice" : "144-voice")
+            app.terminate()
+        }
+    }
+}

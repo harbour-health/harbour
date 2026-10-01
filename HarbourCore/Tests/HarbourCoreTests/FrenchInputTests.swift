@@ -12,7 +12,7 @@ final class FrenchInputTests: XCTestCase {
         for text in ["J'ai une douleur thoracique intense et persistante.", "Douleur persistante et sévère à la poitrine.", "Douleur thoracique persistante et intense.", "J'ai des difficultés à respirer.", "Je ne peux pas respirer.", "Je n'arrive pas à respirer.", "Perte de connaissance.", "Perte de conscience.", "Nouvelle confusion.", "Confusion soudaine.", "Douleur intense non soulagée par les médicaments.", "Douleur qui n'est pas soulagée par les antidouleurs."] {
             XCTAssertTrue(HealthRules.emergencyCue(text), text)
             XCTAssertTrue(HealthRules.emergencyCue(InputLanguage.folded(text)), text)
-            XCTAssertTrue(ToolPlanner.allowed(text).contains(.captureSymptom), text)
+            XCTAssertTrue(ToolPlanner.prompt(text).contains("capture_symptom"), text)
         }
     }
 
@@ -22,10 +22,10 @@ final class FrenchInputTests: XCTestCase {
         }
         XCTAssertTrue(HealthRules.emergencyCue("Pas de nouvelle confusion, mais difficulté à respirer."))
         let medicineCue = "Douleur intense non soulagée par les médicaments."
-        XCTAssertEqual(ToolPlanner.allowed(medicineCue), [.captureSymptom, .reply])
+        for tool in Tool.allCases { XCTAssertTrue(ToolPlanner.prompt(medicineCue).contains(tool.rawValue), tool.rawValue) }
         let negatedThenAffirmative = "Pas de douleur intense non soulagée par les médicaments, mais difficulté à respirer."
         XCTAssertTrue(HealthRules.emergencyCue(negatedThenAffirmative))
-        XCTAssertEqual(ToolPlanner.allowed(negatedThenAffirmative), [.captureSymptom, .reply])
+        for tool in Tool.allCases { XCTAssertTrue(ToolPlanner.prompt(negatedThenAffirmative).contains(tool.rawValue), tool.rawValue) }
         XCTAssertTrue(HealthRules.emergencyCue("Pas seulement une difficulté à respirer."))
         XCTAssertTrue(HealthRules.isEmergency(Symptom(text: "Aucune difficulté respiratoire", signs: [.breathing])))
     }
@@ -48,9 +48,11 @@ final class FrenchInputTests: XCTestCase {
         XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .addMedicine), original: "Puis-je prendre metformine ?", records: Records()))
     }
 
-    func testFrenchIntentRoutingAndOriginalSearchQuestionText() throws {
+    func testFrenchRequestsKeepAllToolsAndOriginalSearchQuestionText() throws {
         for (text, tool) in [("Scanne l'étiquette du médicament", Tool.scanMedicine), ("Vérifie les interactions entre metformine et warfarine", .interactions), ("Importe Apple Santé", .importReadings), ("Exporte mes données", .exportData), ("Efface toutes mes données", .clearData), ("Affiche mes médicaments", .listMedicines), ("Prépare mon rendez-vous", .appointmentNote)] {
-            XCTAssertTrue(ToolPlanner.allowed(text).contains(tool), text)
+            let prompt = ToolPlanner.prompt(text, records: Records())
+            XCTAssertTrue(prompt.contains(tool.rawValue), text)
+            for available in Tool.allCases { XCTAssertTrue(prompt.contains(available.rawValue), "\(text): \(available.rawValue)") }
         }
         XCTAssertEqual(try ToolPlanner.validate(.init(tool: .searchTimeline, arg: "invention"), original: "Cherche mon historique pour prise de sang", records: Records()), .timeline("prise de sang"))
         XCTAssertEqual(try ToolPlanner.validate(.init(tool: .saveQuestion, arg: "invention"), original: "Enregistre cette question pour mon médecin : Dois-je refaire une prise de sang ?", records: Records()), .question("Dois-je refaire une prise de sang ?"))
@@ -58,12 +60,11 @@ final class FrenchInputTests: XCTestCase {
 
     func testFrenchReadingListIntentCannotInventAMeasurement() throws {
         for original in ["Affiche mes relevés", "Affiche mon relevé", "Affiche mes releves"] {
-            XCTAssertEqual(ToolPlanner.allowed(original), [.logReading, .listReadings, .reply])
-            XCTAssertEqual(ToolPlanner.generationTools(original, records: Records()), [.listReadings, .reply])
+            for tool in Tool.allCases { XCTAssertTrue(ToolPlanner.prompt(original, records: Records()).contains(tool.rawValue), tool.rawValue) }
             XCTAssertEqual(try ToolPlanner.validate(.init(tool: .listReadings), original: original, records: Records()), .readings)
             XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .logReading, arg: "heart rate 72"), original: original, records: Records()))
         }
-        XCTAssertEqual(ToolPlanner.allowed("relevespersonnels"), Tool.allCases)
+        for tool in Tool.allCases { XCTAssertTrue(ToolPlanner.prompt("relevespersonnels").contains(tool.rawValue), tool.rawValue) }
     }
 
     func testFrenchDoseStatusesRequireOneSavedMedicineAndOneAffirmativeStatus() throws {
@@ -74,7 +75,7 @@ final class FrenchInputTests: XCTestCase {
         for text in ["Je n'ai pas pris metformine", "J'ai pris et sauté metformine", "Si j'ai pris metformine", "Ma mère a pris metformine", "Hier, j'ai pris metformine", "J'ai pris warfarine"] {
             XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .logDose), original: text, records: records), text)
         }
-        XCTAssertEqual(ToolPlanner.generationTools("J'ai pris metformine", records: Records()), [.reply])
+        XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .logDose), original: "J'ai pris metformine", records: Records()))
     }
 
     func testFrenchTimesAndInstructionsAreLiteral() throws {

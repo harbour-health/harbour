@@ -14,7 +14,9 @@ Voice input requests speech and microphone authorization only when the microphon
 
 An unsupported recognizer or denied permission produces a visible error. Speech permission denial stops before requesting microphone permission. Chat audio remains in the recognition pipeline rather than being written into record storage. The separate [doctor visit recorder](doctor-visits.md) explicitly saves audio and handles longer sessions.
 
-Speech follows the active app localization through `L10n.isFrench`: Canadian French requests `fr-CA`, and English requests `en-CA`. This applies to chat dictation, live visit transcription, and retranscription of saved visit audio. The iOS 26 transcription adapter asks Apple for a supported equivalent locale; older adapters require on-device support for the requested locale. No adapter falls back to server recognition. Missing recognition support leaves typed input or saved visit audio available. Read-aloud prefers an available Canadian voice, then another available voice in the same language; if none exists, it shows an error. Audio and transcript content retain their original language.
+Speech follows the active app localization through `L10n.isFrench`: Canadian French requests `fr-CA`, and English requests `en-CA`. This applies to chat dictation, live visit transcription, and retranscription of saved visit audio. The iOS 26 transcription adapter asks Apple for a supported equivalent locale; older adapters require on-device support for the requested locale. No adapter falls back to server recognition. Missing recognition support leaves typed input or saved visit audio available. Read-aloud uses the saved voice or automatically prefers Premium, then Enhanced, then Standard voices in the app's language. At equal quality it prefers Canadian voices; if none in the language exists, it shows an error. Audio and transcript content retain their original language.
+
+Settings → Voice offers a voice chooser, dialect/quality information, speed, and a localized preview, shared with chat read-aloud and conversation. It explains when only standard voices are available and how to download higher-quality voices in system Settings if offered. Availability refreshes after returning to the app and after Apple's voice-change notification. Speech synthesis stays on the device.
 
 Service errors, progress messages, and private notification bodies use `L10n`. Medicine-label OCR prioritizes the app's language while retaining both English and Canadian French recognition. It returns the label text as recognized rather than translating a medicine name or instruction.
 
@@ -23,6 +25,8 @@ Service errors, progress messages, and private notification bodies use `L10n`. M
 Edit `DeviceServices.swift`. For a new HealthKit metric, request only its required quantity types, convert units explicitly, add a `ReadingKind`, and test ingestion and duplicate handling. Check physical-device permission flows whenever changing capabilities or privacy strings. Do not treat successful authorization-request completion as proof of read access.
 
 For additional speech locales, update `SpeechLanguage` in `DeviceServices.swift` and check on-device support before starting. Keep dictation transcripts editable. Stop recognition when leaving chat, sending, or starting read-aloud. Model chat does not require speech to be enabled. `VoiceTurnTests` covers single delivery and stale/empty turn rejection; physical microphone behavior needs device testing. `VisitTranscription.swift` and `VisitRecorder.swift` share the selected locale; preserve their local-only recognition flags and audio checkpoint behavior when modifying them. Keep resource keys in English and use format resources for changing counts and percentages.
+
+Change `SpeechPreferences.swift` and HarbourCore's `SpeechVoiceSelection.swift` for voice selection and `VoiceSettingsView.swift` for preview controls. Preserve the same-language filter and the quality-first ordering so a compact Canadian voice does not hide a downloaded Premium/Enhanced voice. Saved choices removed from the phone fall back to Automatic without erasing the saved identifier. Novelty and Personal Voice options are excluded; adding Personal Voice would require a separate explicit authorization flow.
 
 Chat dictation and read-aloud controls are disabled while a visit recorder is active. `VoiceService.stop` deactivates the shared audio session only if it owns recording/read-aloud activity, so leaving idle Chat cannot cut off a visit recording.
 
@@ -36,8 +40,12 @@ When an enabled app lock replaces the navigation tree, chat teardown stops voice
 
 `Harbour.entitlements` enables HealthKit. `Info.plist` supplies microphone, speech, and health-read usage descriptions. A development team and a provisioned HealthKit capability are needed for signed device installs. Bundle localization selects English (`en-CA`) or French (`fr-CA`) speech; device language assets determine availability. Read horizon and limits are constants in `HealthService.query`.
 
+Voice preferences use UserDefaults keys `speech.voice.en-CA`, `speech.voice.fr-CA`, and `speech.speed`. Automatic is the default voice; speed defaults to Apple's normal rate and supports 80–130%. iOS manages voice downloads under Accessibility → Read & Speak (iOS 26+) or Spoken Content (iOS 18) → Voices. Downloaded asset availability and audible quality still need phone verification. Settings preview is disabled during visit recording and stops when its view disappears or its scene becomes inactive.
+
 ## Dependencies
 
 Simulator HealthKit checks also need Xcode's simulated entitlements. Use a normal Run/test build or `CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-`; an unsigned compilation with `CODE_SIGNING_ALLOWED=NO` is a compile check and cannot verify HealthKit authorization. Xcode embeds simulator entitlements in the executable, so inspecting only the code-signature entitlement dictionary is insufficient.
 
 HealthKit, Speech, AVFoundation, and the core reading validator. Speech and real HealthKit data/permission behaviour still require physical-device verification; simulator and empty-store results are not evidence of real-world recognition quality.
+
+Speech synthesis additionally uses the core voice-ranking policy, UserDefaults, and [Apple's available voice quality metadata](https://developer.apple.com/documentation/avfaudio/avspeechsynthesisvoicequality). See [voice conversation](voice-conversation.md) for preview lifecycle, platform download guidance, and focused ranking tests.

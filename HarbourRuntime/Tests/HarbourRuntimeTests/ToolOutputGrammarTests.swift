@@ -2,10 +2,22 @@ import XCTest
 @testable import HarbourRuntime
 
 final class ToolOutputGrammarTests: XCTestCase {
-    func testExactToolObjectWithEmptyArgument() throws {
+    func testRouterReturnsExactToolObjectWithEmptyArgument() throws {
         XCTAssertEqual(try ToolOutputGrammar.make(allowedTools: ["capture_symptom", "reply"]), #"""
         root ::= "{\"tool\":\"" tool "\",\"arg\":\"\"}"
         tool ::= "capture_symptom" | "reply"
+        """#)
+    }
+    func testReplyRouterDecisionHasAnEmptyArgument() throws {
+        XCTAssertEqual(try ToolOutputGrammar.make(allowedTools: ["reply"]), #"""
+        root ::= "{\"tool\":\"" tool "\",\"arg\":\"\"}"
+        tool ::= "reply"
+        """#)
+    }
+    func testActionOnlyGrammarKeepsEmptyArguments() throws {
+        XCTAssertEqual(try ToolOutputGrammar.make(allowedTools: ["capture_symptom", "log_reading"]), #"""
+        root ::= "{\"tool\":\"" tool "\",\"arg\":\"\"}"
+        tool ::= "capture_symptom" | "log_reading"
         """#)
     }
     func testDuplicateToolsPreserveFirstOrder() throws {

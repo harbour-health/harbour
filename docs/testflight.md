@@ -55,3 +55,7 @@ Harbour **0.1 (1)** was archived with Xcode 27.0, signed, and uploaded successfu
 The corrected Release package contains both privacy manifests and six permission descriptions in each bundled language, with no GGUF weights or Debug screenshot-fixture markers. The native runtime's missing dSYM warning remains as described above. The independent screenshot runs and permission coverage check are recorded in [App Store screenshots](app-store-screenshots.md).
 
 The **Harbour testing** internal group contains this build and the account holder as its single tester; App Store Connect confirmed the tester status as **Invited**. Automatic distribution of future builds is disabled. Invitation codes/links and account email addresses are not stored in the repository.
+
+## Chat and voice update
+
+Version 0.1 build 2 was signed and uploaded on October 1, 2026, with internal-only distribution retained. It contains ordinary local-model replies and recent chat context, model-selected tools without keyword routing, and localized voice selection/preview/speed settings. Release archive and upload logs are under `/private/tmp/harbour-testflight-chat-voice/` in the producing workspace. Apple accepted the upload; its existing llama dSYM warning remains non-blocking. Processing and group assignment are separate from upload acceptance.

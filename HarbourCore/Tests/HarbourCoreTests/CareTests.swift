@@ -67,15 +67,17 @@ final class CareTests: XCTestCase {
         XCTAssertTrue(CareRules.times(in: "at 28 am").isEmpty)
         XCTAssertEqual(CareRules.times(in: "12 am, 12 pm"), [DoseTime(hour: 0, minute: 0), DoseTime(hour: 12, minute: 0)])
     }
-    func testGenerationToolsExcludeActionsWithoutRequiredSourceFacts() {
-        let readings = ToolPlanner.generationTools("Show my readings", records: Records())
-        XCTAssertTrue(readings.contains(.listReadings)); XCTAssertFalse(readings.contains(.logReading))
-        XCTAssertTrue(ToolPlanner.generationTools("Save my heart rate of 72", records: Records()).contains(.logReading))
-        XCTAssertEqual(ToolPlanner.generationTools("I took Metformin", records: Records()), [.reply])
+    func testAllToolsRemainAvailableWhileMissingSourceFactsAreRejected() {
         var records = Records(); records.medicines = [medicine]
-        XCTAssertTrue(ToolPlanner.generationTools("I took Metformin", records: records).contains(.logDose))
-        XCTAssertEqual(ToolPlanner.generationTools("I took and skipped Metformin", records: records), [.reply])
+        for original in ["Show my readings", "Save my heart rate of 72", "I took Metformin", "I took and skipped Metformin"] {
+            for state in [Records(), records] {
+                let prompt = ToolPlanner.prompt(original, records: state)
+                for tool in Tool.allCases { XCTAssertTrue(prompt.contains(tool.rawValue), "\(original): \(tool.rawValue)") }
+            }
+        }
         XCTAssertThrowsError(try ToolPlanner.validate(ToolDecision(tool: .logReading), original: "Show my readings", records: records))
+        XCTAssertThrowsError(try ToolPlanner.validate(ToolDecision(tool: .logDose), original: "I took Metformin", records: Records()))
+        XCTAssertThrowsError(try ToolPlanner.validate(ToolDecision(tool: .logDose), original: "I took and skipped Metformin", records: records))
     }
     func testAgentNewToolsRemainGrounded() throws {
         var records = Records(); records.medicines = [medicine]

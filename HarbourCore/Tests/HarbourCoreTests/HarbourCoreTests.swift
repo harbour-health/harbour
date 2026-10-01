@@ -64,8 +64,9 @@ final class HarbourCoreTests: XCTestCase {
         for output in ["{\"tool\":\"execute\",\"arg\":\"rm\"}", "{\"tool\":\"reply\",\"arg\":73}", "{}", "null", "{\"tool\":\"diagnose\"}"] { XCTAssertThrowsError(try ToolPlanner.parse(output)) }
     }
     func testHintDoesNotRestrictOrExecuteTool() {
-        XCTAssertTrue(ToolPlanner.prompt("My knee is sore", hint: "Medicines").contains("capture_symptom"))
-        XCTAssertFalse(ToolPlanner.allowed("My knee is sore").contains(.addMedicine))
+        let prompt = ToolPlanner.prompt("My knee is sore", hint: "Medicines")
+        for tool in Tool.allCases { XCTAssertTrue(prompt.contains(tool.rawValue), tool.rawValue) }
+        XCTAssertEqual(ToolPlanner.availableTools, Tool.allCases)
     }
     func testPersistenceRoundTrip() throws {
         var records = Records()
@@ -78,7 +79,10 @@ final class HarbourCoreTests: XCTestCase {
         var records = Records(); records.symptoms = [Symptom(text: "Sore knee", onset: "Tuesday")]
         XCTAssertTrue(records.appointmentNote.contains("Concern: Sore knee")); XCTAssertTrue(records.appointmentNote.contains("Started: Tuesday"))
     }
-    func testAllRoutingCasesSupportExpectedTool() {
-        for fixture in Evaluation.routingCases { XCTAssertTrue(ToolPlanner.allowed(fixture.input).contains(fixture.tool), fixture.input) }
+    func testEveryRoutingFixtureGetsTheFullToolSet() {
+        for fixture in Evaluation.routingCases {
+            let prompt = ToolPlanner.prompt(fixture.input, records: Records())
+            for tool in Tool.allCases { XCTAssertTrue(prompt.contains(tool.rawValue), "\(fixture.input): \(tool.rawValue)") }
+        }
     }
 }

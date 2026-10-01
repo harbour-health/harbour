@@ -181,12 +181,12 @@ struct ChatView: View {
         busy = true
         let currentID = UUID(); operationID = currentID
         let chosenHint = hint
+        let history = store.messages.dropLast().map { ConversationTurn(isUser: $0.isUser, text: $0.spokenText) }
         task = Task {
             defer { if operationID == currentID { busy = false; task = nil; speakReply() } }
             do {
-                let output = try await models.generate(ToolPlanner.prompt(input, hint: chosenHint, records: store.records), allowedTools: ToolPlanner.generationTools(input, records: store.records).map(\.rawValue))
+                let decision = try await models.chatDecision(input, hint: chosenHint, records: store.records, history: history)
                 try Task.checkCancellation()
-                let decision = try ToolPlanner.parse(output)
                 let action = try ToolPlanner.validate(decision, original: input, records: store.records)
                 execute(action)
                 if firstMessage, let title = try? await models.title(for: input), !Task.isCancelled, operationID == currentID { store.nameChat(title, firstMessage: message.id) }
@@ -196,7 +196,7 @@ struct ChatView: View {
     }
     private func execute(_ action: ValidatedAction) {
         switch action {
-        case .reply(let text): store.append(ChatMessage(text: L10n.string(text)))
+        case .reply(let text): store.append(ChatMessage(text: text))
         case .symptom(let text): sheet = .symptom(text); store.append(ChatMessage(text: L10n.string("Review the symptom details and emergency signs before saving.")))
         case .add(let medicine): sheet = .medicine(medicine); store.append(ChatMessage(text: L10n.format("Confirm the exact product and instructions for %@.", L10n.medicineName(medicine))))
         case .remove(let medicine): removal = medicine
@@ -282,7 +282,7 @@ struct MessageView: View {
                             }
                         }.padding(22)
                     }.background(Palette.surface, in: RoundedRectangle(cornerRadius: 26)).clipShape(RoundedRectangle(cornerRadius: 26))
-                } else { Text(message.text).font(.body).textSelection(.enabled).fixedSize(horizontal: false, vertical: true) }
+                } else { Text(message.text).font(.body).textSelection(.enabled).fixedSize(horizontal: false, vertical: true).accessibilityIdentifier("chatReply") }
                 Button(action: speak) { Image(systemName: "speaker.wave.2").font(.body).foregroundStyle(Palette.muted).frame(width: 44, height: 44) }.accessibilityLabel("Read response aloud").disabled(recorder.active)
             }.frame(maxWidth: .infinity, alignment: .leading)
         }

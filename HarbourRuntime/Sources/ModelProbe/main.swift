@@ -10,12 +10,13 @@ import HarbourRuntime
         var passed = 0
         for (input, expected) in cases {
             let start = Date()
-            let output = try await runtime.generate(file: file, prompt: ToolPlanner.prompt(input, records: Evaluation.records), grammar: ToolOutputGrammar.make(allowedTools: ToolPlanner.generationTools(input, records: Evaluation.records).map(\.rawValue)))
-            let decision = try? ToolPlanner.parse(output)
+            let output = try await runtime.generate(file: file, prompt: ToolPlanner.prompt(input, records: Evaluation.records), grammar: ToolOutputGrammar.make(allowedTools: ToolPlanner.availableTools.map(\.rawValue)))
+            var decision = try? ToolPlanner.parse(output)
+            if decision?.tool == .reply { decision?.arg = try await runtime.generate(file: file, prompt: ToolPlanner.conversationPrompt(input, records: Evaluation.records), maxTokens: 512, stopAtJSON: false) }
             let valid = decision.flatMap { try? ToolPlanner.validate($0, original: input, records: Evaluation.records) } != nil
             let success = decision?.tool == expected && valid
             if success { passed += 1 }
-            print("\(success ? "PASS" : "FAIL") \(input) | \(String(format: "%.2f", Date().timeIntervalSince(start)))s | \(output)")
+            print("\(success ? "PASS" : "FAIL") \(input) | \(String(format: "%.2f", Date().timeIntervalSince(start)))s | \(output) | \(decision?.arg ?? "")")
             fflush(stdout)
         }
         print("\(passed)/\(cases.count) model routing cases passed")

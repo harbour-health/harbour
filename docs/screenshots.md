@@ -47,3 +47,9 @@ The navigation refresh adds 87–88 for the new-visit editor in Light/Dark and 8
 ## Dependencies
 
 Xcode's `xcresulttool`, Python 3, and actual XCTest screenshot attachments. Pillow is optional for overview sheets. The viewer uses local HTML, CSS, and JavaScript without external dependencies.
+
+## Ordinary conversation and voice selection
+
+Captures 143–145 come from `harbour-conversation-voice-final.xcresult`, whose two native UI flows passed on October 1. Capture 143 uses actual cached Balanced inference, including the follow-up answer recalling purple. Its fading thinking indicator is part of the reply transition at capture time. Captures 144/145 show actual English/French voice availability and stopped previews. This simulator has Standard voices; these images do not demonstrate downloaded Premium/Enhanced assets or audible phone quality.
+
+The optional post-test `simctl diagnose` collector was stopped after both flows passed, because it delayed result finalization. Xcode subsequently returned `TEST SUCCEEDED`, and attachments were exported from its complete result bundle. No screenshot was fabricated or retouched.

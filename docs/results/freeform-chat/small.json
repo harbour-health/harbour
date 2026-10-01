@@ -1,0 +1,200 @@
+{
+  "date": "2026-10-01",
+  "environment": "Mac native Metal, not iPhone",
+  "model": "small",
+  "runtime": "llama.cpp b10549",
+  "contextTokens": 4096,
+  "routerMaxTokens": 160,
+  "replyMaxTokens": 512,
+  "fullToolCatalog": true,
+  "keywordIntentFilter": false,
+  "passed": 15,
+  "total": 23,
+  "complete": true,
+  "runs": [
+    {
+      "input": "Hello, how are you?",
+      "tool": "reply",
+      "passed": true,
+      "elapsedSeconds": 1.39,
+      "routerOutput": "{\"tool\":\"reply\",\"arg\":\"\"}",
+      "reply": "Hello! I'm just a digital assistant, so I don't have feelings or emotions. How can I assist you today?"
+    },
+    {
+      "input": "Why is the sky blue?",
+      "tool": "reply",
+      "passed": true,
+      "elapsedSeconds": 0.89,
+      "routerOutput": "{\"tool\":\"reply\",\"arg\":\"\"}",
+      "reply": "The sky appears blue because of the scattering of sunlight by tiny particles in the Earth's atmosphere. When sunlight enters the atmosphere, it is scattered in all directions by these particles, which are mostly water molecules. The blue light is scattered more than the other colors, so it appears to come from the blue direction. This is why the sky appears blue."
+    },
+    {
+      "input": "What does blood pressure measure?",
+      "tool": "search_timeline",
+      "passed": false,
+      "elapsedSeconds": 0.37,
+      "routerOutput": "{\"tool\":\"search_timeline\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "Do not delete my records",
+      "tool": "clear_data",
+      "passed": false,
+      "elapsedSeconds": 0.35,
+      "routerOutput": "{\"tool\":\"clear_data\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "Can I take Advil and warfarin together?",
+      "tool": "search_timeline",
+      "passed": false,
+      "elapsedSeconds": 0.37,
+      "routerOutput": "{\"tool\":\"search_timeline\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "Please record that my knee has been sore since Tuesday",
+      "tool": "reply",
+      "passed": false,
+      "elapsedSeconds": 0.65,
+      "routerOutput": "{\"tool\":\"reply\",\"arg\":\"\"}",
+      "reply": "I'm sorry to hear about your sore knee. Have you noticed any other symptoms such as swelling, pain, or difficulty walking? This information will help me provide more targeted advice."
+    },
+    {
+      "input": "Please save my heart rate of 72",
+      "tool": "save_question",
+      "passed": false,
+      "elapsedSeconds": 0.37,
+      "routerOutput": "{\"tool\":\"save_question\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "Add metformin to my medicines",
+      "tool": "add_medication",
+      "passed": true,
+      "elapsedSeconds": 0.39,
+      "routerOutput": "{\"tool\":\"add_medication\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "Show my readings",
+      "tool": "list_readings",
+      "passed": true,
+      "elapsedSeconds": 0.36,
+      "routerOutput": "{\"tool\":\"list_readings\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "Make an appointment note",
+      "tool": "copy_note",
+      "passed": true,
+      "elapsedSeconds": 0.36,
+      "routerOutput": "{\"tool\":\"copy_note\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "My temperature is 36.8",
+      "tool": "log_reading",
+      "passed": true,
+      "elapsedSeconds": 0.38,
+      "routerOutput": "{\"tool\":\"log_reading\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "My blood pressure is 120/80",
+      "tool": "search_timeline",
+      "passed": false,
+      "elapsedSeconds": 0.38,
+      "routerOutput": "{\"tool\":\"search_timeline\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "Export my records",
+      "tool": "export_data",
+      "passed": true,
+      "elapsedSeconds": 0.35,
+      "routerOutput": "{\"tool\":\"export_data\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "Import readings from Apple Health",
+      "tool": "import_readings",
+      "passed": true,
+      "elapsedSeconds": 0.37,
+      "routerOutput": "{\"tool\":\"import_readings\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "Clear all records",
+      "tool": "clear_data",
+      "passed": true,
+      "elapsedSeconds": 0.36,
+      "routerOutput": "{\"tool\":\"clear_data\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "Show my medicines",
+      "tool": "list_medications",
+      "passed": true,
+      "elapsedSeconds": 0.38,
+      "routerOutput": "{\"tool\":\"list_medications\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "Remind me to book blood work",
+      "tool": "schedule_medication",
+      "passed": false,
+      "elapsedSeconds": 0.39,
+      "routerOutput": "{\"tool\":\"schedule_medication\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "Show my reminders",
+      "tool": "list_reminders",
+      "passed": true,
+      "elapsedSeconds": 0.37,
+      "routerOutput": "{\"tool\":\"list_reminders\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "Schedule Metformin at 8 am and 8 pm",
+      "tool": "schedule_medication",
+      "passed": true,
+      "elapsedSeconds": 0.38,
+      "routerOutput": "{\"tool\":\"schedule_medication\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "I took Metformin",
+      "tool": "add_medication",
+      "passed": false,
+      "elapsedSeconds": 0.38,
+      "routerOutput": "{\"tool\":\"add_medication\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "Search my history for blood work",
+      "tool": "search_timeline",
+      "passed": true,
+      "elapsedSeconds": 0.35,
+      "routerOutput": "{\"tool\":\"search_timeline\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "Scan a medicine label",
+      "tool": "scan_medication",
+      "passed": true,
+      "elapsedSeconds": 0.37,
+      "routerOutput": "{\"tool\":\"scan_medication\",\"arg\":\"\"}",
+      "reply": ""
+    },
+    {
+      "input": "Save question for my doctor: Should I repeat my blood test?",
+      "tool": "save_question",
+      "passed": true,
+      "elapsedSeconds": 0.37,
+      "routerOutput": "{\"tool\":\"save_question\",\"arg\":\"\"}",
+      "reply": ""
+    }
+  ]
+}

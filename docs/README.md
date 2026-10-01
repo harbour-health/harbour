@@ -1,12 +1,13 @@
 # Developer documentation
 
 - [Architecture](architecture.md) — modules, persistence, tool execution, and change points.
+- [Chat agent](chat-agent.md) — generated conversation, model-selected tools, history, and validation.
 - [Local models](local-models.md) — runtime setup, pinned weights, downloads, and cancellation.
 - [Doctor visits](doctor-visits.md) — local recording, transcript recovery, source-grounded summaries, and confirmed medicine updates.
 - [Care actions](care-actions.md) — reminders, schedules, dose logging, history, appointment preparation, and shared chat tools.
 - [Care notifications](care-notifications.md) — local scheduling, permission, privacy, limits, and cancellation.
 - [Medicine labels](medicine-labels.md) — on-device OCR and confirmed medicine entry.
-- [Voice conversation](voice-conversation.md) — turn finalization, agent responses, speech playback, and lifecycle.
+- [Voice conversation](voice-conversation.md) — turn finalization, agent responses, voice quality/selection, previews, and lifecycle.
 - [Health and voice](health-and-voice.md) — native permissions, HealthKit queries, and speech.
 - [Interface](interface.md) — floating navigation, dashboard spacing, Records browser, chat composer, and accessibility.
 - [Canadian French localization](localization.md) — bundled translations, app language, native services, structured content, and stable stored values.

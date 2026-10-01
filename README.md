@@ -46,10 +46,10 @@ English and Canadian French follow the iOS app language setting. French includes
 ## Screens
 
 - **Today:** recent readings, upcoming reminders and doses, refill dates, and searchable health history.
-- **Chat:** typed or spoken messages; optional topic hints; model and effort controls beside the microphone; validated tool calls and locally generated conversation titles.
+- **Chat:** typed or spoken messages; optional topic hints; model and effort controls beside the microphone; model-written replies with recent conversation context, model-selected tool calls, and locally generated conversation titles.
 - **Records:** a large category browser leading to dedicated symptom, medicine, and reading lists, with native entry sheets and swipe deletion.
 - **Visits:** a large recorder with pause/resume, saved audio, direct note entry, editable transcripts, source-quoted notes and follow-up, confirmed medicine changes, and appointment preparation with saved questions.
-- **Settings:** appearance, optional Face ID or app PIN lock, model downloads, Apple Health import, record import/export, reset, and evaluation.
+- **Settings:** appearance, optional Face ID or app PIN lock, model downloads, voice choice and preview, Apple Health import, record import/export, reset, and evaluation.
 
 Settings is available at the upper right of every main screen. Forms use Cancel and Save/Review; read-only drawers use Done. See [navigation and actions](docs/navigation-and-actions.md) for the shared control conventions.
 
@@ -64,7 +64,7 @@ xcodebuild -project Harbour.xcodeproj -scheme Harbour \
   -destination 'platform=iOS Simulator,name=Harbour QA' test
 ```
 
-`testLocalModelChat` downloads Qwen Small if missing; budget network access and roughly 500 MB of free space. Other UI tests exercise manual entry, persisted records, draft preservation, and model controls. See [evaluation](docs/evaluation.md) for the device/model matrix, results, and limits.
+`testLocalModelChat` downloads Qwen Small if missing; budget network access and roughly 500 MB of free space. Other UI tests exercise manual entry, persisted records, draft preservation, and model controls. See [chat agent](docs/chat-agent.md) for conversation/tool handling and [evaluation](docs/evaluation.md) for measured model results and limits.
 
 The Xcode project is checked in. If adding source files, regenerate with `python3 scripts/generate-project.py`; this resets generated project settings, so change the generator for persistent configuration changes.
 
@@ -85,7 +85,7 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 <!-- screenshot-gallery:start -->
 ## All screens
 
-141 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
+144 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
 
 ### Today
 
@@ -202,7 +202,8 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | <strong>Chat · Dose confirmation</strong><br>[<img src="docs/screenshots/108-chat-dose-review.png" alt="Chat · Dose confirmation" width="220">](docs/screenshots/108-chat-dose-review.png) | <strong>Health history in chat</strong><br>[<img src="docs/screenshots/109-chat-history.png" alt="Health history in chat" width="220">](docs/screenshots/109-chat-history.png) |
 | <strong>Chat · Appointment question</strong><br>[<img src="docs/screenshots/110-chat-question-review.png" alt="Chat · Appointment question" width="220">](docs/screenshots/110-chat-question-review.png) | <strong>Chat · Label entry</strong><br>[<img src="docs/screenshots/111-chat-label-scan.png" alt="Chat · Label entry" width="220">](docs/screenshots/111-chat-label-scan.png) |
 | <strong>Medicine label entry</strong><br>[<img src="docs/screenshots/112-label-entry.png" alt="Medicine label entry" width="220">](docs/screenshots/112-label-entry.png) | <strong>On-device voice unavailable</strong><br>[<img src="docs/screenshots/114-voice-input-error.png" alt="On-device voice unavailable" width="220">](docs/screenshots/114-voice-input-error.png) |
-| <strong>Reminder notifications</strong><br>[<img src="docs/screenshots/115-notification-setting.png" alt="Reminder notifications" width="220">](docs/screenshots/115-notification-setting.png) |  |
+| <strong>Reminder notifications</strong><br>[<img src="docs/screenshots/115-notification-setting.png" alt="Reminder notifications" width="220">](docs/screenshots/115-notification-setting.png) | <strong>Model conversation and follow-up context</strong><br>[<img src="docs/screenshots/143-freeform-chat.png" alt="Model conversation and follow-up context" width="220">](docs/screenshots/143-freeform-chat.png) |
+| <strong>Voice selection and preview</strong><br>[<img src="docs/screenshots/144-voice.png" alt="Voice selection and preview" width="220">](docs/screenshots/144-voice.png) |  |
 
 ### Canadian French
 
@@ -220,6 +221,6 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | <strong>Rappel · Français</strong><br>[<img src="docs/screenshots/135-french-reminder-draft.png" alt="Rappel · Français" width="220">](docs/screenshots/135-french-reminder-draft.png) | <strong>Préparation · Français</strong><br>[<img src="docs/screenshots/136-french-preparation-draft.png" alt="Préparation · Français" width="220">](docs/screenshots/136-french-preparation-draft.png) |
 | <strong>Écrire un message · Français</strong><br>[<img src="docs/screenshots/137-french-chat-controls.png" alt="Écrire un message · Français" width="220">](docs/screenshots/137-french-chat-controls.png) | <strong>Médicaments et titre local · Français</strong><br>[<img src="docs/screenshots/138-french-model-medicines-title.png" alt="Médicaments et titre local · Français" width="220">](docs/screenshots/138-french-model-medicines-title.png) |
 | <strong>Relevés dans la conversation · Français</strong><br>[<img src="docs/screenshots/139-french-model-readings.png" alt="Relevés dans la conversation · Français" width="220">](docs/screenshots/139-french-model-readings.png) | <strong>Symptôme dans la conversation · Français</strong><br>[<img src="docs/screenshots/140-french-model-symptom-review.png" alt="Symptôme dans la conversation · Français" width="220">](docs/screenshots/140-french-model-symptom-review.png) |
-| <strong>Rappel dans la conversation · Français</strong><br>[<img src="docs/screenshots/141-french-model-reminder-review.png" alt="Rappel dans la conversation · Français" width="220">](docs/screenshots/141-french-model-reminder-review.png) |  |
+| <strong>Rappel dans la conversation · Français</strong><br>[<img src="docs/screenshots/141-french-model-reminder-review.png" alt="Rappel dans la conversation · Français" width="220">](docs/screenshots/141-french-model-reminder-review.png) | <strong>Voix et aperçu · Français</strong><br>[<img src="docs/screenshots/145-french-voice.png" alt="Voix et aperçu · Français" width="220">](docs/screenshots/145-french-voice.png) |
 
 <!-- screenshot-gallery:end -->

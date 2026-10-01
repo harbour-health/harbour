@@ -17,6 +17,7 @@ struct SettingsView: View {
                 NavigationLink { AppLockSettings() } label: { HStack { Label("App lock", systemImage: "lock"); Spacer(); Text(lock.modeName).foregroundStyle(Palette.muted) } }.accessibilityIdentifier("appLockSettings")
                 NavigationLink { AppearanceView() } label: { Label("Appearance", systemImage: "circle.lefthalf.filled") }
                 NavigationLink { ModelsView() } label: { Label("Models", systemImage: "cpu") }
+                NavigationLink { VoiceSettingsView() } label: { Label("Voice", systemImage: "waveform") }.accessibilityIdentifier("voiceSettings")
                 Button { Task { await health.sync(into: store) } } label: { HStack { Label("Import from Apple Health", systemImage: "heart.fill").foregroundStyle(Palette.ink); Spacer(); if health.busy { ProgressView() } } }.disabled(health.busy)
                 if !health.status.isEmpty { Text(health.status).font(.subheadline).foregroundStyle(Palette.muted) }
             }
@@ -27,7 +28,7 @@ struct SettingsView: View {
             }
             Section { NavigationLink { EvaluationView() } label: { Label("Evaluation", systemImage: "checkmark.seal") } }
         }.scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle("Settings").navigationBarTitleDisplayMode(.inline)
-        .drawerHeight(health.status.isEmpty ? 640 : 690)
+        .drawerHeight(health.status.isEmpty ? 690 : 740)
         .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
         .fileImporter(isPresented: $importing, allowedContentTypes: [.json]) { result in switch result { case .success(let url): store.importFile(url); case .failure(let error): store.error = L10n.string(error.localizedDescription) } }
         .alert("Delete all records and chat?", isPresented: $deleting) { Button("Delete all", role: .destructive) { store.clear() }; Button("Cancel", role: .cancel) {} } message: { Text("This includes doctor visits and their recordings.") }

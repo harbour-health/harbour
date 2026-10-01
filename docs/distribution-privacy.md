@@ -6,7 +6,7 @@ The distribution bundles include Apple's required-reason API declarations. These
 
 ## How it works
 
-`Harbour/PrivacyInfo.xcprivacy` is copied into the app by the generated resource phase. It declares app-scoped UserDefaults (`CA92.1`), used by model/effort preferences and SwiftUI appearance storage.
+`Harbour/PrivacyInfo.xcprivacy` is copied into the app by the generated resource phase. It declares app-scoped UserDefaults (`CA92.1`), used by model/effort, per-language speech voice/speed preferences, and SwiftUI appearance storage.
 
 `scripts/runtime-privacy.py` writes a separate manifest into every prepared llama framework slice. It declares file metadata inside the app container (`C617.1`), matching the native runtime's filesystem checks on downloaded model files. This is a repository-added declaration based on the pinned runtime source; it is not an upstream vendor attestation. The existing runtime's `clock_gettime` timing calls are not in Apple's listed system-boot-time API category, so no unsupported reason is added for them.
 

@@ -1,6 +1,7 @@
 import Foundation
 import CryptoKit
 import HarbourRuntime
+import HarbourCore
 
 enum ModelChoice: String, CaseIterable, Identifiable, Codable {
     case automatic, small, balanced
@@ -20,6 +21,7 @@ enum Effort: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var title: String { L10n.string(rawValue) }
     var tokens: Int { switch self { case .quick: 96; case .standard: 160; case .extended: 256 } }
+    var chatTokens: Int { switch self { case .quick: 256; case .standard: 512; case .extended: 768 } }
 }
 
 private final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
@@ -124,7 +126,7 @@ private final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchec
         status = L10n.string("Ready"); return destination
     }
     func cancelDownload() { downloadCancelled = true; activeDownload?.cancel() }
-    func generate(_ prompt: String, maxTokens: Int? = nil, allowedTools: [String]? = nil, responseGrammar: String? = nil) async throws -> String {
+    func generate(_ prompt: String, maxTokens: Int? = nil, allowedTools: [String]? = nil, responseGrammar: String? = nil, stopAtJSON: Bool = true) async throws -> String {
         guard !generating else { throw NSError(domain: "Inference", code: 1, userInfo: [NSLocalizedDescriptionKey: L10n.string("The model is already working on a request.")]) }
         generating = true
         defer { generating = false }
@@ -132,7 +134,16 @@ private final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchec
         let grammar = try allowedTools.map { try ToolOutputGrammar.make(allowedTools: $0) } ?? responseGrammar
         let chosen = resolved, url = try await ensure(chosen)
         status = L10n.string("Thinking")
-        return try await runtime.generate(file: url, prompt: localizedPrompt(prompt), maxTokens: maxTokens ?? effort.tokens, grammar: grammar)
+        return try await runtime.generate(file: url, prompt: localizedPrompt(prompt), maxTokens: maxTokens ?? effort.tokens, grammar: grammar, stopAtJSON: stopAtJSON)
+    }
+    func chatDecision(_ input: String, hint: String? = nil, records: Records, history: [ConversationTurn] = []) async throws -> ToolDecision {
+        let output = try await generate(ToolPlanner.prompt(input, hint: hint, records: records, history: history), allowedTools: ToolPlanner.availableTools.map(\.rawValue))
+        let decision = try ToolPlanner.parse(output)
+        if decision.tool != .reply, (try? ToolPlanner.validate(decision, original: input, records: records)) != nil { return decision }
+        // A tool with missing source facts cannot run. Let the model answer or clarify normally.
+        try Task.checkCancellation()
+        let answer = try await generate(ToolPlanner.conversationPrompt(input, records: records, history: history), maxTokens: effort.chatTokens, stopAtJSON: false)
+        return ToolDecision(tool: .reply, arg: answer)
     }
     /// Only generated prose changes language. Source evidence and machine formats stay exact.
     private func localizedPrompt(_ prompt: String) -> String {

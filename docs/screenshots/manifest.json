@@ -1126,5 +1126,29 @@
     "suggestedHumanReadableName": "142-visit-medicine-review-dark_0_0A5A4357-92B2-4A4A-8D72-1F525679DFAF.png",
     "test": "HarbourVisitTests/testMedicineReviewDrawerScreens()",
     "resultBundle": "harbour-medicine-drawer-fixture.xcresult"
+  },
+  "143-freeform-chat": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1790896877.2,
+    "suggestedHumanReadableName": "143-freeform-chat_0_210150A4-F077-405F-B8A8-F4FE7530B97B.png",
+    "test": "HarbourConversationTests/testFreeformConversationAndToolReview()",
+    "resultBundle": "harbour-conversation-voice-final.xcresult"
+  },
+  "145-french-voice": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1790896992.315,
+    "suggestedHumanReadableName": "145-french-voice_0_F9ED8A8E-E0C3-4A9F-93D5-4C6C778000A6.png",
+    "test": "HarbourConversationTests/testVoiceSelectionPreviewAndFrenchLabels()",
+    "resultBundle": "harbour-conversation-voice-final.xcresult"
+  },
+  "144-voice": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1790896980.944,
+    "suggestedHumanReadableName": "144-voice_0_0E1EFA55-C02B-4B78-ACB5-8C0F30BA9A4E.png",
+    "test": "HarbourConversationTests/testVoiceSelectionPreviewAndFrenchLabels()",
+    "resultBundle": "harbour-conversation-voice-final.xcresult"
   }
 }

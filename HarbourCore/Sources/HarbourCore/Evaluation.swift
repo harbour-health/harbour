@@ -14,8 +14,12 @@ public struct RoutingCase: Sendable {
 public enum Evaluation {
     public static var records: Records { var r = Records(); r.medicines = Catalog.medicines.filter { $0.id == "metformin" }; return r }
     public static let routingCases: [RoutingCase] = [
+        .init("Hello, how are you?", .reply),
+        .init("Why is the sky blue?", .reply),
+        .init("What does blood pressure measure?", .reply),
+        .init("Do not delete my records", .reply),
         .init("Can I take Advil and warfarin together?", .interactions),
-        .init("My knee has been sore since Tuesday", .captureSymptom),
+        .init("Please record that my knee has been sore since Tuesday", .captureSymptom),
         .init("Please save my heart rate of 72", .logReading),
         .init("Add metformin to my medicines", .addMedicine),
         .init("Show my readings", .listReadings),
@@ -62,7 +66,7 @@ public enum Evaluation {
             CheckResult("Known alias accepted", (try? ToolPlanner.parse("{\"tool\":\"record_symptom\",\"arg\":\"anything\"}"))?.tool == .captureSymptom),
             CheckResult("Wrong tool rejected", (try? ToolPlanner.validate(.init(tool: .logReading, arg: "72"), original: "My knee is sore", records: Records())) == nil),
             CheckResult("Invented medicine rejected", (try? ToolPlanner.validate(.init(tool: .addMedicine, arg: "warfarin"), original: "Add my medicine", records: Records())) == nil),
-            CheckResult("Reply cannot give clinical advice", (try? ToolPlanner.validate(.init(tool: .reply, arg: "Double your dose"), original: "Hello", records: Records())) == nil)
+            CheckResult("Generated replies are displayed", (try? ToolPlanner.validate(.init(tool: .reply, arg: "Hello! How are you?"), original: "Hello", records: Records())) == .reply("Hello! How are you?"))
         ]
         return checks
     }

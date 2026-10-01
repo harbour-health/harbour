@@ -35,3 +35,7 @@ Resource folder names use `fr-CA`; Foundation formatting uses `fr_CA`. Unsupport
 ## Dependencies
 
 Foundation bundle lookup and locale formatting, SwiftUI localization, the app's bundled resources, and HarbourCore records/catalog/parsers. Speech, Vision, UIKit and native permission frameworks provide device services. Localization adds no translation service, remote API or new package.
+
+### Voice preferences
+
+Settings → Voice is localized in both languages. Voice identifiers are stored under separate `speech.voice.en-CA` and `speech.voice.fr-CA` keys, while `speech.speed` is shared. Apple's voice names remain exact; dialect names use the current display locale and quality labels use the bundled catalog. The preview is translated speech, rather than a translated label around English audio. The latest source audit contains 547 interface keys and six native permission keys per language.

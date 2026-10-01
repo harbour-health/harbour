@@ -8,9 +8,9 @@ Harbour is a SwiftUI iOS application. It ports the browser prototype's confirmed
 
 `HarbourCore` is a platform-independent Swift package containing Codable records, the explicit product catalog, fixed symptom guidance, interaction lookup, reading validation, tool parsing, and evaluation fixtures. `HarbourRuntime` owns llama.cpp behind an actor; C pointers never leave that actor. `Harbour` contains UI, persistence, downloads, and Apple platform adapters.
 
-A chat message first goes through the emergency phrase check. A matching phrase displays the fixed emergency guidance immediately, before downloading or running a model. Other messages enter a bounded Qwen prompt with an optional topic hint. Tool routing supplies an exact JSON grammar containing only currently allowed, source-valid tool names and an empty argument. Eligibility uses the same validator against current records before generation; the selected action is validated again afterward. For example, a list request without a measurement does not expose the measurement-writing tool. Clarification remains available. Title and visit generation omit this constraint. The model selects a JSON tool; `ToolPlanner` restricts the tool to the current message's allowed set, ignores model-supplied clinical facts, and extracts products/numbers from the original text. Known formatting aliases are normalised. An unknown or malformed tool is rejected.
+A chat message first goes through the emergency phrase check. A matching phrase displays conditional fixed guidance before any model download or inference. Other messages enter the [chat agent](chat-agent.md): the model selects from the entire tool catalog, using bounded conversation history and an optional topic hint. There is no keyword-based action selection or pre-generation tool filter. Tool JSON has an empty argument; the planner extracts facts from the current user message and validates them against records/catalog data.
 
-Symptom, medicine, and reading calls open editable confirmation sheets. Interaction checks produce a sourced result without adding medicines to the list. Removal and full reset require confirmation. Generated prose cannot supply treatment or reassurance: `reply` currently produces a fixed capabilities/clarification response. The small model can choose the wrong tool; the records UI remains independently usable.
+When `reply` is selected, a second local inference generates ordinary conversational text. Invalid source facts prevent the proposed tool from executing and use the conversational path for an answer or clarification. Symptom, medicine, reading, and care mutations open their existing confirmation editors. Removal and reset require confirmation. Read-only tools produce structured results. Generated replies are model output, not a verified clinical conclusion; model tool selection can still be wrong.
 
 `AppStore` stores confirmed records and chat together in Application Support as versioned JSON, atomically written with complete file protection. A failed save leaves the visible state unchanged and surfaces an error. A failed decode blocks writes; a confirmed reset preserves the unreadable file before creating a new archive. There is no iCloud sync. iOS backup may include the protected record archive; downloaded weights are excluded from backup.
 
@@ -34,7 +34,7 @@ When adding Swift app files, regenerate the project with `scripts/generate-proje
 
 ## Configuration
 
-`Records.schemaVersion` and `Archive.version` are currently `1`. Import size is limited to 5 MB. Prompt context is 2,048 tokens. The bundle identifier and iOS 18 target are in the project generator. Model choice and effort are stored in UserDefaults; records are not.
+`Records.schemaVersion` and `Archive.version` are currently `1`. Import size is limited to 5 MB. Prompt context is 4,096 tokens. The bundle identifier and iOS 18 target are in the project generator. Model choice and effort are stored in UserDefaults; records are not.
 
 ## Dependencies
 

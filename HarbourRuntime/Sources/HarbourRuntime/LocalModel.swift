@@ -44,13 +44,13 @@ public actor LocalModel {
         #endif
         guard let loaded = llama_model_load_from_file(file.path, mp) else { throw ModelError.load }
         var cp = llama_context_default_params()
-        cp.n_ctx = 2048; cp.n_batch = 512
+        cp.n_ctx = 4096; cp.n_batch = 512
         cp.n_threads = Int32(max(1, min(4, ProcessInfo.processInfo.processorCount - 2)))
         cp.n_threads_batch = cp.n_threads
         guard let ctx = llama_init_from_model(loaded, cp) else { llama_model_free(loaded); throw ModelError.context }
         model = loaded; context = ctx; path = file.path
     }
-    public func generate(file: URL, prompt: String, maxTokens: Int = 160, grammar: String? = nil) throws -> String {
+    public func generate(file: URL, prompt: String, maxTokens: Int = 160, grammar: String? = nil, stopAtJSON: Bool = true) throws -> String {
         try Task.checkCancellation()
         if let grammar, grammar.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || grammar.contains("\0") {
             throw ModelError.grammar
@@ -63,7 +63,7 @@ public actor LocalModel {
             llama_tokenize(vocab, prompt, Int32(prompt.utf8.count), buffer.baseAddress, Int32(buffer.count), false, true)
         }
         guard count > 0 else { throw ModelError.tokenize }
-        guard Int(count) + maxTokens < 2048 else { throw ModelError.promptTooLong }
+        guard Int(count) + maxTokens < 4096 else { throw ModelError.promptTooLong }
         tokens = Array(tokens.prefix(Int(count)))
         llama_memory_clear(llama_get_memory(context), true)
         guard let sampler = llama_sampler_chain_init(llama_sampler_chain_default_params()) else { throw ModelError.sampler }
@@ -102,7 +102,7 @@ public actor LocalModel {
             }
             if length > 0 { bytes.append(contentsOf: piece.prefix(Int(length)).map { UInt8(bitPattern: $0) }) }
             let current = String(decoding: bytes, as: UTF8.self)
-            if let complete = JSONEnvelope.completePrefix(in: current) { return complete }
+            if stopAtJSON, let complete = JSONEnvelope.completePrefix(in: current) { return complete }
             try decode([token], start: position); position += 1
         }
         return String(decoding: bytes, as: UTF8.self)

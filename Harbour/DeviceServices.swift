@@ -10,10 +10,7 @@ enum SpeechLanguage {
     static var identifier: String { L10n.isFrench ? "fr-CA" : "en-CA" }
     static var locale: Locale { Locale(identifier: identifier) }
     static var voice: AVSpeechSynthesisVoice? {
-        let voices = AVSpeechSynthesisVoice.speechVoices()
-        let language = L10n.isFrench ? "fr" : "en"
-        return voices.first { $0.language == identifier }
-            ?? voices.first { $0.language.split(separator: "-").first == Substring(language) }
+        SpeechPreferences.selectedVoice
     }
 }
 
@@ -181,7 +178,8 @@ enum SpeechLanguage {
         spoken = finished
         do {
             let session = AVAudioSession.sharedInstance(); try session.setCategory(.playback, mode: .spokenAudio); try session.setActive(true); audioSessionOwned = true
-            let utterance = AVSpeechUtterance(string: text); utterance.voice = voice; utterance.rate = 0.45
+            let utterance = AVSpeechUtterance(string: text); utterance.voice = voice
+            utterance.rate = AVSpeechUtteranceDefaultSpeechRate * Float(SpeechPreferences.speed)
             activeUtterance = ObjectIdentifier(utterance); speaking = true; speaker.speak(utterance)
         } catch { stop(); self.error = L10n.format("Couldn’t play the response. %@", error.localizedDescription) }
     }
