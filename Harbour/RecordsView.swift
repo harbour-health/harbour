@@ -15,6 +15,7 @@ struct RecordsView: View {
         .contentMargins(.bottom, dockClearance, for: .scrollContent)
         .listStyle(.plain).scrollContentBackground(.hidden).background(Palette.canvas)
         .navigationTitle("Records")
+        .toolbar { if category == nil { ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) } } }
         .navigationDestination(item: $category) { selected in
             RecordList(sheet: $sheet, category: selected)
         }
@@ -57,8 +58,10 @@ private struct RecordList: View {
                     ForEach(store.records.medicines) { medicine in
                         Button { sheet = .medicine(medicine) } label: {
                             HStack(spacing: 14) {
-                                FeatureIcon(symbol: "pills", colour: .indigo)
+                                FeatureIcon(symbol: "pills.fill", colour: Palette.blue)
                                 VStack(alignment: .leading, spacing: 5) { Text(medicine.name).foregroundStyle(Palette.ink).fontWeight(.medium); Text(medicine.ingredients.isEmpty ? "Ingredients unconfirmed" : medicine.ingredients.joined(separator: ", ")).font(.body).foregroundStyle(Palette.muted); if !medicine.instructions.isEmpty { Text(medicine.instructions).font(.body).foregroundStyle(Palette.muted) } }
+                                Spacer(minLength: 8)
+                                Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Palette.muted)
                             }.padding(.vertical, 12)
                         }
                     }.onDelete { indexes in let ids = indexes.map { store.records.medicines[$0].id }; for id in ids { store.removeMedicine(id) } }
@@ -75,7 +78,7 @@ private struct RecordList: View {
         .contentMargins(.bottom, dockClearance, for: .scrollContent)
         .listStyle(.plain).listSectionSpacing(24).scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle(title)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) { Button { switch category { case 0: sheet = .symptom(""); case 1: sheet = .medicine(nil); default: sheet = .reading(nil) } } label: { Image(systemName: "plus") }.accessibilityLabel("Add record") }
+            ToolbarItem(placement: .topBarTrailing) { Button { switch category { case 0: sheet = .symptom(""); case 1: sheet = .medicine(nil); default: sheet = .reading(nil) } } label: { ToolbarGlyph(symbol: "plus") }.accessibilityLabel("Add record") }
         }
     }
 }
@@ -127,7 +130,7 @@ struct SymptomEditor: View {
     }
     private func choice(_ title: String, selected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            HStack(spacing: 12) { Text(title).font(.body).multilineTextAlignment(.leading); Spacer(); Image(systemName: selected ? "checkmark.circle.fill" : "circle").foregroundStyle(selected ? Palette.coral : Palette.muted) }
+            HStack(spacing: 12) { Text(title).font(.body).multilineTextAlignment(.leading); Spacer(); SelectionIndicator(selected: selected, colour: Palette.coral) }
                 .foregroundStyle(Palette.ink).padding(14).frame(maxWidth: .infinity, alignment: .leading)
                 .background(selected ? Palette.coralWash : Palette.surface, in: RoundedRectangle(cornerRadius: 18))
         }.buttonStyle(.plain).accessibilityAddTraits(selected ? .isSelected : []).accessibilityIdentifier(title == "None of these apply" ? "noEmergencySigns" : title)
@@ -181,9 +184,9 @@ struct MedicineEditor: View {
                         HStack(spacing: 14) {
                             Text("I checked the exact product and ingredients").foregroundStyle(Palette.ink)
                             Spacer(minLength: 8)
-                            Image(systemName: confirmed ? "checkmark.circle.fill" : "circle").foregroundStyle(Palette.ink)
+                            SelectionIndicator(selected: confirmed)
                         }.padding(.vertical, 8).contentShape(Rectangle())
-                    }.buttonStyle(.plain).accessibilityIdentifier("confirmMedicine").accessibilityValue(confirmed ? "Confirmed" : "Not confirmed")
+                    }.buttonStyle(.plain).accessibilityIdentifier("confirmMedicine").accessibilityValue(confirmed ? "Confirmed" : "Not confirmed").accessibilityAddTraits(confirmed ? .isSelected : [])
                 } footer: { Text(chosen.ingredients.isEmpty ? "This medicine will be saved with unconfirmed ingredients. Its interactions cannot be assessed." : "Brand formulations can differ. Check the active ingredients on your package.") }
             } else {
                 Section {
@@ -229,7 +232,7 @@ struct ReadingEditor: View {
             Section {
                 Picker("Type", selection: $kind) { ForEach(ReadingKind.allCases, id: \.self) { Text($0.rawValue).tag($0) } }.accessibilityIdentifier("readingKind")
                 HStack { TextField(kind == .bloodPressure ? "120/80" : kind == .temperature ? "36.8" : "72", text: $value, prompt: Text(kind == .bloodPressure ? "120/80" : kind == .temperature ? "36.8" : "72").foregroundStyle(Palette.muted)).focused($editing).keyboardType(kind == .bloodPressure ? .numbersAndPunctuation : .decimalPad).accessibilityIdentifier("readingValue"); Text(kind.unit).foregroundStyle(Palette.muted) }
-                DatePicker("Recorded", selection: $date, in: ...Date.now)
+                DatePicker("Date", selection: $date, in: ...Date.now)
             }
             if !value.isEmpty && !ReadingParser.valid(value, kind: kind) { Section { Text(kind == .bloodPressure ? "Enter systolic/diastolic, such as 120/80." : "Check the number and unit.").foregroundStyle(Palette.muted) } }
         }
@@ -269,15 +272,28 @@ struct InteractionView: View {
 struct NoteView: View {
     @EnvironmentObject var store: AppStore
     @Environment(\.dismiss) private var dismiss
-    @State private var text = ""
     @State private var copied = false
+    private var text: String { store.records.appointmentNote }
     var body: some View {
-        TextEditor(text: $text).scrollContentBackground(.hidden).padding(24).background(Palette.canvas).navigationTitle("Appointment note").navigationBarTitleDisplayMode(.inline)
-            .onAppear { text = store.records.appointmentNote }
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) { Button("Done") { dismiss() } }
-                ToolbarItemGroup(placement: .topBarTrailing) { Button { UIPasteboard.general.string = text; copied = true } label: { Image(systemName: copied ? "checkmark" : "doc.on.doc") }.accessibilityLabel("Copy note"); ShareLink(item: text) }
+        VStack(spacing: 16) {
+            ScrollView {
+                Text(text).font(.body).lineSpacing(5).textSelection(.enabled)
+                    .frame(maxWidth: .infinity, alignment: .leading).padding(.top, 8)
+            }.accessibilityIdentifier("appointmentNoteContent")
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 12) { noteActions }
+                VStack(spacing: 12) { noteActions }
             }
+        }.padding(.horizontal, AppLayout.screenInset).padding(.bottom, 12)
+            .background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle("Appointment note").navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } }
+            }
+    }
+    @ViewBuilder private var noteActions: some View {
+        Button { UIPasteboard.general.string = text; copied = true } label: { Label(copied ? "Copied" : "Copy", systemImage: copied ? "checkmark" : "doc.on.doc") }
+            .buttonStyle(ActionButtonStyle()).accessibilityLabel("Copy note").accessibilityValue(copied ? "Copied" : "Not copied")
+        ShareLink(item: text) { Label("Share", systemImage: "square.and.arrow.up") }.buttonStyle(ActionButtonStyle(secondary: true))
     }
 }
 

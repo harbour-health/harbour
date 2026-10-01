@@ -34,6 +34,7 @@ struct SettingsView: View {
     }
 }
 struct ModelsView: View {
+    var standalone = false
     @EnvironmentObject var models: ModelManager
     @EnvironmentObject var store: AppStore
     @Environment(\.dismiss) private var dismiss
@@ -74,6 +75,6 @@ struct ModelsView: View {
             }
         }.scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle("Models").navigationBarTitleDisplayMode(.inline)
         .drawerHeight(models.downloading == nil ? 680 : 730)
-        .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
+        .toolbar { if standalone { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } } }
     }
 }

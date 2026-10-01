@@ -55,6 +55,8 @@ TITLES = {
     '81-reading-keyboard': 'Reading drawer · Keyboard', '82-reading-keyboard-dark': 'Reading drawer · Keyboard · Dark',
     '83-visit-notes-drawer': 'Visit notes drawer', '84-drawer-large-text': 'Reading drawer · Large text',
     '85-interactions-drawer-dark': 'Interaction drawer · Dark', '86-evaluation-drawer-dark': 'Evaluation drawer · Dark',
+    '87-new-visit-notes': 'New visit notes', '88-new-visit-notes-dark': 'New visit notes · Dark',
+    '89-chat-small-phone': 'Chat · Small phone', '90-reading-small-phone': 'Reading drawer · Small phone',
 }
 
 parser = argparse.ArgumentParser()
@@ -92,7 +94,7 @@ for entry in entries:
 figures = ''.join(f'<figure><button class="capture" data-index="{i}" aria-label="Open {html.escape(entry["title"])}"><img src="{entry["src"]}" alt="{html.escape(entry["title"])}" loading="lazy"></button><figcaption>{html.escape(entry["title"])}</figcaption><a href="{entry["file"]}" download>Download PNG</a></figure>' for i, entry in enumerate(entries))
 page = '''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Harbour — iOS screenshots</title>
 <style> *{box-sizing:border-box}body{margin:0;background:#f7f7f7;color:#141414;font:16px -apple-system,BlinkMacSystemFont,sans-serif}header{padding:48px 5vw 28px}h1{margin:0 0 12px;font-size:34px;font-weight:650}header p{color:#666;line-height:1.6}main{display:flex;flex-wrap:wrap;gap:48px 32px;padding:16px 5vw 64px}figure{margin:0;width:260px;max-width:100%}.capture{display:block;width:100%;padding:0;border:0;background:transparent;cursor:zoom-in}.capture img{display:block;width:100%;border-radius:24px}figcaption{font-weight:600;margin:16px 0 8px}a{color:#666;font-size:14px}button{font:inherit}dialog{border:0;border-radius:20px;padding:16px;background:#fff;max-width:96vw;max-height:96vh}dialog::backdrop{background:#000b}.viewer-controls{display:flex;gap:12px;align-items:center;margin-bottom:12px;position:sticky;top:0;background:white;padding:4px 0}.viewer-controls strong{flex:1}.viewer-controls button{border:0;border-radius:10px;padding:10px;background:#eee;cursor:pointer}#full{display:block;max-width:88vw;width:500px;height:auto;margin:auto}button:focus-visible,a:focus-visible{outline:3px solid #555;outline-offset:4px}@media(max-width:600px){header{padding-top:28px}main{justify-content:center}figure{width:320px}} </style>
-<header><h1>Harbour for iOS</h1><p>COUNT native screenshots · iPhone 17 Pro simulator<br>Fictional records. Select a screen to view it larger or download the original.</p></header><main>FIGURES</main>
+<header><h1>Harbour for iOS</h1><p>COUNT native screenshots · iPhone simulators<br>Fictional records. Select a screen to view it larger or download the original.</p></header><main>FIGURES</main>
 <dialog id="viewer"><div class="viewer-controls"><button id="previous" aria-label="Previous screenshot">←</button><strong id="name"></strong><button id="next" aria-label="Next screenshot">→</button><button id="close">Close</button></div><img id="full" alt=""></dialog>
 <script>const entries=ENTRIES;let selected=0;const viewer=document.getElementById('viewer');function show(index){selected=(index+entries.length)%entries.length;const entry=entries[selected];document.getElementById('name').textContent=entry.title;const full=document.getElementById('full');full.src=entry.src;full.alt=entry.title;}document.querySelectorAll('.capture').forEach(button=>button.addEventListener('click',()=>{show(Number(button.dataset.index));viewer.showModal();}));document.getElementById('close').onclick=()=>viewer.close();document.getElementById('previous').onclick=()=>show(selected-1);document.getElementById('next').onclick=()=>show(selected+1);document.addEventListener('keydown',event=>{if(viewer.open&&event.key==='ArrowRight')show(selected+1);if(viewer.open&&event.key==='ArrowLeft')show(selected-1);});</script></html>'''
 (args.output / 'index.html').write_text(page.replace('COUNT', str(len(entries))).replace('FIGURES', figures).replace('ENTRIES', json.dumps(entries)))
@@ -128,10 +130,10 @@ except ImportError:
 if args.update_readme:
     groups = {
         'Today': {1, 31, 43, 66},
-        'Chat': {10, 11, 12, 13, 28, 32, 36, 42, 44, 45, 46, 47, 53, 58},
+        'Chat': {10, 11, 12, 13, 28, 32, 36, 42, 44, 45, 46, 47, 53, 58, 89},
         'Records': {2, 3, 4, 22, 33, 34, 35, 64, 65},
-        'Entry and review': {5, 6, 7, 8, 9, 20, 21, 23, 24, 25, 48, 49, 50, 51, 52, 79, 81, 82, 84, 85},
-        'Doctor visits': set(range(67, 79)) | {83},
+        'Entry and review': {5, 6, 7, 8, 9, 20, 21, 23, 24, 25, 48, 49, 50, 51, 52, 79, 81, 82, 84, 85, 90},
+        'Doctor visits': set(range(67, 79)) | {83, 87, 88},
         'Settings, models, and notes': {14, 15, 16, 18, 19, 27, 37, 38, 39, 40, 41, 60},
         'App lock': {54, 55, 56, 57, 59, 61, 62, 80},
         'Health permissions': {26, 30, 63},

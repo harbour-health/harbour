@@ -12,7 +12,7 @@
 
 ## How to change it
 
-The gallery currently contains 86 native captures. The new Records browser has light/dark captures numbered 64 and 65; capture 66 shows scrolled content around the floating navigation. Main app screens and editors have paired appearance captures. Download and Health permission/status images were refreshed on a disposable simulator without removing existing models. PIN setup and retry captures show a fictional test credential, never a user's PIN. The Face ID capture shows the unavailable/enrollment error, not a successful biometric match.
+The gallery currently contains 90 native captures. The new Records browser has light/dark captures numbered 64 and 65; capture 66 shows scrolled content around the floating navigation. Main app screens and editors have paired appearance captures. Download and Health permission/status images were refreshed on a disposable simulator without removing existing models. PIN setup and retry captures show a fictional test credential, never a user's PIN. The Face ID capture shows the unavailable/enrollment error, not a successful biometric match.
 
 The root README shows Today, Chat, Records, and Settings in separate light/dark tables, plus doctor visits and compact drawers. Its All screens section also embeds every numbered PNG, grouped by feature in two-column tables. It embeds the original PNGs at 220 pixels wide with descriptive alt text and links to their full-resolution files. Update those relative image paths when replacing the featured captures; keep the originals in `docs/screenshots/` so they render directly on GitHub without a running gallery server.
 
@@ -35,6 +35,8 @@ The localhost viewer is accessible only on the development computer. For remote/
 To repeat `HarbourFreshScreensTests`, create and boot a disposable iPhone simulator, then use its UUID as the Xcode destination. Do not reset an existing user's permissions or remove their downloaded models for screenshots. After exporting its attachments, shut down and delete that fixture simulator.
 
 The white-palette refresh replaces dashboard, record categories/lists, entry/review, settings, composer, PIN, and rich chat captures. Earlier completed evaluation results remain historical workflow evidence; download and operating-system permission captures were refreshed with the floating-navigation build. Consult each image's manifest entry for its producing run. The corrected white capture bundle completed its appearance, detail, and navigation flows; its separate composer assertion measured an inner accessibility text view rather than the surrounding writing area. The final dashboard run verifies both the two-line text view and the full control-row distance.
+
+The navigation refresh adds 87–88 for the new-visit editor in Light/Dark and 89–90 for the smaller iPhone SE (3rd generation) on iOS 18.6. The latter verifies the compact model/effort label and compatibility drawer rather than implying physical-device performance. `HarbourStreamlineTests`, `HarbourCompactLayoutTests`, and the refreshed visit/main and rich-chat flows supply these captures. Earlier permission and exceptional-state images remain historical workflow evidence, with their original run recorded in the manifest.
 
 ## Dependencies
 

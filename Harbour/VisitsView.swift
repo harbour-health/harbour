@@ -5,15 +5,17 @@ private func visitTime(_ seconds: TimeInterval) -> String {
     let value = max(0, Int(seconds)); return String(format: "%02d:%02d", value / 60, value % 60)
 }
 struct VisitsView: View {
+    @Binding var sheet: AppSheet?
     @EnvironmentObject private var store: AppStore
     @EnvironmentObject private var recorder: VisitRecorder
     @Environment(\.floatingDockClearance) private var dockClearance
     @State private var destination: UUID?
     @State private var showRecorder = false
+    @State private var newVisit: DoctorVisit?
     @State private var deleting: DoctorVisit?
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 32) {
+            VStack(alignment: .leading, spacing: AppLayout.sectionSpacing) {
                 Button { showRecorder = true } label: {
                     VStack(spacing: 22) {
                         VisitWaveform(levels: Array(repeating: 0.12, count: 38), decorative: true).frame(height: 76).padding(.horizontal, 30)
@@ -22,12 +24,7 @@ struct VisitsView: View {
                         Text(recorder.active ? "Recording in progress" : "Record a visit").font(.system(.title2, design: .rounded, weight: .bold))
                     }.frame(maxWidth: .infinity).padding(.vertical, 36).background(Palette.coralWash, in: RoundedRectangle(cornerRadius: 32))
                 }.buttonStyle(PressFeedback()).accessibilityIdentifier("recordVisit")
-                HStack {
-                    Text("Visits").font(.title2.weight(.semibold)); Spacer()
-                    Button { let visit = DoctorVisit(title: "Visit notes"); if store.saveVisit(visit) { destination = visit.id } } label: {
-                        Label("Add notes", systemImage: "square.and.pencil").font(.body.weight(.medium)).padding(.vertical, 8)
-                    }.disabled(recorder.active).accessibilityIdentifier("addVisitNotes")
-                }
+                Text("Recent visits").font(.title2.weight(.semibold))
                 if store.visits.isEmpty { Text("No visits yet").font(.title3).foregroundStyle(Palette.muted).padding(.vertical, 20) }
                 ForEach(store.visits) { visit in
                     Button {
@@ -44,14 +41,26 @@ struct VisitsView: View {
                             }
                             Spacer(); Image(systemName: "chevron.right").foregroundStyle(Palette.muted)
                         }.padding(.vertical, 12).contentShape(Rectangle())
-                    }.buttonStyle(.plain).contextMenu { Button("Delete visit", role: .destructive) { deleting = visit }.disabled(recorder.active) }
+                    }.buttonStyle(.plain).accessibilityIdentifier("visit-row-" + visit.id.uuidString).contextMenu { Button("Delete visit", role: .destructive) { deleting = visit }.disabled(recorder.active) }
                     Divider().overlay(Palette.line)
                 }
-            }.padding(.horizontal, 24).padding(.top, 14).padding(.bottom, 32).frame(maxWidth: 760).frame(maxWidth: .infinity)
+            }.padding(.horizontal, AppLayout.screenInset).padding(.top, 14).padding(.bottom, 32).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity)
         }.contentMargins(.bottom, dockClearance, for: .scrollContent)
             .background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle("Visits")
+            .toolbar {
+                if !showRecorder && destination == nil {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button { newVisit = DoctorVisit(title: "Visit notes") } label: { ToolbarGlyph(symbol: "square.and.pencil") }
+                            .disabled(recorder.active).accessibilityLabel("Add notes").accessibilityIdentifier("addVisitNotes")
+                    }
+                    ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) }
+                }
+            }
             .navigationDestination(isPresented: $showRecorder) { VisitRecordingView() }
             .navigationDestination(item: $destination) { VisitDetailView(id: $0) }
+            .sheet(item: $newVisit) { visit in
+                NavigationStack { VisitTranscriptEditor(visit: visit, isNew: true) { destination = $0 } }.floatingDrawer(height: 520)
+            }
             .confirmationDialog("Delete this visit and its recording?", isPresented: Binding(get: { deleting != nil }, set: { if !$0 { deleting = nil } }), titleVisibility: .visible) {
                 Button("Delete visit", role: .destructive) { if let deleting { store.deleteVisit(deleting) }; deleting = nil }
             }
@@ -118,7 +127,7 @@ struct VisitRecordingView: View {
                         .accessibilityIdentifier("visitRecordingControl").disabled(saving || recorder.state == .finishing)
                 }.padding(.vertical, 12)
                 Text(recorder.state == .idle ? "Start recording" : recorder.state == .paused ? "Resume or finish" : "").font(.body.weight(.medium))
-            }.padding(.horizontal, 28).padding(.bottom, 32).frame(maxWidth: 760).frame(maxWidth: .infinity)
+            }.padding(.horizontal, 28).padding(.bottom, 32).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity)
         }.contentMargins(.bottom, dockClearance, for: .scrollContent)
             .background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle("Recorder").navigationBarTitleDisplayMode(.inline)
             .navigationDestination(item: $finished) { VisitDetailView(id: $0, automaticallySummarise: true) }
@@ -147,7 +156,7 @@ struct VisitDetailView: View {
     var body: some View {
         ScrollView {
             if let visit {
-                VStack(alignment: .leading, spacing: 28) {
+                VStack(alignment: .leading, spacing: AppLayout.sectionSpacing) {
                     HStack {
                         VStack(alignment: .leading, spacing: 6) {
                             Text(visit.date, format: .dateTime.month(.wide).day().year()).font(.body).foregroundStyle(Palette.muted)
@@ -166,9 +175,9 @@ struct VisitDetailView: View {
                     if tab == 1 {
                         if visit.transcript.isEmpty { Text("No transcript yet").font(.title3).foregroundStyle(Palette.muted) }
                         else { Text(visit.transcript).font(.title3).lineSpacing(8).textSelection(.enabled).accessibilityIdentifier("savedVisitTranscript") }
-                        Button { editing = true } label: { Label("Edit transcript", systemImage: "square.and.pencil").font(.body.weight(.semibold)) }.disabled(busy || recorder.active)
+                        Button { editing = true } label: { Label("Edit transcript", systemImage: "square.and.pencil").font(.body.weight(.semibold)).frame(minHeight: AppLayout.controlSize) }.disabled(busy || recorder.active)
                         if store.audioURL(for: visit) != nil {
-                            Button { transcribe(visit) } label: { Label("Transcribe audio", systemImage: "waveform").font(.body.weight(.semibold)) }.disabled(busy || recorder.active)
+                            Button { transcribe(visit) } label: { Label("Transcribe audio", systemImage: "waveform").font(.body.weight(.semibold)).frame(minHeight: AppLayout.controlSize) }.disabled(busy || recorder.active)
                         }
                     } else if let summary = visit.summary {
                         if !summary.highlights.isEmpty { quotes(summary.highlights, title: "Notes", symbol: "note.text") }
@@ -184,7 +193,7 @@ struct VisitDetailView: View {
                                     Divider()
                                 }
                                 if visit.appliedChanges.isEmpty {
-                                    Button { reviewing = true } label: { Label("Review medicine changes", systemImage: "checkmark.circle").font(.body.weight(.semibold)).frame(maxWidth: .infinity).padding(18).background(Palette.blueWash, in: Capsule()) }.disabled(recorder.active || busy).accessibilityIdentifier("reviewVisitMedicines")
+                                    Button { reviewing = true } label: { Label("Review medicine changes", systemImage: "checkmark.circle") }.buttonStyle(ActionButtonStyle()).disabled(recorder.active || busy).accessibilityIdentifier("reviewVisitMedicines")
                                 } else { Label("Medicine changes saved", systemImage: "checkmark.circle.fill").font(.body.weight(.medium)).foregroundStyle(Palette.blue) }
                             }
                         }
@@ -200,9 +209,9 @@ struct VisitDetailView: View {
                         HStack(spacing: 12) { HarbourMark(size: 24, spinning: true).foregroundStyle(Palette.blue); Text(status).font(.body); Spacer(); Button("Cancel") { task?.cancel(); models.cancelDownload() } }
                         if models.downloading != nil { ProgressView(value: models.progress).tint(Palette.blue) }
                     } else if !visit.transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                        Button { summarise(visit) } label: { Label(visit.summary == nil ? "Prepare summary" : "Refresh summary", systemImage: "sparkles").font(.body.weight(.semibold)).frame(maxWidth: .infinity).padding(18).foregroundStyle(Palette.canvas).background(Palette.ink, in: Capsule()) }.disabled(recorder.active).accessibilityIdentifier("summariseVisit")
+                        Button { summarise(visit) } label: { Label(visit.summary == nil ? "Prepare summary" : "Refresh summary", systemImage: "sparkles") }.buttonStyle(ActionButtonStyle(secondary: visit.summary != nil)).disabled(recorder.active).accessibilityIdentifier("summariseVisit")
                     }
-                }.padding(.horizontal, 24).padding(.top, 16).padding(.bottom, 32).frame(maxWidth: 760).frame(maxWidth: .infinity)
+                }.padding(.horizontal, AppLayout.screenInset).padding(.top, 16).padding(.bottom, 32).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity)
             }
         }.contentMargins(.bottom, dockClearance, for: .scrollContent)
             .background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle(visit?.title ?? "Visit").navigationBarTitleDisplayMode(.inline)
@@ -211,7 +220,7 @@ struct VisitDetailView: View {
                     Button("Edit visit", systemImage: "square.and.pencil") { editing = true }.disabled(busy || recorder.active)
                     Button("Share notes", systemImage: "square.and.arrow.up") { if let visit { store.shareVisit(visit) } }
                     Button("Delete visit", systemImage: "trash", role: .destructive) { deleting = true }.disabled(busy || recorder.active)
-                } label: { Image(systemName: "ellipsis").frame(width: 44, height: 44) }.accessibilityLabel("Visit options") }
+                } label: { ToolbarGlyph(symbol: "ellipsis") }.accessibilityLabel("Visit options") }
             }
             .sheet(isPresented: $editing) { if let visit { NavigationStack { VisitTranscriptEditor(visit: visit) }.floatingDrawer(height: 520) } }
             .sheet(isPresented: $reviewing) { NavigationStack { VisitMedicineReview(id: id) }.floatingDrawer(height: 520) }
@@ -266,23 +275,29 @@ struct VisitTranscriptEditor: View {
     @EnvironmentObject private var store: AppStore
     @Environment(\.dismiss) private var dismiss
     let visit: DoctorVisit
+    var isNew = false
+    var onSave: ((UUID) -> Void)?
     @State private var title: String
     @State private var transcript: String
-    init(visit: DoctorVisit) { self.visit = visit; _title = State(initialValue: visit.title); _transcript = State(initialValue: visit.transcript) }
+    init(visit: DoctorVisit, isNew: Bool = false, onSave: ((UUID) -> Void)? = nil) { self.visit = visit; self.isNew = isNew; self.onSave = onSave; _title = State(initialValue: visit.title); _transcript = State(initialValue: visit.transcript) }
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             TextField("Visit title", text: $title).font(.title2.weight(.semibold)).accessibilityIdentifier("visitTitleInput")
             Divider()
-            TextEditor(text: $transcript).font(.title3).scrollContentBackground(.hidden).accessibilityIdentifier("visitTranscriptInput")
+            TextEditor(text: $transcript).font(.title3).scrollContentBackground(.hidden).accessibilityLabel("Notes or transcript").accessibilityIdentifier("visitTranscriptInput")
+                .overlay(alignment: .topLeading) {
+                    if transcript.isEmpty { Text("Notes or transcript").font(.title3).foregroundStyle(Palette.muted).padding(.top, 8).padding(.leading, 5).allowsHitTesting(false).accessibilityHidden(true) }
+                }
         }.padding(24).background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle("Visit notes").navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) { Button("Save") {
-                    guard var current = store.visits.first(where: { $0.id == visit.id }) else { dismiss(); return }
+                    guard isNew || store.visits.contains(where: { $0.id == visit.id }) else { dismiss(); return }
+                    var current = store.visits.first(where: { $0.id == visit.id }) ?? visit
                     current.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
                     if current.transcript != transcript { current.transcript = transcript; current.summary = nil; current.medicineBaseline = nil }
-                    if store.saveVisit(current) { dismiss() }
-                }.disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || transcript.count > 200_000).accessibilityIdentifier("saveVisitTranscript") }
+                    if store.saveVisit(current) { dismiss(); onSave?(current.id) }
+                }.disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || transcript.count > 200_000 || (isNew && transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)).accessibilityIdentifier("saveVisitTranscript") }
                 ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil) } }
             }
     }
@@ -304,22 +319,23 @@ struct VisitMedicineReview: View {
                         acknowledged = false
                     } label: {
                         HStack(alignment: .top, spacing: 16) {
-                            Image(systemName: selected.contains(change.id) ? "checkmark.circle.fill" : "circle").font(.title2).foregroundStyle(selected.contains(change.id) ? Palette.blue : Palette.muted)
                             VStack(alignment: .leading, spacing: 10) {
                                 Text(change.action.rawValue.capitalized + " " + change.medicine.name).font(.title3.weight(.semibold))
                                 if !change.medicine.instructions.isEmpty { Text(change.medicine.instructions).font(.body) }
                                 Text("“" + change.quote + "”").font(.body).foregroundStyle(Palette.muted)
                             }.frame(maxWidth: .infinity, alignment: .leading)
+                            SelectionIndicator(selected: selected.contains(change.id))
                         }.padding(.vertical, 10).contentShape(Rectangle())
-                    }.buttonStyle(.plain).accessibilityIdentifier("visit-change-" + change.medicine.id)
+                    }.buttonStyle(.plain).accessibilityIdentifier("visit-change-" + change.medicine.id).accessibilityAddTraits(selected.contains(change.id) ? .isSelected : [])
                     Divider()
                 }
                 Button { acknowledged.toggle() } label: {
                     HStack(alignment: .top, spacing: 14) {
-                        Image(systemName: acknowledged ? "checkmark.circle.fill" : "circle").font(.title2)
                         Text("I checked the medicine names and instructions against my prescription or visit notes.").font(.body).multilineTextAlignment(.leading)
+                        Spacer(minLength: 8)
+                        SelectionIndicator(selected: acknowledged)
                     }.foregroundStyle(acknowledged ? Palette.blue : Palette.ink).padding(18).background(Palette.surface, in: RoundedRectangle(cornerRadius: 22))
-                }.buttonStyle(.plain).accessibilityIdentifier("confirmVisitMedicines")
+                }.buttonStyle(.plain).accessibilityIdentifier("confirmVisitMedicines").accessibilityAddTraits(acknowledged ? .isSelected : [])
             }.padding(24).measuredDrawerHeight()
         }.background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle("Medicine changes").navigationBarTitleDisplayMode(.inline)
             .toolbar {

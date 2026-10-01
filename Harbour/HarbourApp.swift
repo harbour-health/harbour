@@ -52,7 +52,7 @@ struct RootView: View {
                 .tabItem { Label("Chat", systemImage: "bubble.left.and.bubble.right") }.tag(1)
             NavigationStack { RecordsView(sheet: $sheet, category: $recordCategory).toolbar(.hidden, for: .tabBar) }
                 .tabItem { Label("Records", systemImage: "heart.text.square") }.tag(2)
-            NavigationStack { VisitsView().toolbar(.hidden, for: .tabBar) }
+            NavigationStack { VisitsView(sheet: $sheet).toolbar(.hidden, for: .tabBar) }
                 .tabItem { Label("Visits", systemImage: "waveform") }.tag(3)
         }
         .toolbar(.hidden, for: .tabBar)
@@ -133,7 +133,7 @@ struct FeatureRow: View {
 }
 struct SettingsButton: View {
     @Binding var sheet: AppSheet?
-    var body: some View { Button { sheet = .settings } label: { Image(systemName: "gearshape").frame(width: 44, height: 44) }.accessibilityLabel("Settings") }
+    var body: some View { Button { sheet = .settings } label: { ToolbarGlyph(symbol: "gearshape") }.accessibilityLabel("Settings") }
 }
 struct TodayView: View {
     @EnvironmentObject var store: AppStore
@@ -145,7 +145,7 @@ struct TodayView: View {
     var openVisits: () -> Void
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 32) {
+            VStack(alignment: .leading, spacing: AppLayout.sectionSpacing) {
                 Text(Date.now, format: .dateTime.weekday(.wide).month(.wide).day()).font(.body).foregroundStyle(Palette.muted).padding(.top, 2)
                 VStack(spacing: 14) {
                     ReadingSummary(readings: store.records.readings) { sheet = .reading(nil) }
@@ -159,25 +159,33 @@ struct TodayView: View {
                         Spacer(); Image(systemName: "arrow.up.right").font(.title3)
                     }.foregroundStyle(Palette.ink).padding(.vertical, 16).contentShape(Rectangle())
                 }.buttonStyle(PressFeedback())
-                VStack(alignment: .leading, spacing: 16) {
-                    HStack { Text("Readings").font(.title2.weight(.semibold)); Spacer(); Button { sheet = .reading(nil) } label: { Image(systemName: "plus").frame(width: 44, height: 44) }.accessibilityLabel("Add a reading") }
-                    ForEach(ReadingKind.allCases, id: \.self) { kind in
-                        if let reading = store.records.readings.first(where: { $0.kind == kind }) { ReadingRow(reading: reading); Divider().overlay(Palette.line) }
+                if store.records.readings.contains(where: { $0.kind != store.records.readings.first?.kind }) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("Readings").font(.title2.weight(.semibold)).frame(maxWidth: .infinity, alignment: .leading).padding(.bottom, 16)
+                        ForEach(ReadingKind.allCases, id: \.self) { kind in
+                            if kind != store.records.readings.first?.kind, let reading = store.records.readings.first(where: { $0.kind == kind }) { ReadingRow(reading: reading); Divider().overlay(Palette.line) }
+                        }
                     }
+                }
+                VStack(alignment: .leading, spacing: 0) {
                     Button { sheet = .interactions(store.records.medicines) } label: { FeatureRow(title: "Check interactions", symbol: "arrow.triangle.branch", colour: Palette.blue) }.buttonStyle(PressFeedback())
+                    Divider().overlay(Palette.line)
                     Button(action: openVisits) { FeatureRow(title: "Doctor visits", symbol: "waveform", colour: Palette.coral) }.buttonStyle(PressFeedback())
+                    Divider().overlay(Palette.line)
                     Button { sheet = .note } label: { FeatureRow(title: "Appointment note", symbol: "note.text", colour: Palette.coral) }.buttonStyle(PressFeedback())
                 }
                 if !store.records.symptoms.isEmpty {
                     VStack(alignment: .leading, spacing: 14) {
                         Text("Recent symptoms").font(.title2.weight(.semibold))
                         ForEach(store.records.symptoms.prefix(2)) { symptom in
-                            NavigationLink { SymptomDetail(symptom: symptom) } label: { SymptomRow(symptom: symptom).frame(maxWidth: .infinity, alignment: .leading) }.buttonStyle(.plain)
+                            NavigationLink { SymptomDetail(symptom: symptom) } label: {
+                                HStack(spacing: 14) { SymptomRow(symptom: symptom).frame(maxWidth: .infinity, alignment: .leading); Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Palette.muted) }
+                            }.buttonStyle(.plain)
                             Divider().overlay(Palette.line)
                         }
                     }
                 }
-            }.padding(.horizontal, 24).padding(.bottom, 32).frame(maxWidth: 760).frame(maxWidth: .infinity)
+            }.padding(.horizontal, AppLayout.screenInset).padding(.bottom, 32).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity)
         }.contentMargins(.bottom, dockClearance, for: .scrollContent)
             .background(Palette.canvas).foregroundStyle(Palette.ink)
             .navigationTitle("Today").toolbar { ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) } }

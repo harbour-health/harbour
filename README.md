@@ -47,8 +47,10 @@ Qwen Small downloads when the first chat message is sent, or from **Settings →
 - **Today:** recent readings and entry points to symptoms, medicines, interactions, and appointment notes.
 - **Chat:** freeform messages; optional topic hints; model and effort controls beside the microphone; validated tool calls and locally generated conversation titles.
 - **Records:** a large category browser leading to dedicated symptom, medicine, and reading lists, with native entry sheets and swipe deletion.
-- **Visits:** a large recorder with pause/resume, saved audio, editable transcripts, source-quoted notes and follow-up, and confirmed medicine changes.
+- **Visits:** a large recorder with pause/resume, saved audio, direct note entry, editable transcripts, source-quoted notes and follow-up, and confirmed medicine changes.
 - **Settings:** appearance, optional Face ID or app PIN lock, model downloads, Apple Health import, record import/export, reset, and evaluation.
+
+Settings is available at the upper right of every main screen. Forms use Cancel and Save/Review; read-only drawers use Done. See [navigation and actions](docs/navigation-and-actions.md) for the shared control conventions.
 
 The current medicine catalog maps 11 names to ingredients and checks four cited pairs. Other pairs are unassessed. Symptom guidance uses fixed Ontario wording and does not establish a diagnosis. This is the existing honours-project scope carried into native code.
 
@@ -80,7 +82,7 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 <!-- screenshot-gallery:start -->
 ## All screens
 
-86 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
+90 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
 
 ### Today
 
@@ -100,6 +102,7 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | <strong>Medicines in chat</strong><br>[<img src="docs/screenshots/44-chat-medicines.png" alt="Medicines in chat" width="220">](docs/screenshots/44-chat-medicines.png) | <strong>Medicines in chat · Dark</strong><br>[<img src="docs/screenshots/45-chat-medicines-dark.png" alt="Medicines in chat · Dark" width="220">](docs/screenshots/45-chat-medicines-dark.png) |
 | <strong>Readings in chat</strong><br>[<img src="docs/screenshots/46-chat-readings.png" alt="Readings in chat" width="220">](docs/screenshots/46-chat-readings.png) | <strong>Readings in chat · Dark</strong><br>[<img src="docs/screenshots/47-chat-readings-dark.png" alt="Readings in chat · Dark" width="220">](docs/screenshots/47-chat-readings-dark.png) |
 | <strong>Selected topic · Dark</strong><br>[<img src="docs/screenshots/53-selected-topic-dark.png" alt="Selected topic · Dark" width="220">](docs/screenshots/53-selected-topic-dark.png) | <strong>Generated chat title</strong><br>[<img src="docs/screenshots/58-generated-chat-title.png" alt="Generated chat title" width="220">](docs/screenshots/58-generated-chat-title.png) |
+| <strong>Chat · Small phone</strong><br>[<img src="docs/screenshots/89-chat-small-phone.png" alt="Chat · Small phone" width="220">](docs/screenshots/89-chat-small-phone.png) |  |
 
 ### Records
 
@@ -125,6 +128,7 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | <strong>Symptom review · Dark</strong><br>[<img src="docs/screenshots/52-symptom-review-dark.png" alt="Symptom review · Dark" width="220">](docs/screenshots/52-symptom-review-dark.png) | <strong>Reading drawer · Landscape</strong><br>[<img src="docs/screenshots/79-reading-landscape.png" alt="Reading drawer · Landscape" width="220">](docs/screenshots/79-reading-landscape.png) |
 | <strong>Reading drawer · Keyboard</strong><br>[<img src="docs/screenshots/81-reading-keyboard.png" alt="Reading drawer · Keyboard" width="220">](docs/screenshots/81-reading-keyboard.png) | <strong>Reading drawer · Keyboard · Dark</strong><br>[<img src="docs/screenshots/82-reading-keyboard-dark.png" alt="Reading drawer · Keyboard · Dark" width="220">](docs/screenshots/82-reading-keyboard-dark.png) |
 | <strong>Reading drawer · Large text</strong><br>[<img src="docs/screenshots/84-drawer-large-text.png" alt="Reading drawer · Large text" width="220">](docs/screenshots/84-drawer-large-text.png) | <strong>Interaction drawer · Dark</strong><br>[<img src="docs/screenshots/85-interactions-drawer-dark.png" alt="Interaction drawer · Dark" width="220">](docs/screenshots/85-interactions-drawer-dark.png) |
+| <strong>Reading drawer · Small phone</strong><br>[<img src="docs/screenshots/90-reading-small-phone.png" alt="Reading drawer · Small phone" width="220">](docs/screenshots/90-reading-small-phone.png) |  |
 
 ### Doctor visits
 
@@ -136,7 +140,8 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | <strong>Recording · audio-only simulator</strong><br>[<img src="docs/screenshots/73-visit-recording.png" alt="Recording · audio-only simulator" width="220">](docs/screenshots/73-visit-recording.png) | <strong>Paused · audio-only simulator</strong><br>[<img src="docs/screenshots/74-visit-paused.png" alt="Paused · audio-only simulator" width="220">](docs/screenshots/74-visit-paused.png) |
 | <strong>Playback · audio-only simulator</strong><br>[<img src="docs/screenshots/75-visit-audio.png" alt="Playback · audio-only simulator" width="220">](docs/screenshots/75-visit-audio.png) | <strong>Visits · Dark</strong><br>[<img src="docs/screenshots/76-visits-dark.png" alt="Visits · Dark" width="220">](docs/screenshots/76-visits-dark.png) |
 | <strong>Visit recorder · Dark</strong><br>[<img src="docs/screenshots/77-visit-recorder-dark.png" alt="Visit recorder · Dark" width="220">](docs/screenshots/77-visit-recorder-dark.png) | <strong>Visit summary · Dark</strong><br>[<img src="docs/screenshots/78-visit-summary-dark.png" alt="Visit summary · Dark" width="220">](docs/screenshots/78-visit-summary-dark.png) |
-| <strong>Visit notes drawer</strong><br>[<img src="docs/screenshots/83-visit-notes-drawer.png" alt="Visit notes drawer" width="220">](docs/screenshots/83-visit-notes-drawer.png) |  |
+| <strong>Visit notes drawer</strong><br>[<img src="docs/screenshots/83-visit-notes-drawer.png" alt="Visit notes drawer" width="220">](docs/screenshots/83-visit-notes-drawer.png) | <strong>New visit notes</strong><br>[<img src="docs/screenshots/87-new-visit-notes.png" alt="New visit notes" width="220">](docs/screenshots/87-new-visit-notes.png) |
+| <strong>New visit notes · Dark</strong><br>[<img src="docs/screenshots/88-new-visit-notes-dark.png" alt="New visit notes · Dark" width="220">](docs/screenshots/88-new-visit-notes-dark.png) |  |
 
 ### Settings, models, and notes
 

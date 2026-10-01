@@ -20,6 +20,8 @@ Medicine proposals are never automatically applied. The review page begins with 
 
 ## How to change it
 
+Add notes opens `VisitTranscriptEditor` directly with `isNew: true`. The draft stays in `VisitsView.newVisit` until Save; cancelling does not add an empty visit. The editor's `onSave` callback navigates to the saved detail screen. Existing-visit editing uses the same editor with `isNew: false`. New notes require a non-empty title and transcript.
+
 - `HarbourCore/Visits.swift`: data structures, chunking, prompt, source validation, and the medicine mutation boundary.
 - `Harbour/VisitRecorder.swift`: permissions, live speech sessions, PCM/AAC writer, pause/interruption lifecycle, and playback.
 - `Harbour/VisitTranscription.swift`: saved-audio retry, model assets, and the legacy chunk recognizer's cancellation/timeout.

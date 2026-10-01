@@ -43,7 +43,7 @@ struct ChatView: View {
                         if models.downloading != nil { VStack(alignment: .leading, spacing: 8) { ProgressView(value: models.progress); Text(models.status == "Verifying download" ? models.status : "\(Int(models.progress * 100))% downloaded").font(.caption).foregroundStyle(Palette.muted) } }
                     }
                     Color.clear.frame(height: 1).id("bottom")
-                }.animation(reduceMotion ? nil : .easeOut(duration: 0.3), value: store.messages.count).padding(.horizontal, 24).padding(.bottom, 16).frame(maxWidth: 760).frame(maxWidth: .infinity)
+                }.animation(reduceMotion ? nil : .easeOut(duration: 0.3), value: store.messages.count).padding(.horizontal, AppLayout.screenInset).padding(.bottom, 16).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity)
             }
             .scrollDismissesKeyboard(.interactively)
             .onChange(of: store.messages.count) { withAnimation(reduceMotion ? nil : .easeOut(duration: 0.3)) { proxy.scrollTo("bottom", anchor: .bottom) } }
@@ -57,9 +57,10 @@ struct ChatView: View {
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { focused = false } }
             ToolbarItem(placement: .principal) { Text(store.chatTitle).font(.body.weight(.medium)).lineLimit(1).accessibilityIdentifier("chatTitle") }
-            ToolbarItem(placement: .topBarTrailing) { Button { cancel(); focused = false; draft = ""; hint = nil; store.newChat() } label: { Image(systemName: "square.and.pencil") }.accessibilityLabel("New chat") }
+            ToolbarItem(placement: .topBarLeading) { Button { cancel(); focused = false; draft = ""; hint = nil; store.newChat() } label: { ToolbarGlyph(symbol: "square.and.pencil") }.accessibilityLabel("New chat") }
+            ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) }
         }
-        .sheet(isPresented: $modelSheet) { NavigationStack { ModelsView() }.floatingDrawer(height: 680) }
+        .sheet(isPresented: $modelSheet) { NavigationStack { ModelsView(standalone: true) }.floatingDrawer(height: 680) }
         .sheet(isPresented: $toolSheet) { topicPicker.floatingDrawer(height: 355) }
         .confirmationDialog("Delete all records and chat?", isPresented: $deleteConfirmation, titleVisibility: .visible) { Button("Delete all", role: .destructive) { store.clear() }; Button("Cancel", role: .cancel) {} }
         .confirmationDialog("Remove \(removal?.name ?? "medicine") from your list?", isPresented: Binding(get: { removal != nil }, set: { if !$0 { removal = nil } }), titleVisibility: .visible) { Button("Remove", role: .destructive) { if let removal { store.removeMedicine(removal.id); store.append(ChatMessage(text: "Removed \(removal.name) from your list.")) }; removal = nil } }
@@ -83,12 +84,22 @@ struct ChatView: View {
                     Button { self.hint = nil } label: { HStack(spacing: 5) { Text(hint).font(.subheadline); Image(systemName: "xmark").font(.caption2) }.padding(.horizontal, 10).padding(.vertical, 7).background(Palette.blueWash, in: Capsule()).foregroundStyle(Palette.ink) }.accessibilityLabel("Clear \(hint) topic")
                 }
                 HStack(spacing: 4) {
-                    Button { focused = false; toolSheet = true } label: { Image(systemName: "plus").font(.title3).frame(width: 42, height: 44) }.accessibilityLabel("Choose a topic")
+                    Button { focused = false; toolSheet = true } label: { ToolbarGlyph(symbol: "plus") }.accessibilityLabel("Choose a topic")
                     Spacer(minLength: 0)
                     Button { focused = false; modelSheet = true } label: {
-                        HStack(spacing: 5) { Text(models.resolved == .balanced ? "Qwen 1.5B" : "Qwen 0.5B").font(.body.weight(.medium)); Text(models.effort.rawValue).font(.body).foregroundStyle(Palette.muted); Image(systemName: "chevron.down").font(.caption2) }
+                        HStack(spacing: 5) {
+                            ViewThatFits(in: .horizontal) {
+                                modelLabel(compact: false).fixedSize(horizontal: true, vertical: false)
+                                modelLabel(compact: true).fixedSize(horizontal: true, vertical: false)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(models.resolved == .balanced ? "Balanced" : "Small").font(.body.weight(.medium))
+                                    Text(models.effort.rawValue).font(.body).foregroundStyle(Palette.muted)
+                                }
+                            }
+                            Image(systemName: "chevron.down").font(.caption2)
+                        }
                             .padding(.horizontal, 10).frame(minHeight: 48).contentShape(RoundedRectangle(cornerRadius: 10))
-                    }.accessibilityLabel("Choose model").accessibilityIdentifier("modelSelector")
+                    }.layoutPriority(-1).accessibilityLabel("Choose model").accessibilityValue(models.resolved.title + ", " + models.effort.rawValue).accessibilityIdentifier("modelSelector")
                     Button {
                         if voice.listening { voice.stop() } else {
                             let original = draft
@@ -104,14 +115,20 @@ struct ChatView: View {
             .padding(16).background(Palette.surface, in: RoundedRectangle(cornerRadius: 28))
             .overlay(RoundedRectangle(cornerRadius: 28).strokeBorder(Palette.line.opacity(0.7)))
             .padding(.horizontal, 12).padding(.top, 8).padding(.bottom, 8)
-            .frame(maxWidth: 760)
+            .frame(maxWidth: AppLayout.contentWidth)
         }.frame(maxWidth: .infinity).background(Palette.canvas).foregroundStyle(Palette.ink)
+    }
+    private func modelLabel(compact: Bool) -> some View {
+        HStack(spacing: 5) {
+            Text(compact ? (models.resolved == .balanced ? "Balanced" : "Small") : (models.resolved == .balanced ? "Qwen 1.5B" : "Qwen 0.5B")).font(.body.weight(.medium))
+            Text(models.effort.rawValue).font(.body).foregroundStyle(Palette.muted)
+        }
     }
     private var topicPicker: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 Text("Topic").font(.title2.weight(.semibold)).padding(.bottom, 12)
-                ForEach([("Symptoms", "cross.case", Color.orange), ("Medicines", "pills", .indigo), ("Interactions", "arrow.triangle.branch", .blue), ("Readings", "waveform.path.ecg", .red)], id: \.0) { item in
+                ForEach([("Symptoms", "cross.case.fill", Palette.coral), ("Medicines", "pills.fill", Palette.blue), ("Interactions", "arrow.triangle.branch", Palette.blue), ("Readings", "waveform.path.ecg", Palette.coral)], id: \.0) { item in
                     Button { hint = item.0; toolSheet = false; focused = true } label: { FeatureRow(title: item.0, subtitle: nil, symbol: item.1, colour: item.2) }.buttonStyle(.plain).padding(.vertical, 4)
                 }
             }.padding(24).frame(maxWidth: .infinity, alignment: .topLeading).measuredDrawerHeight(chrome: 24)

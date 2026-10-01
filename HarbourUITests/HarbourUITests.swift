@@ -500,7 +500,7 @@ import XCTest
         app.buttons["recordVisit"].tap(); capture("68-visit-recorder")
         app.navigationBars.buttons.firstMatch.tap()
         app.buttons["addVisitNotes"].tap()
-        app.buttons["editVisitTranscript"].tap()
+        XCTAssertTrue(app.textViews["visitTranscriptInput"].waitForExistence(timeout: 5))
         let title = app.textFields["visitTitleInput"]
         title.tap(); title.press(forDuration: 1.2)
         if app.menuItems["Select All"].exists { app.menuItems["Select All"].tap() }
@@ -564,10 +564,14 @@ import XCTest
         app.buttons["nav-chat"].tap(); app.buttons["New chat"].tap(); capture("11-chat-empty")
         app.buttons["nav-records"].tap(); capture("64-records")
         app.buttons["nav-visits"].tap(); capture("67-visits")
+        app.buttons["addVisitNotes"].tap(); XCTAssertTrue(app.textViews["visitTranscriptInput"].waitForExistence(timeout: 5)); capture("87-new-visit-notes"); app.buttons["Cancel"].tap()
+        app.buttons["recordVisit"].tap(); capture("68-visit-recorder"); app.navigationBars["Recorder"].buttons.firstMatch.tap()
         app.buttons["nav-today"].tap(); app.buttons["Settings"].tap(); capture("16-settings")
         app.buttons["Appearance"].tap(); app.buttons["appearance-dark"].tap(); app.navigationBars.buttons.firstMatch.tap(); capture("38-settings-dark"); app.buttons["Done"].tap()
         capture("31-today-dark"); app.buttons["nav-chat"].tap(); capture("32-chat-dark"); app.buttons["nav-records"].tap(); capture("65-records-dark")
-        app.buttons["nav-visits"].tap(); capture("76-visits-dark"); app.buttons["recordVisit"].tap(); capture("77-visit-recorder-dark")
+        app.buttons["nav-visits"].tap(); capture("76-visits-dark")
+        app.buttons["addVisitNotes"].tap(); XCTAssertTrue(app.textViews["visitTranscriptInput"].waitForExistence(timeout: 5)); capture("88-new-visit-notes-dark"); app.buttons["Cancel"].tap()
+        app.buttons["recordVisit"].tap(); capture("77-visit-recorder-dark")
         app.navigationBars.buttons.firstMatch.tap()
         app.buttons.containing(NSPredicate(format: "label CONTAINS %@", "Medication review")).firstMatch.tap(); capture("78-visit-summary-dark")
         app.buttons["nav-today"].tap(); app.buttons["Settings"].tap(); app.buttons["Appearance"].tap(); app.buttons["appearance-light"].tap()
@@ -644,7 +648,7 @@ import XCTest
         app.buttons["Cancel"].tap(); app.swipeUp(); app.buttons["Check interactions"].tap()
         XCTAssertTrue(app.otherElements["floatingDrawer"].waitForExistence(timeout: 5)); capture("20-interactions")
         app.buttons["Done"].tap(); app.buttons["Appointment note"].tap(); capture("19-appointment-note"); app.buttons["Done"].tap()
-        app.buttons["nav-visits"].tap(); app.buttons["addVisitNotes"].tap(); app.buttons["editVisitTranscript"].tap()
+        app.buttons["nav-visits"].tap(); app.buttons["addVisitNotes"].tap()
         XCTAssertTrue(app.textViews["visitTranscriptInput"].waitForExistence(timeout: 5)); capture("83-visit-notes-drawer")
         app.buttons["Cancel"].tap(); app.buttons["nav-records"].tap(); selectRecords(app, "Readings")
         app.buttons["Add record"].tap()
@@ -702,5 +706,108 @@ import XCTest
         }
         app.buttons["Settings"].tap(); app.buttons["Appearance"].tap(); app.buttons["appearance-light"].tap()
         app.navigationBars["Appearance"].buttons.firstMatch.tap(); app.buttons["Done"].tap()
+    }
+}
+
+@MainActor final class HarbourStreamlineTests: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+    private func capture(_ name: String) {
+        let item = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); item.name = name; item.lifetime = .keepAlways; add(item)
+    }
+    private func appearance(_ app: XCUIApplication, dark: Bool) {
+        app.buttons["nav-today"].tap(); app.buttons["Settings"].tap(); app.buttons["Appearance"].tap()
+        app.buttons[dark ? "appearance-dark" : "appearance-light"].tap()
+        app.navigationBars["Appearance"].buttons.firstMatch.tap(); app.buttons["Done"].tap()
+    }
+    func testMainActionsDraftRetentionAndVisitCreation() {
+        XCUIDevice.shared.orientation = .portrait
+        let app = XCUIApplication(); app.launch()
+        for dark in [false, true] {
+            appearance(app, dark: dark)
+            app.swipeDown(); app.swipeDown(); capture(dark ? "31-today-dark" : "01-today")
+            for destination in ["today", "chat", "records", "visits"] {
+                app.buttons["nav-" + destination].tap()
+                if destination == "records", !app.navigationBars["Records"].exists { app.navigationBars.buttons.firstMatch.tap() }
+                XCTAssertTrue(app.buttons["Settings"].isHittable)
+                XCTAssertGreaterThan(app.buttons["Settings"].frame.midX, app.frame.width * 0.7)
+                app.buttons["Settings"].tap(); XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 5))
+                app.buttons["Done"].tap()
+                XCTAssertTrue(app.buttons["nav-" + destination].isSelected)
+            }
+            app.buttons["nav-chat"].tap(); app.buttons["New chat"].tap(); capture(dark ? "32-chat-dark" : "11-chat-empty")
+            let input = app.textFields["chatInput"]; input.tap(); input.typeText("Help me organise my notes")
+            app.buttons["Done"].tap(); app.buttons["Settings"].tap(); app.buttons["Models"].tap()
+            XCTAssertTrue(app.sliders["Generation effort"].waitForExistence(timeout: 5))
+            app.navigationBars["Models"].buttons.firstMatch.tap()
+            XCTAssertTrue(app.navigationBars["Settings"].exists); app.buttons["Done"].tap()
+            XCTAssertEqual(input.value as? String, "Help me organise my notes")
+            app.buttons["modelSelector"].tap(); XCTAssertTrue(app.buttons["Done"].isHittable); app.buttons["Done"].tap()
+            XCTAssertEqual(input.value as? String, "Help me organise my notes")
+            app.buttons["nav-records"].tap(); capture(dark ? "65-records-dark" : "64-records")
+            selectRecords(app, "Medicines")
+            XCTAssertFalse(app.buttons["Settings"].exists)
+            XCTAssertTrue(app.buttons["Add record"].isHittable); capture(dark ? "34-medicines-dark" : "03-medicines")
+            app.navigationBars["Medicines"].buttons.firstMatch.tap()
+            app.buttons["nav-visits"].tap(); capture(dark ? "76-visits-dark" : "67-visits")
+            let rows = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "visit-row-"))
+            let count = rows.count
+            app.buttons["addVisitNotes"].tap()
+            XCTAssertTrue(app.textViews["visitTranscriptInput"].waitForExistence(timeout: 5))
+            XCTAssertFalse(app.buttons["saveVisitTranscript"].isEnabled)
+            capture(dark ? "88-new-visit-notes-dark" : "87-new-visit-notes")
+            app.buttons["Cancel"].tap(); XCTAssertTrue(app.buttons["addVisitNotes"].waitForExistence(timeout: 5))
+            XCTAssertEqual(rows.count, count)
+            app.buttons["recordVisit"].tap(); capture(dark ? "77-visit-recorder-dark" : "68-visit-recorder")
+            XCTAssertFalse(app.buttons["Settings"].exists); XCTAssertFalse(app.buttons["addVisitNotes"].exists)
+            app.navigationBars["Recorder"].buttons.firstMatch.tap()
+            app.buttons["nav-today"].tap(); app.swipeUp()
+            app.buttons["Appointment note"].tap(); capture(dark ? "39-note-dark" : "19-appointment-note")
+            XCTAssertEqual(app.textViews.count, 0)
+            XCTAssertGreaterThan(app.buttons["Done"].frame.midX, app.frame.width * 0.7)
+            app.buttons["Copy note"].tap(); XCTAssertEqual(app.buttons["Copy note"].value as? String, "Copied")
+            app.buttons["Done"].tap()
+        }
+        app.buttons["nav-visits"].tap(); app.buttons["addVisitNotes"].tap()
+        let transcript = app.textViews["visitTranscriptInput"]
+        transcript.tap(); transcript.typeText("Discussed sleep habits and bringing a medicine list to the next visit.")
+        app.buttons["Done"].tap(); app.buttons["saveVisitTranscript"].tap()
+        XCTAssertTrue(app.buttons["summariseVisit"].waitForExistence(timeout: 5))
+        app.buttons["Transcript"].tap()
+        XCTAssertEqual(app.staticTexts["savedVisitTranscript"].label, "Discussed sleep habits and bringing a medicine list to the next visit.")
+        app.terminate(); app.launch(); app.buttons["nav-visits"].tap()
+        app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "visit-row-")).firstMatch.tap()
+        app.buttons["Transcript"].tap()
+        XCTAssertEqual(app.staticTexts["savedVisitTranscript"].label, "Discussed sleep habits and bringing a medicine list to the next visit.")
+        appearance(app, dark: false)
+    }
+}
+
+@MainActor final class HarbourCompactLayoutTests: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+    private func capture(_ name: String) {
+        let item = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); item.name = name; item.lifetime = .keepAlways; add(item)
+    }
+    func testComposerAndFloatingReadingOnSmallPhone() {
+        XCUIDevice.shared.orientation = .portrait
+        let app = XCUIApplication(); app.launchArguments = ["--verify-drawers"]; app.launch()
+        app.buttons["nav-chat"].tap(); app.buttons["modelSelector"].tap()
+        app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Qwen Balanced")).firstMatch.tap()
+        app.sliders["Generation effort"].adjust(toNormalizedSliderPosition: 1)
+        app.buttons["Done"].tap()
+        let input = app.textFields["chatInput"]; input.tap(); input.typeText("Help me prepare for my appointment")
+        let selector = app.buttons["modelSelector"], microphone = app.buttons["Record voice"], send = app.buttons["Send message"]
+        XCTAssertTrue(selector.isHittable); XCTAssertTrue(microphone.isHittable); XCTAssertTrue(send.isHittable)
+        XCTAssertTrue(send.isEnabled)
+        XCTAssertLessThanOrEqual(selector.frame.maxX, microphone.frame.minX + 1)
+        XCTAssertLessThanOrEqual(microphone.frame.maxX, send.frame.minX + 1)
+        XCTAssertLessThan(send.frame.maxX, app.frame.width)
+        XCTAssertGreaterThanOrEqual(app.buttons["Choose a topic"].frame.width, 44)
+        app.buttons["Done"].tap(); capture("89-chat-small-phone")
+        app.buttons["nav-records"].tap(); selectRecords(app, "Readings"); app.buttons["Add record"].tap()
+        let value = app.textFields["readingValue"]; value.tap(); value.typeText("74"); app.buttons["Done"].tap()
+        let panel = app.descendants(matching: .any)["drawerBounds"].firstMatch
+        XCTAssertTrue(panel.waitForExistence(timeout: 5)); XCTAssertLessThan(panel.frame.maxY, app.frame.height - 5)
+        XCTAssertTrue(app.buttons["saveReading"].isHittable); capture("90-reading-small-phone")
+        app.buttons["saveReading"].tap(); XCTAssertTrue(app.staticTexts["74"].waitForExistence(timeout: 5))
     }
 }
