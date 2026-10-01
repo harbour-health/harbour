@@ -159,6 +159,8 @@ The final unsigned generic-iPhone build succeeded in `harbour-care-device-paired
 
 ## Uniform drawer corners and dock symbols
 
+`harbour-dock-selection-final.xcresult` passed the paired main-screen test with dim inactive outlines and a white filled active symbol. All four destinations remained hittable in both appearances. Light Today and dark Chat originals were visually checked. An initial compilation attempt was corrected before this successful run; no captures from the failed build were exported. The recording badge state was not exercised by this main-screen flow.
+
 `harbour-navigation-symbols.xcresult` then passed the same paired main-screen flow with the final home, conversation, medical-clipboard, and doctor-meeting symbols. Refreshed native screenshots were inspected in both appearances. The owned build/test runner exited and no simulator remained booted afterward.
 
 The later `harbour-filled-dock.xcresult` passed the existing paired main-screen test after switching all four navigation symbols to filled variants. It captured all roots in Light and Dark and verified each dock target remained hittable. No navigation or drawer behavior changed in this update.

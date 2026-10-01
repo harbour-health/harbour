@@ -50,13 +50,13 @@ struct RootView: View {
     var body: some View {
         TabView(selection: $tab) {
             NavigationStack { TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1; tab = 2 }, openSymptoms: { recordCategory = 0; tab = 2 }, openVisits: { tab = 3 }).toolbar(.hidden, for: .tabBar) }
-                .tabItem { Label("Today", systemImage: "house.fill") }.tag(0)
+                .tabItem { Label("Today", systemImage: tab == 0 ? "house.fill" : "house") }.tag(0)
             NavigationStack { ChatView(sheet: $sheet).toolbar(.hidden, for: .tabBar) }
-                .tabItem { Label("Chat", systemImage: "bubble.left.and.bubble.right.fill") }.tag(1)
+                .tabItem { Label("Chat", systemImage: tab == 1 ? "bubble.left.and.bubble.right.fill" : "bubble.left.and.bubble.right") }.tag(1)
             NavigationStack { RecordsView(sheet: $sheet, category: $recordCategory).toolbar(.hidden, for: .tabBar) }
-                .tabItem { Label("Records", systemImage: "heart.text.clipboard.fill") }.tag(2)
+                .tabItem { Label("Records", systemImage: tab == 2 ? "heart.text.clipboard.fill" : "heart.text.clipboard") }.tag(2)
             NavigationStack { VisitsView(sheet: $sheet).toolbar(.hidden, for: .tabBar) }
-                .tabItem { Label("Visits", systemImage: "person.2.fill") }.tag(3)
+                .tabItem { Label("Visits", systemImage: tab == 3 ? "person.2.fill" : "person.2") }.tag(3)
         }
         .toolbar(.hidden, for: .tabBar)
         .environment(\.floatingDockClearance, keyboardVisible ? 0 : 86)

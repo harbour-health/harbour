@@ -7,6 +7,8 @@ enum Palette {
     static let ink = adaptive(0x181818, 0xF7F7F7)
     static let muted = adaptive(0x606060, 0xBFBFBF)
     static let line = adaptive(0xE5E5E5, 0x404040)
+    static let dockInactive = adaptive(0x757575, 0x999999)
+    static let dockSelection = adaptive(0x181818, 0x404040)
     static let blue = adaptive(0x365DCE, 0xA0B6FF)
     static let coral = adaptive(0xB94831, 0xFFAE98)
     static let blueWash = adaptive(0xE3E9FC, 0x303C5B)

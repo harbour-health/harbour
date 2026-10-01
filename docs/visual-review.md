@@ -49,6 +49,8 @@ SwiftUI, UIKit, Swift Charts, `HarbourCore.Reading`, and `VisitRecorder` supply 
 
 ### Final capture corrections
 
+The current selection styling supersedes the all-filled treatment: inactive symbols are dim outlines, and only the active symbol is filled white on a dark capsule. `harbour-dock-selection-final.xcresult` passed the paired main-screen flow and refreshed all eight roots. Light Today and dark Chat were inspected directly for selection contrast and the outline/fill change. The recording signal is now a coral dot so it does not replace the selected white color.
+
 The latest semantic revision uses a filled home, conversation bubbles, medical clipboard, and two people. `harbour-navigation-symbols.xcresult` passed the paired main-screen flow and replaced all eight root captures. Light Today and dark Chat were inspected directly; all four symbols render with consistent spacing. The medical clipboard distinguishes health records, while the people represent a doctor meeting rather than only its recording function.
 
 The following filled-icon update supersedes the outline choice: all four dock symbols now use their `.fill` variants in both selected and unselected states. `harbour-filled-dock.xcresult` passed the paired main-screen flow and refreshed all eight root-page captures. The light Today and dark Chat originals were visually inspected; selection remains visible through the capsule.

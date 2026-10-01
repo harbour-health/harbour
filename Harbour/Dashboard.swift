@@ -18,10 +18,10 @@ struct NavigationDock: View {
     @Binding var selection: Int
     var body: some View {
         HStack(spacing: 10) {
-            item("Today", symbol: "house.fill", index: 0)
-            item("Chat", symbol: "bubble.left.and.bubble.right.fill", index: 1)
-            item("Records", symbol: "heart.text.clipboard.fill", index: 2)
-            item("Visits", symbol: "person.2.fill", index: 3)
+            item("Today", symbol: "house", index: 0)
+            item("Chat", symbol: "bubble.left.and.bubble.right", index: 1)
+            item("Records", symbol: "heart.text.clipboard", index: 2)
+            item("Visits", symbol: "person.2", index: 3)
         }.padding(7)
             .background {
                 if reduceTransparency { Capsule().fill(Palette.surface) }
@@ -31,13 +31,21 @@ struct NavigationDock: View {
             .shadow(color: .black.opacity(0.10), radius: 16, y: 6).padding(.bottom, 12)
     }
     private func item(_ title: String, symbol: String, index: Int) -> some View {
-        Button { selection = index } label: {
-            Image(systemName: symbol).font(.system(size: 25, weight: .regular)).symbolRenderingMode(.monochrome)
-                .foregroundStyle(index == 3 && recorder.active ? Palette.coral : Palette.ink).frame(width: 68, height: 48)
-                .background(selection == index ? Palette.line.opacity(0.5) : .clear, in: Capsule())
+        let selected = selection == index
+        let displayedSymbol = selected ? symbol + ".fill" : symbol
+        return Button { selection = index } label: {
+            Image(systemName: displayedSymbol).font(.system(size: 25, weight: .regular)).symbolRenderingMode(.monochrome)
+                .foregroundStyle(selected ? Color.white : Palette.dockInactive).frame(width: 68, height: 48)
+                .background(selected ? Palette.dockSelection : .clear, in: Capsule())
+                .overlay(alignment: .topTrailing) {
+                    if index == 3 && recorder.active {
+                        Circle().fill(Palette.coral).frame(width: 6, height: 6).padding(7).accessibilityHidden(true)
+                    }
+                }
         }.buttonStyle(PressFeedback()).accessibilityLabel(title).accessibilityIdentifier("nav-" + title.lowercased())
-            .accessibilityAddTraits(selection == index ? .isSelected : [])
-            .accessibilityShowsLargeContentViewer { Label(title, systemImage: symbol) }
+            .accessibilityAddTraits(selected ? .isSelected : [])
+            .accessibilityValue(index == 3 && recorder.active ? "Recording" : "")
+            .accessibilityShowsLargeContentViewer { Label(title, systemImage: displayedSymbol) }
     }
 }
 
