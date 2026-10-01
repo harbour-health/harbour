@@ -2,6 +2,24 @@
 
 Native SwiftUI companion with local-model chat, editable voice input, symptom records, medicine comparison, readings, appointment notes, and read-only Apple Health import. The app has no web view, inference server, analytics, or account requirement.
 
+## Screenshots
+
+Native iPhone simulator captures with fictional test records. Select an image to view it at full resolution.
+
+### Light
+
+| Today | Chat | Records | Settings |
+| :---: | :---: | :---: | :---: |
+| [<img src="docs/screenshots/01-today.png" alt="Today dashboard in light mode" width="220">](docs/screenshots/01-today.png) | [<img src="docs/screenshots/11-chat-empty.png" alt="New chat in light mode" width="220">](docs/screenshots/11-chat-empty.png) | [<img src="docs/screenshots/64-records.png" alt="Records browser in light mode" width="220">](docs/screenshots/64-records.png) | [<img src="docs/screenshots/16-settings.png" alt="Settings in light mode" width="220">](docs/screenshots/16-settings.png) |
+
+### Dark
+
+| Today | Chat | Records | Settings |
+| :---: | :---: | :---: | :---: |
+| [<img src="docs/screenshots/31-today-dark.png" alt="Today dashboard in dark mode" width="220">](docs/screenshots/31-today-dark.png) | [<img src="docs/screenshots/32-chat-dark.png" alt="New chat in dark mode" width="220">](docs/screenshots/32-chat-dark.png) | [<img src="docs/screenshots/65-records-dark.png" alt="Records browser in dark mode" width="220">](docs/screenshots/65-records-dark.png) | [<img src="docs/screenshots/38-settings-dark.png" alt="Settings in dark mode" width="220">](docs/screenshots/38-settings-dark.png) |
+
+See [all captures](docs/screenshots/) and [capture details](docs/screenshots.md) for entry sheets, chat results, model downloads, and app lock.
+
 ## Run
 
 Requires a Mac, Xcode with an iOS SDK, and CMake for the simulator inference library. Minimum app target: iOS 18.0.
