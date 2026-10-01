@@ -18,10 +18,10 @@ struct NavigationDock: View {
     @Binding var selection: Int
     var body: some View {
         HStack(spacing: 10) {
-            item("Today", symbol: "sun.max", index: 0)
-            item("Chat", symbol: "bubble.left", index: 1)
-            item("Records", symbol: "doc.text", index: 2)
-            item("Visits", symbol: "mic", index: 3)
+            item("Today", symbol: "sun.max.fill", index: 0)
+            item("Chat", symbol: "bubble.left.fill", index: 1)
+            item("Records", symbol: "doc.text.fill", index: 2)
+            item("Visits", symbol: "mic.fill", index: 3)
         }.padding(7)
             .background {
                 if reduceTransparency { Capsule().fill(Palette.surface) }

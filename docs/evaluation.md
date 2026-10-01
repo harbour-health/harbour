@@ -159,4 +159,6 @@ The final unsigned generic-iPhone build succeeded in `harbour-care-device-paired
 
 ## Uniform drawer corners and dock symbols
 
+The later `harbour-filled-dock.xcresult` passed the existing paired main-screen test after switching all four navigation symbols to filled variants. It captured all roots in Light and Dark and verified each dock target remained hittable. No navigation or drawer behavior changed in this update.
+
 `harbour-uniform-corners.xcresult` passed both selected native UI tests on the iPhone 17 Pro / iOS 26.5 simulator: the paired-theme drawer flow and settled main-screen flow. These exercised Settings resizing, PIN cancellation, reading keyboard/save, medicine confirmation, topics, models, and all four dock destinations in Light and Dark. Genuine refreshed Appearance, Models, and PIN captures were inspected for matching top/bottom curves; Today and Chat captures were inspected for the new outline symbols. The shared radius also applies to the older-system compatibility panel, whose rendering was not recaptured in this run. The README still contains all 115 numbered images exactly once; historical captures retain their producing-run provenance.

@@ -26,7 +26,7 @@ Visits follows the [Google Recorder](https://support.google.com/pixelphone/answe
 
 The empty chat uses a 204 × 160 point illustration and a compact top inset. This preserves the larger composer while keeping all three starter actions visible at the default text size on the QA phone; smaller viewports can scroll. `HarbourStableMainScreensTests` checks the last starter above the composer and all four dock targets in both appearances.
 
-The floating dock uses a sun for Today, a single speech bubble for Chat, a document for Records, and a microphone for Visits. All use regular-weight 25-point outlines; the selected capsule identifies the active destination. Recording still colors the Visits icon, and accessibility labels and the large-content viewer remain available. Update the hidden native TabView labels alongside the custom dock when changing symbols.
+The floating dock uses filled symbols in every state: `sun.max.fill` for Today, `bubble.left.fill` for Chat, `doc.text.fill` for Records, and `mic.fill` for Visits. All use a regular-weight 25-point font; the selected capsule identifies the active destination. Recording still colors the Visits icon, and accessibility labels and the large-content viewer remain available. Update the hidden native TabView labels alongside the custom dock when changing symbols.
 
 ## How to change it
 

@@ -50,13 +50,13 @@ struct RootView: View {
     var body: some View {
         TabView(selection: $tab) {
             NavigationStack { TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1; tab = 2 }, openSymptoms: { recordCategory = 0; tab = 2 }, openVisits: { tab = 3 }).toolbar(.hidden, for: .tabBar) }
-                .tabItem { Label("Today", systemImage: "sun.max") }.tag(0)
+                .tabItem { Label("Today", systemImage: "sun.max.fill") }.tag(0)
             NavigationStack { ChatView(sheet: $sheet).toolbar(.hidden, for: .tabBar) }
-                .tabItem { Label("Chat", systemImage: "bubble.left") }.tag(1)
+                .tabItem { Label("Chat", systemImage: "bubble.left.fill") }.tag(1)
             NavigationStack { RecordsView(sheet: $sheet, category: $recordCategory).toolbar(.hidden, for: .tabBar) }
-                .tabItem { Label("Records", systemImage: "doc.text") }.tag(2)
+                .tabItem { Label("Records", systemImage: "doc.text.fill") }.tag(2)
             NavigationStack { VisitsView(sheet: $sheet).toolbar(.hidden, for: .tabBar) }
-                .tabItem { Label("Visits", systemImage: "mic") }.tag(3)
+                .tabItem { Label("Visits", systemImage: "mic.fill") }.tag(3)
         }
         .toolbar(.hidden, for: .tabBar)
         .environment(\.floatingDockClearance, keyboardVisible ? 0 : 86)
