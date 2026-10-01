@@ -26,6 +26,9 @@ asset = add('Assets', 'isa = PBXFileReference; lastKnownFileType = folder.assetc
 source_refs.append(asset)
 asset_build = add('AssetsBuild', f'isa = PBXBuildFile; fileRef = {asset};')
 resource_builds = [asset_build]
+privacy = add('PrivacyManifest', 'isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>";')
+source_refs.append(privacy)
+resource_builds.append(add('PrivacyManifestBuild', f'isa = PBXBuildFile; fileRef = {privacy};'))
 languages = sorted(path.name.removesuffix('.lproj') for path in (root / 'Harbour').glob('*.lproj'))
 localized_files = sorted({path.name for folder in (root / 'Harbour').glob('*.lproj') for path in folder.glob('*.strings*')})
 for filename in localized_files:

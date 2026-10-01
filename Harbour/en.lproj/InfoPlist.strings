@@ -2,5 +2,6 @@
 "NSMicrophoneUsageDescription" = "Record voice messages or your doctor visits on this device. You choose when recording starts and stops.";
 "NSSpeechRecognitionUsageDescription" = "Transcribe voice messages and doctor visits on this device into editable text.";
 "NSHealthShareUsageDescription" = "Import heart rate, blood pressure, and temperature readings that you choose to share.";
+"NSHealthUpdateUsageDescription" = "Harbour uses Apple Health to import readings. It does not add or change Apple Health records.";
 "NSFaceIDUsageDescription" = "Use Face ID to unlock your Harbour health records.";
 "NSCameraUsageDescription" = "Read the medicine label you choose to photograph. You review the details before saving.";

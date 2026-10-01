@@ -49,7 +49,14 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
         update { $0.chatTitle = title }
     }
     init(folder customFolder: URL? = nil) {
-        let folder = customFolder ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("Harbour")
+        #if DEBUG
+        let screenshots = ProcessInfo.processInfo.arguments.contains("--app-store-screenshots")
+        if screenshots { UserDefaults.standard.set(AppearanceChoice.light.rawValue, forKey: "appearance") }
+        #endif
+        var folder = customFolder ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("Harbour")
+        #if DEBUG
+        if screenshots && customFolder == nil { folder = folder.appendingPathComponent("AppStoreScreenshots") }
+        #endif
         file = folder.appendingPathComponent("records.json")
         do {
             try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
@@ -59,6 +66,9 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
                 archive = loaded
             }
         } catch { loadFailed = true; self.error = L10n.format("Your saved records could not be opened. The original file has been kept. %@", L10n.string(error.localizedDescription)) }
+        #if DEBUG
+        if screenshots { prepareAppStoreScreenshots() }
+        #endif
     }
     @discardableResult func update(_ change: (inout Archive) -> Void) -> Bool {
         guard !loadFailed else { error = L10n.string("The saved file could not be read. Changes are blocked to preserve it. Export or recover the file before resetting records in Settings."); return false }
@@ -246,3 +256,29 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
         } catch { self.error = L10n.format("Couldn’t import these records. %@", L10n.string(error.localizedDescription)) }
     }
 }
+
+#if DEBUG
+extension AppStore {
+    /// Fictional saved inputs only: this fixture never runs or simulates model inference.
+    private func prepareAppStoreScreenshots() {
+        let date = Date(timeIntervalSince1970: 1790859600) // 2026-10-01 09:00 America/Toronto
+        let french = L10n.isFrench
+        var records = Records()
+        var metformin = Catalog.medicines.first { $0.id == "metformin" }!
+        metformin.instructions = french ? "500 mg, deux fois par jour" : "500 mg, twice daily"
+        var amlodipine = Catalog.medicines.first { $0.id == "amlodipine" }!
+        amlodipine.instructions = french ? "5 mg, une fois par jour" : "5 mg, once daily"
+        records.medicines = [metformin, amlodipine]
+        records.readings = [
+            Reading(id: "store-heart", kind: .heartRate, value: "72", date: date),
+            Reading(id: "store-pressure", kind: .bloodPressure, value: "120/80", date: date.addingTimeInterval(-1800)),
+            Reading(id: "store-temperature", kind: .temperature, value: "36.8", date: date.addingTimeInterval(-3600))
+        ]
+        records.symptoms = [Symptom(id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!, text: french ? "Genou douloureux après une promenade" : "Sore knee after a walk", onset: french ? "Depuis mardi" : "Since Tuesday", severity: "Mild", date: date.addingTimeInterval(-86400))]
+        var care = CareData()
+        care.questions = [AppointmentQuestion(id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!, text: french ? "Quels changements devrais-je surveiller?" : "What changes should I watch for?", date: date)]
+        let visit = DoctorVisit(id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!, title: french ? "Consultation de suivi" : "Follow-up visit", date: date.addingTimeInterval(-172800), transcript: french ? "Nous avons discuté du sommeil et des promenades quotidiennes. Apporter la liste des médicaments à la prochaine consultation." : "We discussed sleep habits and daily walks. Bring a medicine list to the next visit.")
+        _ = update { $0 = Archive(); $0.records = records; $0.care = care; $0.visits = [visit] }
+    }
+}
+#endif

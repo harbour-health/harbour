@@ -16,7 +16,7 @@ Core continues to return its existing English strings and canonical machine valu
 
 `ModelManager` adds a Canadian French prose instruction to generation when French is selected. It explicitly preserves required machine formats, source quotes, medicine names and extracted instructions. This requests a language from the local model; it does not establish extraction accuracy. Download verification uses the separate `isVerifying` flag, so a translated status message cannot alter control flow.
 
-`InfoPlist.strings` covers microphone, speech, HealthKit, Face ID and camera permission descriptions. Speech capture, visit transcription and response playback use the app language through `SpeechLanguage`. On-device recognition must be available for that language. Medicine OCR prefers the app language while including both Canadian French and English recognition languages.
+`InfoPlist.strings` covers six native permission descriptions: microphone, speech, HealthKit read and update keys, Face ID and camera. Apple upload validation requires the HealthKit update description even though Harbour requests no write types; both languages accurately describe read-only import. Speech capture, visit transcription and response playback use the app language through `SpeechLanguage`. On-device recognition must be available for that language. Medicine OCR prefers the app language while including both Canadian French and English recognition languages.
 
 ## How to change it
 

@@ -1244,3 +1244,48 @@ import XCTest
         app.buttons["nav-chat"].tap(); XCTAssertEqual(app.staticTexts["chatTitle"].label, title)
     }
 }
+
+
+@MainActor final class HarbourAppStoreScreenshotTests: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+    func testCaptureEnglish() { captureSet(french: false) }
+    func testCaptureFrench() { captureSet(french: true) }
+    private func captureSet(french: Bool) {
+        let app = XCUIApplication()
+        app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", french ? "(fr-CA)" : "(en)", "-AppleLocale", french ? "fr_CA" : "en_CA"]
+        XCUIDevice.shared.orientation = .portrait
+        app.launch()
+        func word(_ en: String, _ fr: String) -> String { french ? fr : en }
+        func capture(_ name: String) {
+            XCTAssertFalse(app.keyboards.firstMatch.exists)
+            XCTAssertFalse(app.alerts.firstMatch.exists)
+            Thread.sleep(forTimeInterval: 1)
+            let image = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+            image.name = "appstore-" + name; image.lifetime = .keepAlways; add(image)
+        }
+        XCTAssertTrue(app.buttons["nav-today"].waitForExistence(timeout: 10), app.debugDescription)
+        capture("01-today")
+        app.buttons["nav-records"].tap()
+        XCTAssertTrue(app.buttons["record-category-1"].waitForExistence(timeout: 5)); capture("02-records")
+        for (index, name, title) in [(1, "03-medicines", word("Medicines", "Médicaments")), (2, "04-readings", word("Readings", "Relevés")), (0, "05-symptoms", word("Symptoms", "Symptômes"))] {
+            app.buttons["record-category-\(index)"].tap()
+            XCTAssertTrue(app.navigationBars[title].waitForExistence(timeout: 5)); capture(name)
+            app.navigationBars[title].buttons.firstMatch.tap()
+        }
+        app.buttons["nav-visits"].tap()
+        let visit = app.buttons["visit-row-00000000-0000-0000-0000-000000000003"]
+        XCTAssertTrue(visit.waitForExistence(timeout: 5)); capture("06-visits")
+        visit.tap(); app.buttons[word("Transcript", "Transcription")].tap()
+        XCTAssertTrue(app.staticTexts["savedVisitTranscript"].waitForExistence(timeout: 5)); capture("07-visit-notes")
+        app.navigationBars.buttons.firstMatch.tap()
+        app.buttons["prepareAppointment"].tap()
+        XCTAssertTrue(app.staticTexts["appointmentNoteContent"].waitForExistence(timeout: 5)); capture("08-appointment-preparation")
+        app.buttons[word("Done", "Terminé")].tap()
+        app.buttons["nav-today"].tap(); app.swipeUp()
+        app.buttons[word("Timeline", "Historique")].firstMatch.tap()
+        XCTAssertTrue(app.navigationBars[word("Timeline", "Historique")].waitForExistence(timeout: 5)); capture("09-timeline")
+        app.buttons["nav-chat"].tap()
+        XCTAssertTrue(app.textFields["chatInput"].waitForExistence(timeout: 5)); capture("10-chat")
+        app.terminate()
+    }
+}

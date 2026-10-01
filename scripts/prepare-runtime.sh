@@ -3,6 +3,7 @@ set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
 vendor="${HARBOUR_RUNTIME_VENDOR:-$root/HarbourRuntime/Vendor}"
 if [[ -f "$vendor/llama.xcframework/Info.plist" ]]; then
+    python3 "$root/scripts/runtime-privacy.py" "$vendor/llama.xcframework"
     echo "Native runtime already prepared."
     exit 0
 fi
@@ -45,4 +46,5 @@ xcodebuild -create-xcframework \
     -framework "$release/ios-arm64/llama.framework" \
     -framework "$release/macos-arm64_x86_64/llama.framework" \
     -framework "$work/sim/llama.framework" -output "$vendor/llama.xcframework"
+python3 "$root/scripts/runtime-privacy.py" "$vendor/llama.xcframework"
 echo "Native runtime prepared. Open Harbour.xcodeproj."

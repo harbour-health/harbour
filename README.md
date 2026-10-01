@@ -70,6 +70,8 @@ The Xcode project is checked in. If adding source files, regenerate with `python
 
 ## Documentation
 
+For private iOS testing, see [the internal-only TestFlight workflow](docs/testflight.md). Generate the light-mode iPhone App Store image set with [the screenshot script](docs/app-store-screenshots.md).
+
 See [docs/README.md](docs/README.md).
 
 See the [native screenshot gallery](docs/screenshots/index.html) for the current interface and entry/confirmation sheets. Today uses a recorded-value summary and equally sized illustrated shortcuts; the floating dock has icon-only buttons with accessible names. Appearance can follow the phone or be set to Light or Dark. See [app lock](docs/app-lock.md) for authentication, PIN retry behaviour, and protection limits.

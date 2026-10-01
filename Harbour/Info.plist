@@ -5,6 +5,7 @@
     <key>NSMicrophoneUsageDescription</key><string>Record voice messages or your doctor visits on this device. You choose when recording starts and stops.</string>
     <key>NSSpeechRecognitionUsageDescription</key><string>Transcribe voice messages and doctor visits on this device into editable text.</string>
     <key>NSHealthShareUsageDescription</key><string>Import heart rate, blood pressure, and temperature readings that you choose to share.</string>
+    <key>NSHealthUpdateUsageDescription</key><string>Harbour uses Apple Health to import readings. It does not add or change Apple Health records.</string>
     <key>NSFaceIDUsageDescription</key><string>Use Face ID to unlock your Harbour health records.</string>
     <key>NSCameraUsageDescription</key><string>Read the medicine label you choose to photograph. You review the details before saving.</string>
     <key>ITSAppUsesNonExemptEncryption</key><false/>

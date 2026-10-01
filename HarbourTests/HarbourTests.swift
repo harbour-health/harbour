@@ -205,7 +205,7 @@ import HarbourCore
 
     func testPackagedPermissionDescriptionsCoverAllNativeAccess() throws {
         let english = try table("InfoPlist", language: "en"), french = try table("InfoPlist", language: "fr-CA")
-        let keys: Set<String> = ["NSMicrophoneUsageDescription", "NSSpeechRecognitionUsageDescription", "NSHealthShareUsageDescription", "NSFaceIDUsageDescription", "NSCameraUsageDescription"]
+        let keys: Set<String> = ["NSMicrophoneUsageDescription", "NSSpeechRecognitionUsageDescription", "NSHealthShareUsageDescription", "NSHealthUpdateUsageDescription", "NSFaceIDUsageDescription", "NSCameraUsageDescription"]
         XCTAssertEqual(Set(english.keys), keys); XCTAssertEqual(Set(french.keys), keys)
         for key in keys {
             let source = try XCTUnwrap(english[key]), translated = try XCTUnwrap(french[key])

@@ -20,5 +20,9 @@
 - [Artwork](artwork.md) — original vector imagery, palettes, and motion.
 - [Evaluation](evaluation.md) — reproducible checks, observed results, and outstanding device evidence.
 - [Screenshots](screenshots.md) — full-resolution native captures and the review gallery.
+- [TestFlight distribution](testflight.md) — signed archives, internal-only exports/uploads, and processing checks.
+- [Distribution privacy](distribution-privacy.md) — app and runtime required-reason API declarations.
+
+- [App Store screenshots](app-store-screenshots.md) — reproducible light iPhone marketing capture workflow and fictional-input provenance.
 
 Course context, the project plan, and the preliminary report are maintained separately in the parent CSI4900 coursework folder.
