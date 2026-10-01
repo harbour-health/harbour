@@ -49,6 +49,8 @@ SwiftUI, UIKit, Swift Charts, `HarbourCore.Reading`, and `VisitRecorder` supply 
 
 ### Final capture corrections
 
+The latest semantic revision uses a filled home, conversation bubbles, medical clipboard, and two people. `harbour-navigation-symbols.xcresult` passed the paired main-screen flow and replaced all eight root captures. Light Today and dark Chat were inspected directly; all four symbols render with consistent spacing. The medical clipboard distinguishes health records, while the people represent a doctor meeting rather than only its recording function.
+
 The following filled-icon update supersedes the outline choice: all four dock symbols now use their `.fill` variants in both selected and unselected states. `harbour-filled-dock.xcresult` passed the paired main-screen flow and refreshed all eight root-page captures. The light Today and dark Chat originals were visually inspected; selection remains visible through the capsule.
 
 The subsequent corner/icon review inspected refreshed Appearance in both themes, Models, PIN setup, Today, and dark Chat from `harbour-uniform-corners.xcresult`. Applying the shared 54-point radius to the native presentation removes the smaller top curve; the panel now has matching continuous corners. The dock's sun, single bubble, document, and microphone are consistent outlines, with selection shown by the capsule. Both native drawer and settled main-screen tests passed. See [Floating drawers](floating-drawers.md) for the presentation change and [Interface](interface.md) for the symbol choices.
