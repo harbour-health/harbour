@@ -155,6 +155,17 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
             }
         }
     }
+    #if DEBUG
+    func prepareMedicineReviewScreenshot() {
+        let title = "Medicine drawer review"
+        for visit in visits where visit.title == title { deleteVisit(visit) }
+        let transcript = "Start metformin 500 mg twice daily."
+        let output = #"{"highlights":[],"medicines":[{"action":"start","name":"metformin","instructions":"500 mg twice daily","quote":"Start metformin 500 mg twice daily."}],"followUps":[]}"#
+        guard let summary = try? VisitReview.parse(output, transcript: transcript, medicines: records.medicines), summary.medicines.count == 1 else { return }
+        let visit = DoctorVisit(title: title, transcript: transcript)
+        if saveVisit(visit) { saveVisitSummary(summary, id: visit.id, transcript: transcript, baseline: records.medicines) }
+    }
+    #endif
     func deleteVisit(_ visit: DoctorVisit) {
         if update({ $0.visits?.removeAll { $0.id == visit.id }; if $0.care != nil { for i in $0.care!.reminders.indices where $0.care!.reminders[i].visitID == visit.id { $0.care!.reminders[i].visitID = nil; $0.care!.reminders[i].quote = nil } } }), let audio = audioURL(for: visit) {
             do { if FileManager.default.fileExists(atPath: audio.path) { try FileManager.default.removeItem(at: audio) } }

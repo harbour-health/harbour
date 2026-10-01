@@ -504,6 +504,40 @@ import XCTest
     private func capture(_ name: String) {
         let item = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); item.name = name; item.lifetime = .keepAlways; add(item)
     }
+    func testMedicineReviewDrawerScreens() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--verify-drawers", "--medicine-review-fixture", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
+        app.launch()
+        let title = "Medicine drawer review"
+        for dark in [false, true] {
+            app.buttons["nav-today"].tap(); app.buttons["Settings"].tap(); app.buttons["Appearance"].tap()
+            app.buttons[dark ? "appearance-dark" : "appearance-light"].tap()
+            app.navigationBars["Appearance"].buttons.firstMatch.tap(); app.buttons["Done"].tap()
+            app.buttons["nav-records"].tap(); selectRecords(app, "Medicines"); app.buttons["Add record"].tap()
+            app.buttons["catalog-advil"].tap()
+            XCTAssertFalse(app.buttons["saveMedicine"].isEnabled)
+            Thread.sleep(forTimeInterval: 2)
+            capture(dark ? "50-confirm-medicine-dark" : "07-medicine-details")
+            app.buttons["Cancel"].tap(); app.buttons["nav-visits"].tap()
+            app.buttons.containing(NSPredicate(format: "label CONTAINS %@", title)).firstMatch.tap()
+            XCTAssertTrue(app.buttons["reviewVisitMedicines"].waitForExistence(timeout: 120), app.debugDescription)
+            app.buttons["reviewVisitMedicines"].tap()
+            XCTAssertFalse(app.buttons["saveVisitMedicines"].isEnabled)
+            app.buttons["visit-change-metformin"].tap(); app.buttons["confirmVisitMedicines"].tap()
+            XCTAssertTrue(app.buttons["saveVisitMedicines"].isEnabled)
+            let panel = app.descendants(matching: .any)["drawerBounds"].firstMatch
+            XCTAssertTrue(panel.waitForExistence(timeout: 5))
+            XCTAssertLessThan(panel.frame.maxY, app.frame.height - 5)
+            Thread.sleep(forTimeInterval: 2)
+            capture(dark ? "142-visit-medicine-review-dark" : "71-visit-medicine-review")
+            app.buttons["Cancel"].tap()
+            if !dark { app.navigationBars.buttons.firstMatch.tap() }
+        }
+        app.buttons["Visit options"].tap(); app.buttons["Delete visit"].tap()
+        XCTAssertTrue(app.buttons["Delete visit"].waitForExistence(timeout: 5)); app.buttons["Delete visit"].tap()
+        XCTAssertTrue(app.buttons["addVisitNotes"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons.containing(NSPredicate(format: "label CONTAINS %@", title)).firstMatch.exists)
+    }
     func testVisitNotesLocalSummaryAndConfirmedMedicineChanges() {
         let app = XCUIApplication(); app.launch()
         app.buttons["nav-visits"].tap(); capture("67-visits")

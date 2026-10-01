@@ -25,6 +25,7 @@ struct NavigationDock: View {
 }
 
 private struct NativeNavigationDock: UIViewRepresentable {
+    @Environment(\.colorScheme) private var colorScheme
     @Binding var selection: Int
     let recording: Bool
     let reduceMotion: Bool
@@ -36,7 +37,7 @@ private struct NativeNavigationDock: UIViewRepresentable {
     }
     func updateUIView(_ view: DockView, context: Context) {
         context.coordinator.selection = $selection
-        view.update(selection: selection, recording: recording, reduceMotion: reduceMotion)
+        view.update(selection: selection, recording: recording, reduceMotion: reduceMotion, dark: colorScheme == .dark)
     }
     final class Coordinator: NSObject {
         var selection: Binding<Int>
@@ -87,9 +88,8 @@ private final class DockView: UIView {
     let buttons = (0..<4).map { index in let button = DockButton(type: .custom); button.tag = index; return button }
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = UIColor(white: 35.0 / 255, alpha: 1)
-        layer.cornerRadius = 31; layer.borderWidth = 0.8; layer.borderColor = UIColor.white.withAlphaComponent(0.11).cgColor
-        marker.backgroundColor = UIColor(white: 13.0 / 255, alpha: 1); marker.layer.cornerRadius = 27
+        layer.cornerRadius = 31; layer.borderWidth = 0.8
+        marker.layer.cornerRadius = 27
         marker.isUserInteractionEnabled = false; marker.isAccessibilityElement = false; addSubview(marker)
         symbols.backgroundColor = .clear; symbols.isOpaque = false
         symbols.isUserInteractionEnabled = false; symbols.isAccessibilityElement = false; addSubview(symbols)
@@ -113,7 +113,13 @@ private final class DockView: UIView {
         recordingDot.frame = CGRect(x: 14 + 3 * 62.5 + 62.5 - 13, y: 11, width: 6, height: 6)
     }
     private func markerFrame(_ index: Int) -> CGRect { CGRect(x: 3.75 + CGFloat(index) * 62.5, y: 4, width: 83, height: 54) }
-    func update(selection: Int, recording: Bool, reduceMotion: Bool) {
+    func update(selection: Int, recording: Bool, reduceMotion: Bool, dark: Bool) {
+        let traits = UITraitCollection(userInterfaceStyle: dark ? .dark : .light)
+        func resolved(_ color: Color) -> UIColor { UIColor(color).resolvedColor(with: traits) }
+        backgroundColor = resolved(Palette.dockBackground)
+        marker.backgroundColor = resolved(Palette.dockSelection)
+        layer.borderColor = (dark ? UIColor.white.withAlphaComponent(0.11) : UIColor.black.withAlphaComponent(0.07)).cgColor
+        recordingDot.backgroundColor = resolved(Palette.coral)
         let changed = selection != selectedIndex
         selectedIndex = selection
         let configuration = UIImage.SymbolConfiguration(pointSize: 22, weight: .regular)
@@ -121,7 +127,7 @@ private final class DockView: UIView {
         for button in buttons {
             let selected = button.tag == selection
             let symbol = Self.symbols[button.tag] + (selected ? ".fill" : "")
-            let tint: UIColor = selected ? .white : UIColor(white: 91.0 / 255, alpha: 1)
+            let tint = resolved(selected ? Palette.dockActive : Palette.dockInactive)
             let image = UIImage(systemName: symbol, withConfiguration: configuration)?.withTintColor(tint, renderingMode: .alwaysOriginal)
             if let image { images.append(image) }
             button.accessibilityLabel = L10n.string(Self.titles[button.tag])

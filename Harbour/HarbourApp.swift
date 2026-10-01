@@ -97,7 +97,12 @@ struct RootView: View {
         .task(id: store.archive.care) { await alerts.sync(care: store.care, medicines: store.records.medicines) }
         .onChange(of: store.records.medicines.map(\.id)) { Task { await alerts.sync(care: store.care, medicines: store.records.medicines) } }
         .onChange(of: scenePhase) { if scenePhase == .active { Task { await alerts.sync(care: store.care, medicines: store.records.medicines) } } }
-        .task { if ProcessInfo.processInfo.arguments.contains("--evaluate-model") { await SimulatorEvaluation.run(models: models, store: store) } }
+        .task {
+            #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("--medicine-review-fixture") { store.prepareMedicineReviewScreenshot() }
+            #endif
+            if ProcessInfo.processInfo.arguments.contains("--evaluate-model") { await SimulatorEvaluation.run(models: models, store: store) }
+        }
     }
     private var closeButton: some ToolbarContent { ToolbarItem(placement: .confirmationAction) { Button("Done") { sheet = nil } } }
 }
