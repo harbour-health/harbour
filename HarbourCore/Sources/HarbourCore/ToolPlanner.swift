@@ -1,5 +1,13 @@
 import Foundation
 
+/// Normalize only heuristic matching. Stored user text and verbatim visit quotes stay unchanged.
+enum InputLanguage {
+    static func folded(_ text: String) -> String {
+        text.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: Locale(identifier: "fr_CA"))
+            .replacingOccurrences(of: "’", with: "'")
+    }
+}
+
 public enum Tool: String, Codable, CaseIterable, Sendable {
     case reply, captureSymptom = "capture_symptom", addMedicine = "add_medication", removeMedicine = "remove_medication", listMedicines = "list_medications", interactions = "check_interactions", logReading = "log_reading", listReadings = "list_readings", importReadings = "import_readings", exportData = "export_data", appointmentNote = "copy_note", clearData = "clear_data", createReminder = "create_reminder", listReminders = "list_reminders", scheduleMedicine = "schedule_medication", logDose = "log_dose", searchTimeline = "search_timeline", scanMedicine = "scan_medication", saveQuestion = "save_question"
 }
@@ -26,24 +34,27 @@ public enum PlannerError: LocalizedError {
 public enum ToolPlanner {
     private static func matches(_ text: String, _ pattern: String) -> Bool { text.range(of: pattern, options: [.regularExpression, .caseInsensitive]) != nil }
     public static func allowed(_ text: String) -> [Tool] {
-        if matches(text, "\\b(scan|camera|photograph|photo)\\b.*\\b(medicine|medication|label|bottle)\\b") { return [.scanMedicine, .reply] }
-        if matches(text, "\\b(question|ask my doctor|ask the doctor)\\b") && matches(text, "\\b(save|add|remember|appointment|prepare)\\b") { return [.saveQuestion, .appointmentNote, .reply] }
-        if matches(text, "\\b(timeline|history|search|find)\\b") { return [.searchTimeline, .reply] }
-        if matches(text, "\\b(taken|took|skipped|skip|remind later|snooze)\\b") && (!Catalog.mentioned(in: text).isEmpty || matches(text, "\\b(dose|medicine|medication|pill)\\b")) { return [.logDose, .reply] }
-        if matches(text, "\\b(schedule|refill)\\b") && (!Catalog.mentioned(in: text).isEmpty || matches(text, "\\b(medicine|medication|pill)\\b")) { return [.scheduleMedicine, .reply] }
-        if matches(text, "\\b(reminder|reminders|remind|follow.up|follow.ups)\\b") { return [.createReminder, .listReminders, .reply] }
-        if matches(text, "prepare.*appointment|appointment preparation") { return [.appointmentNote, .reply] }
-        let med = !Catalog.mentioned(in: text).isEmpty || matches(text, "\\b(medicines?|medications?|drugs?|pills?)\\b")
-        if matches(text, "\\b(interact\\w*|mix|combine|together|take with|safe to take)\\b") && med { return [.interactions, .reply] }
-        if matches(text, "\\b(import|sync|apple health)\\b") { return [.importReadings, .reply] }
-        if matches(text, "\\b(export|download)\\b.*\\b(data|records|notes)\\b") { return [.exportData, .reply] }
-        if matches(text, "\\b(clear|erase|delete)\\b.*\\b(all|data|records)\\b") { return [.clearData, .reply] }
-        if matches(text, "appointment note|note for.*appointment") { return [.appointmentNote, .reply] }
-        if matches(text, "heart rate|pulse|blood pressure|temperature|readings?") { return [.logReading, .listReadings, .reply] }
-        if med && matches(text, "\\b(remove|delete)\\b") { return [.removeMedicine, .reply] }
-        if med && matches(text, "\\b(add|taking|take|use|record)\\b") { return [.addMedicine, .listMedicines, .reply] }
+        let text = InputLanguage.folded(text)
+        // An affirmative emergency cue takes precedence over medicine words in the same description.
+        if HealthRules.emergencyCue(text) { return [.captureSymptom, .reply] }
+        if matches(text, "\\b(scan|scanner|scanne|camera|photograph|photographier|photographie|photo)\\b.*\\b(medicine|medication|label|bottle|medicament|etiquette|flacon|bouteille)\\b") { return [.scanMedicine, .reply] }
+        if matches(text, "\\b(question|ask my doctor|ask the doctor|demander au medecin|demander a mon medecin)\\b") && matches(text, "\\b(save|add|remember|appointment|prepare|enregistre|enregistrer|sauve|sauvegarde|ajoute|ajouter|rendez-vous|preparer)\\b") { return [.saveQuestion, .appointmentNote, .reply] }
+        if matches(text, "\\b(timeline|history|search|find|chronologie|historique|cherche|chercher|recherche|rechercher|trouve|trouver)\\b") { return [.searchTimeline, .reply] }
+        let med = !Catalog.mentioned(in: text).isEmpty || matches(text, "\\b(medicines?|medications?|drugs?|pills?|medicaments?|pilules?|comprimes?)\\b")
+        if matches(text, "\\b(taken|took|skipped|skip|remind later|snooze|pris|prise|saute|sautee|omettre|omis|omise|rappelle plus tard|rappeler plus tard|reporter)\\b") && (med || matches(text, "\\bdose\\b")) { return [.logDose, .reply] }
+        if matches(text, "\\b(schedule|refill|programme|programmer|planifie|planifier|renouvellement|renouveler)\\b") && med { return [.scheduleMedicine, .reply] }
+        if matches(text, "\\b(reminder|reminders|remind|follow.up|follow.ups|rappels?|rappelle|rappeler|suivi)\\b") { return [.createReminder, .listReminders, .reply] }
+        if matches(text, "prepare.*appointment|appointment preparation|prepar(?:e|er|ation).*rendez-vous") { return [.appointmentNote, .reply] }
+        if matches(text, "\\b(interact\\w*|mix|combine|together|take with|safe to take|melanger|melange|combiner|combine|ensemble|prendre avec)\\b") && med { return [.interactions, .reply] }
+        if matches(text, "\\b(import|sync|apple health|importe|importer|synchronise|synchroniser|apple sante)\\b") { return [.importReadings, .reply] }
+        if matches(text, "\\b(export|download|exporte|exporter|telecharge|telecharger)\\b.*\\b(data|records|notes|donnees|dossiers)\\b") { return [.exportData, .reply] }
+        if matches(text, "\\b(clear|erase|delete|efface|effacer|supprime|supprimer)\\b.*\\b(all|data|records|tout|toutes|donnees|dossiers)\\b") { return [.clearData, .reply] }
+        if matches(text, "appointment note|note for.*appointment|note (?:pour|de).*rendez-vous") { return [.appointmentNote, .reply] }
+        if matches(text, "heart rate|pulse|blood pressure|temperature|readings?|frequence cardiaque|rythme cardiaque|pouls|tension arterielle|pression arterielle|mesures?|\\breleves?\\b") { return [.logReading, .listReadings, .reply] }
+        if med && matches(text, "\\b(remove|delete|retire|retirer|enleve|enlever|supprime|supprimer)\\b") { return [.removeMedicine, .reply] }
+        if med && matches(text, "\\b(add|taking|take|use|record|ajoute|ajouter|prends|prendre|utilise|utiliser|enregistre|enregistrer)\\b") { return [.addMedicine, .listMedicines, .reply] }
         if med { return [.listMedicines, .interactions, .reply] }
-        if matches(text, "\\b(pain|ache|sore|fever|rash|dizz\\w*|breath\\w*|cough|headache|tired|nausea|symptom|feel\\w*|hurt|swell\\w*|confus\\w*|chest)\\b") { return [.captureSymptom, .reply] }
+        if matches(text, "\\b(pain|ache|sore|fever|rash|dizz\\w*|breath\\w*|cough|headache|tired|nausea|symptom|feel\\w*|hurt|swell\\w*|confus\\w*|chest|douleurs?|mal|fievre|eruption|etourdi\\w*|vertiges?|respir\\w*|toux|fatigu\\w*|nausees?|symptomes?|ressens|gonfl\\w*|poitrine|thoracique|connaissance|conscience)\\b") { return [.captureSymptom, .reply] }
         return Tool.allCases
     }
     public static func generationTools(_ original: String, records: Records) -> [Tool] {
@@ -77,6 +88,9 @@ public enum ToolPlanner {
     }
     public static func validate(_ decision: ToolDecision, original: String, records: Records) throws -> ValidatedAction {
         guard allowed(original).contains(decision.tool) else { throw PlannerError.forbidden }
+        let input = InputLanguage.folded(original)
+        if [.addMedicine, .removeMedicine, .scheduleMedicine, .logDose, .clearData].contains(decision.tool),
+           matches(input, "\\b(?:ne|n')\\s*.{0,60}\\b(?:pas|jamais|plus)\\b|\\b(?:pas|jamais|sans|si|puis-je|dois-je|devrais-je|faudrait-il|pourrais-je|peut-etre)\\b") { throw PlannerError.forbidden }
         switch decision.tool {
         case .reply: throw PlannerError.unsupportedReply
         case .captureSymptom: return .symptom(original)
@@ -102,14 +116,19 @@ public enum ToolPlanner {
         case .scanMedicine: return .scan
         case .saveQuestion: return .question(CareRules.question(from: original))
         case .searchTimeline:
-            let query = original.replacingOccurrences(of: "(?i)^(search|find|show)( (my|the))?( (health|medical))?( (timeline|history))?( for)?\\s*", with: "", options: .regularExpression).trimmingCharacters(in: .whitespacesAndNewlines)
-            return .timeline(query.range(of: "(?i)^(my )?(health )?(timeline|history)$", options: .regularExpression) != nil ? "" : query)
+            let englishPrefix = "(?i)^(search|find|show)( (my|the))?( (health|medical))?( (timeline|history))?( for)?\\s*"
+            let frenchPrefix = "(?i)^(cherche|chercher|recherche|rechercher|trouve|trouver|affiche|afficher|montre|montrer)\\s+(?:(?:mon|le|la|l')\\s*)?(?:(?:historique|chronologie)(?: (?:de sante|de santé|medical|médical))?\\s*)?(?:(?:pour|sur|concernant)\\s+)?"
+            let query = original.replacingOccurrences(of: englishPrefix, with: "", options: .regularExpression)
+                .replacingOccurrences(of: frenchPrefix, with: "", options: .regularExpression).trimmingCharacters(in: .whitespacesAndNewlines)
+            return .timeline(matches(InputLanguage.folded(query), "^(?:(?:my|mon|le|la) )?(?:health )?(?:timeline|history|historique|chronologie)(?: de sante)?$") ? "" : query)
         case .scheduleMedicine, .logDose:
             let meds = Catalog.mentioned(in: original, saved: records.medicines).filter { m in records.medicines.contains { $0.id == m.id } }
             guard meds.count == 1 else { throw CareError.missingMedicine }
             let medicine = records.medicines.first { $0.id == meds[0].id }!
             if decision.tool == .scheduleMedicine { return .schedule(medicine, CareRules.times(in: original)) }
-            let taken = matches(original, "\\b(taken|took)\\b"), skipped = matches(original, "\\b(skipped|skip)\\b"), later = matches(original, "remind later|snooze")
+            let input = InputLanguage.folded(original)
+            guard !matches(input, "\\b(pas|jamais|sans|peut-etre|pourrais|devrais|hier|autrefois|auparavant|ma mere|mon pere|ma soeur|mon frere|mon mari|ma femme|elle|elles|il|ils)\\b|\\bsi\\s") else { throw CareError.invalid }
+            let taken = matches(input, "\\b(taken|took|pris|prise)\\b"), skipped = matches(input, "\\b(skipped|skip|saute|sautee|omettre|omis|omise)\\b"), later = matches(input, "remind later|snooze|rappelle(?:r)? plus tard|reporter")
             guard [taken, skipped, later].filter({ $0 }).count == 1 else { throw CareError.invalid }
             return .dose(medicine, taken ? .taken : skipped ? .skipped : .later)
         }

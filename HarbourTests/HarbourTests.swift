@@ -175,3 +175,99 @@ import HarbourCore
     func removePending(_ removed: [String]) { ids.removeAll { removed.contains($0) } }
     func removeDelivered(_ ids: [String]) {}
 }
+
+@MainActor final class HarbourLocalizationTests: XCTestCase {
+    private func table(_ name: String, language: String) throws -> [String: String] {
+        let url = try XCTUnwrap(Bundle.main.url(forResource: name, withExtension: "strings", subdirectory: nil, localization: language), "Missing packaged \(language)/\(name).strings")
+        return try XCTUnwrap(PropertyListSerialization.propertyList(from: Data(contentsOf: url), options: [], format: nil) as? [String: String])
+    }
+
+    func testActualAppBundlesContainCompleteEnglishAndFrenchTables() throws {
+        XCTAssertTrue(Bundle.main.localizations.contains("en")); XCTAssertTrue(Bundle.main.localizations.contains("fr-CA"))
+        let english = try table("Localizable", language: "en")
+        let french = try table("Localizable", language: "fr-CA")
+        XCTAssertFalse(english.isEmpty); XCTAssertEqual(Set(english.keys), Set(french.keys))
+        let formatPattern = "%(?:[0-9]+\\$)?[-+ #0]*(?:[0-9]+)?(?:\\.[0-9]+)?(?:hh|h|ll|l|L|z|t|j)?[@diuoxXfFeEgGaAcCsSpn%]"
+        let expression = try NSRegularExpression(pattern: formatPattern)
+        func formats(_ value: String) -> [String] {
+            expression.matches(in: value, range: NSRange(value.startIndex..., in: value)).compactMap { Range($0.range, in: value).map { String(value[$0]) } }.sorted()
+        }
+        for (key, source) in english {
+            let translated = try XCTUnwrap(french[key], key)
+            XCTAssertFalse(translated.isEmpty, key)
+            XCTAssertEqual(formats(source), formats(translated), "Format mismatch: " + key)
+        }
+        XCTAssertEqual(french["Today"], "Aujourd’hui"); XCTAssertEqual(french["Settings"], "Réglages")
+        XCTAssertEqual(french["Harbour"], "Harbour")
+        XCTAssertEqual(L10n.string("Settings"), L10n.isFrench ? "Réglages" : "Settings")
+        XCTAssertEqual(L10n.locale.language.languageCode?.identifier, L10n.isFrench ? "fr" : "en")
+    }
+
+    func testPackagedPermissionDescriptionsCoverAllNativeAccess() throws {
+        let english = try table("InfoPlist", language: "en"), french = try table("InfoPlist", language: "fr-CA")
+        let keys: Set<String> = ["NSMicrophoneUsageDescription", "NSSpeechRecognitionUsageDescription", "NSHealthShareUsageDescription", "NSFaceIDUsageDescription", "NSCameraUsageDescription"]
+        XCTAssertEqual(Set(english.keys), keys); XCTAssertEqual(Set(french.keys), keys)
+        for key in keys {
+            let source = try XCTUnwrap(english[key]), translated = try XCTUnwrap(french[key])
+            XCTAssertFalse(source.isEmpty); XCTAssertFalse(translated.isEmpty); XCTAssertNotEqual(source, translated)
+            XCTAssertEqual(Bundle.main.object(forInfoDictionaryKey: key) as? String, L10n.isFrench ? translated : source, key)
+        }
+    }
+
+    func testCountAndPercentageFormatsForZeroOneAndTwo() throws {
+        let french = try table("Localizable", language: "fr-CA")
+        for (count, expected) in [(0, "0 entrées"), (1, "1 entrée"), (2, "2 entrées")] {
+            let suffix = count == 1 ? "record" : "records"
+            let format = try XCTUnwrap(french["%d " + suffix])
+            XCTAssertEqual(String(format: format, locale: Locale(identifier: "fr_CA"), arguments: [count]), expected)
+            let swiftFormat = try XCTUnwrap(french["%lld " + suffix])
+            XCTAssertEqual(String(format: swiftFormat, locale: Locale(identifier: "fr_CA"), arguments: [Int64(count)]), expected)
+            XCTAssertEqual(L10n.format("%d " + suffix, count), L10n.isFrench ? expected : "\(count) \(suffix)")
+        }
+        XCTAssertEqual(String(format: try XCTUnwrap(french["%d%% downloaded"]), locale: Locale(identifier: "fr_CA"), arguments: [50]), "50 % téléchargé")
+    }
+
+    func testCanonicalPersistedValuesRemainIndependentOfPresentation() throws {
+        XCTAssertEqual(ReadingKind.allCases.map(\.rawValue), ["Heart rate", "Blood pressure", "Temperature"])
+        XCTAssertEqual(DoseStatus.allCases.map(\.rawValue), ["Taken", "Skipped", "Remind later"])
+        XCTAssertEqual(Effort.allCases.map(\.rawValue), ["Quick", "Standard", "Extended"])
+        XCTAssertEqual(AppearanceChoice.allCases.map(\.rawValue), ["System", "Light", "Dark"])
+        XCTAssertEqual(MedicineChangeAction.allCases.map(\.rawValue), ["start", "update", "stop"])
+        XCTAssertEqual(Tool.captureSymptom.rawValue, "capture_symptom"); XCTAssertEqual(Tool.addMedicine.rawValue, "add_medication")
+        let reading = try XCTUnwrap(ReadingParser.parse("Ma température est de 36,8"))
+        XCTAssertEqual(reading.value, "36.8"); XCTAssertEqual(reading.source, "Manual")
+        XCTAssertEqual(L10n.readingValue(reading), L10n.isFrench ? "36,8" : "36.8")
+        let encoded = try JSONEncoder().encode(reading)
+        XCTAssertTrue(String(decoding: encoded, as: UTF8.self).contains("Temperature"))
+        XCTAssertEqual(try JSONDecoder().decode(Reading.self, from: encoded), reading)
+        let medicine = try XCTUnwrap(Catalog.resolve("acétaminophène"))
+        XCTAssertEqual(medicine.id, "acetaminophen"); XCTAssertEqual(medicine.ingredients, ["acetaminophen"])
+        XCTAssertEqual(L10n.medicineName(medicine), L10n.isFrench ? "Acétaminophène" : "Acetaminophen")
+        XCTAssertEqual(L10n.ingredientNames(medicine.ingredients), L10n.isFrench ? "acétaminophène" : "acetaminophen")
+        XCTAssertEqual(L10n.medicineName(Medicine(id: "user-product", name: "Acetaminophen")), "Acetaminophen")
+    }
+
+    func testGeneratedNoteAndHistoryKeepMixedUserTextVerbatim() throws {
+        var records = Records(), care = CareData()
+        let symptom = Symptom(text: "Sore knee — douleur au genou", onset: "Tuesday et mercredi", severity: "Mild")
+        let reading = try XCTUnwrap(ReadingParser.parse("Température 36,8"))
+        records.symptoms = [symptom]; records.readings = [reading]
+        records.medicines = [Medicine(id: "user-product", name: "Mon produit / My product", instructions: "Suivre mon étiquette / follow my label")]
+        care.questions = [AppointmentQuestion(text: "Should I bring mes relevés? Questions: keep this exact text.")]
+        let note = LocalizedHealthContent.appointmentNote(records: records, care: care)
+        for source in [symptom.text, symptom.onset, records.medicines[0].name, care.questions[0].text] { XCTAssertTrue(note.contains(source), source) }
+        if L10n.isFrench {
+            XCTAssertTrue(note.hasPrefix("Préoccupation")); XCTAssertTrue(note.contains("Intensité")); XCTAssertTrue(note.contains("Légère")); XCTAssertTrue(note.contains("36,8"))
+            XCTAssertFalse(note.contains("Medicines entered:")); XCTAssertFalse(note.contains("Recent readings:"))
+        } else { XCTAssertTrue(note.hasPrefix("Concern:")); XCTAssertTrue(note.contains("36.8")) }
+        let visit = DoctorVisit(title: "My consultation / ma consultation", transcript: "Keep my English and French transcript.")
+        let timeline = LocalizedHealthContent.timelineEntries(records: records, care: care, visits: [visit])
+        let visitEntry = try XCTUnwrap(timeline.first { $0.id == "visit-" + visit.id.uuidString })
+        XCTAssertEqual(visitEntry.title, visit.title); XCTAssertEqual(visitEntry.detail, visit.transcript)
+        let readingEntry = try XCTUnwrap(timeline.first { $0.id == "reading-" + reading.id })
+        XCTAssertEqual(readingEntry.detail, L10n.isFrench ? "Manuel" : "Manual")
+        XCTAssertTrue(readingEntry.title.contains(L10n.isFrench ? "Température 36,8" : "Temperature 36.8"))
+        let spoken = ChatMessage(text: "My source / mon texte", readings: [reading]).spokenText
+        XCTAssertTrue(spoken.hasPrefix("My source / mon texte")); XCTAssertTrue(spoken.contains(L10n.isFrench ? "36,8" : "36.8"))
+    }
+}

@@ -39,12 +39,18 @@ public enum HealthRules {
         return report
     }
     public static func emergencyCue(_ text: String) -> Bool {
-        let pattern = "(?i)persistent[ ,]+severe chest pain|difficulty breathing|loss of consciousness|new confusion|(?:severe )?pain not relieved by (?:pain )?medic(?:ine|ation)"
+        let text = InputLanguage.folded(text)
+        let frenchChest = "douleur(?:s)? (?:thoracique(?:s)?|a la poitrine|dans la poitrine) (?:intense(?:s)?|severe(?:s)?)[ ,]+(?:et )?persistante(?:s)?|douleur(?:s)? persistante(?:s)?[ ,]+(?:et )?(?:intense(?:s)?|severe(?:s)?) (?:thoracique(?:s)?|a la poitrine|dans la poitrine)"
+        let frenchChestReversed = "douleur(?:s)? (?:thoracique(?:s)?|a la poitrine|dans la poitrine) persistante(?:s)?[ ,]+(?:et )?(?:intense(?:s)?|severe(?:s)?)"
+        let pattern = "persistent[ ,]+severe chest pain|difficulty breathing|loss of consciousness|new confusion|(?:severe )?pain not relieved by (?:pain )?medic(?:ine|ation)|" + frenchChest + "|" + frenchChestReversed + "|(?:ne peux|ne peut|ne pouvez) pas respirer|(?:n'arrive|n'arrivez) pas a respirer|mal a respirer|difficulte(?:s)? (?:a|de) respirer|difficulte(?:s)? respiratoire(?:s)?|perte de (?:connaissance|conscience)|(?:nouvelle confusion|confusion (?:nouvelle|soudaine))|douleur(?:s)? (?:intense(?:s)? |severe(?:s)? )?(?:non soulagee(?:s)?|pas soulagee(?:s)?|qui n'est pas soulagee|qui ne sont pas soulagees) par (?:les |des |un |le )?(?:medicament(?:s)?|antidouleur(?:s)?|analgesique(?:s)?)"
         guard let regex = try? NSRegularExpression(pattern: pattern) else { return false }
         let ns = text as NSString
         return regex.matches(in: text, range: NSRange(location: 0, length: ns.length)).contains { match in
-            let before = ns.substring(with: NSRange(location: max(0, match.range.location - 24), length: min(24, match.range.location)))
-            return before.range(of: "(?i)\\b(no|not|without|denies|denied)\\s*(?:any\\s*)?$", options: .regularExpression) == nil
+            let before = ns.substring(with: NSRange(location: max(0, match.range.location - 64), length: min(64, match.range.location)))
+            // Only local explicit negation suppresses a cue. History and third-person mentions
+            // stay conservative because this heuristic cannot establish who is affected now.
+            let negation = "\\b(no|not|without|denies|denied)\\s*(?:any\\s*)?$|\\b(?:pas|plus|jamais)\\s+(?:de |d'|des |une? )?$|\\b(?:aucune?|sans|nie|nie avoir)\\s*(?:de |d'|des |une? )?$"
+            return before.range(of: negation, options: .regularExpression) == nil
         }
     }
     public static func isEmergency(_ symptom: Symptom) -> Bool { !symptom.signs.isEmpty || emergencyCue(symptom.text) }

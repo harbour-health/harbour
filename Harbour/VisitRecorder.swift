@@ -40,7 +40,7 @@ private final class VisitAudioWriter: @unchecked Sendable {
         lock.lock(); defer { lock.unlock() }
         guard let file, !paused else { return }
         do { try file.write(from: buffer) }
-        catch { self.file = nil; failure("Recording stopped because the audio couldn’t be saved. \(error.localizedDescription)"); return }
+        catch { self.file = nil; failure(L10n.format("Recording stopped because the audio couldn’t be saved. %@", error.localizedDescription)); return }
         speech(buffer)
         meteredFrames += buffer.frameLength
         if meteredFrames >= AVAudioFrameCount(buffer.format.sampleRate / 8), let values = buffer.floatChannelData?[0] {
@@ -67,7 +67,7 @@ private final class ModernAudioBridge: @unchecked Sendable {
     private let continuation: AsyncStream<AnalyzerInput>.Continuation
     private let failure: @Sendable (String) -> Void
     init(input: AVAudioFormat, output: AVAudioFormat, continuation: AsyncStream<AnalyzerInput>.Continuation, failure: @escaping @Sendable (String) -> Void) throws {
-        guard let converter = AVAudioConverter(from: input, to: output) else { throw visitError("The microphone format isn’t supported for transcription.") }
+        guard let converter = AVAudioConverter(from: input, to: output) else { throw visitError(L10n.string("The microphone format isn’t supported for transcription.")) }
         self.converter = converter; self.outputFormat = output; self.continuation = continuation; self.failure = failure
     }
     // Called only by the writer's locked audio tap.
@@ -79,9 +79,9 @@ private final class ModernAudioBridge: @unchecked Sendable {
             if supplied { state.pointee = .noDataNow; return nil }
             supplied = true; state.pointee = .haveData; return input
         }
-        if status == .error { failure(error?.localizedDescription ?? "Transcription lost an audio segment."); return }
+        if status == .error { failure(error?.localizedDescription ?? L10n.string("Transcription lost an audio segment.")); return }
         if output.frameLength > 0, case .dropped = continuation.yield(AnalyzerInput(buffer: output)) {
-            failure("Live transcription fell behind. The audio is saved; transcribe it again after the visit.")
+            failure(L10n.string("Live transcription fell behind. The audio is saved; transcribe it again after the visit."))
         }
     }
 }
@@ -98,17 +98,17 @@ private final class ModernAudioBridge: @unchecked Sendable {
         self.analyzer = analyzer; self.transcriber = transcriber; self.continuation = continuation
     }
     static func prepare(format: AVAudioFormat, transcript: @escaping (String) -> Void, status: @escaping (String) -> Void, failure: @escaping @Sendable (String) -> Void) async throws -> ModernVisitSpeech {
-        guard SpeechTranscriber.isAvailable, let locale = await SpeechTranscriber.supportedLocale(equivalentTo: Locale(identifier: "en-CA")) else { throw visitError("On-device English transcription isn’t available. You can still save audio or type visit notes.") }
+        guard SpeechTranscriber.isAvailable, let locale = await SpeechTranscriber.supportedLocale(equivalentTo: SpeechLanguage.locale) else { throw visitError(L10n.string("On-device transcription isn’t available in the app’s language. You can still save audio or type visit notes.")) }
         let transcriber = SpeechTranscriber(locale: locale, preset: .progressiveTranscription)
         if let request = try await AssetInventory.assetInstallationRequest(supporting: [transcriber]) {
-            status("Downloading speech recognition")
+            status(L10n.string("Downloading speech recognition"))
             let progress = Task { @MainActor in
-                while !Task.isCancelled { status("Downloading speech recognition · \(Int(request.progress.fractionCompleted * 100))%"); try? await Task.sleep(for: .milliseconds(250)) }
+                while !Task.isCancelled { status(L10n.format("Downloading speech recognition · %d%%", Int(request.progress.fractionCompleted * 100))); try? await Task.sleep(for: .milliseconds(250)) }
             }
             defer { progress.cancel() }
             try await request.downloadAndInstall()
         }
-        guard let output = await SpeechAnalyzer.bestAvailableAudioFormat(compatibleWith: [transcriber], considering: format) else { throw visitError("No supported transcription audio format was found.") }
+        guard let output = await SpeechAnalyzer.bestAvailableAudioFormat(compatibleWith: [transcriber], considering: format) else { throw visitError(L10n.string("No supported transcription audio format was found.")) }
         let (stream, continuation) = AsyncStream<AnalyzerInput>.makeStream(bufferingPolicy: .bufferingOldest(128))
         let analyzer = SpeechAnalyzer(modules: [transcriber])
         let session = ModernVisitSpeech(analyzer: analyzer, transcriber: transcriber, continuation: continuation)
@@ -124,7 +124,7 @@ private final class ModernAudioBridge: @unchecked Sendable {
                     session.pieces.append((start, end, String(result.text.characters)))
                     transcript(session.pieces.sorted { $0.start < $1.start }.map(\.text).joined(separator: " "))
                 }
-            } catch { failure("Live transcription stopped. Your audio is still being saved. \(error.localizedDescription)"); throw error }
+            } catch { failure(L10n.format("Live transcription stopped. Your audio is still being saved. %@", error.localizedDescription)); throw error }
         }
         try await analyzer.start(inputSequence: stream)
         return session
@@ -156,7 +156,7 @@ private final class LegacyAudioBridge: @unchecked Sendable {
     private let failure: @Sendable (String) -> Void
     var append: @Sendable (AVAudioPCMBuffer) -> Void { let bridge = bridge; return { bridge.append($0) } }
     init(transcript: @escaping (String) -> Void, failure: @escaping @Sendable (String) -> Void) throws {
-        guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-CA")), recognizer.isAvailable, recognizer.supportsOnDeviceRecognition else { throw visitError("On-device English transcription isn’t available. Audio can still be recorded.") }
+        guard let recognizer = SFSpeechRecognizer(locale: SpeechLanguage.locale), recognizer.isAvailable, recognizer.supportsOnDeviceRecognition else { throw visitError(L10n.string("On-device transcription isn’t available in the app’s language. Audio can still be recorded.")) }
         self.recognizer = recognizer; self.transcript = transcript; self.failure = failure
         beginSegment()
         rotation = Task { @MainActor [weak self] in
@@ -177,7 +177,7 @@ private final class LegacyAudioBridge: @unchecked Sendable {
             Task { @MainActor in
                 guard let self, !self.stopped else { return }
                 if let result { self.pieces[current] = result.bestTranscription.formattedString; self.transcript(self.pieces.keys.sorted().compactMap { self.pieces[$0] }.joined(separator: " ")) }
-                if error != nil && current == self.index { self.failure("Live transcription paused. The full audio is still being saved.") }
+                if error != nil && current == self.index { self.failure(L10n.string("Live transcription paused. The full audio is still being saved.")) }
             }
         }
     }
@@ -216,22 +216,22 @@ private final class LegacyAudioBridge: @unchecked Sendable {
     init() {
         interruption = VisitObservation(NotificationCenter.default.addObserver(forName: AVAudioSession.interruptionNotification, object: nil, queue: .main) { [weak self] notification in
             let kind = notification.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt
-            if kind == AVAudioSession.InterruptionType.began.rawValue { Task { @MainActor in self?.pause(); self?.status = "Recording paused by an interruption" } }
+            if kind == AVAudioSession.InterruptionType.began.rawValue { Task { @MainActor in self?.pause(); self?.status = L10n.string("Recording paused by an interruption") } }
         })
     }
     func start(into store: AppStore) async {
         guard state == .idle else { return }
-        let current = UUID(); generation = current; state = .preparing; status = "Preparing microphone"; self.store = store
+        let current = UUID(); generation = current; state = .preparing; status = L10n.string("Preparing microphone"); self.store = store
         error = nil; transcriptionWarning = nil; transcript = ""; duration = 0; elapsed = 0; levels = Array(repeating: 0.04, count: 48)
         let microphone = VisitPermission(); permission = microphone
         let granted = await microphone.wait { AVAudioApplication.requestRecordPermission(completionHandler: $0) }
         guard generation == current else { return }
-        guard granted else { state = .idle; error = "Allow microphone access in iPhone Settings to record a visit."; return }
+        guard granted else { state = .idle; error = L10n.string("Allow microphone access in iPhone Settings to record a visit."); return }
         do {
             let session = AVAudioSession.sharedInstance()
             try session.setCategory(.record, mode: .measurement, options: []); try session.setActive(true)
             let format = engine.inputNode.outputFormat(forBus: 0)
-            guard format.sampleRate > 0, format.channelCount > 0 else { throw visitError("No microphone is available.") }
+            guard format.sampleRate > 0, format.channelCount > 0 else { throw visitError(L10n.string("No microphone is available.")) }
             let speechAccess = VisitPermission(); permission = speechAccess
             let speechGranted = await speechAccess.wait { completion in SFSpeechRecognizer.requestAuthorization { completion($0 == .authorized) } }
             guard generation == current else { return }
@@ -246,15 +246,15 @@ private final class LegacyAudioBridge: @unchecked Sendable {
                 do {
                     if #available(iOS 26, *) { preparedSpeech = try await ModernVisitSpeech.prepare(format: format, transcript: received, status: { [weak self] value in guard self?.generation == current else { return }; self?.status = value }, failure: failed) }
                     else { preparedSpeech = try LegacyVisitSpeech(transcript: received, failure: failed) }
-                } catch { if generation == current { status = "Audio only · \(error.localizedDescription)"; transcriptionWarning = status } }
-            } else { status = "Audio only · Speech access is off"; transcriptionWarning = status }
+                } catch { if generation == current { status = L10n.format("Audio only · %@", error.localizedDescription); transcriptionWarning = status } }
+            } else { status = L10n.string("Audio only · Speech access is off"); transcriptionWarning = status }
             guard generation == current else { preparedSpeech?.cancel(); return }
             speech = preparedSpeech
             try FileManager.default.createDirectory(at: store.visitAudioDirectory, withIntermediateDirectories: true, attributes: [.protectionKey: FileProtectionType.complete])
-            var newVisit = DoctorVisit(interrupted: true)
+            var newVisit = DoctorVisit(title: L10n.string("Doctor visit"), interrupted: true)
             newVisit.transcriptionWarning = transcriptionWarning
             newVisit.audioFilename = newVisit.id.uuidString + ".m4a"
-            guard store.saveVisit(newVisit) else { throw visitError("The visit couldn’t be saved. Recording has not started.") }
+            guard store.saveVisit(newVisit) else { throw visitError(L10n.string("The visit couldn’t be saved. Recording has not started.")) }
             visit = newVisit; visitID = newVisit.id
             let handler: @Sendable (AVAudioPCMBuffer) -> Void
             if let speech { handler = speech.append } else { handler = { @Sendable _ in } }
@@ -267,7 +267,7 @@ private final class LegacyAudioBridge: @unchecked Sendable {
             let writer = writer!
             engine.inputNode.installTap(onBus: 0, bufferSize: 4096, format: format) { buffer, _ in writer.append(buffer) }; hasTap = true
             engine.prepare(); try engine.start(); state = .recording; startDate = .now
-            if speech != nil { status = "Transcribing on this iPhone" }
+            if speech != nil { status = L10n.string("Transcribing on this iPhone") }
             timer = Task { @MainActor [weak self] in
                 var ticks = 0
                 while !Task.isCancelled {
@@ -276,10 +276,10 @@ private final class LegacyAudioBridge: @unchecked Sendable {
                     if self.state == .recording { self.duration = self.elapsed + Date.now.timeIntervalSince(self.startDate ?? .now) }
                     ticks += 1
                     if ticks % 40 == 0 { self.checkpoint(interrupted: true) }
-                    if self.duration >= 5400 { self.status = "90-minute recording limit reached"; await self.finish(); return }
+                    if self.duration >= 5400 { self.status = L10n.string("90-minute recording limit reached"); await self.finish(); return }
                 }
             }
-        } catch { await finish(interrupted: true); state = .idle; self.error = error.localizedDescription }
+        } catch { await finish(interrupted: true); state = .idle; self.error = L10n.string(error.localizedDescription) }
     }
     func pause() {
         guard state == .recording else { return }
@@ -289,7 +289,7 @@ private final class LegacyAudioBridge: @unchecked Sendable {
     func resume() {
         guard state == .paused else { return }
         do { try AVAudioSession.sharedInstance().setActive(true); try engine.start(); writer?.setPaused(false); startDate = .now; state = .recording }
-        catch { self.error = error.localizedDescription }
+        catch { self.error = L10n.string(error.localizedDescription) }
     }
     func finish(interrupted: Bool = false) async {
         guard state != .idle && state != .finishing else { return }
@@ -311,7 +311,7 @@ private final class LegacyAudioBridge: @unchecked Sendable {
                 session?.cancel()
             }
             defer { timeout.cancel() }
-            do { try await session?.finish() } catch { status = "Transcript may be incomplete. The audio is saved."; transcriptionWarning = status }
+            do { try await session?.finish() } catch { status = L10n.string("Transcript may be incomplete. The audio is saved."); transcriptionWarning = status }
         }
         speech?.cancel(); speech = nil; checkpoint(interrupted: interrupted); state = .idle; visitID = nil; generation = UUID()
     }
@@ -319,7 +319,7 @@ private final class LegacyAudioBridge: @unchecked Sendable {
         guard var visit, let store else { return }
         visit.duration = duration; visit.transcript = transcript; visit.interrupted = interrupted; visit.transcriptionWarning = transcriptionWarning
         self.visit = visit
-        if !store.saveVisit(visit) { error = "The transcript couldn’t be saved. Finish recording before making other changes." }
+        if !store.saveVisit(visit) { error = L10n.string("The transcript couldn’t be saved. Finish recording before making other changes.") }
     }
 }
 
@@ -335,7 +335,7 @@ private final class LegacyAudioBridge: @unchecked Sendable {
             try AVAudioSession.sharedInstance().setCategory(.playback)
             try AVAudioSession.sharedInstance().setActive(true)
             player = try AVAudioPlayer(contentsOf: url); player?.currentTime = position
-            guard player?.play() == true else { throw visitError("The recording couldn’t be played.") }
+            guard player?.play() == true else { throw visitError(L10n.string("The recording couldn’t be played.")) }
             playing = true
             timer = Task { @MainActor [weak self] in
                 while !Task.isCancelled {
@@ -344,7 +344,7 @@ private final class LegacyAudioBridge: @unchecked Sendable {
                     if self.player?.isPlaying != true { self.stop(); self.position = 0; return }
                 }
             }
-        } catch { self.error = error.localizedDescription }
+        } catch { self.error = L10n.string(error.localizedDescription) }
     }
     func stop() { let owned = playing; player?.pause(); playing = false; timer?.cancel(); timer = nil; if owned { try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation) } }
 }

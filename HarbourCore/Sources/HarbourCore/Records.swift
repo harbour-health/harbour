@@ -77,32 +77,78 @@ public enum Catalog {
         Medicine(id: "amlodipine", name: "Amlodipine", ingredients: ["amlodipine"]),
         Medicine(id: "apixaban", name: "Apixaban", ingredients: ["apixaban"])
     ]
+    private static let aliases: [String: [String]] = [
+        "warfarin": ["warfarine"], "ibuprofen": ["ibuprofène"],
+        "aspirin": ["ASA", "aspirine", "AAS", "acide acétylsalicylique"],
+        "naproxen": ["naproxène"], "acetaminophen": ["acétaminophène"],
+        "metformin": ["metformine"]
+    ]
+    private static func folded(_ text: String) -> String {
+        text.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: "en_US_POSIX"))
+    }
+    public static func names(for medicine: Medicine) -> [String] {
+        let names = [medicine.name, medicine.name.components(separatedBy: " / ").first!]
+        guard let canonical = medicines.first(where: { $0.id == medicine.id }),
+              ([canonical.name, canonical.name.components(separatedBy: " / ").first!] + (aliases[canonical.id] ?? [])).contains(where: { folded($0) == folded(medicine.name) }) else { return names }
+        return names + [canonical.name, canonical.name.components(separatedBy: " / ").first!] + (aliases[medicine.id] ?? [])
+    }
+    public static func ingredientNames(for ingredient: String) -> [String] {
+        [ingredient] + (aliases[ingredient] ?? [])
+    }
+    public static func resolve(_ name: String, saved: [Medicine] = []) -> Medicine? {
+        let query = folded(name.trimmingCharacters(in: .whitespacesAndNewlines))
+        guard !query.isEmpty else { return nil }
+        return (saved + medicines).first { names(for: $0).contains { folded($0) == query } }
+    }
+    public static func search(_ query: String) -> [Medicine] {
+        let query = folded(query.trimmingCharacters(in: .whitespacesAndNewlines))
+        return medicines.filter { medicine in
+            query.isEmpty || (names(for: medicine) + medicine.ingredients.flatMap { ingredientNames(for: $0) }).contains { folded($0).contains(query) }
+        }
+    }
     public static func mentioned(in text: String, saved: [Medicine] = []) -> [Medicine] {
         var found = Set<String>()
+        let text = folded(text)
         return (saved + medicines).filter { medicine in
-            let names = [medicine.name.components(separatedBy: " / ").first!] + (medicine.id == "aspirin" ? ["ASA"] : [])
-            return names.contains { text.range(of: "\\b" + NSRegularExpression.escapedPattern(for: $0) + "\\b", options: [.regularExpression, .caseInsensitive]) != nil } && found.insert(medicine.id).inserted
+            names(for: medicine).contains { text.range(of: "(?<![\\p{L}\\p{M}\\p{N}_])" + NSRegularExpression.escapedPattern(for: folded($0)) + "(?![\\p{L}\\p{M}\\p{N}_])", options: .regularExpression) != nil } && found.insert(medicine.id).inserted
         }
     }
 }
 
 public enum ReadingParser {
     public static func parse(_ input: String) -> Reading? {
-        let pattern = "(?i)\\b(heart rate|pulse|blood pressure|temperature)\\b([^\\n]{0,36})"
-        guard let match = input.range(of: pattern, options: .regularExpression) else { return nil }
-        let portion = String(input[match]).lowercased()
-        let kind: ReadingKind = portion.hasPrefix("blood pressure") ? .bloodPressure : portion.hasPrefix("temperature") ? .temperature : .heartRate
-        let numeric = kind == .bloodPressure ? "\\b[0-9]{2,3}\\s*/\\s*[0-9]{2,3}\\b" : "\\b[0-9]{1,3}(?:\\.[0-9]+)?\\b"
+        let input = input.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: "en_US_POSIX"))
+        let labels: [(ReadingKind, String)] = [
+            (.heartRate, "heart rate|pulse|pouls|frequence cardiaque|rythme cardiaque"),
+            (.bloodPressure, "blood pressure|tension arterielle|pression arterielle|tension"),
+            (.temperature, "temperature")
+        ]
+        let matches = labels.compactMap { (kind, label) -> (ReadingKind, Range<String.Index>)? in
+            guard let range = input.range(of: "\\b(?:" + label + ")(?![\\p{L}\\p{M}])", options: .regularExpression) else { return nil }
+            return (kind, range)
+        }
+        guard let match = matches.min(by: { $0.1.lowerBound < $1.1.lowerBound }) else { return nil }
+        let kind = match.0
+        let portion = String(input[match.1.upperBound...].prefix(36)).components(separatedBy: .newlines).first!
+        guard portion.range(of: "[0-9]+(?:[.,][0-9]+)?[eE][+-]?[0-9]+", options: .regularExpression) == nil else { return nil }
+        let number = kind == .bloodPressure ? "[0-9]{2,3}\\s*/\\s*[0-9]{2,3}" : "[0-9]{1,3}(?:[.,][0-9]+)?"
+        let numeric = "(?<![0-9.,/+−-])" + number + "(?![0-9.,/]|[eE][+-]?[0-9])"
         guard let valueRange = portion.range(of: numeric, options: .regularExpression) else { return nil }
-        let value = String(portion[valueRange]).replacingOccurrences(of: " ", with: "")
+        let value = normalizedValue(String(portion[valueRange]))
         guard valid(value, kind: kind) else { return nil }
         return Reading(kind: kind, value: value)
     }
+    public static func normalizedValue(_ value: String) -> String {
+        value.trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "\\s*/\\s*", with: "/", options: .regularExpression).replacingOccurrences(of: ",", with: ".")
+    }
     public static func valid(_ value: String, kind: ReadingKind) -> Bool {
+        let value = normalizedValue(value)
         if kind == .bloodPressure {
+            guard value.range(of: "\\A[0-9]{2,3}/[0-9]{2,3}\\z", options: .regularExpression) != nil else { return false }
             let parts = value.split(separator: "/").compactMap { Double($0) }
             return parts.count == 2 && parts.allSatisfy { (10...350).contains($0) } && parts[0] > parts[1]
         }
+        guard value.range(of: "\\A[0-9]{1,3}(?:\\.[0-9]+)?\\z", options: .regularExpression) != nil else { return false }
         guard let number = Double(value), number.isFinite else { return false }
         return kind == .heartRate ? (10...300).contains(number) : (25...45).contains(number)
     }

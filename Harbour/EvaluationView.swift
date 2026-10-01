@@ -33,7 +33,7 @@ struct EvaluationReport: Codable {
         func checkpoint() {
             let encoder = JSONEncoder(); encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             do { try encoder.encode(report).write(to: destination, options: [.atomic, .completeFileProtection]) }
-            catch { store.error = error.localizedDescription }
+            catch { store.error = L10n.string(error.localizedDescription) }
         }
         checkpoint()
         for effort in efforts {
@@ -64,20 +64,26 @@ struct EvaluationView: View {
         List {
             Section("Checks") {
                 LabeledContent("Passed", value: "\(report.checks.filter(\.passed).count)/\(report.checks.count)")
-                ForEach(report.checks) { check in Label(check.name, systemImage: check.passed ? "checkmark.circle" : "xmark.circle").foregroundStyle(check.passed ? Color.primary : Color.red).font(.subheadline) }
+                ForEach(report.checks) { check in Label(checkTitle(check), systemImage: check.passed ? "checkmark.circle" : "xmark.circle").foregroundStyle(check.passed ? Color.primary : Color.red).font(.subheadline) }
             }
             Section {
                 Toggle("Test all effort settings", isOn: $allEfforts).disabled(busy)
-                Button(busy ? "Stop evaluation" : "Evaluate selected model") { if busy { task?.cancel() } else { run() } }
-                if busy { ProgressView(models.downloading == nil ? "Running fictional cases" : models.status) }
+                Button(L10n.string(busy ? "Stop evaluation" : "Evaluate selected model")) { if busy { task?.cancel() } else { run() } }
+                if busy { ProgressView(models.downloading == nil ? L10n.string("Running fictional cases") : models.status) }
                 if !report.runs.isEmpty { LabeledContent("Passed", value: "\(report.runs.filter(\.passed).count)/\(report.runs.count)") }
-            } header: { Text("Local model") } footer: { Text("\(Evaluation.routingCases.count) fictional prompts per effort setting. Results include model routing and latency; they do not measure clinical validity.") }
+            } header: { Text("Local model") } footer: { Text(L10n.format("%d fictional prompts per effort setting. Results include model routing and latency; they do not measure clinical validity.", Evaluation.routingCases.count)) }
             ForEach(report.runs) { result in
-                VStack(alignment: .leading, spacing: 8) { Label(result.input, systemImage: result.passed ? "checkmark.circle" : "xmark.circle"); Text("\(result.effort) · \(String(format: "%.2f", result.elapsedSeconds)) seconds · \(result.observed)").font(.caption).foregroundStyle(.secondary) }
+                VStack(alignment: .leading, spacing: 8) { Label(L10n.string(result.input), systemImage: result.passed ? "checkmark.circle" : "xmark.circle"); Text(L10n.format("%@ · %.2f seconds · %@", L10n.string(result.effort), result.elapsedSeconds, L10n.string(result.observed))).font(.caption).foregroundStyle(.secondary) }
             }
             Section { Button("Export results") { export() }.disabled(busy) }
         }.drawerHeight(650).navigationTitle("Evaluation").navigationBarTitleDisplayMode(.inline)
         .onDisappear { task?.cancel() }
+    }
+    private func checkTitle(_ check: CheckResult) -> String {
+        for sign in EmergencySign.allCases where check.name == "Emergency sign: " + sign.rawValue {
+            return L10n.format("Emergency sign: %@", L10n.string(sign.rawValue))
+        }
+        return L10n.string(check.name)
     }
     private func run() {
         busy = true; report = EvaluationReport()
@@ -106,6 +112,6 @@ struct EvaluationView: View {
             let encoder = JSONEncoder(); encoder.outputFormatting = [.prettyPrinted, .sortedKeys]; encoder.dateEncodingStrategy = .iso8601
             let url = FileManager.default.temporaryDirectory.appendingPathComponent("Harbour-evaluation.json")
             try encoder.encode(report).write(to: url, options: [.atomic, .completeFileProtection]); store.shareFile = ShareFile(url: url)
-        } catch { store.error = error.localizedDescription }
+        } catch { store.error = L10n.string(error.localizedDescription) }
     }
 }

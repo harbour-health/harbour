@@ -9,6 +9,9 @@
 - [Voice conversation](voice-conversation.md) — turn finalization, agent responses, speech playback, and lifecycle.
 - [Health and voice](health-and-voice.md) — native permissions, HealthKit queries, and speech.
 - [Interface](interface.md) — floating navigation, dashboard spacing, Records browser, chat composer, and accessibility.
+- [Canadian French localization](localization.md) — bundled translations, app language, native services, structured content, and stable stored values.
+- [French input validation](french-input-validation.md) — bounded symptom cues, tool requests, literal schedules, and source validation.
+- [French record input](french-records.md) — reading labels, decimal commas, medicine aliases, and canonical record values.
 - [Navigation and actions](navigation-and-actions.md) — toolbar positions, shared controls, action priority, and draft creation.
 - [Floating drawers](floating-drawers.md) — compact heights, detached panels, corner geometry, and keyboard handling.
 - [App lock](app-lock.md) — Face ID, Keychain-backed PIN, retry delays, and lifecycle gating.

@@ -2,7 +2,7 @@
 
 ## What it is
 
-Native adapters provide read-only HealthKit import and on-device English speech recognition. Both are optional; manual records and typed chat work independently.
+Native adapters provide read-only HealthKit import and on-device English or Canadian French speech recognition. Both are optional; manual records and typed chat work independently.
 
 ## How it works
 
@@ -14,11 +14,15 @@ Voice input requests speech and microphone authorization only when the microphon
 
 An unsupported recognizer or denied permission produces a visible error. Speech permission denial stops before requesting microphone permission. Chat audio remains in the recognition pipeline rather than being written into record storage. The separate [doctor visit recorder](doctor-visits.md) explicitly saves audio and handles longer sessions.
 
+Speech follows the active app localization through `L10n.isFrench`: Canadian French requests `fr-CA`, and English requests `en-CA`. This applies to chat dictation, live visit transcription, and retranscription of saved visit audio. The iOS 26 transcription adapter asks Apple for a supported equivalent locale; older adapters require on-device support for the requested locale. No adapter falls back to server recognition. Missing recognition support leaves typed input or saved visit audio available. Read-aloud prefers an available Canadian voice, then another available voice in the same language; if none exists, it shows an error. Audio and transcript content retain their original language.
+
+Service errors, progress messages, and private notification bodies use `L10n`. Medicine-label OCR prioritizes the app's language while retaining both English and Canadian French recognition. It returns the label text as recognized rather than translating a medicine name or instruction.
+
 ## How to change it
 
 Edit `DeviceServices.swift`. For a new HealthKit metric, request only its required quantity types, convert units explicitly, add a `ReadingKind`, and test ingestion and duplicate handling. Check physical-device permission flows whenever changing capabilities or privacy strings. Do not treat successful authorization-request completion as proof of read access.
 
-For additional speech locales, check on-device support before starting. Keep dictation transcripts editable. Stop recognition when leaving chat, sending, or starting read-aloud. Model chat does not require speech to be enabled. `VoiceTurnTests` covers single delivery and stale/empty turn rejection; physical microphone behavior needs device testing.
+For additional speech locales, update `SpeechLanguage` in `DeviceServices.swift` and check on-device support before starting. Keep dictation transcripts editable. Stop recognition when leaving chat, sending, or starting read-aloud. Model chat does not require speech to be enabled. `VoiceTurnTests` covers single delivery and stale/empty turn rejection; physical microphone behavior needs device testing. `VisitTranscription.swift` and `VisitRecorder.swift` share the selected locale; preserve their local-only recognition flags and audio checkpoint behavior when modifying them. Keep resource keys in English and use format resources for changing counts and percentages.
 
 Chat dictation and read-aloud controls are disabled while a visit recorder is active. `VoiceService.stop` deactivates the shared audio session only if it owns recording/read-aloud activity, so leaving idle Chat cannot cut off a visit recording.
 
@@ -30,7 +34,7 @@ When an enabled app lock replaces the navigation tree, chat teardown stops voice
 
 ## Configuration
 
-`Harbour.entitlements` enables HealthKit. `Info.plist` supplies microphone, speech, and health-read usage descriptions. A development team and a provisioned HealthKit capability are needed for signed device installs. English locale is `en-CA`; device language assets determine availability. Read horizon and limits are constants in `HealthService.query`.
+`Harbour.entitlements` enables HealthKit. `Info.plist` supplies microphone, speech, and health-read usage descriptions. A development team and a provisioned HealthKit capability are needed for signed device installs. Bundle localization selects English (`en-CA`) or French (`fr-CA`) speech; device language assets determine availability. Read horizon and limits are constants in `HealthService.query`.
 
 ## Dependencies
 

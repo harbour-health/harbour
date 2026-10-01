@@ -5,16 +5,16 @@ import Speech
 @MainActor enum VisitTranscription {
     static func transcribe(_ url: URL, status: @escaping (String) -> Void) async throws -> String {
         let permission = await withCheckedContinuation { continuation in SFSpeechRecognizer.requestAuthorization { continuation.resume(returning: $0) } }
-        guard permission == .authorized else { throw NSError(domain: "Visit", code: 2, userInfo: [NSLocalizedDescriptionKey: "Allow Speech Recognition access in iPhone Settings, or edit the transcript manually."]) }
+        guard permission == .authorized else { throw NSError(domain: "Visit", code: 2, userInfo: [NSLocalizedDescriptionKey: L10n.string("Allow Speech Recognition access in iPhone Settings, or edit the transcript manually.")]) }
         if #available(iOS 26, *) { return try await modern(url, status: status) }
         return try await legacy(url, status: status)
     }
     @available(iOS 26, *)
     private static func modern(_ url: URL, status: @escaping (String) -> Void) async throws -> String {
-        guard SpeechTranscriber.isAvailable, let locale = await SpeechTranscriber.supportedLocale(equivalentTo: Locale(identifier: "en-CA")) else { throw NSError(domain: "Visit", code: 3, userInfo: [NSLocalizedDescriptionKey: "On-device English transcription is unavailable on this phone."]) }
+        guard SpeechTranscriber.isAvailable, let locale = await SpeechTranscriber.supportedLocale(equivalentTo: SpeechLanguage.locale) else { throw NSError(domain: "Visit", code: 3, userInfo: [NSLocalizedDescriptionKey: L10n.string("On-device transcription is unavailable in the app’s language on this phone.")]) }
         let transcriber = SpeechTranscriber(locale: locale, preset: .transcription)
         if let request = try await AssetInventory.assetInstallationRequest(supporting: [transcriber]) {
-            status("Downloading speech recognition")
+            status(L10n.string("Downloading speech recognition"))
             try await request.downloadAndInstall()
         }
         try Task.checkCancellation()
@@ -26,7 +26,7 @@ import Speech
                 for try await value in transcriber.results {
                     try Task.checkCancellation()
                     text.append(String(value.text.characters))
-                    status("Transcribing · \(min(100, Int(value.range.start.seconds / max(1, Double(file.length) / file.processingFormat.sampleRate) * 100)))%")
+                    status(L10n.format("Transcribing · %d%%", min(100, Int(value.range.start.seconds / max(1, Double(file.length) / file.processingFormat.sampleRate) * 100))))
                 }
                 return text.joined(separator: " ")
             }
@@ -35,7 +35,7 @@ import Speech
         } onCancel: { Task { await analyzer.cancelAndFinishNow() } }
     }
     private static func legacy(_ url: URL, status: @escaping (String) -> Void) async throws -> String {
-        guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-CA")), recognizer.isAvailable, recognizer.supportsOnDeviceRecognition else { throw NSError(domain: "Visit", code: 3, userInfo: [NSLocalizedDescriptionKey: "On-device English transcription is unavailable on this phone."]) }
+        guard let recognizer = SFSpeechRecognizer(locale: SpeechLanguage.locale), recognizer.isAvailable, recognizer.supportsOnDeviceRecognition else { throw NSError(domain: "Visit", code: 3, userInfo: [NSLocalizedDescriptionKey: L10n.string("On-device transcription is unavailable in the app’s language on this phone.")]) }
         let file = try AVAudioFile(forReading: url), format = file.processingFormat
         let capacity = AVAudioFrameCount(format.sampleRate * 44)
         var result: [String] = []
@@ -50,7 +50,7 @@ import Speech
                 try FileManager.default.setAttributes([.protectionKey: FileProtectionType.complete], ofItemAtPath: chunk.path)
                 try output.write(from: buffer)
             }
-            status("Transcribing · \(Int(Double(file.framePosition) / Double(file.length) * 100))%")
+            status(L10n.format("Transcribing · %d%%", Int(Double(file.framePosition) / Double(file.length) * 100)))
             let request = SFSpeechURLRecognitionRequest(url: chunk)
             request.requiresOnDeviceRecognition = true; request.shouldReportPartialResults = false
             let operation = LegacyFileRecognition()
@@ -74,7 +74,7 @@ import Speech
                 } }
                 timeout = Task { @MainActor [weak self] in
                     do { try await Task.sleep(for: .seconds(60)) } catch { return }
-                    self?.complete(.failure(NSError(domain: "Visit", code: 4, userInfo: [NSLocalizedDescriptionKey: "Transcription timed out. Audio and the previous transcript are preserved."])))
+                    self?.complete(.failure(NSError(domain: "Visit", code: 4, userInfo: [NSLocalizedDescriptionKey: L10n.string("Transcription timed out. Audio and the previous transcript are preserved.")])))
                 }
             }
         } onCancel: { Task { @MainActor in self.complete(.failure(CancellationError())) } }

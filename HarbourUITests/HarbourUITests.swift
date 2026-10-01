@@ -913,7 +913,9 @@ import XCTest
 @MainActor final class HarbourStableMainScreensTests: XCTestCase {
     override func setUpWithError() throws { continueAfterFailure = false }
     func testStableLightMainScreens() {
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication()
+        app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
+        app.launch()
         for dark in [true, false] {
             app.buttons["nav-today"].tap(); app.buttons["Settings"].tap(); app.buttons["Appearance"].tap(); app.buttons[dark ? "appearance-dark" : "appearance-light"].tap()
             app.navigationBars["Appearance"].buttons.firstMatch.tap(); app.buttons["Done"].tap()
@@ -966,5 +968,245 @@ import XCTest
         else { XCTAssertTrue(app.buttons["End voice"].waitForExistence(timeout: 5)); capture("113-voice-mode"); app.buttons["End voice"].tap() }
         XCTAssertTrue(app.buttons["Voice options"].exists)
         app.buttons["nav-today"].tap()
+    }
+}
+
+@MainActor final class HarbourFrenchScreensTests: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+
+    private func capture(_ name: String) {
+        Thread.sleep(forTimeInterval: 0.6)
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
+    }
+
+    private func reveal(_ app: XCUIApplication, _ element: XCUIElement) {
+        for _ in 0..<6 { if element.isHittable { return }; app.swipeUp() }
+        XCTAssertTrue(element.isHittable, app.debugDescription)
+    }
+
+    private func openRecords(_ app: XCUIApplication, category: Int? = nil) {
+        app.buttons["nav-records"].tap()
+        for _ in 0..<3 {
+            if app.buttons["record-category-0"].exists { break }
+            app.navigationBars.firstMatch.buttons.firstMatch.tap()
+        }
+        XCTAssertTrue(app.buttons["record-category-0"].waitForExistence(timeout: 5))
+        if let category { app.buttons["record-category-\(category)"].tap() }
+    }
+
+    private func appearance(_ app: XCUIApplication, dark: Bool) {
+        app.buttons["nav-today"].tap(); app.buttons["Réglages"].tap(); app.buttons["Apparence"].tap()
+        app.buttons[dark ? "appearance-dark" : "appearance-light"].tap()
+        app.navigationBars["Apparence"].buttons.firstMatch.tap(); app.buttons["Terminé"].tap()
+    }
+
+    func testFrenchMainScreensAndDraftWorkflows() throws {
+        XCUIDevice.shared.orientation = .portrait
+        let app = XCUIApplication()
+        app.launchArguments += ["-AppleLanguages", "(fr-CA)", "-AppleLocale", "fr_CA"]
+        app.launch()
+        XCTAssertTrue(app.buttons["nav-today"].waitForExistence(timeout: 10), app.debugDescription)
+        XCTAssertEqual(app.buttons["nav-today"].label, "Aujourd’hui")
+        XCTAssertEqual(app.buttons["nav-chat"].label, "Conversation")
+        XCTAssertEqual(app.buttons["nav-records"].label, "Dossier")
+        XCTAssertEqual(app.buttons["nav-visits"].label, "Consultations")
+
+        app.buttons["nav-chat"].tap(); app.buttons["Nouvelle conversation"].tap(); app.buttons["nav-today"].tap()
+
+        for dark in [false, true] {
+            appearance(app, dark: dark)
+            let pages = dark
+                ? [("today", "121-french-today-dark"), ("chat", "122-french-chat-dark"), ("records", "123-french-records-dark"), ("visits", "124-french-visits-dark")]
+                : [("today", "117-french-today"), ("chat", "118-french-chat"), ("records", "119-french-records"), ("visits", "120-french-visits")]
+            for (destination, name) in pages {
+                if destination == "records" { openRecords(app) }
+                else { app.buttons["nav-" + destination].tap() }
+                if destination == "today" { app.swipeDown(); app.swipeDown() }
+                if destination == "chat" {
+                    let last = app.buttons["starter-readings"]
+                    XCTAssertTrue(last.isHittable)
+                    XCTAssertLessThan(last.frame.maxY, app.textFields["chatInput"].frame.minY - 8)
+                }
+                for tab in ["today", "chat", "records", "visits"] { XCTAssertTrue(app.buttons["nav-" + tab].isHittable) }
+                capture(name)
+            }
+        }
+        appearance(app, dark: false)
+
+        app.buttons["Réglages"].tap()
+        XCTAssertTrue(app.navigationBars["Réglages"].waitForExistence(timeout: 5)); capture("125-french-settings")
+        app.buttons["Apparence"].tap()
+        XCTAssertEqual(app.buttons["appearance-system"].label, "Système")
+        XCTAssertEqual(app.buttons["appearance-light"].label, "Clair")
+        XCTAssertEqual(app.buttons["appearance-dark"].label, "Sombre"); capture("126-french-appearance")
+        app.navigationBars["Apparence"].buttons.firstMatch.tap(); app.buttons["appLockSettings"].tap()
+        app.buttons["lock-option-pin"].tap()
+        let slots = app.descendants(matching: .any)["pinSlots"].firstMatch
+        XCTAssertTrue(slots.waitForExistence(timeout: 5)); XCTAssertEqual(slots.label, "NIP")
+        app.buttons["pin-key-1"].tap()
+        XCTAssertTrue((slots.value as? String ?? "").contains("Chiffres saisis : 1 sur")); capture("127-french-pin-draft")
+        app.buttons["Annuler"].tap()
+        XCTAssertTrue(app.buttons["lock-option-pin"].waitForExistence(timeout: 5))
+        app.navigationBars["Verrouillage de l’app"].buttons.firstMatch.tap(); app.buttons["Terminé"].tap()
+
+        openRecords(app, category: 1); app.buttons["Ajouter une entrée"].tap()
+        let search = app.textFields["medicineSearch"]
+        XCTAssertTrue(search.waitForExistence(timeout: 5)); search.tap(); search.typeText("acétaminophène")
+        XCTAssertTrue(app.buttons["catalog-acetaminophen"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["addUnlistedMedicine"].exists)
+        app.buttons["Terminé"].tap(); capture("128-french-medicine-search"); app.buttons["Annuler"].tap()
+
+        openRecords(app, category: 2); app.buttons["Ajouter une entrée"].tap()
+        app.buttons["readingKind"].tap(); app.buttons["Température"].tap()
+        let value = app.textFields["readingValue"]; value.tap(); value.typeText("36,8"); app.buttons["Terminé"].tap()
+        XCTAssertEqual(value.value as? String, "36,8"); XCTAssertTrue(app.buttons["saveReading"].isEnabled)
+        capture("129-french-reading-comma"); app.buttons["Annuler"].tap()
+
+        openRecords(app, category: 0); app.buttons["Ajouter une entrée"].tap()
+        let symptom = app.textFields["symptomText"]
+        symptom.tap(); symptom.typeText("Exemple fictif : douleur au genou depuis mardi."); app.buttons["Terminé"].tap()
+        XCTAssertTrue(app.staticTexts["Que se passe-t-il?"].exists); capture("130-french-symptom-draft")
+        let redFlag = app.buttons["Persistent, severe chest pain"]; reveal(app, redFlag); redFlag.tap()
+        app.buttons["saveSymptom"].tap()
+        let emergency = app.staticTexts["Soins d’urgence"]; reveal(app, emergency)
+        XCTAssertTrue(emergency.exists); capture("131-french-emergency-review"); app.buttons["Annuler"].tap()
+
+        app.buttons["nav-chat"].tap(); app.buttons["Choisir un sujet"].tap()
+        XCTAssertTrue(app.staticTexts["Sujet"].waitForExistence(timeout: 5)); capture("132-french-topics")
+        app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Médicaments")).firstMatch.tap()
+        app.buttons["modelSelector"].tap()
+        XCTAssertTrue(app.navigationBars["Modèles"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.sliders["Generation effort"].label, "Effort de génération")
+        capture("133-french-models"); app.buttons["Terminé"].tap()
+        let draft = app.textFields["chatInput"]
+        draft.tap(); draft.typeText("Exemple fictif : quelles questions devrais-je poser pendant ma prochaine consultation?")
+        let selector = app.buttons["modelSelector"], voice = app.buttons["Options vocales"], send = app.buttons["Envoyer le message"]
+        XCTAssertTrue(selector.isHittable); XCTAssertTrue(voice.isHittable); XCTAssertTrue(send.isHittable)
+        XCTAssertLessThanOrEqual(selector.frame.maxX, voice.frame.minX + 1)
+        XCTAssertLessThanOrEqual(voice.frame.maxX, send.frame.minX + 1)
+        XCTAssertLessThanOrEqual(send.frame.maxX, app.frame.maxX)
+        XCTAssertGreaterThanOrEqual(app.buttons["Choisir un sujet"].frame.width, 44)
+        capture("137-french-chat-controls")
+        draft.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: (draft.value as? String ?? "").count))
+        app.buttons["Terminé"].tap()
+
+        app.buttons["nav-visits"].tap(); app.buttons["addVisitNotes"].tap()
+        XCTAssertEqual(app.textFields["visitTitleInput"].placeholderValue, "Titre de la consultation")
+        let transcript = app.textViews["visitTranscriptInput"]
+        transcript.tap(); transcript.typeText("Exemple fictif : discuter du sommeil et de la liste des médicaments."); app.buttons["Terminé"].tap()
+        capture("134-french-visit-notes-draft"); app.buttons["Annuler"].tap()
+
+        app.buttons["nav-today"].tap()
+        let reminderButton = app.buttons["Ajouter un rappel"]; reveal(app, reminderButton); reminderButton.tap()
+        let reminder = app.textFields["reminderTitle"]; reminder.tap(); reminder.typeText("Exemple fictif : préparer une liste de questions")
+        app.buttons["Terminé"].tap(); XCTAssertFalse(app.buttons["saveReminder"].isEnabled)
+        app.buttons["confirmReminderDate"].tap(); XCTAssertTrue(app.buttons["saveReminder"].isEnabled)
+        capture("135-french-reminder-draft"); app.buttons["Annuler"].tap()
+
+        app.buttons["nav-visits"].tap(); app.buttons["prepareAppointment"].tap()
+        let question = app.textFields["appointmentQuestion"]
+        XCTAssertTrue(question.waitForExistence(timeout: 5)); XCTAssertEqual(question.placeholderValue, "Question pour votre médecin")
+        let note = app.staticTexts["appointmentNoteContent"]
+        reveal(app, note); XCTAssertTrue(note.label.contains("Préoccupation")); XCTAssertTrue(note.label.contains("Médicaments consignés"))
+        capture("136-french-preparation-draft"); app.buttons["Terminé"].tap()
+        app.buttons["nav-today"].tap()
+    }
+}
+
+@MainActor final class HarbourFrenchModelTests: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+
+    private func capture(_ name: String) {
+        Thread.sleep(forTimeInterval: 2)
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
+    }
+
+    private func reveal(_ app: XCUIApplication, _ element: XCUIElement) {
+        for _ in 0..<6 { if element.isHittable { return }; app.swipeUp() }
+        XCTAssertTrue(element.isHittable, app.debugDescription)
+    }
+
+    private func recordLabels(_ app: XCUIApplication) -> [String] {
+        app.buttons["nav-records"].tap()
+        for _ in 0..<3 {
+            if app.buttons["record-category-0"].exists { break }
+            app.navigationBars.firstMatch.buttons.firstMatch.tap()
+        }
+        XCTAssertTrue(app.buttons["record-category-0"].waitForExistence(timeout: 5))
+        return (0...2).map { app.buttons["record-category-\($0)"].label }
+    }
+
+    private func send(_ input: String, app: XCUIApplication) {
+        let field = app.textFields["chatInput"]
+        XCTAssertTrue(field.waitForExistence(timeout: 5)); field.tap(); field.typeText(input)
+        XCTAssertTrue(app.buttons["Envoyer le message"].isEnabled); app.buttons["Envoyer le message"].tap()
+    }
+
+    func testCachedSmallModelRoutesFrenchRequestsAndNamesTheConversation() {
+        let app = XCUIApplication()
+        app.launchArguments += ["-AppleLanguages", "(fr-CA)", "-AppleLocale", "fr_CA"]
+        app.launch()
+        XCTAssertTrue(app.buttons["nav-chat"].waitForExistence(timeout: 10))
+        let before = recordLabels(app)
+        app.buttons["nav-chat"].tap(); app.buttons["modelSelector"].tap()
+
+        // Refuse to start inference if Small has not already passed native download verification.
+        func smallIsCached() -> Bool {
+            app.cells.containing(.staticText, identifier: "Qwen Petit").allElementsBoundByIndex.contains { $0.buttons["Retirer"].exists }
+        }
+        for _ in 0..<3 { if smallIsCached() { break }; app.swipeUp() }
+        XCTAssertTrue(smallIsCached(), "Qwen Small must already be cached; this test does not start a download.")
+        let small = app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Qwen Petit")).firstMatch
+        for _ in 0..<3 { if small.isHittable { break }; app.swipeDown() }
+        XCTAssertTrue(small.isHittable); small.tap()
+        let effort = app.sliders["Generation effort"]; reveal(app, effort); effort.adjust(toNormalizedSliderPosition: 0.5)
+        XCTAssertEqual(effort.value as? String, "Standard"); app.buttons["Terminé"].tap()
+        XCTAssertEqual(app.buttons["modelSelector"].value as? String, "Qwen Petit, Standard")
+        app.buttons["Nouvelle conversation"].tap()
+        XCTAssertEqual(app.staticTexts["chatTitle"].label, "Nouvelle conversation")
+
+        let medicines = "Montre-moi les médicaments que j’ai déjà enregistrés."
+        send(medicines, app: app)
+        XCTAssertTrue(app.staticTexts["Vos médicaments"].waitForExistence(timeout: 120), app.debugDescription)
+        // Send returns only after the separate title generation has finished.
+        XCTAssertTrue(app.buttons["Envoyer le message"].waitForExistence(timeout: 90))
+        let title = app.staticTexts["chatTitle"].label
+        let fallback = medicines.split(whereSeparator: \.isWhitespace).prefix(6).joined(separator: " ")
+        XCTAssertFalse(title.isEmpty); XCTAssertNotEqual(title, "Nouvelle conversation"); XCTAssertNotEqual(title, fallback)
+        XCTAssertNotNil(title.range(of: "(?i)médic|medic|liste|consign|enregistr", options: .regularExpression), title)
+        XCTAssertNil(title.range(of: "(?i)\\b(medicine|medicines|medication|medications|recorded|saved|show|list)\\b", options: .regularExpression), title)
+        capture("138-french-model-medicines-title")
+
+        send("Montre mes relevés de fréquence cardiaque.", app: app)
+        XCTAssertTrue(app.staticTexts["Relevés récents"].waitForExistence(timeout: 90), app.debugDescription)
+        XCTAssertTrue(app.buttons["Envoyer le message"].waitForExistence(timeout: 60))
+        XCTAssertEqual(app.staticTexts["chatTitle"].label, title); capture("139-french-model-readings")
+
+        let symptom = "Exemple fictif : j’ai une douleur au genou depuis mardi."
+        send(symptom, app: app)
+        let symptomField = app.textFields["symptomText"]
+        XCTAssertTrue(symptomField.waitForExistence(timeout: 90), app.debugDescription)
+        XCTAssertEqual(symptomField.value as? String, symptom)
+        XCTAssertFalse(app.buttons["saveSymptom"].isEnabled)
+        reveal(app, app.buttons["noEmergencySigns"]); app.buttons["noEmergencySigns"].tap()
+        XCTAssertTrue(app.buttons["saveSymptom"].isEnabled); app.buttons["saveSymptom"].tap()
+        let guidance = app.staticTexts["Santé811"]; reveal(app, guidance); XCTAssertTrue(guidance.exists)
+        XCTAssertEqual(app.buttons["saveSymptom"].label, "Enregistrer")
+        capture("140-french-model-symptom-review"); app.buttons["Annuler"].tap()
+        XCTAssertTrue(app.staticTexts["Vérifiez les détails du symptôme et les signes d’urgence avant d’enregistrer."].exists)
+
+        let reminder = "Exemple fictif : rappelle-moi de réserver une prise de sang."
+        send(reminder, app: app)
+        let reminderField = app.textFields["reminderTitle"]
+        XCTAssertTrue(reminderField.waitForExistence(timeout: 90), app.debugDescription)
+        XCTAssertEqual(reminderField.value as? String, reminder)
+        XCTAssertFalse(app.buttons["saveReminder"].isEnabled)
+        app.buttons["confirmReminderDate"].tap(); XCTAssertTrue(app.buttons["saveReminder"].isEnabled)
+        capture("141-french-model-reminder-review"); app.buttons["Annuler"].tap()
+        XCTAssertTrue(app.staticTexts["Vérifiez le rappel et choisissez sa date."].exists)
+        XCTAssertEqual(recordLabels(app), before)
+        app.buttons["nav-chat"].tap(); XCTAssertEqual(app.staticTexts["chatTitle"].label, title)
     }
 }

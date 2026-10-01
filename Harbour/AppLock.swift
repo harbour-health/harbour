@@ -16,10 +16,10 @@ private enum LockFailure: LocalizedError {
     case storage, invalidPIN, mismatch, authentication
     var errorDescription: String? {
         switch self {
-        case .storage: "The app lock could not access its saved settings. Try again."
-        case .invalidPIN: "Use four digits for your PIN."
-        case .mismatch: "Those PINs don’t match."
-        case .authentication: "Confirm your current app lock before changing it."
+        case .storage: L10n.string("The app lock could not access its saved settings. Try again.")
+        case .invalidPIN: L10n.string("Use four digits for your PIN.")
+        case .mismatch: L10n.string("Those PINs don’t match.")
+        case .authentication: L10n.string("Confirm your current app lock before changing it.")
         }
     }
 }
@@ -85,7 +85,7 @@ private enum LockKeychain {
     var pinLength: Int { usesPIN ? credential?.pinLength ?? 6 : 4 }
     var presentingAuthentication: Bool { context != nil && working }
     var enabled: Bool { credential?.mode != .off && credential != nil }
-    var modeName: String { usesPIN ? "PIN" : enabled ? biometricName : "Off" }
+    var modeName: String { usesPIN ? L10n.string("PIN") : enabled ? biometricName : L10n.string("Off") }
     var retryAfter: Date? { credential?.retryAfter }
     var biometricName: String {
         let context = LAContext(); _ = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil)
@@ -111,7 +111,7 @@ private enum LockKeychain {
     }
     func verifyPIN(_ pin: String, unlock: Bool = false) async -> Bool {
         guard !working, var saved = credential, saved.mode == .pin else { return false }
-        guard saved.retryAfter.map({ $0 <= .now }) ?? true else { error = "Please wait before trying again."; return false }
+        guard saved.retryAfter.map({ $0 <= .now }) ?? true else { error = L10n.string("Please wait before trying again."); return false }
         guard PINVerifier.valid(pin, length: saved.pinLength ?? 6) else { error = LockFailure.invalidPIN.localizedDescription; return false }
         working = true; let current = generation
         defer { if generation == current { working = false } }
@@ -126,20 +126,20 @@ private enum LockKeychain {
             }
             try persist(saved)
             if correct { if unlock { locked = false } else { authorizationExpires = .now.addingTimeInterval(180) }; return true }
-            error = saved.retryAfter == nil ? "Incorrect PIN. Try again." : "Too many attempts. Please wait before trying again."
+            error = L10n.string(saved.retryAfter == nil ? "Incorrect PIN. Try again." : "Too many attempts. Please wait before trying again.")
         } catch { self.error = error.localizedDescription }
         return false
     }
     func authenticateBiometrics(allowChanges: Bool = false) async -> Bool {
         guard !working else { return false }
         let attempt = generation, next = LAContext()
-        next.localizedCancelTitle = "Cancel"
+        next.localizedCancelTitle = L10n.string("Cancel")
         var failure: NSError?
-        guard next.canEvaluatePolicy(.deviceOwnerAuthentication, error: &failure) else { error = failure?.localizedDescription ?? "Set up a device passcode to use Face ID."; return false }
+        guard next.canEvaluatePolicy(.deviceOwnerAuthentication, error: &failure) else { error = failure?.localizedDescription ?? L10n.string("Set up a device passcode to use Face ID."); return false }
         context = next; working = true
         defer { if generation == attempt { context = nil; working = false } }
         do {
-            let success = try await next.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Unlock your Harbour health records.")
+            let success = try await next.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: L10n.string("Unlock your Harbour health records."))
             guard generation == attempt else { return false }
             error = nil; if success && allowChanges { authorizationExpires = .now.addingTimeInterval(180) }; return success
         } catch { if generation == attempt { self.error = error.localizedDescription }; return false }
@@ -148,7 +148,7 @@ private enum LockKeychain {
     func enableBiometrics() async -> Bool {
         guard canChange else { error = LockFailure.authentication.localizedDescription; return false }
         let availability = LAContext(); var failure: NSError?
-        guard availability.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &failure) else { error = failure?.localizedDescription ?? "Set up Face ID in your phone settings."; return false }
+        guard availability.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &failure) else { error = failure?.localizedDescription ?? L10n.string("Set up Face ID in your phone settings."); return false }
         guard await authenticateBiometrics() else { return false }
         guard canChange else { error = LockFailure.authentication.localizedDescription; return false }
         do { try persist(LockCredential(mode: .biometrics)); authorizationExpires = .distantPast; locked = false; return true }
@@ -177,7 +177,7 @@ private struct PINEntry: View {
             VStack(spacing: compact ? 12 : 20) {
                 Spacer(minLength: 8)
                 if !compact { HarbourMark(size: 36).foregroundStyle(Palette.blue) }
-                Text(title).font(.system(compact ? .title2 : .largeTitle, design: .rounded, weight: .bold)).multilineTextAlignment(.center)
+                Text(L10n.string(title)).font(.system(compact ? .title2 : .largeTitle, design: .rounded, weight: .bold)).multilineTextAlignment(.center)
                 HStack(spacing: length == 4 ? 12 : 6) {
                     ForEach(0..<length, id: \.self) { index in
                         ZStack {
@@ -185,14 +185,14 @@ private struct PINEntry: View {
                             if index < code.count { Circle().fill(Palette.ink).frame(width: 12, height: 12) }
                         }.frame(width: length == 4 ? (compact ? 48 : 54) : (compact ? 38 : 44), height: compact ? 48 : 54)
                     }
-                }.accessibilityElement(children: .ignore).accessibilityLabel("PIN")
-                    .accessibilityValue("\(code.count) of \(length) digits entered").accessibilityIdentifier("pinSlots")
+                }.accessibilityElement(children: .ignore).accessibilityLabel(L10n.string("PIN"))
+                    .accessibilityValue(L10n.format("%d of %d digits entered", code.count, length)).accessibilityIdentifier("pinSlots")
                     .animation(reduceMotion ? nil : .easeOut(duration: 0.12), value: code.count)
                 VStack(spacing: 8) {
                     if let error { Text(error).font(.subheadline).foregroundStyle(Palette.coral).multilineTextAlignment(.center) }
                     if let retryAfter {
                         TimelineView(.periodic(from: .now, by: 1)) { tick in
-                            if retryAfter > tick.date { Text("Try again in \(Int(ceil(retryAfter.timeIntervalSince(tick.date)))) seconds").font(.subheadline).foregroundStyle(Palette.muted) }
+                            if retryAfter > tick.date { Text(L10n.format("Try again in %d seconds", Int(ceil(retryAfter.timeIntervalSince(tick.date))))).font(.subheadline).foregroundStyle(Palette.muted) }
                         }
                     }
                 }.frame(minHeight: 24)
@@ -238,7 +238,7 @@ struct LockScreen: View {
                 Spacer(); HarbourMark(size: 60).foregroundStyle(Palette.blue)
                 Text("Harbour is locked").font(.system(.largeTitle, design: .rounded, weight: .bold))
                 if !lock.configured { Button("Try again") { lock.reload() } }
-                else { Button { Task { await lock.unlockBiometrics() } } label: { Label("Unlock with \(lock.biometricName)", systemImage: "faceid").font(.title3.weight(.semibold)) }.buttonStyle(.borderedProminent).disabled(lock.working) }
+                else { Button { Task { await lock.unlockBiometrics() } } label: { Label(L10n.format("Unlock with %@", lock.biometricName), systemImage: "faceid").font(.title3.weight(.semibold)) }.buttonStyle(.borderedProminent).disabled(lock.working) }
                 if lock.working { ProgressView() }
                 if let error = lock.error { Text(error).foregroundStyle(Palette.coral).multilineTextAlignment(.center) }
                 Spacer(); Spacer()
@@ -269,7 +269,7 @@ struct AppLockSettings: View {
             .sheet(isPresented: $settingPIN) { NavigationStack { PINSetup() }.floatingDrawer(height: 560) }
     }
     private func option(_ title: String, symbol: String, selected: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) { HStack(spacing: 16) { Image(systemName: symbol).font(.title2).frame(width: 30); Text(title).font(.title3.weight(.medium)); Spacer(); if selected { Image(systemName: "checkmark") } }.foregroundStyle(Palette.ink).padding(.vertical, 12).contentShape(Rectangle()) }
+        Button(action: action) { HStack(spacing: 16) { Image(systemName: symbol).font(.title2).frame(width: 30); Text(L10n.string(title)).font(.title3.weight(.medium)); Spacer(); if selected { Image(systemName: "checkmark") } }.foregroundStyle(Palette.ink).padding(.vertical, 12).contentShape(Rectangle()) }
             .disabled(lock.working).listRowBackground(Palette.surface).accessibilityIdentifier("lock-option-" + (title == "PIN" ? "pin" : title == "Off" ? "off" : "biometrics")).accessibilityAddTraits(selected ? .isSelected : [])
     }
     private func begin(_ change: LockRequest) {

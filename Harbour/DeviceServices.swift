@@ -5,13 +5,25 @@ import AVFoundation
 import HarbourCore
 import UIKit
 
+/// Speech stays in the app's language; an unavailable local voice never changes languages.
+enum SpeechLanguage {
+    static var identifier: String { L10n.isFrench ? "fr-CA" : "en-CA" }
+    static var locale: Locale { Locale(identifier: identifier) }
+    static var voice: AVSpeechSynthesisVoice? {
+        let voices = AVSpeechSynthesisVoice.speechVoices()
+        let language = L10n.isFrench ? "fr" : "en"
+        return voices.first { $0.language == identifier }
+            ?? voices.first { $0.language.split(separator: "-").first == Substring(language) }
+    }
+}
+
 @MainActor final class HealthService: ObservableObject {
     @Published var busy = false
     @Published var status = ""
     private let health = HKHealthStore()
     private let types: Set<HKObjectType> = [HKQuantityType(.heartRate), HKQuantityType(.bodyTemperature), HKQuantityType(.bloodPressureSystolic), HKQuantityType(.bloodPressureDiastolic)]
     func sync(into store: AppStore) async {
-        guard HKHealthStore.isHealthDataAvailable() else { status = "Apple Health is unavailable on this device."; return }
+        guard HKHealthStore.isHealthDataAvailable() else { status = L10n.string("Apple Health is unavailable on this device."); return }
         busy = true; defer { busy = false }
         do {
             try await health.requestAuthorization(toShare: [], read: types)
@@ -35,8 +47,8 @@ import UIKit
             imported = imported.filter { ReadingParser.valid($0.value, kind: $0.kind) }
             let newCount = imported.filter { r in !store.records.readings.contains { $0.id == r.id } }.count
             store.importReadings(imported)
-            status = imported.isEmpty ? "No readings available. Check Apple Health access and the last 30 days of data." : "\(newCount) new readings imported."
-        } catch { status = "Couldn’t access Apple Health. Check access in Settings." }
+            status = imported.isEmpty ? L10n.string("No readings available. Check Apple Health access and the last 30 days of data.") : L10n.format("%d new readings imported.", newCount)
+        } catch { status = L10n.string("Couldn’t access Apple Health. Check access in Settings.") }
     }
     private func query(_ type: HKSampleType) async throws -> [HKSample] {
         try await withCheckedThrowingContinuation { continuation in
@@ -76,17 +88,17 @@ import UIKit
         observers.append(center.addObserver(forName: AVAudioSession.interruptionNotification, object: nil, queue: .main) { [weak self] notification in
             guard let raw = notification.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt,
                   AVAudioSession.InterruptionType(rawValue: raw) == .began else { return }
-            Task { @MainActor in self?.interrupt("Voice was interrupted. Start voice again when you’re ready.") }
+            Task { @MainActor in self?.interrupt(L10n.string("Voice was interrupted. Start voice again when you’re ready.")) }
         })
         observers.append(center.addObserver(forName: AVAudioSession.routeChangeNotification, object: nil, queue: .main) { [weak self] notification in
             guard let raw = notification.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt,
                   AVAudioSession.RouteChangeReason(rawValue: raw) == .oldDeviceUnavailable else { return }
-            Task { @MainActor in self?.interrupt("The audio device disconnected. Start voice again when you’re ready.") }
+            Task { @MainActor in self?.interrupt(L10n.string("The audio device disconnected. Start voice again when you’re ready.")) }
         })
         observers.append(center.addObserver(forName: AVAudioSession.mediaServicesWereResetNotification, object: nil, queue: .main) { [weak self] _ in
             Task { @MainActor in
                 guard let self else { return }
-                self.interrupt("Audio restarted. Start voice again when you’re ready.")
+                self.interrupt(L10n.string("Audio restarted. Start voice again when you’re ready."))
                 self.engine = AVAudioEngine()
                 self.speaker = AVSpeechSynthesizer(); self.speaker.delegate = self
             }
@@ -106,20 +118,20 @@ import UIKit
         guard UIApplication.shared.applicationState == .active else { stop(); return }
         let speech = await withCheckedContinuation { continuation in SFSpeechRecognizer.requestAuthorization { continuation.resume(returning: $0) } }
         guard generation == current else { return }
-        guard speech == .authorized else { stop(); error = "Enable speech access in Settings."; return }
+        guard speech == .authorized else { stop(); error = L10n.string("Enable speech access in Settings."); return }
         guard UIApplication.shared.applicationState == .active else { stop(); return }
         let microphone = await withCheckedContinuation { continuation in AVAudioApplication.requestRecordPermission { continuation.resume(returning: $0) } }
         guard generation == current else { return }
-        guard microphone else { stop(); error = "Enable microphone access in Settings."; return }
+        guard microphone else { stop(); error = L10n.string("Enable microphone access in Settings."); return }
         guard UIApplication.shared.applicationState == .active else { stop(); return }
-        guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-CA")), recognizer.isAvailable, recognizer.supportsOnDeviceRecognition else { stop(); error = "On-device speech isn’t available for English on this phone."; return }
+        guard let recognizer = SFSpeechRecognizer(locale: SpeechLanguage.locale), recognizer.isAvailable, recognizer.supportsOnDeviceRecognition else { stop(); error = L10n.string("On-device speech isn’t available in the app’s language on this phone."); return }
         do {
             let session = AVAudioSession.sharedInstance()
             try session.setCategory(.record, mode: .measurement, options: [.duckOthers]); try session.setActive(true); audioSessionOwned = true
             let request = SFSpeechAudioBufferRecognitionRequest(); request.requiresOnDeviceRecognition = true; request.shouldReportPartialResults = true
             self.request = request
             let input = engine.inputNode, format = input.outputFormat(forBus: 0)
-            guard format.sampleRate > 0 else { throw NSError(domain: "Audio", code: 1, userInfo: [NSLocalizedDescriptionKey: "No microphone is available."]) }
+            guard format.sampleRate > 0 else { throw NSError(domain: "Audio", code: 1, userInfo: [NSLocalizedDescriptionKey: L10n.string("No microphone is available.")]) }
             input.installTap(onBus: 0, bufferSize: 1024, format: format) { buffer, _ in request.append(buffer) }; hasTap = true
             recognition = recognizer.recognitionTask(with: request) { [weak self] result, failure in
                 Task { @MainActor in
@@ -134,11 +146,11 @@ import UIKit
                         }
                         if result.isFinal { self.deliver(current); return }
                     }
-                    if failure != nil && !self.finishing { self.stop(); self.error = "Voice input stopped. Please try again." }
+                    if failure != nil && !self.finishing { self.stop(); self.error = L10n.string("Voice input stopped. Please try again.") }
                 }
             }
             engine.prepare(); try engine.start(); listening = true
-        } catch { stop(); self.error = error.localizedDescription }
+        } catch { stop(); self.error = L10n.string(error.localizedDescription) }
     }
     func finishUtterance() {
         guard listening else { return }
@@ -151,7 +163,7 @@ import UIKit
         let value = turn.finish(id: current), callback = completed
         stop()
         if let value { callback?(value) }
-        else if callback != nil { error = "No speech was recognized. Please try again." }
+        else if callback != nil { error = L10n.string("No speech was recognized. Please try again.") }
     }
     private func stopMicrophone() { engine.stop(); if hasTap { engine.inputNode.removeTap(onBus: 0); hasTap = false } }
     func stop() {
@@ -165,12 +177,13 @@ import UIKit
         stop(); error = nil
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { finished?(); return }
         guard UIApplication.shared.applicationState == .active else { return }
+        guard let voice = SpeechLanguage.voice else { error = L10n.string("A voice isn’t available in the app’s language on this phone."); return }
         spoken = finished
         do {
             let session = AVAudioSession.sharedInstance(); try session.setCategory(.playback, mode: .spokenAudio); try session.setActive(true); audioSessionOwned = true
-            let utterance = AVSpeechUtterance(string: text); utterance.voice = AVSpeechSynthesisVoice(language: "en-CA"); utterance.rate = 0.45
+            let utterance = AVSpeechUtterance(string: text); utterance.voice = voice; utterance.rate = 0.45
             activeUtterance = ObjectIdentifier(utterance); speaking = true; speaker.speak(utterance)
-        } catch { stop(); self.error = "Couldn’t play the response. " + error.localizedDescription }
+        } catch { stop(); self.error = L10n.format("Couldn’t play the response. %@", error.localizedDescription) }
     }
     nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
         let identifier = ObjectIdentifier(utterance)
@@ -185,7 +198,7 @@ import UIKit
         let identifier = ObjectIdentifier(utterance)
         Task { @MainActor in
             guard self.activeUtterance == identifier else { return }
-            self.stop(); self.error = "Voice playback stopped. Start voice again when you’re ready."
+            self.stop(); self.error = L10n.string("Voice playback stopped. Start voice again when you’re ready.")
         }
     }
 }

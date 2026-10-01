@@ -39,7 +39,9 @@ open Harbour.xcodeproj
 
 Select the shared `Harbour` scheme and an iPhone simulator, then Run. The prepared runtime is already present in this working copy. On a real phone, choose your signing team in **Signing & Capabilities**, enable HealthKit for the bundle ID, and Run. No signing credentials are stored here.
 
-Qwen Small downloads when the first chat message is sent, or from **Settings → Models**. The download is about 491 MB; Balanced is about 1.12 GB. Progress and cancellation are available. Verified models work without a network connection. Voice requires an available on-device English recognizer; it never silently switches to server transcription.
+Qwen Small downloads when the first chat message is sent, or from **Settings → Models**. The download is about 491 MB; Balanced is about 1.12 GB. Progress and cancellation are available. Verified models work without a network connection. Voice requires an available on-device recognizer for the app’s language; it never silently switches to server transcription.
+
+English and Canadian French follow the iOS app language setting. French includes permission prompts, voice controls, notifications, structured notes, medicine search, decimal-comma readings, and bounded French chat/visit input. Original notes and source quotations keep their language. See [localization](docs/localization.md) for coverage and verification limits.
 
 ## Screens
 
@@ -81,7 +83,7 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 <!-- screenshot-gallery:start -->
 ## All screens
 
-115 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
+140 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
 
 ### Today
 
@@ -199,5 +201,23 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | <strong>Chat · Appointment question</strong><br>[<img src="docs/screenshots/110-chat-question-review.png" alt="Chat · Appointment question" width="220">](docs/screenshots/110-chat-question-review.png) | <strong>Chat · Label entry</strong><br>[<img src="docs/screenshots/111-chat-label-scan.png" alt="Chat · Label entry" width="220">](docs/screenshots/111-chat-label-scan.png) |
 | <strong>Medicine label entry</strong><br>[<img src="docs/screenshots/112-label-entry.png" alt="Medicine label entry" width="220">](docs/screenshots/112-label-entry.png) | <strong>On-device voice unavailable</strong><br>[<img src="docs/screenshots/114-voice-input-error.png" alt="On-device voice unavailable" width="220">](docs/screenshots/114-voice-input-error.png) |
 | <strong>Reminder notifications</strong><br>[<img src="docs/screenshots/115-notification-setting.png" alt="Reminder notifications" width="220">](docs/screenshots/115-notification-setting.png) |  |
+
+### Canadian French
+
+| | |
+| :---: | :---: |
+| <strong>Aujourd’hui · Français</strong><br>[<img src="docs/screenshots/117-french-today.png" alt="Aujourd’hui · Français" width="220">](docs/screenshots/117-french-today.png) | <strong>Conversation · Français</strong><br>[<img src="docs/screenshots/118-french-chat.png" alt="Conversation · Français" width="220">](docs/screenshots/118-french-chat.png) |
+| <strong>Dossier · Français</strong><br>[<img src="docs/screenshots/119-french-records.png" alt="Dossier · Français" width="220">](docs/screenshots/119-french-records.png) | <strong>Consultations · Français</strong><br>[<img src="docs/screenshots/120-french-visits.png" alt="Consultations · Français" width="220">](docs/screenshots/120-french-visits.png) |
+| <strong>Aujourd’hui · Français · Sombre</strong><br>[<img src="docs/screenshots/121-french-today-dark.png" alt="Aujourd’hui · Français · Sombre" width="220">](docs/screenshots/121-french-today-dark.png) | <strong>Conversation · Français · Sombre</strong><br>[<img src="docs/screenshots/122-french-chat-dark.png" alt="Conversation · Français · Sombre" width="220">](docs/screenshots/122-french-chat-dark.png) |
+| <strong>Dossier · Français · Sombre</strong><br>[<img src="docs/screenshots/123-french-records-dark.png" alt="Dossier · Français · Sombre" width="220">](docs/screenshots/123-french-records-dark.png) | <strong>Consultations · Français · Sombre</strong><br>[<img src="docs/screenshots/124-french-visits-dark.png" alt="Consultations · Français · Sombre" width="220">](docs/screenshots/124-french-visits-dark.png) |
+| <strong>Réglages · Français</strong><br>[<img src="docs/screenshots/125-french-settings.png" alt="Réglages · Français" width="220">](docs/screenshots/125-french-settings.png) | <strong>Apparence · Français</strong><br>[<img src="docs/screenshots/126-french-appearance.png" alt="Apparence · Français" width="220">](docs/screenshots/126-french-appearance.png) |
+| <strong>NIP · Français</strong><br>[<img src="docs/screenshots/127-french-pin-draft.png" alt="NIP · Français" width="220">](docs/screenshots/127-french-pin-draft.png) | <strong>Recherche de médicaments · Français</strong><br>[<img src="docs/screenshots/128-french-medicine-search.png" alt="Recherche de médicaments · Français" width="220">](docs/screenshots/128-french-medicine-search.png) |
+| <strong>Température · Français</strong><br>[<img src="docs/screenshots/129-french-reading-comma.png" alt="Température · Français" width="220">](docs/screenshots/129-french-reading-comma.png) | <strong>Symptôme · Français</strong><br>[<img src="docs/screenshots/130-french-symptom-draft.png" alt="Symptôme · Français" width="220">](docs/screenshots/130-french-symptom-draft.png) |
+| <strong>Soins d’urgence · Français</strong><br>[<img src="docs/screenshots/131-french-emergency-review.png" alt="Soins d’urgence · Français" width="220">](docs/screenshots/131-french-emergency-review.png) | <strong>Sujets · Français</strong><br>[<img src="docs/screenshots/132-french-topics.png" alt="Sujets · Français" width="220">](docs/screenshots/132-french-topics.png) |
+| <strong>Modèles · Français</strong><br>[<img src="docs/screenshots/133-french-models.png" alt="Modèles · Français" width="220">](docs/screenshots/133-french-models.png) | <strong>Notes de consultation · Français</strong><br>[<img src="docs/screenshots/134-french-visit-notes-draft.png" alt="Notes de consultation · Français" width="220">](docs/screenshots/134-french-visit-notes-draft.png) |
+| <strong>Rappel · Français</strong><br>[<img src="docs/screenshots/135-french-reminder-draft.png" alt="Rappel · Français" width="220">](docs/screenshots/135-french-reminder-draft.png) | <strong>Préparation · Français</strong><br>[<img src="docs/screenshots/136-french-preparation-draft.png" alt="Préparation · Français" width="220">](docs/screenshots/136-french-preparation-draft.png) |
+| <strong>Écrire un message · Français</strong><br>[<img src="docs/screenshots/137-french-chat-controls.png" alt="Écrire un message · Français" width="220">](docs/screenshots/137-french-chat-controls.png) | <strong>Médicaments et titre local · Français</strong><br>[<img src="docs/screenshots/138-french-model-medicines-title.png" alt="Médicaments et titre local · Français" width="220">](docs/screenshots/138-french-model-medicines-title.png) |
+| <strong>Relevés dans la conversation · Français</strong><br>[<img src="docs/screenshots/139-french-model-readings.png" alt="Relevés dans la conversation · Français" width="220">](docs/screenshots/139-french-model-readings.png) | <strong>Symptôme dans la conversation · Français</strong><br>[<img src="docs/screenshots/140-french-model-symptom-review.png" alt="Symptôme dans la conversation · Français" width="220">](docs/screenshots/140-french-model-symptom-review.png) |
+| <strong>Rappel dans la conversation · Français</strong><br>[<img src="docs/screenshots/141-french-model-reminder-review.png" alt="Rappel dans la conversation · Français" width="220">](docs/screenshots/141-french-model-reminder-review.png) |  |
 
 <!-- screenshot-gallery:end -->

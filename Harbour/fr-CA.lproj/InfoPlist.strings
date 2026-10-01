@@ -1,0 +1,6 @@
+/* System permission dialogs. */
+"NSMicrophoneUsageDescription" = "Enregistrez des messages vocaux ou vos consultations médicales sur cet appareil. Vous choisissez quand l’enregistrement commence et se termine.";
+"NSSpeechRecognitionUsageDescription" = "Transcrivez des messages vocaux et des consultations médicales sur cet appareil en texte modifiable.";
+"NSHealthShareUsageDescription" = "Importez les relevés de fréquence cardiaque, de pression artérielle et de température que vous choisissez de partager.";
+"NSFaceIDUsageDescription" = "Utilisez Face ID pour déverrouiller votre dossier de santé Harbour.";
+"NSCameraUsageDescription" = "Lisez l’étiquette du médicament que vous choisissez de photographier. Vous vérifiez les détails avant de les enregistrer.";

@@ -19,7 +19,7 @@ import HarbourCore
     func pending() async -> [String] { await center.pendingNotificationRequests().map(\.identifier) }
     func delivered() async -> [(id: String, date: Date)] { await center.deliveredNotifications().map { ($0.request.identifier, $0.date) } }
     func add(_ plan: CareNotificationPlan) async throws {
-        let content = UNMutableNotificationContent(); content.title = "Harbour"; content.body = "You have a reminder. Open Harbour to view it."; content.sound = .default
+        let content = UNMutableNotificationContent(); content.title = "Harbour"; content.body = L10n.string("You have a reminder. Open Harbour to view it."); content.sound = .default
         let trigger = UNCalendarNotificationTrigger(dateMatching: plan.components, repeats: plan.repeating)
         try await center.add(UNNotificationRequest(identifier: plan.id, content: content, trigger: trigger))
     }
@@ -28,7 +28,7 @@ import HarbourCore
 }
 
 @MainActor final class CareNotifications: ObservableObject {
-    @Published private(set) var status = "Notifications use a private message on your lock screen."
+    @Published private(set) var status = L10n.string("Notifications use a private message on your lock screen.")
     private let delivery: any CareNotificationDelivery
     private let prefix: String
     private var generation = UUID()
@@ -38,8 +38,8 @@ import HarbourCore
         self.delivery = delivery ?? NativeCareNotificationDelivery(); self.prefix = prefix
     }
     func requestAccess() async {
-        do { let allowed = try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]); status = allowed ? "Notifications enabled" : "Notifications are off. Enable them in iPhone Settings." }
-        catch { status = "Couldn’t enable notifications. " + error.localizedDescription }
+        do { let allowed = try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]); status = allowed ? L10n.string("Notifications enabled") : L10n.string("Notifications are off. Enable them in iPhone Settings.") }
+        catch { status = L10n.format("Couldn’t enable notifications. %@", error.localizedDescription) }
     }
     func sync(care: CareData, medicines: [Medicine]) async {
         generation = UUID(); queued = (care, medicines, generation)
@@ -59,17 +59,17 @@ import HarbourCore
         guard generation == current else { return }
         delivery.removePending(pending.filter { $0.hasPrefix(prefix) })
         guard allowed else {
-            if care.reminders.contains(where: \.notify) || care.schedules.contains(where: \.notify) || care.doses.contains(where: { $0.status == .later }) { status = "Notifications are off. Enable them in iPhone Settings." }
+            if care.reminders.contains(where: \.notify) || care.schedules.contains(where: \.notify) || care.doses.contains(where: { $0.status == .later }) { status = L10n.string("Notifications are off. Enable them in iPhone Settings.") }
             return
         }
         let plans = CareNotificationPlan.make(care: care, medicineIDs: Set(medicines.map(\.id))).map { plan in
             var plan = plan; plan.id = prefix + plan.id.dropFirst("harbour-care-".count); return plan
         }
-        status = plans.count >= 60 ? "The next 60 notifications are scheduled." : "Notifications enabled"
+        status = plans.count >= 60 ? L10n.string("The next 60 notifications are scheduled.") : L10n.string("Notifications enabled")
         for plan in plans {
             guard generation == current else { return }
             do { try await delivery.add(plan) }
-            catch { if generation == current { status = "Couldn’t schedule a notification. " + error.localizedDescription } }
+            catch { if generation == current { status = L10n.format("Couldn’t schedule a notification. %@", error.localizedDescription) } }
         }
         let delivered = await delivery.delivered()
         guard generation == current else { return }

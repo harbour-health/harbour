@@ -7,8 +7,9 @@ enum Palette {
     static let ink = adaptive(0x181818, 0xF7F7F7)
     static let muted = adaptive(0x606060, 0xBFBFBF)
     static let line = adaptive(0xE5E5E5, 0x404040)
-    static let dockInactive = adaptive(0x999999, 0x666666)
-    static let dockSelection = adaptive(0x181818, 0x404040)
+    static let dockBackground = Color(white: 35.0 / 255)
+    static let dockInactive = Color(white: 91.0 / 255)
+    static let dockSelection = Color(white: 13.0 / 255)
     static let blue = adaptive(0x365DCE, 0xA0B6FF)
     static let coral = adaptive(0xB94831, 0xFFAE98)
     static let blueWash = adaptive(0xE3E9FC, 0x303C5B)
@@ -38,7 +39,7 @@ struct AppearanceView: View {
                 Button { appearance = choice.rawValue } label: {
                     HStack(spacing: 16) {
                         Image(systemName: choice.symbol).font(.title2).frame(width: 30)
-                        Text(choice.rawValue).font(.title3.weight(.medium))
+                        Text(L10n.string(choice.rawValue)).font(.title3.weight(.medium))
                         Spacer()
                         if appearance == choice.rawValue { Image(systemName: "checkmark").font(.headline) }
                     }.foregroundStyle(Palette.ink).padding(.vertical, 12).contentShape(Rectangle())
@@ -68,7 +69,7 @@ struct EffortSlider: UIViewRepresentable {
     func makeUIView(context: Context) -> WideTrackSlider {
         let slider = WideTrackSlider()
         slider.minimumValue = 0; slider.maximumValue = 2
-        slider.accessibilityLabel = "Generation effort"
+        slider.accessibilityLabel = L10n.string("Generation effort")
         slider.accessibilityIdentifier = "Generation effort"
         slider.addTarget(context.coordinator, action: #selector(Coordinator.changed(_:)), for: .valueChanged)
         return slider
@@ -86,7 +87,7 @@ struct EffortSlider: UIViewRepresentable {
             let border = UIBezierPath(ovalIn: CGRect(x: 1, y: 1, width: 26, height: 26)); border.lineWidth = 1; border.stroke()
         }
         slider.setThumbImage(thumb, for: .normal)
-        slider.accessibilityValue = Effort.allCases[Int(value.rounded())].rawValue
+        slider.accessibilityValue = Effort.allCases[Int(value.rounded())].title
     }
     private func track(_ color: UIColor) -> UIImage {
         UIGraphicsImageRenderer(size: CGSize(width: 28, height: 28)).image { _ in

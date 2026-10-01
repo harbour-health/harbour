@@ -19,6 +19,7 @@ enum AppSheet: Identifiable {
         WindowGroup {
             LockShell().environmentObject(lock).environmentObject(store).environmentObject(models).environmentObject(health).environmentObject(recorder).environmentObject(alerts)
                 .tint(Palette.ink)
+                .environment(\.locale, L10n.locale)
                 .preferredColorScheme((AppearanceChoice(rawValue: appearance) ?? .system).scheme)
         }
     }
@@ -61,7 +62,11 @@ struct RootView: View {
         .toolbar(.hidden, for: .tabBar)
         .environment(\.floatingDockClearance, keyboardVisible ? 0 : 86)
         .overlay(alignment: .bottom) {
-            if !keyboardVisible { NavigationDock(selection: $tab) }
+            NavigationDock(selection: $tab)
+                .opacity(keyboardVisible ? 0 : 1)
+                .allowsHitTesting(!keyboardVisible)
+                .accessibilityHidden(keyboardVisible)
+                .transaction { $0.disablesAnimations = true }
         }
         .background(Palette.canvas)
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardVisible = true }
@@ -135,8 +140,8 @@ struct FeatureRow: View {
         HStack(spacing: 14) {
             FeatureIcon(symbol: symbol, colour: colour)
             VStack(alignment: .leading, spacing: 4) {
-                Text(title).font(.title3.weight(.medium)).foregroundStyle(Palette.ink)
-                if let subtitle { Text(subtitle).font(.subheadline).foregroundStyle(Palette.muted) }
+                Text(L10n.string(title)).font(.title3.weight(.medium)).foregroundStyle(Palette.ink)
+                if let subtitle { Text(L10n.string(subtitle)).font(.subheadline).foregroundStyle(Palette.muted) }
             }
             Spacer(minLength: 8)
             Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Palette.muted)
@@ -188,8 +193,8 @@ struct TodayView: View {
             .navigationTitle("Today").toolbar { ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) } }
     }
     @ViewBuilder private var shortcuts: some View {
-        illustratedShortcut("Medicines", detail: "\(store.records.medicines.count) recorded", kind: .medicines, colour: Palette.blueWash, action: openMedicines).accessibilityIdentifier("openMedicines")
-        illustratedShortcut("Symptoms", detail: "\(store.records.symptoms.count) recorded", kind: .symptoms, colour: Palette.coralWash, action: openSymptoms)
+        illustratedShortcut("Medicines", detail: L10n.format("%lld recorded", Int64(store.records.medicines.count)), kind: .medicines, colour: Palette.blueWash, action: openMedicines).accessibilityIdentifier("openMedicines")
+        illustratedShortcut("Symptoms", detail: L10n.format("%lld recorded", Int64(store.records.symptoms.count)), kind: .symptoms, colour: Palette.coralWash, action: openSymptoms)
             .accessibilityIdentifier("addSymptom")
     }
     private func illustratedShortcut(_ title: String, detail: String, kind: IllustrationKind, colour: Color, action: @escaping () -> Void) -> some View {
@@ -197,7 +202,7 @@ struct TodayView: View {
             ZStack(alignment: .topLeading) {
                 colour
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(title).font(.system(.title3, design: .rounded, weight: .bold))
+                    Text(L10n.string(title)).font(.system(.title3, design: .rounded, weight: .bold))
                     Text(detail).font(.body).lineLimit(2)
                 }.padding(18)
             }.frame(maxWidth: .infinity).frame(height: typeSize.isAccessibilitySize ? 320 : 190)
@@ -218,9 +223,9 @@ struct ReadingRow: View {
     var body: some View {
         HStack(spacing: 14) {
             Image(systemName: reading.kind.symbol).foregroundStyle(.red).frame(width: 24)
-            VStack(alignment: .leading, spacing: 5) { Text(reading.kind.rawValue).font(.body.weight(.medium)); Text(reading.date, format: .dateTime.month(.abbreviated).day().hour().minute()).font(.subheadline).foregroundStyle(Palette.muted) }
+            VStack(alignment: .leading, spacing: 5) { Text(L10n.string(reading.kind.rawValue)).font(.body.weight(.medium)); Text(reading.date, format: .dateTime.month(.abbreviated).day().hour().minute()).font(.subheadline).foregroundStyle(Palette.muted) }
             Spacer()
-            HStack(alignment: .firstTextBaseline, spacing: 4) { Text(reading.value).font(.title2.weight(.semibold)); Text(reading.kind.unit).font(.subheadline).foregroundStyle(Palette.muted) }
+            HStack(alignment: .firstTextBaseline, spacing: 4) { Text(L10n.readingValue(reading)).font(.title2.weight(.semibold)); Text(reading.kind.unit).font(.subheadline).foregroundStyle(Palette.muted) }
         }.foregroundStyle(Palette.ink).padding(.vertical, 12).listRowBackground(Color.clear).accessibilityElement(children: .combine)
     }
 }

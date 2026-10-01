@@ -69,6 +69,21 @@ TITLES = {
     '110-chat-question-review': 'Chat · Appointment question', '111-chat-label-scan': 'Chat · Label entry',
     '112-label-entry': 'Medicine label entry', '113-voice-mode': 'Voice conversation',
     '114-voice-input-error': 'On-device voice unavailable', '115-notification-setting': 'Reminder notifications', '116-today-large-text': 'Today · Largest text',
+    '117-french-today': 'Aujourd’hui · Français', '118-french-chat': 'Conversation · Français',
+    '119-french-records': 'Dossier · Français', '120-french-visits': 'Consultations · Français',
+    '121-french-today-dark': 'Aujourd’hui · Français · Sombre', '122-french-chat-dark': 'Conversation · Français · Sombre',
+    '123-french-records-dark': 'Dossier · Français · Sombre', '124-french-visits-dark': 'Consultations · Français · Sombre',
+    '125-french-settings': 'Réglages · Français', '126-french-appearance': 'Apparence · Français',
+    '127-french-pin-draft': 'NIP · Français', '128-french-medicine-search': 'Recherche de médicaments · Français',
+    '129-french-reading-comma': 'Température · Français', '130-french-symptom-draft': 'Symptôme · Français',
+    '131-french-emergency-review': 'Soins d’urgence · Français', '132-french-topics': 'Sujets · Français',
+    '133-french-models': 'Modèles · Français', '134-french-visit-notes-draft': 'Notes de consultation · Français',
+    '135-french-reminder-draft': 'Rappel · Français', '136-french-preparation-draft': 'Préparation · Français',
+    '137-french-chat-controls': 'Écrire un message · Français',
+    '138-french-model-medicines-title': 'Médicaments et titre local · Français',
+    '139-french-model-readings': 'Relevés dans la conversation · Français',
+    '140-french-model-symptom-review': 'Symptôme dans la conversation · Français',
+    '141-french-model-reminder-review': 'Rappel dans la conversation · Français',
 }
 
 parser = argparse.ArgumentParser()
@@ -123,7 +138,14 @@ try:
             screenshot.thumbnail((304, 720))
             x, y = 24 + (index % 3) * 352, 18 + (index // 3) * 820
             overview.paste(screenshot, (x + (304 - screenshot.width) // 2, y))
-            draw.text((x, y + 742), TITLES.get(path.stem, path.stem), font=font, fill='#141414')
+            caption_lines = ['']
+            for word in TITLES.get(path.stem, path.stem).split():
+                candidate = (caption_lines[-1] + ' ' + word).strip()
+                if caption_lines[-1] and draw.textlength(candidate, font=font) > 304:
+                    caption_lines.append(word)
+                else:
+                    caption_lines[-1] = candidate
+            draw.multiline_text((x, y + 742), '\n'.join(caption_lines), font=font, spacing=4, fill='#141414')
         overview.save(args.output / f'overview-{offset // 9 + 1}.jpg', quality=90)
     preview_files = ['01-today.png', '64-records.png', '11-chat-empty.png', '31-today-dark.png']
     if all((args.output / name).exists() for name in preview_files):
@@ -151,7 +173,8 @@ if args.update_readme:
         'Health permissions': {26, 30, 63},
         'Evaluation': {17, 29, 86},
         'Reminders, schedules, and preparation': set(range(91, 104)),
-        'Voice and care tools in chat': set(range(104, 120)),
+        'Voice and care tools in chat': set(range(104, 116)),
+        'Canadian French': set(range(117, 142)),
     }
     sections = {name: [] for name in groups}
     for entry in entries:

@@ -130,19 +130,36 @@ public enum CareRules {
         return result
     }
     public static func question(from text: String) -> String {
-        text.replacingOccurrences(of: "(?i)^(save|add|remember)\\s+(this\\s+)?(question\\s*:?\\s*)?(for (my |the )?(doctor|appointment)\\s*:?\\s*)?", with: "", options: .regularExpression).trimmingCharacters(in: .whitespacesAndNewlines)
+        let english = "(?i)^(save|add|remember)\\s+(this\\s+)?(question\\s*:?\\s*)?(for (my |the )?(doctor|appointment)\\s*:?\\s*)?"
+        let french = "(?i)^(enregistre|enregistrer|sauve|sauvegarde|sauvegarder|ajoute|ajouter|garde|garder)\\s+(?:(?:cette|une|la)\\s+)?(?:question\\s*:?\\s*)?(?:pour (?:mon |le |un |la |ma )?(?:médecin|medecin|docteur|rendez-vous)\\s*:?\\s*)?"
+        return text.replacingOccurrences(of: english, with: "", options: .regularExpression)
+            .replacingOccurrences(of: french, with: "", options: .regularExpression).trimmingCharacters(in: .whitespacesAndNewlines)
     }
     public static func times(in text: String) -> [DoseTime] {
-        let regex = try! NSRegularExpression(pattern: "(?i)\\b(1[0-2]|0?[1-9])(?::([0-5][0-9]))?\\s*(am|pm)\\b")
         let ns = text as NSString
-        return Array(Set(regex.matches(in: text, range: NSRange(location: 0, length: ns.length)).map { match in
+        var times: [DoseTime] = []
+        let english = try! NSRegularExpression(pattern: "(?i)\\b(1[0-2]|0?[1-9])(?::([0-5][0-9]))?\\s*(am|pm)\\b")
+        for match in english.matches(in: text, range: NSRange(location: 0, length: ns.length)) {
             let h = Int(ns.substring(with: match.range(at: 1)))! % 12
             let m = match.range(at: 2).location == NSNotFound ? 0 : Int(ns.substring(with: match.range(at: 2)))!
-            return DoseTime(hour: h + (ns.substring(with: match.range(at: 3)).lowercased() == "pm" ? 12 : 0), minute: m)
-        })).sorted { $0.hour * 60 + $0.minute < $1.hour * 60 + $1.minute }
+            times.append(DoseTime(hour: h + (ns.substring(with: match.range(at: 3)).lowercased() == "pm" ? 12 : 0), minute: m))
+        }
+        // Accept literal French 24-hour notation; never infer times from "morning" or frequency.
+        let clocks = ["(?i)\\b([01]?[0-9]|2[0-3])\\s*h(?:\\s*([0-5][0-9]))?(?![0-9]|\\s+[0-9])\\b", "(?i)\\b([01]?[0-9]|2[0-3]):([0-5][0-9])\\b(?!\\s*(?:am|pm)\\b)"]
+        for pattern in clocks {
+            let regex = try! NSRegularExpression(pattern: pattern)
+            for match in regex.matches(in: text, range: NSRange(location: 0, length: ns.length)) {
+                let h = Int(ns.substring(with: match.range(at: 1)))!
+                let m = match.range(at: 2).location == NSNotFound ? 0 : Int(ns.substring(with: match.range(at: 2)))!
+                times.append(DoseTime(hour: h, minute: m))
+            }
+        }
+        return Array(Set(times)).sorted { $0.hour * 60 + $0.minute < $1.hour * 60 + $1.minute }
     }
     public static func labelInstructions(_ text: String) -> String {
-        text.components(separatedBy: .newlines).filter { $0.range(of: "(?i)^(take|directions|dosage|apply|use)\\b", options: .regularExpression) != nil }.prefix(4).joined(separator: "\n")
+        text.components(separatedBy: .newlines).filter {
+            InputLanguage.folded($0).range(of: "^(take|directions|dosage|apply|use|prendre|prenez|posologie|appliquer|appliquez|utiliser|utilisez|mode d'emploi)\\b", options: .regularExpression) != nil
+        }.prefix(4).joined(separator: "\n")
     }
     public static func labelCandidates(_ text: String) -> [Medicine] { Catalog.mentioned(in: String(text.prefix(12_000))) }
     public static func appointmentNote(records: Records, care: CareData) -> String {

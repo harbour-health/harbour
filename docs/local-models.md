@@ -10,7 +10,7 @@ The pinned runtime is llama.cpp `b10549`. Its release archive includes device an
 
 Tool routing can pass a GBNF grammar made by `ToolOutputGrammar.make(allowedTools:)`. It permits exactly `{"tool":"<allowed name>","arg":""}`. The caller supplies source-valid names from `ToolPlanner.generationTools` for the current request and saved records; the model cannot write treatment advice, dose details, or other argument text into this envelope. A grammar sampler filters tokens before greedy selection, and llama.cpp's `llama_sampler_sample` accepts each selected token to advance the grammar. The sampler chain owns both samplers and is freed when generation returns, fails, or is cancelled.
 
-`ModelManager` chooses weights and streams a foreground URLSession download to a temporary file. The UI receives byte progress. A streaming SHA-256 and exact-size check must pass before atomic installation and creation of a verified marker. Cancelled and failed downloads remove temporary files. A later retry starts from the beginning; background transfer and resume data are not implemented. There is no automatic network fallback for a failed inference.
+`ModelManager` chooses weights and streams a foreground URLSession download to a temporary file. The UI receives byte progress and an `isVerifying` state flag; it does not infer verification state from translated status text. A streaming SHA-256 and exact-size check must pass before atomic installation and creation of a verified marker. The flag clears when the operation completes, fails, or observes cancellation. Cancelled and failed downloads remove temporary files. A later retry starts from the beginning; background transfer and resume data are not implemented. There is no automatic network fallback for a failed inference.
 
 | Model | Revision | Bytes | SHA-256 |
 | --- | --- | ---: | --- |
@@ -21,6 +21,8 @@ Downloads come from the official [Qwen Small repository](https://huggingface.co/
 
 Automatic selection uses Small in the simulator. On a physical device it uses Balanced only with at least 8 GB of memory, nominal thermal state, and low-power mode off; otherwise Small. This is an initial heuristic, not a validated device benchmark policy. Manual selection remains available. Effort is a 96/160/256-token output budget, not a guarantee of reasoning quality. Only the active model has an inference context; switching frees the previous context.
 
+`ModelManager.generate` adds an app-language instruction to the existing ChatML system message. Generated titles and user-facing prose request Canadian French when the app's active localization is French, otherwise Canadian English. Required JSON keys, tool names, enum values, empty routing arguments, medicine names, source quotes, and extracted instructions stay exact. This preserves the grammar and source-grounding checks; it does not establish that every generated title will follow the instruction or that French medical extraction has been validated. The model remains subject to the original safety prompt and ordinary review screens.
+
 ## How to change it
 
 Generation stops only after the outer JSON object is complete. `JSONEnvelope` tracks nesting, quoted strings, and escapes; a nested `arg` object's closing brace must not stop generation. The core planner still parses and validates the completed object against the original message. Runtime regression tests cover this independently of model quality.
@@ -29,6 +31,8 @@ Keep tool names in lowercase ASCII identifier form (`[a-z][a-z0-9_]*`); empty li
 
 Update filename, immutable revision, byte count, and checksum together in `ModelChoice`. A different model family also requires the correct prompt template; the current template is Qwen ChatML. Extend the CPU/Metal tests before changing the runtime. Never adapt arbitrary tool names into executable operations.
 
+Change output-language policy in `ModelManager.localizedPrompt` and localized display labels in the app resources. Keep `ModelChoice` and `Effort` raw values stable because they are persisted in user defaults. `Effort.title` supplies the translated display name. Never translate schema identifiers or source evidence to satisfy the language instruction.
+
 The first older runtime failed Metal startup on this Mac, and the first newer CLI process hit a teardown assertion when exiting before releasing its context. The current probe explicitly unloads the runtime before exiting. Simulator inference is tested separately from Mac Metal inference.
 
 ## Configuration
@@ -36,6 +40,8 @@ The first older runtime failed Metal startup on this Mac, and the first newer CL
 `scripts/prepare-runtime.sh` requires Xcode, CMake, curl, unzip, and shasum. `HARBOUR_RUNTIME_VENDOR` can override the output directory for clean setup testing. Runtime archive SHA-256: `636709d4a7b49ac7f2ed6dc8a4de3f278c257cac7248fe40d6a513f671e4bff4`. Source tarball SHA-256: `418ef98f058952c4f2e1fba0f77a73cbbfac2e5bf4146a0dc3202777ed5d9c1f`.
 
 Download timeout: 30 minutes total, 60 seconds per request. Model storage is Application Support/Models and is excluded from iOS backup. Context is 2,048 tokens; threads are capped at four. Large inputs fail explicitly.
+
+The active Bundle localization, exposed by `L10n.isFrench`, chooses the generated prose language. No model or language preference changes the pinned download URLs, model verification, grammar, or local inference path.
 
 `LocalModel.generate(file:prompt:maxTokens:grammar:)` defaults `grammar` to `nil`, so title and visit generation keep their existing output formats. A supplied grammar starts from its `root` rule. Empty grammar strings, embedded NULs, and grammar allocation/parsing failures raise `ModelError.grammar`; they never silently fall back to unconstrained output. The output token budget can still end before an envelope is complete, which the core parser rejects.
 

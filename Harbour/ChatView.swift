@@ -37,12 +37,12 @@ struct ChatView: View {
                             starter("Check medicines", symbol: "pills", colour: Palette.blue, hint: "Interactions")
                             starter("Record a symptom", symbol: "cross.case", colour: Palette.coral, hint: "Symptoms")
                             starter("Add a reading", symbol: "waveform.path.ecg", colour: Palette.coral, hint: "Readings")
-                        }.padding(.horizontal, 20).frame(maxWidth: 400).frame(maxWidth: .infinity)
+                        }.frame(maxWidth: 400).frame(maxWidth: .infinity)
                     }
                     ForEach(store.messages) { message in MessageView(message: message, speak: { if !recorder.active { voice.speak(message.spokenText) } }).id(message.id).transition(.opacity.combined(with: .move(edge: .bottom))) }
                     if busy {
-                        HStack(spacing: 12) { HarbourMark(size: 32, spinning: true).foregroundStyle(Palette.blue); Text(models.downloading == nil ? "Thinking…" : models.status).font(.subheadline).foregroundStyle(Palette.muted) }.id("pending")
-                        if models.downloading != nil { VStack(alignment: .leading, spacing: 8) { ProgressView(value: models.progress); Text(models.status == "Verifying download" ? models.status : "\(Int(models.progress * 100))% downloaded").font(.caption).foregroundStyle(Palette.muted) } }
+                        HStack(spacing: 12) { HarbourMark(size: 32, spinning: true).foregroundStyle(Palette.blue); Text(models.downloading == nil ? L10n.string("Thinking…") : models.status).font(.subheadline).foregroundStyle(Palette.muted) }.id("pending")
+                        if models.downloading != nil { VStack(alignment: .leading, spacing: 8) { ProgressView(value: models.progress); Text(models.isVerifying ? models.status : L10n.format("%lld%% downloaded", Int64(models.progress * 100))).font(.caption).foregroundStyle(Palette.muted) } }
                     }
                     Color.clear.frame(height: 1).id("bottom")
                 }.animation(reduceMotion ? nil : .easeOut(duration: 0.3), value: store.messages.count).padding(.horizontal, AppLayout.screenInset).padding(.bottom, 16).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity)
@@ -65,7 +65,7 @@ struct ChatView: View {
         .sheet(isPresented: $modelSheet) { NavigationStack { ModelsView(standalone: true) }.floatingDrawer(height: 680) }
         .sheet(isPresented: $toolSheet) { topicPicker.floatingDrawer(height: 355) }
         .confirmationDialog("Delete all records and chat?", isPresented: $deleteConfirmation, titleVisibility: .visible) { Button("Delete all", role: .destructive) { store.clear() }; Button("Cancel", role: .cancel) {} }
-        .confirmationDialog("Remove \(removal?.name ?? "medicine") from your list?", isPresented: Binding(get: { removal != nil }, set: { if !$0 { removal = nil } }), titleVisibility: .visible) { Button("Remove", role: .destructive) { if let removal { store.removeMedicine(removal.id); store.append(ChatMessage(text: "Removed \(removal.name) from your list.")) }; removal = nil } }
+        .confirmationDialog(L10n.format("Remove %@ from your list?", removal.map(L10n.medicineName) ?? L10n.string("medicine")), isPresented: Binding(get: { removal != nil }, set: { if !$0 { removal = nil } }), titleVisibility: .visible) { Button("Remove", role: .destructive) { if let removal { store.removeMedicine(removal.id); store.append(ChatMessage(text: L10n.format("Removed %@ from your list.", L10n.medicineName(removal)))) }; removal = nil } }
         .alert("Voice input", isPresented: Binding(get: { voice.error != nil }, set: { if !$0 { voice.error = nil } })) { Button("OK") { voice.error = nil } } message: { Text(voice.error ?? "") }
         .onChange(of: sheet?.id) { voice.stop() }
         .onChange(of: modelSheet) { if modelSheet { voice.stop() } }
@@ -77,7 +77,7 @@ struct ChatView: View {
     }
     private func starter(_ title: String, symbol: String, colour: Color, hint: String) -> some View {
         Button { self.hint = hint; focused = true } label: {
-            HStack(spacing: 14) { Image(systemName: symbol).font(.title2).foregroundStyle(colour).frame(width: 32); Text(title).font(.title3.weight(.medium)).foregroundStyle(Palette.ink); Spacer(); Image(systemName: "arrow.up.left").font(.body).foregroundStyle(Palette.muted) }
+            HStack(spacing: 14) { Image(systemName: symbol).font(.title2).foregroundStyle(colour).frame(width: 32); Text(L10n.string(title)).font(.title3.weight(.medium)).foregroundStyle(Palette.ink); Spacer(); Image(systemName: "arrow.up.left").font(.body).foregroundStyle(Palette.muted) }
                 .padding(.vertical, 14).contentShape(Rectangle())
         }.buttonStyle(PressFeedback()).accessibilityIdentifier("starter-" + hint.lowercased())
     }
@@ -86,7 +86,7 @@ struct ChatView: View {
             VStack(alignment: .leading, spacing: 12) {
                 if voiceMode {
                     HStack {
-                        Label(voice.listening ? "Listening" : voice.finishing ? "Finishing…" : voice.speaking ? "Speaking" : busy ? "Thinking…" : "Voice paused", systemImage: "waveform").symbolEffect(.variableColor, options: .repeating, isActive: !reduceMotion && (voice.listening || voice.speaking)).foregroundStyle(Palette.coral)
+                        Label(L10n.string(voice.listening ? "Listening" : voice.finishing ? "Finishing…" : voice.speaking ? "Speaking" : busy ? "Thinking…" : "Voice paused"), systemImage: "waveform").symbolEffect(.variableColor, options: .repeating, isActive: !reduceMotion && (voice.listening || voice.speaking)).foregroundStyle(Palette.coral)
                         Spacer(); Button("End voice") { voiceMode = false; voice.stop() }.font(.body.weight(.medium)).frame(minHeight: AppLayout.controlSize).contentShape(Rectangle())
                     }.accessibilityIdentifier("voiceModeStatus")
                 }
@@ -95,7 +95,7 @@ struct ChatView: View {
                     .padding(.horizontal, 6).padding(.top, 6)
                     .frame(minHeight: verticalSize == .compact ? 54 : 82, alignment: .topLeading)
                 if let hint {
-                    Button { self.hint = nil } label: { HStack(spacing: 5) { Text(hint).font(.subheadline); Image(systemName: "xmark").font(.caption2) }.padding(.horizontal, 10).padding(.vertical, 7).background(Palette.blueWash, in: Capsule()).foregroundStyle(Palette.ink) }.accessibilityLabel("Clear \(hint) topic")
+                    Button { self.hint = nil } label: { HStack(spacing: 5) { Text(L10n.string(hint)).font(.subheadline); Image(systemName: "xmark").font(.caption2) }.padding(.horizontal, 10).padding(.vertical, 7).background(Palette.blueWash, in: Capsule()).foregroundStyle(Palette.ink) }.accessibilityLabel(L10n.format("Clear %@ topic", L10n.string(hint)))
                 }
                 HStack(spacing: 4) {
                     Button { focused = false; toolSheet = true } label: { ToolbarGlyph(symbol: "plus") }.accessibilityLabel("Choose a topic")
@@ -106,24 +106,24 @@ struct ChatView: View {
                                 modelLabel(compact: false).fixedSize(horizontal: true, vertical: false)
                                 modelLabel(compact: true).fixedSize(horizontal: true, vertical: false)
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text(models.resolved == .balanced ? "Balanced" : "Small").font(.body.weight(.medium))
-                                    Text(models.effort.rawValue).font(.body).foregroundStyle(Palette.muted)
+                                    Text(L10n.string(models.resolved == .balanced ? "Balanced" : "Small")).font(.body.weight(.medium))
+                                    Text(models.effort.title).font(.body).foregroundStyle(Palette.muted)
                                 }
                             }
                             Image(systemName: "chevron.down").font(.caption2)
                         }
                             .padding(.horizontal, 10).frame(minHeight: 48).contentShape(RoundedRectangle(cornerRadius: 10))
-                    }.layoutPriority(-1).accessibilityLabel("Choose model").accessibilityValue(models.resolved.title + ", " + models.effort.rawValue).accessibilityIdentifier("modelSelector")
+                    }.layoutPriority(-1).accessibilityLabel("Choose model").accessibilityValue(L10n.string(models.resolved.title) + ", " + models.effort.title).accessibilityIdentifier("modelSelector")
                     if voiceMode {
                         Button {
                             if voice.listening { voice.finishUtterance() }
                             else if voice.speaking { voice.stop(); startVoiceTurn() }
                             else if !busy { startVoiceTurn() }
-                        } label: { Image(systemName: voice.listening ? "mic.fill" : "waveform").foregroundStyle(Palette.coral).frame(width: 44, height: 48) }.accessibilityLabel(voice.listening ? "Finish speaking" : "Resume voice")
+                        } label: { Image(systemName: voice.listening ? "mic.fill" : "waveform").foregroundStyle(Palette.coral).frame(width: 44, height: 48) }.accessibilityLabel(L10n.string(voice.listening ? "Finish speaking" : "Resume voice"))
                     } else {
                         Menu {
                             Button("Voice conversation", systemImage: "waveform") { focused = false; voiceMode = true; startVoiceTurn() }
-                            Button(voice.listening ? "Finish dictation" : "Dictate message", systemImage: "mic") {
+                            Button(L10n.string(voice.listening ? "Finish dictation" : "Dictate message"), systemImage: "mic") {
                                 if voice.listening { voice.finishUtterance() }
                                 else { let original = draft; Task { await voice.start { transcript in draft = original.isEmpty ? transcript : original + " " + transcript } } }
                             }
@@ -132,7 +132,7 @@ struct ChatView: View {
                     Button { busy ? cancel() : send() } label: {
                         Image(systemName: busy ? "stop.fill" : "arrow.up").font(.body.weight(.semibold))
                             .foregroundStyle(Palette.canvas).frame(width: 44, height: 44).background(Palette.ink, in: Circle())
-                    }.accessibilityLabel(busy ? "Stop" : "Send message").disabled(!busy && draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    }.accessibilityLabel(L10n.string(busy ? "Stop" : "Send message")).disabled(!busy && draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
             .padding(16).background(Palette.surface, in: RoundedRectangle(cornerRadius: 28))
@@ -143,8 +143,8 @@ struct ChatView: View {
     }
     private func modelLabel(compact: Bool) -> some View {
         HStack(spacing: 5) {
-            Text(compact ? (models.resolved == .balanced ? "Balanced" : "Small") : (models.resolved == .balanced ? "Qwen 1.5B" : "Qwen 0.5B")).font(.body.weight(.medium))
-            Text(models.effort.rawValue).font(.body).foregroundStyle(Palette.muted)
+            Text(compact ? L10n.string(models.resolved == .balanced ? "Balanced" : "Small") : (models.resolved == .balanced ? "Qwen 1.5B" : "Qwen 0.5B")).font(.body.weight(.medium))
+            Text(models.effort.title).font(.body).foregroundStyle(Palette.muted)
         }
     }
     private var topicPicker: some View {
@@ -175,7 +175,7 @@ struct ChatView: View {
         store.append(message)
         // Emergency wording is checked before any download or model inference.
         if HealthRules.emergencyCue(input) {
-            store.append(ChatMessage(text: HealthRules.guidance(Symptom(text: input))))
+            store.append(ChatMessage(text: L10n.string(HealthRules.guidance(Symptom(text: input)))))
             sheet = .symptom(input); speakReply(); return
         }
         busy = true
@@ -191,34 +191,34 @@ struct ChatView: View {
                 execute(action)
                 if firstMessage, let title = try? await models.title(for: input), !Task.isCancelled, operationID == currentID { store.nameChat(title, firstMessage: message.id) }
             } catch is CancellationError { }
-            catch { if !Task.isCancelled { store.append(ChatMessage(text: error.localizedDescription)); if firstMessage, let title = try? await models.title(for: input), !Task.isCancelled, operationID == currentID { store.nameChat(title, firstMessage: message.id) } } }
+            catch { if !Task.isCancelled { store.append(ChatMessage(text: L10n.string(error.localizedDescription))); if firstMessage, let title = try? await models.title(for: input), !Task.isCancelled, operationID == currentID { store.nameChat(title, firstMessage: message.id) } } }
         }
     }
     private func execute(_ action: ValidatedAction) {
         switch action {
-        case .reply(let text): store.append(ChatMessage(text: text))
-        case .symptom(let text): sheet = .symptom(text); store.append(ChatMessage(text: "Review the symptom details and emergency signs before saving."))
-        case .add(let medicine): sheet = .medicine(medicine); store.append(ChatMessage(text: "Confirm the exact product and instructions for \(medicine.name)."))
+        case .reply(let text): store.append(ChatMessage(text: L10n.string(text)))
+        case .symptom(let text): sheet = .symptom(text); store.append(ChatMessage(text: L10n.string("Review the symptom details and emergency signs before saving.")))
+        case .add(let medicine): sheet = .medicine(medicine); store.append(ChatMessage(text: L10n.format("Confirm the exact product and instructions for %@.", L10n.medicineName(medicine))))
         case .remove(let medicine): removal = medicine
-        case .medicines: store.append(ChatMessage(text: store.records.medicines.isEmpty ? "No medicines recorded." : "Your medicines", medicines: store.records.medicines))
-        case .interactions(let medicines): store.append(ChatMessage(text: "Medicine check", report: HealthRules.check(medicines)))
-        case .reading(let reading): sheet = .reading(reading); store.append(ChatMessage(text: "Confirm \(reading.kind.rawValue.lowercased()): \(reading.value) \(reading.kind.unit)."))
-        case .readings: store.append(ChatMessage(text: store.records.readings.isEmpty ? "No readings recorded." : "Recent readings", readings: Array(store.records.readings.prefix(10))))
+        case .medicines: store.append(ChatMessage(text: L10n.string(store.records.medicines.isEmpty ? "No medicines recorded." : "Your medicines"), medicines: store.records.medicines))
+        case .interactions(let medicines): store.append(ChatMessage(text: L10n.string("Medicine check"), report: HealthRules.check(medicines)))
+        case .reading(let reading): sheet = .reading(reading); store.append(ChatMessage(text: L10n.format("Confirm %@: %@ %@.", L10n.string(reading.kind.rawValue), L10n.readingValue(reading), reading.kind.unit)))
+        case .readings: store.append(ChatMessage(text: L10n.string(store.records.readings.isEmpty ? "No readings recorded." : "Recent readings"), readings: Array(store.records.readings.prefix(10))))
         case .importHealth: Task { await health.sync(into: store); store.append(ChatMessage(text: health.status)) }
         case .export: store.export()
         case .note: sheet = .note
         case .clear: deleteConfirmation = true
-        case .reminder(let text): sheet = .reminder(CareReminder(title: text)); store.append(ChatMessage(text: "Review the reminder and choose its date."))
-        case .reminders: store.append(ChatMessage(text: store.care.reminders.isEmpty ? "No reminders saved." : "Reminders", reminders: store.care.reminders.sorted { $0.due < $1.due }))
-        case .schedule(let medicine, let times): sheet = .schedule(medicine, times); store.append(ChatMessage(text: "Confirm the times and refill date from your prescription."))
+        case .reminder(let text): sheet = .reminder(CareReminder(title: text)); store.append(ChatMessage(text: L10n.string("Review the reminder and choose its date.")))
+        case .reminders: store.append(ChatMessage(text: L10n.string(store.care.reminders.isEmpty ? "No reminders saved." : "Reminders"), reminders: store.care.reminders.sorted { $0.due < $1.due }))
+        case .schedule(let medicine, let times): sheet = .schedule(medicine, times); store.append(ChatMessage(text: L10n.string("Confirm the times and refill date from your prescription.")))
         case .dose(let medicine, let status):
-            guard let schedule = store.care.schedules.first(where: { $0.medicineID == medicine.id }), let date = CareRules.doses(on: .now, schedule: schedule).last(where: { $0 <= Date.now }) ?? CareRules.doses(on: .now, schedule: schedule).first else { store.append(ChatMessage(text: "Save a schedule for " + medicine.name + " first.")); return }
-            sheet = .dose(medicine, date, status); store.append(ChatMessage(text: "Confirm the scheduled dose before saving " + status.rawValue.lowercased() + "."))
+            guard let schedule = store.care.schedules.first(where: { $0.medicineID == medicine.id }), let date = CareRules.doses(on: .now, schedule: schedule).last(where: { $0 <= Date.now }) ?? CareRules.doses(on: .now, schedule: schedule).first else { store.append(ChatMessage(text: L10n.format("Save a schedule for %@ first.", L10n.medicineName(medicine)))); return }
+            sheet = .dose(medicine, date, status); store.append(ChatMessage(text: L10n.format("Confirm the scheduled dose before saving %@.", L10n.string(status.rawValue))))
         case .timeline(let query):
-            let results = HealthTimeline.entries(records: store.records, care: store.care, visits: store.visits, query: query)
-            store.append(ChatMessage(text: results.isEmpty ? "No matching records." : "Health history", timeline: results.prefix(20).map(ChatTimelineEntry.init)))
-        case .scan: sheet = .scanMedicine; store.append(ChatMessage(text: "Choose a label photo, then confirm the product and instructions."))
-        case .question(let text): sheet = .question(text); store.append(ChatMessage(text: "Review your question before saving it."))
+            let results = LocalizedHealthContent.timelineEntries(records: store.records, care: store.care, visits: store.visits, query: query)
+            store.append(ChatMessage(text: L10n.string(results.isEmpty ? "No matching records." : "Health history"), timeline: results.prefix(20).map(ChatTimelineEntry.init)))
+        case .scan: sheet = .scanMedicine; store.append(ChatMessage(text: L10n.string("Choose a label photo, then confirm the product and instructions.")))
+        case .question(let text): sheet = .question(text); store.append(ChatMessage(text: L10n.string("Review your question before saving it.")))
         }
     }
 }
@@ -272,8 +272,8 @@ struct MessageView: View {
                                     HStack(alignment: .top, spacing: 14) {
                                         Image(systemName: "pills.fill").font(.title2).foregroundStyle(Palette.blue).frame(width: 28)
                                         VStack(alignment: .leading, spacing: 6) {
-                                            Text(medicine.name).font(.title3.weight(.medium))
-                                            Text(medicine.ingredients.isEmpty ? "Ingredients unconfirmed" : medicine.ingredients.joined(separator: ", ")).font(.body).foregroundStyle(Palette.muted)
+                                            Text(L10n.medicineName(medicine)).font(.title3.weight(.medium))
+                                            Text(medicine.ingredients.isEmpty ? L10n.string("Ingredients unconfirmed") : L10n.ingredientNames(medicine.ingredients)).font(.body).foregroundStyle(Palette.muted)
                                             if !medicine.instructions.isEmpty { Text(medicine.instructions).foregroundStyle(Palette.muted) }
                                         }
                                     }
@@ -294,13 +294,13 @@ extension ChatMessage {
     var spokenText: String {
         var text = self.text
         if let medicines = self.medicines { text += ". " + medicines.map { $0.name + ($0.instructions.isEmpty ? "" : ", " + $0.instructions) }.joined(separator: ". ") }
-        if let readings = self.readings { text += ". " + readings.map { $0.kind.rawValue + " " + $0.value + " " + $0.kind.unit }.joined(separator: ". ") }
-        if let report = self.report { text += ". " + report.alerts.map(\.summary).joined(separator: ". "); if !report.unassessed.isEmpty || !report.unresolved.isEmpty { text += ". Some interactions could not be assessed." }; if !report.duplicates.isEmpty { text += ". Duplicate ingredients: " + report.duplicates.joined(separator: ", ") } }
+        if let readings = self.readings { text += ". " + readings.map { L10n.string($0.kind.rawValue) + " " + L10n.readingValue($0) + " " + $0.kind.unit }.joined(separator: ". ") }
+        if let report = self.report { text += ". " + report.alerts.map { L10n.string($0.summary) }.joined(separator: ". "); if !report.unassessed.isEmpty || !report.unresolved.isEmpty { text += ". " + L10n.string("Some interactions could not be assessed.") }; if !report.duplicates.isEmpty { text += ". " + L10n.format("Duplicate ingredients: %@", L10n.ingredientNames(report.duplicates)) } }
         if let reminders = self.reminders {
-            text += ". " + reminders.map { $0.title + ", " + $0.due.formatted(date: .abbreviated, time: .shortened) + ($0.completed ? ", completed" : "") }.joined(separator: ". ")
+            text += ". " + reminders.map { $0.title + ", " + L10n.date($0.due, time: true) + ($0.completed ? ", " + L10n.string("completed") : "") }.joined(separator: ". ")
         }
         if let timeline = self.timeline {
-            text += ". " + timeline.map { $0.title + ", " + $0.date.formatted(date: .abbreviated, time: .shortened) + ($0.detail.isEmpty ? "" : ", " + $0.detail) }.joined(separator: ". ")
+            text += ". " + timeline.map { $0.title + ", " + L10n.date($0.date, time: true) + ($0.detail.isEmpty ? "" : ", " + $0.detail) }.joined(separator: ". ")
         }
         return text
     }

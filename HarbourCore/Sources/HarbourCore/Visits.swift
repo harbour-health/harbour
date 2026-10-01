@@ -110,13 +110,13 @@ public enum VisitReview {
         summary.highlights = grounded(raw.highlights)
         summary.followUps = grounded(raw.followUps)
         // Preserve obvious source follow-up lines even when a small model omits that JSON category.
-        let followUpPattern = "(?i)\\b(book|schedule|arrange|follow[- ]?up|blood work|bloodwork|return|call the|repeat the)\\b"
+        let followUpPattern = "\\b(book|schedule|arrange|follow[- ]?up|blood work|bloodwork|return|call the|repeat the|prendre rendez-vous|prenez rendez-vous|prendre un rendez-vous|prenez un rendez-vous|planifier|planifiez|suivi|prise de sang|analyses sanguines|revenez|retournez|appelez|repeter|repetez)\\b"
         let sentencePattern = "[^.!?]+[.!?]?"
         if let expression = try? NSRegularExpression(pattern: sentencePattern) {
             for match in expression.matches(in: source, range: NSRange(source.startIndex..., in: source)) {
                 guard let range = Range(match.range, in: source) else { continue }
                 let sentence = source[range].trimmingCharacters(in: .whitespaces)
-                if quoteIsValid(sentence), sentence.range(of: followUpPattern, options: .regularExpression) != nil {
+                if quoteIsValid(sentence), InputLanguage.folded(sentence).range(of: followUpPattern, options: .regularExpression) != nil {
                     let item = VisitQuote(quote: sentence)
                     if !summary.followUps.contains(item) { summary.followUps.append(item) }
                 }
@@ -129,23 +129,32 @@ public enum VisitReview {
                   instructions.count <= 180, instructions.isEmpty || quote.contains(instructions),
                   change.action == .stop || !instructions.isEmpty else { continue }
             // Speculative/negated source lines never create proposals, even if the model claims otherwise.
-            let blocked = "(?i)\\b(not|don't|do not|never|might|may|could|consider|if|maybe|should we|can i)\\b|\\?"
+            let blocked = "\\b(not|don't|do not|never|might|may|could|consider|if|maybe|should we|can i|pas|jamais|aucun|aucune|sans|si|peut-etre|pourrais|pourrait|pourrions|devrais|devrait|envisager|envisagez|eventuellement|est-ce que|puis-je|dois-je|faudrait-il|hier|autrefois|auparavant|prenait|prenaient|commencait|commencaient|avait|avaient|ma mere|mon pere|ma soeur|mon frere|mon mari|ma femme|elle|elles|il|ils)\\b|\\?"
             // Check the containing source sentence, so omitting "do not" from the quote cannot bypass grounding.
             guard let quotedRange = source.range(of: quote) else { continue }
             let sentenceStart = source[..<quotedRange.lowerBound].lastIndex(where: { ".!?".contains($0) }).map { source.index(after: $0) } ?? source.startIndex
             let sentenceEnd = quote.last.map { ".!?".contains($0) } == true ? quotedRange.upperBound : source[quotedRange.upperBound...].firstIndex(where: { ".!?".contains($0) }).map { source.index(after: $0) } ?? source.endIndex
             let context = String(source[sentenceStart..<sentenceEnd])
-            guard context.range(of: blocked, options: .regularExpression) == nil else { continue }
-            let verbs: String
+            guard InputLanguage.folded(context).range(of: blocked, options: .regularExpression) == nil else { continue }
+            let verbs: String, frenchVerbs: String
             switch change.action {
-            case .start: verbs = "start|begin|add|prescribe"
-            case .update: verbs = "increase|decrease|change|take|continue|reduce|switch|update"
-            case .stop: verbs = "stop|discontinue"
+            case .start:
+                verbs = "start|begin|add|prescribe"
+                frenchVerbs = "commencer|commencez|commence|debuter|debutez|debute|ajouter|ajoutez|ajoute|prescrire|prescrivez"
+            case .update:
+                verbs = "increase|decrease|change|take|continue|reduce|switch|update"
+                frenchVerbs = "augmenter|augmentez|augmente|diminuer|diminuez|diminue|modifier|modifiez|modifie|prendre|prenez|prends|continuer|continuez|continue|reduire|reduisez|reduit|changer|changez|change"
+            case .stop:
+                verbs = "stop|discontinue"
+                frenchVerbs = "arreter|arretez|arrete|cesser|cessez|cesse|suspendre|suspendez"
             }
-            guard quote.range(of: "(?i)\\b(" + verbs + ")\\b", options: .regularExpression) != nil else { continue }
-            let known = (medicines + Catalog.medicines).first { item in
-                item.name.caseInsensitiveCompare(name) == .orderedSame || item.name.components(separatedBy: " / ").first?.caseInsensitiveCompare(name) == .orderedSame
-            }
+            let foldedQuote = InputLanguage.folded(quote)
+            let frenchInstruction = "\\b(?:" + frenchVerbs + ")\\s+(?:(?:la|le|de|du|votre|dose de|traitement par|traitement avec)\\s+|l')*" + NSRegularExpression.escapedPattern(for: InputLanguage.folded(name)) + "\\b"
+            guard foldedQuote.range(of: "\\b(" + verbs + ")\\b", options: .regularExpression) != nil ||
+                  foldedQuote.range(of: frenchInstruction, options: .regularExpression) != nil else { continue }
+            // A French reported current regimen is a fact, not a new prescriber instruction.
+            guard foldedQuote.range(of: "\\bje\\s+(?:prends|commence|continue|change|augmente|diminue)\\b", options: .regularExpression) == nil else { continue }
+            let known = Catalog.resolve(name, saved: medicines)
             // Unknown names remain a transcript item; no model-created ingredient mapping is trusted.
             guard var medicine = known else {
                 let item = VisitQuote(quote: quote)
@@ -167,7 +176,10 @@ public enum VisitReview {
         var next = medicines
         for change in changes {
             // Revalidate against the saved transcript at the mutation boundary.
-            let proposal: [String: Any] = ["highlights": [], "followUps": [], "medicines": [["action": change.action.rawValue, "name": change.medicine.name.components(separatedBy: " / ").first!, "instructions": change.medicine.instructions, "quote": change.quote]]]
+            guard let sourceName = Catalog.names(for: change.medicine).first(where: {
+                change.quote.range(of: "\\b" + NSRegularExpression.escapedPattern(for: $0) + "\\b", options: [.regularExpression, .caseInsensitive]) != nil
+            }) else { throw VisitReviewError.unsupportedChange }
+            let proposal: [String: Any] = ["highlights": [], "followUps": [], "medicines": [["action": change.action.rawValue, "name": sourceName, "instructions": change.medicine.instructions, "quote": change.quote]]]
             let validated = try parse(String(decoding: JSONSerialization.data(withJSONObject: proposal), as: UTF8.self), transcript: visit.transcript, medicines: baseline)
             guard validated.medicines.count == 1, validated.medicines[0].medicine == change.medicine else { throw VisitReviewError.unsupportedChange }
             let index = next.firstIndex { $0.id == change.medicine.id }

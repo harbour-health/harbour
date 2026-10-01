@@ -25,6 +25,19 @@ for path in sorted((root / 'Harbour').glob('*.swift')):
 asset = add('Assets', 'isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>";')
 source_refs.append(asset)
 asset_build = add('AssetsBuild', f'isa = PBXBuildFile; fileRef = {asset};')
+resource_builds = [asset_build]
+languages = sorted(path.name.removesuffix('.lproj') for path in (root / 'Harbour').glob('*.lproj'))
+localized_files = sorted({path.name for folder in (root / 'Harbour').glob('*.lproj') for path in folder.glob('*.strings*')})
+for filename in localized_files:
+    children = []
+    for language in languages:
+        if not (root / 'Harbour' / f'{language}.lproj' / filename).exists():
+            continue
+        filetype = 'text.plist.stringsdict' if filename.endswith('.stringsdict') else 'text.plist.strings'
+        children.append(add(f'{language}-{filename}', f'isa = PBXFileReference; lastKnownFileType = {filetype}; name = "{language}"; path = "{language}.lproj/{filename}"; sourceTree = "<group>";'))
+    variant = add(f'Localized-{filename}', f'isa = PBXVariantGroup; children = {refs(children)}; name = "{filename}"; sourceTree = "<group>";')
+    source_refs.append(variant)
+    resource_builds.append(add(f'LocalizedBuild-{filename}', f'isa = PBXBuildFile; fileRef = {variant};'))
 for filename, filetype in [('Info.plist', 'text.plist.xml'), ('Harbour.entitlements', 'text.plist.entitlements')]:
     source_refs.append(add(filename, f'isa = PBXFileReference; lastKnownFileType = {filetype}; path = {filename}; sourceTree = "<group>";'))
 app = add('AppProduct', 'isa = PBXFileReference; explicitFileType = wrapper.application; path = Harbour.app; sourceTree = BUILT_PRODUCTS_DIR;')
@@ -44,7 +57,7 @@ for name in ['HarbourCore', 'HarbourRuntime']:
     package_builds.append(add('Link-' + name, f'isa = PBXBuildFile; productRef = {product};'))
 sources = add('SourcePhase', f'isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = {refs(builds)}; runOnlyForDeploymentPostprocessing = 0;')
 frameworks = add('LinkPhase', f'isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = {refs(package_builds)}; runOnlyForDeploymentPostprocessing = 0;')
-resources = add('ResourcePhase', f'isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = {refs([asset_build])}; runOnlyForDeploymentPostprocessing = 0;')
+resources = add('ResourcePhase', f'isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = {refs(resource_builds)}; runOnlyForDeploymentPostprocessing = 0;')
 test_sources = add('TestSources', f'isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = {refs([test_build])}; runOnlyForDeploymentPostprocessing = 0;')
 test_frameworks = add('TestFrameworks', 'isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0;')
 
@@ -59,6 +72,7 @@ project_configs = config_list('Project', 'IPHONEOS_DEPLOYMENT_TARGET = 18.0; SDK
 app_configs = config_list('App', 'PRODUCT_NAME = Harbour; PRODUCT_BUNDLE_IDENTIFIER = com.matteopolak.harbour; TARGETED_DEVICE_FAMILY = "1,2"; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_FILE = Harbour/Info.plist; INFOPLIST_KEY_CFBundleDisplayName = Harbour; INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES; INFOPLIST_KEY_UILaunchScreen_Generation = YES; INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"; INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"; CODE_SIGN_STYLE = Automatic; CODE_SIGN_ENTITLEMENTS = Harbour/Harbour.entitlements; ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; CURRENT_PROJECT_VERSION = 1; MARKETING_VERSION = 0.1; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";')
 test_configs = config_list('Test', 'PRODUCT_NAME = HarbourUITests; PRODUCT_BUNDLE_IDENTIFIER = com.matteopolak.harbour.uitests; GENERATE_INFOPLIST_FILE = YES; TEST_TARGET_NAME = Harbour; TARGETED_DEVICE_FAMILY = "1,2"; CODE_SIGN_STYLE = Automatic;')
 target = add('AppTarget', f'isa = PBXNativeTarget; buildConfigurationList = {app_configs}; buildPhases = {refs([sources, frameworks, resources])}; buildRules = (); dependencies = (); name = Harbour; packageProductDependencies = {refs(product_deps)}; productName = Harbour; productReference = {app}; productType = "com.apple.product-type.application";')
+region_refs = refs(['en', 'Base'] + ['"' + language + '"' for language in languages if language != 'en'])
 project_id = ident('Project')
 proxy = add('TestProxy', f'isa = PBXContainerItemProxy; containerPortal = {project_id}; proxyType = 1; remoteGlobalIDString = {target}; remoteInfo = Harbour;')
 dependency = add('TestDependency', f'isa = PBXTargetDependency; target = {target}; targetProxy = {proxy};')
@@ -73,7 +87,7 @@ unit_sources = add('UnitSources', f'isa = PBXSourcesBuildPhase; buildActionMask 
 unit_frameworks = add('UnitFrameworks', 'isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0;')
 unit_configs = config_list('Unit', 'PRODUCT_NAME = HarbourTests; PRODUCT_BUNDLE_IDENTIFIER = com.matteopolak.harbour.tests; GENERATE_INFOPLIST_FILE = YES; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Harbour.app/Harbour"; BUNDLE_LOADER = "$(TEST_HOST)"; TARGETED_DEVICE_FAMILY = "1,2"; CODE_SIGN_STYLE = Automatic;')
 unit_target = add('UnitTarget', f'isa = PBXNativeTarget; buildConfigurationList = {unit_configs}; buildPhases = {refs([unit_sources, unit_frameworks])}; buildRules = (); dependencies = {refs([dependency])}; name = HarbourTests; productName = HarbourTests; productReference = {unit_product}; productType = "com.apple.product-type.bundle.unit-test";')
-add('Project', f'isa = PBXProject; attributes = {{ LastUpgradeCheck = 2700; TargetAttributes = {{ {target} = {{ CreatedOnToolsVersion = 27.0; SystemCapabilities = {{ com.apple.HealthKit = {{ enabled = 1; }}; }}; }}; {test_target} = {{ TestTargetID = {target}; }}; }}; }}; buildConfigurationList = {project_configs}; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base); mainGroup = {group}; productRefGroup = {products}; projectDirPath = ""; projectRoot = ""; packageReferences = {refs(packages)}; targets = {refs([target, test_target, unit_target])};')
+add('Project', f'isa = PBXProject; attributes = {{ LastUpgradeCheck = 2700; TargetAttributes = {{ {target} = {{ CreatedOnToolsVersion = 27.0; SystemCapabilities = {{ com.apple.HealthKit = {{ enabled = 1; }}; }}; }}; {test_target} = {{ TestTargetID = {target}; }}; }}; }}; buildConfigurationList = {project_configs}; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = {region_refs}; mainGroup = {group}; productRefGroup = {products}; projectDirPath = ""; projectRoot = ""; packageReferences = {refs(packages)}; targets = {refs([target, test_target, unit_target])};')
 project = root / 'Harbour.xcodeproj'
 project.mkdir(exist_ok=True)
 (project / 'project.pbxproj').write_text('// !$*UTF8*$!\n{ archiveVersion = 1; classes = {}; objectVersion = 56; objects = {\n' + '\n'.join(f'{key} = {value};' for key, value in objects.items()) + f'\n}}; rootObject = {project_id}; }}\n')
