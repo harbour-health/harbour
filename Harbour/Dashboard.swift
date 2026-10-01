@@ -18,10 +18,10 @@ struct NavigationDock: View {
     @Binding var selection: Int
     var body: some View {
         HStack(spacing: 10) {
-            item("Today", symbol: "house", selectedSymbol: "house.fill", index: 0)
-            item("Chat", symbol: "bubble.left.and.bubble.right", selectedSymbol: "bubble.left.and.bubble.right.fill", index: 1)
-            item("Records", symbol: "heart.text.square", selectedSymbol: "heart.text.square.fill", index: 2)
-            item("Visits", symbol: "waveform", selectedSymbol: "waveform", index: 3)
+            item("Today", symbol: "sun.max", index: 0)
+            item("Chat", symbol: "bubble.left", index: 1)
+            item("Records", symbol: "doc.text", index: 2)
+            item("Visits", symbol: "mic", index: 3)
         }.padding(7)
             .background {
                 if reduceTransparency { Capsule().fill(Palette.surface) }
@@ -30,14 +30,14 @@ struct NavigationDock: View {
             .overlay(Capsule().strokeBorder(Palette.line.opacity(0.6)))
             .shadow(color: .black.opacity(0.10), radius: 16, y: 6).padding(.bottom, 12)
     }
-    private func item(_ title: String, symbol: String, selectedSymbol: String, index: Int) -> some View {
+    private func item(_ title: String, symbol: String, index: Int) -> some View {
         Button { selection = index } label: {
-            Image(systemName: selection == index ? selectedSymbol : symbol).font(.system(size: 26, weight: .medium))
+            Image(systemName: symbol).font(.system(size: 25, weight: .regular)).symbolRenderingMode(.monochrome)
                 .foregroundStyle(index == 3 && recorder.active ? Palette.coral : Palette.ink).frame(width: 68, height: 48)
                 .background(selection == index ? Palette.line.opacity(0.5) : .clear, in: Capsule())
         }.buttonStyle(PressFeedback()).accessibilityLabel(title).accessibilityIdentifier("nav-" + title.lowercased())
             .accessibilityAddTraits(selection == index ? .isSelected : [])
-            .accessibilityShowsLargeContentViewer { Label(title, systemImage: selectedSymbol) }
+            .accessibilityShowsLargeContentViewer { Label(title, systemImage: symbol) }
     }
 }
 

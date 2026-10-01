@@ -10,10 +10,10 @@
   "16-settings": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790832824.245,
-    "suggestedHumanReadableName": "16-settings_0_B46B494F-2D13-4631-A06A-5B0B601741D9.png",
-    "test": "HarbourCareFeatureTests/testZCareLayoutScreenshots()",
-    "resultBundle": "harbour-care-final-source.xcresult"
+    "timestamp": 1790864830.786,
+    "suggestedHumanReadableName": "16-settings_0_4BA82919-DF5F-4883-82D6-19F6CB5CAD50.png",
+    "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "15-model-download": {
     "deviceName": "Harbour inline screenshot fixture",
@@ -26,10 +26,10 @@
   "14-models": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790826249.84,
-    "suggestedHumanReadableName": "14-models_0_A050FED6-042D-492E-A138-E74BEF278018.png",
+    "timestamp": 1790864873.676,
+    "suggestedHumanReadableName": "14-models_0_A45110D1-AE0A-464B-9B18-A8290CB499AF.png",
     "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
-    "resultBundle": "harbour-streamline-drawers-final.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "13-chat-topic": {
     "deviceName": "Harbour QA",
@@ -42,18 +42,18 @@
   "12-topics": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790826245.204,
-    "suggestedHumanReadableName": "12-topics_0_44A24C63-5FFA-4302-A80A-B1D4E46F06C6.png",
+    "timestamp": 1790864869.935,
+    "suggestedHumanReadableName": "12-topics_0_ED469BF0-A60B-4688-AF05-C7005FE7EBDB.png",
     "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
-    "resultBundle": "harbour-streamline-drawers-final.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "11-chat-empty": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790834850.583,
-    "suggestedHumanReadableName": "11-chat-empty_0_551D04D7-220E-4F11-9715-467AA0C0C5AA.png",
+    "timestamp": 1790864983.563,
+    "suggestedHumanReadableName": "11-chat-empty_0_1569DF67-7258-4ADE-842B-B0A235CAB259.png",
     "test": "HarbourStableMainScreensTests/testStableLightMainScreens()",
-    "resultBundle": "harbour-care-stable-paired.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "10-chat-conversation": {
     "deviceName": "Harbour QA",
@@ -82,26 +82,26 @@
   "07-medicine-details": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790826239.236,
-    "suggestedHumanReadableName": "07-medicine-details_0_4835B61A-D7F2-40D9-90F5-D1703E207C4A.png",
+    "timestamp": 1790864864.611,
+    "suggestedHumanReadableName": "07-medicine-details_0_30D19F12-78E5-476A-B40C-55827FDBDE0E.png",
     "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
-    "resultBundle": "harbour-streamline-drawers-final.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "06-medicine-catalog": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790826236.289,
-    "suggestedHumanReadableName": "06-medicine-catalog_0_9EDE307F-20C9-4FD7-ABAA-5EAE22D45F1B.png",
+    "timestamp": 1790864861.63,
+    "suggestedHumanReadableName": "06-medicine-catalog_0_6BADF45E-8B17-475D-87E2-4894D3E011F7.png",
     "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
-    "resultBundle": "harbour-streamline-drawers-final.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "05-add-reading": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790826223.356,
-    "suggestedHumanReadableName": "05-add-reading_0_13A9E1DE-5622-4100-8BB0-561B8DCB6D9C.png",
+    "timestamp": 1790864849.074,
+    "suggestedHumanReadableName": "05-add-reading_0_D18375D9-3DC3-4235-87F3-E4F7A49D825A.png",
     "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
-    "resultBundle": "harbour-streamline-drawers-final.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "04-readings": {
     "deviceName": "Harbour QA",
@@ -130,10 +130,10 @@
   "01-today": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790834846.03,
-    "suggestedHumanReadableName": "01-today_0_FC111435-BD75-48D0-9573-634C694D07EA.png",
+    "timestamp": 1790864979.054,
+    "suggestedHumanReadableName": "01-today_0_EC053301-97D5-4195-8A5A-012950F252C3.png",
     "test": "HarbourStableMainScreensTests/testStableLightMainScreens()",
-    "resultBundle": "harbour-care-stable-paired.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "19-appointment-note": {
     "deviceName": "Harbour QA",
@@ -282,18 +282,18 @@
   "38-settings-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790826262.942,
-    "suggestedHumanReadableName": "38-settings-dark_0_56ED601B-D2ED-446C-A712-C921579BED96.png",
+    "timestamp": 1790864885.609,
+    "suggestedHumanReadableName": "38-settings-dark_0_B62D2D9F-92A2-46DC-BF20-D752ABAFBEC5.png",
     "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
-    "resultBundle": "harbour-streamline-drawers-final.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "37-models-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790826311.817,
-    "suggestedHumanReadableName": "37-models-dark_0_2B98FCB9-F65A-4B26-A0D7-32C2ED0C41A2.png",
+    "timestamp": 1790864930.184,
+    "suggestedHumanReadableName": "37-models-dark_0_53BB8D1B-3A6D-4B35-896F-A410430D242E.png",
     "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
-    "resultBundle": "harbour-streamline-drawers-final.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "53-selected-topic-dark": {
     "deviceName": "Harbour QA",
@@ -306,18 +306,18 @@
   "36-topics-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790826307.205,
-    "suggestedHumanReadableName": "36-topics-dark_0_AAC6D6BB-1F71-4A56-B3D2-7F7B2B8D4855.png",
+    "timestamp": 1790864926.557,
+    "suggestedHumanReadableName": "36-topics-dark_0_5E292E53-73A7-4F62-B06C-7DA90A655505.png",
     "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
-    "resultBundle": "harbour-streamline-drawers-final.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "32-chat-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790834827.295,
-    "suggestedHumanReadableName": "32-chat-dark_0_173D7AE8-8756-4BE8-9E43-F4392131F046.png",
+    "timestamp": 1790864960.336,
+    "suggestedHumanReadableName": "32-chat-dark_0_B70A989A-C889-49A2-BE3B-4C30BDAA1299.png",
     "test": "HarbourStableMainScreensTests/testStableLightMainScreens()",
-    "resultBundle": "harbour-care-stable-paired.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "52-symptom-review-dark": {
     "deviceName": "Harbour QA",
@@ -338,26 +338,26 @@
   "50-confirm-medicine-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790826301.818,
-    "suggestedHumanReadableName": "50-confirm-medicine-dark_0_5BB975C9-80D8-48F6-9831-0A4D6BFA7008.png",
+    "timestamp": 1790864921.276,
+    "suggestedHumanReadableName": "50-confirm-medicine-dark_0_F7375FDD-0766-47FD-BA95-B174E07BBFAA.png",
     "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
-    "resultBundle": "harbour-streamline-drawers-final.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "49-catalog-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790826298.68,
-    "suggestedHumanReadableName": "49-catalog-dark_0_23905329-CFFC-433B-92AF-E4A5BCB75981.png",
+    "timestamp": 1790864918.281,
+    "suggestedHumanReadableName": "49-catalog-dark_0_19F7ED9C-20B6-413C-8217-5BA7A10CCAE3.png",
     "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
-    "resultBundle": "harbour-streamline-drawers-final.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "48-add-reading-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790826284.408,
-    "suggestedHumanReadableName": "48-add-reading-dark_0_B232AA85-BAD0-4ED9-86CB-DCA5C2A8C861.png",
+    "timestamp": 1790864905.694,
+    "suggestedHumanReadableName": "48-add-reading-dark_0_20993AD4-7398-46F1-B294-13CA8F562F28.png",
     "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
-    "resultBundle": "harbour-streamline-drawers-final.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "35-readings-dark": {
     "deviceName": "Harbour QA",
@@ -386,26 +386,26 @@
   "31-today-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790834822.543,
-    "suggestedHumanReadableName": "31-today-dark_0_C0E1AE82-8128-4E1E-B7DC-5C3BEFDFB6DE.png",
+    "timestamp": 1790864955.564,
+    "suggestedHumanReadableName": "31-today-dark_0_71A60305-417F-4140-A40E-2AE7FB4726AD.png",
     "test": "HarbourStableMainScreensTests/testStableLightMainScreens()",
-    "resultBundle": "harbour-care-stable-paired.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "41-appearance-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790826259.064,
-    "suggestedHumanReadableName": "41-appearance-dark_0_AE357C53-28BB-4B34-9853-34BBF84227D1.png",
+    "timestamp": 1790864882.038,
+    "suggestedHumanReadableName": "41-appearance-dark_0_DBFFB49E-FDF4-42F3-8864-EE7EF1253E83.png",
     "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
-    "resultBundle": "harbour-streamline-drawers-final.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "40-appearance-light": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790826201.017,
-    "suggestedHumanReadableName": "40-appearance-light_0_82F44C1E-0CD8-4DE6-955B-23C5B84B900A.png",
+    "timestamp": 1790864827.284,
+    "suggestedHumanReadableName": "40-appearance-light_0_7C1085B7-F2F0-4FE3-9F1D-B79E0C389F1B.png",
     "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
-    "resultBundle": "harbour-streamline-drawers-final.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "43-system-dark": {
     "deviceName": "Harbour QA",
@@ -442,18 +442,18 @@
   "55-pin-setup": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790826211.793,
-    "suggestedHumanReadableName": "55-pin-setup_0_DC03962C-DFB4-4664-A6AB-FD94BE41DAF9.png",
+    "timestamp": 1790864837.873,
+    "suggestedHumanReadableName": "55-pin-setup_0_A03B20DB-447E-470B-BD27-78421AFEFF0F.png",
     "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
-    "resultBundle": "harbour-streamline-drawers-final.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "54-app-lock-settings": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790826207.505,
-    "suggestedHumanReadableName": "54-app-lock-settings_0_16C5A615-35AC-42EC-87D8-B92688ECA94B.png",
+    "timestamp": 1790864833.601,
+    "suggestedHumanReadableName": "54-app-lock-settings_0_523E6AA1-0688-4F62-AB4C-BF8E5C09F252.png",
     "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
-    "resultBundle": "harbour-streamline-drawers-final.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "29-evaluation-results": {
     "deviceName": "Harbour QA",
@@ -506,18 +506,18 @@
   "65-records-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790834830.613,
-    "suggestedHumanReadableName": "65-records-dark_0_693D4AFA-7784-4D18-84E6-04CDD6F73329.png",
+    "timestamp": 1790864963.716,
+    "suggestedHumanReadableName": "65-records-dark_0_FFD95D53-74E6-4D95-8F0F-0A52FAE61F24.png",
     "test": "HarbourStableMainScreensTests/testStableLightMainScreens()",
-    "resultBundle": "harbour-care-stable-paired.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "64-records": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790834853.89,
-    "suggestedHumanReadableName": "64-records_0_8E663AFF-8FB6-447B-ACF7-0F24CB854CF7.png",
+    "timestamp": 1790864986.867,
+    "suggestedHumanReadableName": "64-records_0_99A33319-F354-49D4-AE01-3556EDAF3E9E.png",
     "test": "HarbourStableMainScreensTests/testStableLightMainScreens()",
-    "resultBundle": "harbour-care-stable-paired.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "66-floating-navigation": {
     "deviceName": "Harbour QA",
@@ -594,10 +594,10 @@
   "67-visits": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790834857.207,
-    "suggestedHumanReadableName": "67-visits_0_75BD4DD8-244E-4608-82AC-B2561DFBCFE7.png",
+    "timestamp": 1790864990.19,
+    "suggestedHumanReadableName": "67-visits_0_D5EB2F64-8AD8-470D-AEFD-9E315B2F4566.png",
     "test": "HarbourStableMainScreensTests/testStableLightMainScreens()",
-    "resultBundle": "harbour-care-stable-paired.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "78-visit-summary-dark": {
     "deviceName": "Harbour QA",
@@ -618,10 +618,10 @@
   "76-visits-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790834834.063,
-    "suggestedHumanReadableName": "76-visits-dark_0_4CCB67BC-A360-49CC-B72D-8182102AEDBA.png",
+    "timestamp": 1790864967.156,
+    "suggestedHumanReadableName": "76-visits-dark_0_AC399591-B2A6-4D4F-93B6-3C86AB52656F.png",
     "test": "HarbourStableMainScreensTests/testStableLightMainScreens()",
-    "resultBundle": "harbour-care-stable-paired.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "79-reading-landscape": {
     "deviceName": "Harbour QA",
@@ -642,26 +642,26 @@
   "82-reading-keyboard-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790826289.028,
-    "suggestedHumanReadableName": "82-reading-keyboard-dark_0_C124A2F0-1A9F-4439-9625-7D632BF97307.png",
+    "timestamp": 1790864909.539,
+    "suggestedHumanReadableName": "82-reading-keyboard-dark_0_4A8990B3-6429-4A74-90FE-7A443CE6979C.png",
     "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
-    "resultBundle": "harbour-streamline-drawers-final.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "80-pin-drawer-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790826270.331,
-    "suggestedHumanReadableName": "80-pin-drawer-dark_0_200F776F-BA48-40FB-8810-31E1488874E5.png",
+    "timestamp": 1790864893.639,
+    "suggestedHumanReadableName": "80-pin-drawer-dark_0_5591CBCB-38DC-4674-AF74-DCB26E2FF653.png",
     "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
-    "resultBundle": "harbour-streamline-drawers-final.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "81-reading-keyboard": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790826227.61,
-    "suggestedHumanReadableName": "81-reading-keyboard_0_F186BF2C-8D98-42D5-BD8F-8E932ACD1395.png",
+    "timestamp": 1790864852.902,
+    "suggestedHumanReadableName": "81-reading-keyboard_0_E276015E-2A02-429F-B514-DAEA150737CC.png",
     "test": "HarbourDrawerTests/testCompactDrawersNavigationKeyboardAndThemes()",
-    "resultBundle": "harbour-streamline-drawers-final.xcresult"
+    "resultBundle": "harbour-uniform-corners.xcresult"
   },
   "85-interactions-drawer-dark": {
     "deviceName": "Harbour QA",

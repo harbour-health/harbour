@@ -10,6 +10,8 @@
 
 `scripts/export-screenshots.py` exports attachments from Xcode result bundles, preserves their device/test/timestamp provenance in `screenshots/manifest.json`, and generates a local HTML viewer. Image URLs include their file modification timestamp so a refreshed capture replaces browser-cached thumbnails and enlarged images; download filenames remain unchanged. Paired light/dark dashboard, chat, records, settings, model controls, and entry-sheet captures show the current appearance. `preview.jpg` uses light/dark dashboard, Records browser, and empty chat captures. Images are not mockups or generated designs.
 
+The corner/icon refresh in `harbour-uniform-corners.xcresult` replaces the main pages and paired drawer-flow captures. Its Appearance, Models, PIN, Today, and dark Chat originals were visually inspected. Other images remain historical captures, with their original producing bundle recorded in the manifest.
+
 ## How to change it
 
 The gallery currently contains 115 native captures; the generated README gallery and manifest report the authoritative inventory. The new Records browser has light/dark captures numbered 64 and 65; capture 66 shows scrolled content around the floating navigation. Main app screens and editors have paired appearance captures. Download and Health permission/status images were refreshed on a disposable simulator without removing existing models. PIN setup and retry captures show a fictional test credential, never a user's PIN. The Face ID capture shows the unavailable/enrollment error, not a successful biometric match.

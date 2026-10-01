@@ -32,6 +32,7 @@ extension View {
 
 private struct FloatingDrawer: ViewModifier {
     let defaultHeight: CGFloat
+    private let cornerRadius: CGFloat = 54
     @State private var contentHeight: DrawerHeight?
     @State private var windowHeight: CGFloat = 800
     @State private var windowWidth: CGFloat = 400
@@ -47,13 +48,6 @@ private struct FloatingDrawer: ViewModifier {
         if #available(iOS 26, *) { return verticalSizeClass != .compact && windowHeight > windowWidth }
         return false
     }
-    private var corners: AnyShape {
-        if #available(iOS 26, *), nativeDetached {
-            return AnyShape(ConcentricRectangle(corners: .concentric, isUniform: true))
-        }
-        return AnyShape(RoundedRectangle(cornerRadius: 54, style: .continuous))
-    }
-
     func body(content: Content) -> some View {
         VStack(spacing: 0) {
             Capsule().fill(Palette.muted.opacity(0.35)).frame(width: 36, height: nativeDetached ? 0 : 5)
@@ -61,7 +55,7 @@ private struct FloatingDrawer: ViewModifier {
             content.safeAreaPadding(.bottom, nativeDetached ? 20 : 16)
         }
         .background(Palette.canvas)
-        .clipShape(corners)
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
         .background { DrawerBounds() }
         .accessibilityElement(children: .contain).accessibilityIdentifier("floatingDrawer")
         .padding(.horizontal, nativeDetached ? 0 : 8)
@@ -73,6 +67,7 @@ private struct FloatingDrawer: ViewModifier {
         .onPreferenceChange(DrawerHeightKey.self) { contentHeight = $0 }
         .presentationDetents([.height(height)])
         .presentationBackground(nativeDetached ? Palette.canvas : .clear)
+        .presentationCornerRadius(nativeDetached ? cornerRadius : nil)
         .presentationDragIndicator(nativeDetached ? .visible : .hidden)
         .presentationCompactAdaptation(.none)
         .presentationBackgroundInteraction(.disabled)
