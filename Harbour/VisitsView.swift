@@ -213,8 +213,8 @@ struct VisitDetailView: View {
                     Button("Delete visit", systemImage: "trash", role: .destructive) { deleting = true }.disabled(busy || recorder.active)
                 } label: { Image(systemName: "ellipsis").frame(width: 44, height: 44) }.accessibilityLabel("Visit options") }
             }
-            .sheet(isPresented: $editing) { if let visit { NavigationStack { VisitTranscriptEditor(visit: visit) } } }
-            .sheet(isPresented: $reviewing) { NavigationStack { VisitMedicineReview(id: id) } }
+            .sheet(isPresented: $editing) { if let visit { NavigationStack { VisitTranscriptEditor(visit: visit) }.floatingDrawer(height: 520) } }
+            .sheet(isPresented: $reviewing) { NavigationStack { VisitMedicineReview(id: id) }.floatingDrawer(height: 520) }
             .confirmationDialog("Delete this visit and its recording?", isPresented: $deleting, titleVisibility: .visible) { Button("Delete visit", role: .destructive) { if let visit { store.deleteVisit(visit) }; dismiss() } }
             .alert("Visit", isPresented: Binding(get: { error != nil || playback.error != nil }, set: { if !$0 { error = nil; playback.error = nil } })) { Button("OK") { error = nil; playback.error = nil } } message: { Text(error ?? playback.error ?? "") }
             .task {
@@ -320,7 +320,7 @@ struct VisitMedicineReview: View {
                         Text("I checked the medicine names and instructions against my prescription or visit notes.").font(.body).multilineTextAlignment(.leading)
                     }.foregroundStyle(acknowledged ? Palette.blue : Palette.ink).padding(18).background(Palette.surface, in: RoundedRectangle(cornerRadius: 22))
                 }.buttonStyle(.plain).accessibilityIdentifier("confirmVisitMedicines")
-            }.padding(24)
+            }.padding(24).measuredDrawerHeight()
         }.background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle("Medicine changes").navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }

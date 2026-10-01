@@ -76,7 +76,7 @@ struct EvaluationView: View {
                 VStack(alignment: .leading, spacing: 8) { Label(result.input, systemImage: result.passed ? "checkmark.circle" : "xmark.circle"); Text("\(result.effort) · \(String(format: "%.2f", result.elapsedSeconds)) seconds · \(result.observed)").font(.caption).foregroundStyle(.secondary) }
             }
             Section { Button("Export results") { export() }.disabled(busy) }
-        }.navigationTitle("Evaluation").navigationBarTitleDisplayMode(.inline)
+        }.drawerHeight(650).navigationTitle("Evaluation").navigationBarTitleDisplayMode(.inline)
         .onDisappear { task?.cancel() }
     }
     private func run() {

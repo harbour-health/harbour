@@ -27,6 +27,7 @@ struct SettingsView: View {
             }
             Section { NavigationLink { EvaluationView() } label: { Label("Evaluation", systemImage: "checkmark.seal") } }
         }.scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle("Settings").navigationBarTitleDisplayMode(.inline)
+        .drawerHeight(health.status.isEmpty ? 640 : 690)
         .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
         .fileImporter(isPresented: $importing, allowedContentTypes: [.json]) { result in switch result { case .success(let url): store.importFile(url); case .failure(let error): store.error = error.localizedDescription } }
         .alert("Delete all records and chat?", isPresented: $deleting) { Button("Delete all", role: .destructive) { store.clear() }; Button("Cancel", role: .cancel) {} } message: { Text("This includes doctor visits and their recordings.") }
@@ -72,6 +73,7 @@ struct ModelsView: View {
                 }
             }
         }.scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle("Models").navigationBarTitleDisplayMode(.inline)
+        .drawerHeight(models.downloading == nil ? 680 : 730)
         .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
     }
 }

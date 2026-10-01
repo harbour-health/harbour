@@ -45,7 +45,7 @@ struct AppearanceView: View {
                     .listRowBackground(Palette.surface)
             }
         }.scrollContentBackground(.hidden).background(Palette.canvas)
-            .navigationTitle("Appearance").navigationBarTitleDisplayMode(.inline)
+            .drawerHeight(350).navigationTitle("Appearance").navigationBarTitleDisplayMode(.inline)
     }
 }
 

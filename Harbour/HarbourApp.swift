@@ -3,6 +3,7 @@ import HarbourCore
 
 enum AppSheet: Identifiable {
     case symptom(String), medicine(Medicine?), reading(Reading?), interactions([Medicine]), settings, note
+    var drawerHeight: CGFloat { switch self { case .symptom: 690; case .medicine: 600; case .reading: 320; case .interactions: 420; case .settings: 640; case .note: 440 } }
     var id: String { switch self { case .symptom: "symptom"; case .medicine: "medicine"; case .reading: "reading"; case .interactions: "interactions"; case .settings: "settings"; case .note: "note" } }
 }
 
@@ -68,12 +69,13 @@ struct RootView: View {
                 case .symptom(let text): SymptomEditor(initial: text)
                 case .medicine(let medicine): MedicineEditor(initial: medicine)
                 case .reading(let reading): ReadingEditor(initial: reading)
-                case .interactions(let medicines): ScrollView { InteractionView(report: HealthRules.check(medicines)).padding(24) }.navigationTitle("Interactions").navigationBarTitleDisplayMode(.inline).toolbar { closeButton }
+                case .interactions(let medicines): ScrollView { InteractionView(report: HealthRules.check(medicines)).padding(24).measuredDrawerHeight() }.navigationTitle("Interactions").navigationBarTitleDisplayMode(.inline).toolbar { closeButton }
                 case .settings: SettingsView()
                 case .note: NoteView()
                 }
             }
             .background(Palette.canvas)
+            .floatingDrawer(height: item.drawerHeight)
             .sheet(item: $store.shareFile) { ShareView(url: $0.url) }
         }
         .sheet(item: Binding(get: { if case nil = sheet { return store.shareFile }; return nil }, set: { store.shareFile = $0 })) { ShareView(url: $0.url) }

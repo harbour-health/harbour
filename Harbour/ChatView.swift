@@ -59,8 +59,8 @@ struct ChatView: View {
             ToolbarItem(placement: .principal) { Text(store.chatTitle).font(.body.weight(.medium)).lineLimit(1).accessibilityIdentifier("chatTitle") }
             ToolbarItem(placement: .topBarTrailing) { Button { cancel(); focused = false; draft = ""; hint = nil; store.newChat() } label: { Image(systemName: "square.and.pencil") }.accessibilityLabel("New chat") }
         }
-        .sheet(isPresented: $modelSheet) { NavigationStack { ModelsView() } }
-        .sheet(isPresented: $toolSheet) { topicPicker.presentationDetents([.height(420)]).presentationDragIndicator(.visible) }
+        .sheet(isPresented: $modelSheet) { NavigationStack { ModelsView() }.floatingDrawer(height: 680) }
+        .sheet(isPresented: $toolSheet) { topicPicker.floatingDrawer(height: 355) }
         .confirmationDialog("Delete all records and chat?", isPresented: $deleteConfirmation, titleVisibility: .visible) { Button("Delete all", role: .destructive) { store.clear() }; Button("Cancel", role: .cancel) {} }
         .confirmationDialog("Remove \(removal?.name ?? "medicine") from your list?", isPresented: Binding(get: { removal != nil }, set: { if !$0 { removal = nil } }), titleVisibility: .visible) { Button("Remove", role: .destructive) { if let removal { store.removeMedicine(removal.id); store.append(ChatMessage(text: "Removed \(removal.name) from your list.")) }; removal = nil } }
         .alert("Voice input", isPresented: Binding(get: { voice.error != nil }, set: { if !$0 { voice.error = nil } })) { Button("OK") { voice.error = nil } } message: { Text(voice.error ?? "") }
@@ -108,12 +108,14 @@ struct ChatView: View {
         }.frame(maxWidth: .infinity).background(Palette.canvas).foregroundStyle(Palette.ink)
     }
     private var topicPicker: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text("Topic").font(.title2.weight(.semibold)).padding(.bottom, 12)
-            ForEach([("Symptoms", "cross.case", Color.orange), ("Medicines", "pills", .indigo), ("Interactions", "arrow.triangle.branch", .blue), ("Readings", "waveform.path.ecg", .red)], id: \.0) { item in
-                Button { hint = item.0; toolSheet = false; focused = true } label: { FeatureRow(title: item.0, subtitle: nil, symbol: item.1, colour: item.2) }.buttonStyle(.plain).padding(.vertical, 4)
-            }
-        }.padding(24).frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading).background(Palette.canvas)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Topic").font(.title2.weight(.semibold)).padding(.bottom, 12)
+                ForEach([("Symptoms", "cross.case", Color.orange), ("Medicines", "pills", .indigo), ("Interactions", "arrow.triangle.branch", .blue), ("Readings", "waveform.path.ecg", .red)], id: \.0) { item in
+                    Button { hint = item.0; toolSheet = false; focused = true } label: { FeatureRow(title: item.0, subtitle: nil, symbol: item.1, colour: item.2) }.buttonStyle(.plain).padding(.vertical, 4)
+                }
+            }.padding(24).frame(maxWidth: .infinity, alignment: .topLeading).measuredDrawerHeight(chrome: 24)
+        }.background(Palette.canvas)
     }
     private func cancel() { operationID = UUID(); task?.cancel(); task = nil; busy = false; voice.stop() }
     private func send() {

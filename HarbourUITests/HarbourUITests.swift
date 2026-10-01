@@ -573,3 +573,134 @@ import XCTest
         app.buttons["nav-today"].tap(); app.buttons["Settings"].tap(); app.buttons["Appearance"].tap(); app.buttons["appearance-light"].tap()
     }
 }
+
+@MainActor final class HarbourDrawerTests: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+    private func capture(_ name: String) {
+        let item = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); item.name = name; item.lifetime = .keepAlways; add(item)
+    }
+    private func drawer(_ app: XCUIApplication, shorterThan maximum: CGFloat = 800) {
+        let panel = app.descendants(matching: .any)["drawerBounds"].firstMatch
+        XCTAssertTrue(panel.waitForExistence(timeout: 5), app.debugDescription)
+        let fits = NSPredicate { _, _ in
+            let frame = panel.frame
+            return frame.height > 100 && frame.height < maximum && frame.minX > 0 && frame.maxX < app.frame.width && frame.maxY < app.frame.height - 5
+        }
+        XCTAssertEqual(XCTWaiter.wait(for: [expectation(for: fits, evaluatedWith: nil)], timeout: 5), .completed, app.debugDescription)
+    }
+    func testCompactDrawersNavigationKeyboardAndThemes() {
+        XCUIDevice.shared.orientation = .portrait
+        let app = XCUIApplication(); app.launchArguments = ["--verify-drawers"]; app.launch()
+        for dark in [false, true] {
+            app.buttons["nav-today"].tap(); app.buttons["Settings"].tap()
+            app.buttons["Appearance"].tap(); app.buttons[dark ? "appearance-dark" : "appearance-light"].tap()
+            drawer(app, shorterThan: 400); capture(dark ? "41-appearance-dark" : "40-appearance-light")
+            app.navigationBars["Appearance"].buttons.firstMatch.tap()
+            drawer(app, shorterThan: 750); capture(dark ? "38-settings-dark" : "16-settings")
+            app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "App lock")).firstMatch.tap()
+            drawer(app, shorterThan: 500); capture("54-app-lock-settings")
+            app.buttons["lock-option-pin"].tap()
+            XCTAssertTrue(app.staticTexts["Choose a PIN"].waitForExistence(timeout: 5))
+            drawer(app, shorterThan: 650); capture(dark ? "80-pin-drawer-dark" : "55-pin-setup")
+            app.buttons["pin-key-5"].tap(); app.buttons["pin-key-8"].tap()
+            XCTAssertEqual(app.descendants(matching: .any)["pinSlots"].firstMatch.value as? String, "2 of 4 digits entered")
+            app.buttons["Cancel"].tap(); app.navigationBars["App lock"].buttons.firstMatch.tap(); app.buttons["Done"].tap()
+            app.buttons["nav-records"].tap(); selectRecords(app, "Readings"); app.buttons["Add record"].tap()
+            drawer(app, shorterThan: 400); capture(dark ? "48-add-reading-dark" : "05-add-reading")
+            let value = app.textFields["readingValue"]; value.tap(); value.typeText("73")
+            XCTAssertTrue(app.buttons["saveReading"].isHittable); drawer(app)
+            capture(dark ? "82-reading-keyboard-dark" : "81-reading-keyboard")
+            app.buttons["saveReading"].tap()
+            XCTAssertTrue(app.staticTexts["73"].firstMatch.waitForExistence(timeout: 5))
+            selectRecords(app, "Medicines"); app.buttons["Add record"].tap(); drawer(app)
+            capture(dark ? "49-catalog-dark" : "06-medicine-catalog")
+            app.buttons["catalog-advil"].tap(); drawer(app, shorterThan: 600)
+            XCTAssertFalse(app.buttons["saveMedicine"].isEnabled)
+            capture(dark ? "50-confirm-medicine-dark" : "07-medicine-details"); app.buttons["Cancel"].tap()
+            app.buttons["nav-chat"].tap(); app.buttons["Choose a topic"].tap()
+            drawer(app, shorterThan: 430); capture(dark ? "36-topics-dark" : "12-topics")
+            app.buttons["Medicines"].tap(); XCTAssertTrue(app.buttons["Clear Medicines topic"].exists)
+            app.buttons["modelSelector"].tap(); drawer(app)
+            capture(dark ? "37-models-dark" : "14-models"); app.buttons["Done"].tap()
+        }
+        app.buttons["nav-today"].tap(); app.buttons["Settings"].tap(); app.buttons["Appearance"].tap()
+        app.buttons["appearance-light"].tap(); app.navigationBars["Appearance"].buttons.firstMatch.tap(); app.buttons["Done"].tap()
+    }
+}
+
+@MainActor final class HarbourDrawerDetailTests: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+    private func capture(_ name: String) {
+        let item = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); item.name = name; item.lifetime = .keepAlways; add(item)
+    }
+    func testLongDrawersAndLandscape() {
+        XCUIDevice.shared.orientation = .portrait
+        let app = XCUIApplication(); app.launchArguments = ["--verify-drawers"]; app.launch()
+        app.buttons["nav-today"].tap(); app.buttons["addSymptom"].tap()
+        let symptom = app.textFields["symptomText"]; symptom.tap(); symptom.typeText("Sore knee since Tuesday")
+        app.buttons["Done"].tap(); capture("08-symptom-intake")
+        app.buttons["noEmergencySigns"].tap(); app.buttons["saveSymptom"].tap(); app.swipeUp()
+        XCTAssertTrue(app.staticTexts["Health811"].waitForExistence(timeout: 5)); capture("09-symptom-review")
+        app.buttons["Cancel"].tap(); app.swipeUp(); app.buttons["Check interactions"].tap()
+        XCTAssertTrue(app.otherElements["floatingDrawer"].waitForExistence(timeout: 5)); capture("20-interactions")
+        app.buttons["Done"].tap(); app.buttons["Appointment note"].tap(); capture("19-appointment-note"); app.buttons["Done"].tap()
+        app.buttons["nav-visits"].tap(); app.buttons["addVisitNotes"].tap(); app.buttons["editVisitTranscript"].tap()
+        XCTAssertTrue(app.textViews["visitTranscriptInput"].waitForExistence(timeout: 5)); capture("83-visit-notes-drawer")
+        app.buttons["Cancel"].tap(); app.buttons["nav-records"].tap(); selectRecords(app, "Readings")
+        app.buttons["Add record"].tap()
+        let value = app.textFields["readingValue"]; value.tap(); value.typeText("74"); app.buttons["Done"].tap()
+        XCUIDevice.shared.orientation = .landscapeLeft
+        defer { XCUIDevice.shared.orientation = .portrait }
+        XCTAssertTrue(app.textFields["readingValue"].waitForExistence(timeout: 5))
+        let panel = app.descendants(matching: .any)["drawerBounds"].firstMatch
+        XCTAssertTrue(panel.waitForExistence(timeout: 5))
+        capture("79-reading-landscape")
+        XCTAssertLessThan(panel.frame.maxY, app.frame.height - 5)
+        XCTAssertEqual(value.value as? String, "74")
+        XCTAssertTrue(app.buttons["saveReading"].isHittable); app.buttons["saveReading"].tap()
+        XCTAssertTrue(app.staticTexts["74"].firstMatch.waitForExistence(timeout: 5))
+    }
+}
+
+@MainActor final class HarbourDrawerAccessibilityTests: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+    func testLargestTextReadingAndTopic() {
+        XCUIDevice.shared.orientation = .portrait
+        let app = XCUIApplication(); app.launchArguments = ["--verify-drawers"]; app.launch()
+        app.buttons["nav-records"].tap(); app.swipeUp(); selectRecords(app, "Readings"); app.buttons["Add record"].tap()
+        let value = app.textFields["readingValue"]
+        XCTAssertTrue(value.waitForExistence(timeout: 5)); XCTAssertGreaterThan(value.frame.height, 30)
+        let item = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); item.name = "84-drawer-large-text"; item.lifetime = .keepAlways; add(item)
+        value.tap(); value.typeText("75"); XCTAssertTrue(app.buttons["saveReading"].isHittable); app.buttons["saveReading"].tap()
+        XCTAssertTrue(app.staticTexts["75"].firstMatch.waitForExistence(timeout: 5))
+        app.buttons["nav-chat"].tap(); app.buttons["Choose a topic"].tap(); app.buttons["Readings"].firstMatch.tap()
+        XCTAssertTrue(app.buttons["Clear Readings topic"].waitForExistence(timeout: 5))
+    }
+}
+
+@MainActor final class HarbourRemainingDrawerScreens: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+    private func capture(_ name: String) {
+        let item = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); item.name = name; item.lifetime = .keepAlways; add(item)
+    }
+    func testRemainingDrawers() {
+        XCUIDevice.shared.orientation = .portrait
+        let app = XCUIApplication(); app.launch()
+        for dark in [false, true] {
+            app.buttons["nav-today"].tap(); app.buttons["Settings"].tap(); app.buttons["Appearance"].tap()
+            app.buttons[dark ? "appearance-dark" : "appearance-light"].tap(); app.navigationBars["Appearance"].buttons.firstMatch.tap(); capture(dark ? "38-settings-dark" : "16-settings")
+            app.buttons["Evaluation"].tap(); capture(dark ? "86-evaluation-drawer-dark" : "17-evaluation")
+            app.navigationBars["Evaluation"].buttons.firstMatch.tap(); app.buttons["Done"].tap()
+            if dark {
+                app.swipeDown(); app.swipeDown()
+                app.buttons["addSymptom"].tap(); app.textFields["symptomText"].tap(); app.textFields["symptomText"].typeText("Sore knee since Tuesday")
+                app.buttons["Done"].tap(); capture("51-symptom-entry-dark")
+                app.buttons["noEmergencySigns"].tap(); app.buttons["saveSymptom"].tap(); app.swipeUp(); capture("52-symptom-review-dark"); app.buttons["Cancel"].tap()
+            }
+            app.swipeUp(); app.buttons["Check interactions"].tap(); capture(dark ? "85-interactions-drawer-dark" : "20-interactions"); app.buttons["Done"].tap()
+            app.buttons["Appointment note"].tap(); capture(dark ? "39-note-dark" : "19-appointment-note"); app.buttons["Done"].tap()
+        }
+        app.buttons["Settings"].tap(); app.buttons["Appearance"].tap(); app.buttons["appearance-light"].tap()
+        app.navigationBars["Appearance"].buttons.firstMatch.tap(); app.buttons["Done"].tap()
+    }
+}

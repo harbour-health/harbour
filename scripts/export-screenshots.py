@@ -51,12 +51,20 @@ TITLES = {
     '73-visit-recording': 'Recording · audio-only simulator', '74-visit-paused': 'Paused · audio-only simulator',
     '75-visit-audio': 'Playback · audio-only simulator', '76-visits-dark': 'Visits · Dark',
     '77-visit-recorder-dark': 'Visit recorder · Dark', '78-visit-summary-dark': 'Visit summary · Dark',
+    '79-reading-landscape': 'Reading drawer · Landscape', '80-pin-drawer-dark': 'PIN drawer · Dark',
+    '81-reading-keyboard': 'Reading drawer · Keyboard', '82-reading-keyboard-dark': 'Reading drawer · Keyboard · Dark',
+    '83-visit-notes-drawer': 'Visit notes drawer', '84-drawer-large-text': 'Reading drawer · Large text',
+    '85-interactions-drawer-dark': 'Interaction drawer · Dark', '86-evaluation-drawer-dark': 'Evaluation drawer · Dark',
 }
 
 parser = argparse.ArgumentParser()
 parser.add_argument('results', nargs='+', type=Path)
 parser.add_argument('--output', type=Path, default=Path(__file__).resolve().parents[1] / 'docs/screenshots')
+parser.add_argument('--update-readme', action='store_true', help='Refresh every captured screen in the root README (requires the repository screenshot directory).')
 args = parser.parse_args()
+repository = Path(__file__).resolve().parents[1]
+if args.update_readme and args.output.resolve() != (repository / 'docs/screenshots').resolve():
+    parser.error('--update-readme requires the repository screenshot directory')
 args.output.mkdir(parents=True, exist_ok=True)
 provenance = {}
 if (args.output / 'manifest.json').exists():
@@ -117,4 +125,47 @@ try:
         preview.save(args.output / 'preview.jpg', quality=92)
 except ImportError:
     print('Pillow not installed; full-resolution gallery exported without overview sheets.')
+if args.update_readme:
+    groups = {
+        'Today': {1, 31, 43, 66},
+        'Chat': {10, 11, 12, 13, 28, 32, 36, 42, 44, 45, 46, 47, 53, 58},
+        'Records': {2, 3, 4, 22, 33, 34, 35, 64, 65},
+        'Entry and review': {5, 6, 7, 8, 9, 20, 21, 23, 24, 25, 48, 49, 50, 51, 52, 79, 81, 82, 84, 85},
+        'Doctor visits': set(range(67, 79)) | {83},
+        'Settings, models, and notes': {14, 15, 16, 18, 19, 27, 37, 38, 39, 40, 41, 60},
+        'App lock': {54, 55, 56, 57, 59, 61, 62, 80},
+        'Health permissions': {26, 30, 63},
+        'Evaluation': {17, 29, 86},
+    }
+    sections = {name: [] for name in groups}
+    for entry in entries:
+        number = int(entry['file'][:2])
+        group = next((name for name, numbers in groups.items() if number in numbers), 'Additional screens')
+        sections.setdefault(group, []).append(entry)
+    start = '<!-- screenshot-gallery:start -->'
+    end = '<!-- screenshot-gallery:end -->'
+    lines = [start, '## All screens', '', f'{len(entries)} native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).', '']
+    for name, captures in sections.items():
+        if not captures:
+            continue
+        lines.extend([f'### {name}', '', '| | |', '| :---: | :---: |'])
+        for offset in range(0, len(captures), 2):
+            cells = []
+            for entry in captures[offset:offset + 2]:
+                title = html.escape(entry['title'])
+                path = 'docs/screenshots/' + entry['file']
+                cells.append(f'<strong>{title}</strong><br>[<img src="{path}" alt="{title}" width="220">]({path})')
+            if len(cells) == 1:
+                cells.append('')
+            lines.append('| ' + ' | '.join(cells) + ' |')
+        lines.append('')
+    lines.append(end)
+    section = '\n'.join(lines) + '\n'
+    readme = repository / 'README.md'
+    existing = readme.read_text()
+    if start in existing and end in existing:
+        existing = existing[:existing.index(start)] + section + existing[existing.index(end) + len(end):].lstrip('\n')
+    else:
+        existing = existing.rstrip() + '\n\n' + section
+    readme.write_text(existing)
 print(f'Exported {len(entries)} native screenshots to {args.output}')

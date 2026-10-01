@@ -200,6 +200,7 @@ struct MedicineEditor: View {
             }
         }
         .scrollContentBackground(.hidden).background(Palette.canvas)
+        .drawerHeight(chosen == nil ? 600 : 500)
         .navigationTitle(initial == nil ? "Add medicine" : "Medicine").navigationBarTitleDisplayMode(.inline)
         .onAppear { chosen = initial; instructions = initial?.instructions ?? "" }
         .toolbar {
@@ -233,6 +234,7 @@ struct ReadingEditor: View {
             if !value.isEmpty && !ReadingParser.valid(value, kind: kind) { Section { Text(kind == .bloodPressure ? "Enter systolic/diastolic, such as 120/80." : "Check the number and unit.").foregroundStyle(Palette.muted) } }
         }
         .scrollContentBackground(.hidden).background(Palette.canvas)
+        .drawerHeight(!value.isEmpty && !ReadingParser.valid(value, kind: kind) ? 390 : 320)
         .navigationTitle("Add reading").navigationBarTitleDisplayMode(.inline)
         .onChange(of: kind) { value = "" }
         .toolbar {

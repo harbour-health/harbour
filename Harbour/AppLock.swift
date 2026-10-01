@@ -264,8 +264,9 @@ struct AppLockSettings: View {
             if lock.working { ProgressView() }
             if let error = lock.error { Text(error).foregroundStyle(Palette.coral).accessibilityIdentifier("lockSettingsError") }
         }.scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle("App lock").navigationBarTitleDisplayMode(.inline)
-            .sheet(isPresented: $verifying) { NavigationStack { PINChallenge { verifying = false; Task { await apply() } } } }
-            .sheet(isPresented: $settingPIN) { NavigationStack { PINSetup() } }
+            .drawerHeight(lock.enabled ? 450 : 390)
+            .sheet(isPresented: $verifying) { NavigationStack { PINChallenge { verifying = false; Task { await apply() } } }.floatingDrawer(height: 560) }
+            .sheet(isPresented: $settingPIN) { NavigationStack { PINSetup() }.floatingDrawer(height: 560) }
     }
     private func option(_ title: String, symbol: String, selected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) { HStack(spacing: 16) { Image(systemName: symbol).font(.title2).frame(width: 30); Text(title).font(.title3.weight(.medium)); Spacer(); if selected { Image(systemName: "checkmark") } }.foregroundStyle(Palette.ink).padding(.vertical, 12).contentShape(Rectangle()) }
