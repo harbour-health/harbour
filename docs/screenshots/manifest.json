@@ -50,10 +50,10 @@
   "11-chat-empty": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790866099.094,
-    "suggestedHumanReadableName": "11-chat-empty_0_7C9CF414-D801-4D92-B352-DB8E9E32EFEA.png",
+    "timestamp": 1790866380.075,
+    "suggestedHumanReadableName": "11-chat-empty_0_7B30D80E-9D3C-4DB3-A6C8-5076E104BD03.png",
     "test": "HarbourStableMainScreensTests/testStableLightMainScreens()",
-    "resultBundle": "harbour-dock-selection-final.xcresult"
+    "resultBundle": "harbour-dock-dimmer.xcresult"
   },
   "10-chat-conversation": {
     "deviceName": "Harbour QA",
@@ -130,10 +130,10 @@
   "01-today": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790866094.57,
-    "suggestedHumanReadableName": "01-today_0_A07C2491-F13A-41A5-98BB-179B963F4799.png",
+    "timestamp": 1790866375.545,
+    "suggestedHumanReadableName": "01-today_0_AA0DF954-09FD-41FE-AD51-48BE7B917485.png",
     "test": "HarbourStableMainScreensTests/testStableLightMainScreens()",
-    "resultBundle": "harbour-dock-selection-final.xcresult"
+    "resultBundle": "harbour-dock-dimmer.xcresult"
   },
   "19-appointment-note": {
     "deviceName": "Harbour QA",
@@ -314,10 +314,10 @@
   "32-chat-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790866075.505,
-    "suggestedHumanReadableName": "32-chat-dark_0_ED5F64F2-AF09-44C2-8A8E-FE2BBCECEDAE.png",
+    "timestamp": 1790866356.779,
+    "suggestedHumanReadableName": "32-chat-dark_0_324B3BD1-62BF-41F9-9C5C-4677F99B7FED.png",
     "test": "HarbourStableMainScreensTests/testStableLightMainScreens()",
-    "resultBundle": "harbour-dock-selection-final.xcresult"
+    "resultBundle": "harbour-dock-dimmer.xcresult"
   },
   "52-symptom-review-dark": {
     "deviceName": "Harbour QA",
@@ -386,10 +386,10 @@
   "31-today-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790866070.48,
-    "suggestedHumanReadableName": "31-today-dark_0_CAE2BC37-1319-4F43-BB21-BEDD6C8135FE.png",
+    "timestamp": 1790866351.967,
+    "suggestedHumanReadableName": "31-today-dark_0_E047F0DE-A3CC-4385-AC2E-ED9C33735CED.png",
     "test": "HarbourStableMainScreensTests/testStableLightMainScreens()",
-    "resultBundle": "harbour-dock-selection-final.xcresult"
+    "resultBundle": "harbour-dock-dimmer.xcresult"
   },
   "41-appearance-dark": {
     "deviceName": "Harbour QA",
@@ -506,18 +506,18 @@
   "65-records-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790866078.89,
-    "suggestedHumanReadableName": "65-records-dark_0_4C808E96-4F7E-4642-9FE4-EBE34176A4D4.png",
+    "timestamp": 1790866360.09,
+    "suggestedHumanReadableName": "65-records-dark_0_F52FA945-37E1-444D-8F12-6CDF568B8607.png",
     "test": "HarbourStableMainScreensTests/testStableLightMainScreens()",
-    "resultBundle": "harbour-dock-selection-final.xcresult"
+    "resultBundle": "harbour-dock-dimmer.xcresult"
   },
   "64-records": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790866102.399,
-    "suggestedHumanReadableName": "64-records_0_918AE4D0-13E8-4FBA-AE6C-37A9F7F82DAC.png",
+    "timestamp": 1790866383.349,
+    "suggestedHumanReadableName": "64-records_0_608A65C7-C447-456D-B287-ABE9BFF111D3.png",
     "test": "HarbourStableMainScreensTests/testStableLightMainScreens()",
-    "resultBundle": "harbour-dock-selection-final.xcresult"
+    "resultBundle": "harbour-dock-dimmer.xcresult"
   },
   "66-floating-navigation": {
     "deviceName": "Harbour QA",
@@ -594,10 +594,10 @@
   "67-visits": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790866105.727,
-    "suggestedHumanReadableName": "67-visits_0_053661AB-641F-4C83-A2CB-6DADD1195C27.png",
+    "timestamp": 1790866386.711,
+    "suggestedHumanReadableName": "67-visits_0_3E6106E1-AE23-452F-A7F3-0AE135611E2B.png",
     "test": "HarbourStableMainScreensTests/testStableLightMainScreens()",
-    "resultBundle": "harbour-dock-selection-final.xcresult"
+    "resultBundle": "harbour-dock-dimmer.xcresult"
   },
   "78-visit-summary-dark": {
     "deviceName": "Harbour QA",
@@ -618,10 +618,10 @@
   "76-visits-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1790866082.57,
-    "suggestedHumanReadableName": "76-visits-dark_0_627DFB35-FD51-4F39-AA6B-3F261760C221.png",
+    "timestamp": 1790866363.575,
+    "suggestedHumanReadableName": "76-visits-dark_0_B0D2FE8E-09B4-493D-8556-B3FC797E1E36.png",
     "test": "HarbourStableMainScreensTests/testStableLightMainScreens()",
-    "resultBundle": "harbour-dock-selection-final.xcresult"
+    "resultBundle": "harbour-dock-dimmer.xcresult"
   },
   "79-reading-landscape": {
     "deviceName": "Harbour QA",
