@@ -10,17 +10,21 @@ Apple Health import requests access to heart rate, body temperature, and the sys
 
 Read authorization intentionally cannot prove that the user granted access. An empty query reports that no readings are available; it does not claim permission was granted or denied. Import runs when explicitly requested, rather than continuously in the background. [Apple’s authorization documentation](https://developer.apple.com/documentation/healthkit/authorizing-access-to-health-data) explains this privacy boundary.
 
-Voice input requests microphone and speech authorization only when the microphone is used. `SFSpeechRecognizer` must support on-device recognition; `requiresOnDeviceRecognition` is always true. Transcription updates the draft and is never submitted automatically. An unsupported recognizer or denied permission produces a visible error. Chat dictation audio remains in the recognition pipeline rather than being written into record storage. The separate [doctor visit recorder](doctor-visits.md) explicitly saves audio and handles longer sessions. Read-aloud uses AVSpeechSynthesizer.
+Voice input requests speech and microphone authorization only when the microphone is used. `SFSpeechRecognizer` must support on-device recognition; `requiresOnDeviceRecognition` is always true. Dictation updates an editable draft until the user taps Send. The explicitly selected [voice conversation](voice-conversation.md) mode submits a completed utterance through the ordinary chat message and tool flow, reads the response with `AVSpeechSynthesizer`, and listens again after matching playback completion. Mutations still use the same human confirmation screens as typed chat.
+
+An unsupported recognizer or denied permission produces a visible error. Speech permission denial stops before requesting microphone permission. Chat audio remains in the recognition pipeline rather than being written into record storage. The separate [doctor visit recorder](doctor-visits.md) explicitly saves audio and handles longer sessions.
 
 ## How to change it
 
 Edit `DeviceServices.swift`. For a new HealthKit metric, request only its required quantity types, convert units explicitly, add a `ReadingKind`, and test ingestion and duplicate handling. Check physical-device permission flows whenever changing capabilities or privacy strings. Do not treat successful authorization-request completion as proof of read access.
 
-For additional speech locales, check on-device support before starting. Keep transcripts editable. Stop recognition when leaving chat, sending, or starting read-aloud. Model chat does not require speech to be enabled.
+For additional speech locales, check on-device support before starting. Keep dictation transcripts editable. Stop recognition when leaving chat, sending, or starting read-aloud. Model chat does not require speech to be enabled. `VoiceTurnTests` covers single delivery and stale/empty turn rejection; physical microphone behavior needs device testing.
 
 Chat dictation and read-aloud controls are disabled while a visit recorder is active. `VoiceService.stop` deactivates the shared audio session only if it owns recording/read-aloud activity, so leaving idle Chat cannot cut off a visit recording.
 
 Voice starts carry a generation ID. Stopping or leaving chat invalidates pending permission requests and queued recognition callbacks, so granting a delayed permission cannot start recording after navigation or update a later draft.
+
+`VoiceService` also stops on app backgrounding, audio interruptions, audio-device disconnection, and media-service resets. Interrupted speech does not trigger the next listening turn. A media-service reset recreates platform audio objects. Restart is explicit after an audio failure, and an idle service does not deactivate another feature's audio session.
 
 When an enabled app lock replaces the navigation tree, chat teardown stops voice and cancels its model task. Returning from the background requires unlocking before another microphone request. The app lock's privacy curtain also covers any open entry or permission-adjacent screen while backgrounded; physical-device speech and snapshot behaviour still need acceptance testing.
 

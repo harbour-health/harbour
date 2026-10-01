@@ -57,6 +57,18 @@ TITLES = {
     '85-interactions-drawer-dark': 'Interaction drawer · Dark', '86-evaluation-drawer-dark': 'Evaluation drawer · Dark',
     '87-new-visit-notes': 'New visit notes', '88-new-visit-notes-dark': 'New visit notes · Dark',
     '89-chat-small-phone': 'Chat · Small phone', '90-reading-small-phone': 'Reading drawer · Small phone',
+    '91-label-scan': 'Recognized medicine label', '92-medicine-schedule': 'Medicine schedule',
+    '93-reminder': 'Reminder', '94-dose-log': 'Log a dose', '95-agenda': 'Today · Agenda',
+    '96-timeline': 'Health timeline', '97-timeline-search': 'Search health history',
+    '98-appointment-preparation': 'Appointment preparation', '99-agenda-dark': 'Agenda · Dark',
+    '100-timeline-dark': 'Health timeline · Dark', '101-preparation-dark': 'Appointment preparation · Dark',
+    '102-schedule-dark': 'Medicine schedule · Dark', '103-dose-later-dark': 'Remind later · Dark',
+    '104-voice-options': 'Voice options', '105-chat-reminder-review': 'Chat · Reminder confirmation',
+    '106-chat-reminders': 'Reminders in chat', '107-chat-schedule-review': 'Chat · Schedule confirmation',
+    '108-chat-dose-review': 'Chat · Dose confirmation', '109-chat-history': 'Health history in chat',
+    '110-chat-question-review': 'Chat · Appointment question', '111-chat-label-scan': 'Chat · Label entry',
+    '112-label-entry': 'Medicine label entry', '113-voice-mode': 'Voice conversation',
+    '114-voice-input-error': 'On-device voice unavailable', '115-notification-setting': 'Reminder notifications', '116-today-large-text': 'Today · Largest text',
 }
 
 parser = argparse.ArgumentParser()
@@ -76,7 +88,7 @@ for result in args.results:
         subprocess.run(['xcrun', 'xcresulttool', 'export', 'attachments', '--path', str(result), '--output-path', temporary], check=True, stdout=subprocess.DEVNULL)
         for test in json.loads((Path(temporary) / 'manifest.json').read_text()):
             for attachment in test['attachments']:
-                match = re.match(r'(\d{2}-[a-z-]+)_', attachment['suggestedHumanReadableName'])
+                match = re.match(r'(\d{2,3}-[a-z-]+)_', attachment['suggestedHumanReadableName'])
                 if not match or not attachment['exportedFileName'].endswith('.png'):
                     continue
                 stem = match.group(1)
@@ -87,8 +99,8 @@ for result in args.results:
                 provenance[stem]['test'] = test['testIdentifier']
                 provenance[stem]['resultBundle'] = result.name
 (args.output / 'manifest.json').write_text(json.dumps(provenance, indent=2) + '\n')
-files = sorted(path for path in args.output.glob('*.png') if re.match(r'\d{2}-', path.name))
-entries = [{'file': path.name, 'title': TITLES.get(path.stem, path.stem[3:].replace('-', ' ').capitalize())} for path in files]
+files = sorted((path for path in args.output.glob('*.png') if re.match(r'\d{2,3}-', path.name)), key=lambda p: int(p.stem.split('-', 1)[0]))
+entries = [{'file': path.name, 'title': TITLES.get(path.stem, path.stem.split('-', 1)[1].replace('-', ' ').capitalize())} for path in files]
 for entry in entries:
     entry['src'] = entry['file'] + '?v=' + str((args.output / entry['file']).stat().st_mtime_ns)
 figures = ''.join(f'<figure><button class="capture" data-index="{i}" aria-label="Open {html.escape(entry["title"])}"><img src="{entry["src"]}" alt="{html.escape(entry["title"])}" loading="lazy"></button><figcaption>{html.escape(entry["title"])}</figcaption><a href="{entry["file"]}" download>Download PNG</a></figure>' for i, entry in enumerate(entries))
@@ -129,7 +141,7 @@ except ImportError:
     print('Pillow not installed; full-resolution gallery exported without overview sheets.')
 if args.update_readme:
     groups = {
-        'Today': {1, 31, 43, 66},
+        'Today': {1, 31, 43, 66, 116},
         'Chat': {10, 11, 12, 13, 28, 32, 36, 42, 44, 45, 46, 47, 53, 58, 89},
         'Records': {2, 3, 4, 22, 33, 34, 35, 64, 65},
         'Entry and review': {5, 6, 7, 8, 9, 20, 21, 23, 24, 25, 48, 49, 50, 51, 52, 79, 81, 82, 84, 85, 90},
@@ -138,10 +150,12 @@ if args.update_readme:
         'App lock': {54, 55, 56, 57, 59, 61, 62, 80},
         'Health permissions': {26, 30, 63},
         'Evaluation': {17, 29, 86},
+        'Reminders, schedules, and preparation': set(range(91, 104)),
+        'Voice and care tools in chat': set(range(104, 120)),
     }
     sections = {name: [] for name in groups}
     for entry in entries:
-        number = int(entry['file'][:2])
+        number = int(entry['file'].split('-', 1)[0])
         group = next((name for name, numbers in groups.items() if number in numbers), 'Additional screens')
         sections.setdefault(group, []).append(entry)
     start = '<!-- screenshot-gallery:start -->'

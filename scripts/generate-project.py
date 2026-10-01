@@ -51,7 +51,7 @@ test_frameworks = add('TestFrameworks', 'isa = PBXFrameworksBuildPhase; buildAct
 def config_list(name, settings):
     configurations = []
     for mode in ['Debug', 'Release']:
-        flags = 'SWIFT_OPTIMIZATION_LEVEL = "-Onone"; DEBUG_INFORMATION_FORMAT = dwarf; ONLY_ACTIVE_ARCH = YES;' if mode == 'Debug' else 'SWIFT_OPTIMIZATION_LEVEL = "-O"; DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";'
+        flags = 'SWIFT_OPTIMIZATION_LEVEL = "-Onone"; ENABLE_TESTABILITY = YES; SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG; DEBUG_INFORMATION_FORMAT = dwarf; ONLY_ACTIVE_ARCH = YES;' if mode == 'Debug' else 'SWIFT_OPTIMIZATION_LEVEL = "-O"; DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";'
         configurations.append(add(name + mode, f'isa = XCBuildConfiguration; buildSettings = {{ {settings} {flags} }}; name = {mode};'))
     return add(name + 'Configurations', f'isa = XCConfigurationList; buildConfigurations = {refs(configurations)}; defaultConfigurationIsVisible = 0; defaultConfigurationName = Release;')
 
@@ -63,7 +63,17 @@ project_id = ident('Project')
 proxy = add('TestProxy', f'isa = PBXContainerItemProxy; containerPortal = {project_id}; proxyType = 1; remoteGlobalIDString = {target}; remoteInfo = Harbour;')
 dependency = add('TestDependency', f'isa = PBXTargetDependency; target = {target}; targetProxy = {proxy};')
 test_target = add('TestTarget', f'isa = PBXNativeTarget; buildConfigurationList = {test_configs}; buildPhases = {refs([test_sources, test_frameworks])}; buildRules = (); dependencies = {refs([dependency])}; name = HarbourUITests; productName = HarbourUITests; productReference = {test_product}; productType = "com.apple.product-type.bundle.ui-testing";')
-add('Project', f'isa = PBXProject; attributes = {{ LastUpgradeCheck = 2700; TargetAttributes = {{ {target} = {{ CreatedOnToolsVersion = 27.0; SystemCapabilities = {{ com.apple.HealthKit = {{ enabled = 1; }}; }}; }}; {test_target} = {{ TestTargetID = {target}; }}; }}; }}; buildConfigurationList = {project_configs}; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base); mainGroup = {group}; productRefGroup = {products}; projectDirPath = ""; projectRoot = ""; packageReferences = {refs(packages)}; targets = {refs([target, test_target])};')
+unit_product = add('UnitProduct', 'isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = HarbourTests.xctest; sourceTree = BUILT_PRODUCTS_DIR;')
+unit_ref = add('UnitSource', 'isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarbourTests.swift; sourceTree = "<group>";')
+unit_build = add('UnitBuild', f'isa = PBXBuildFile; fileRef = {unit_ref};')
+unit_group = add('UnitGroup', f'isa = PBXGroup; children = {refs([unit_ref])}; path = HarbourTests; sourceTree = "<group>";')
+objects[group] = '{ isa = PBXGroup; children = ' + refs([source_group, test_group, unit_group, products]) + '; sourceTree = "<group>"; }'
+objects[products] = '{ isa = PBXGroup; children = ' + refs([app, test_product, unit_product]) + '; name = Products; sourceTree = "<group>"; }'
+unit_sources = add('UnitSources', f'isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = {refs([unit_build])}; runOnlyForDeploymentPostprocessing = 0;')
+unit_frameworks = add('UnitFrameworks', 'isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0;')
+unit_configs = config_list('Unit', 'PRODUCT_NAME = HarbourTests; PRODUCT_BUNDLE_IDENTIFIER = com.matteopolak.harbour.tests; GENERATE_INFOPLIST_FILE = YES; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Harbour.app/Harbour"; BUNDLE_LOADER = "$(TEST_HOST)"; TARGETED_DEVICE_FAMILY = "1,2"; CODE_SIGN_STYLE = Automatic;')
+unit_target = add('UnitTarget', f'isa = PBXNativeTarget; buildConfigurationList = {unit_configs}; buildPhases = {refs([unit_sources, unit_frameworks])}; buildRules = (); dependencies = {refs([dependency])}; name = HarbourTests; productName = HarbourTests; productReference = {unit_product}; productType = "com.apple.product-type.bundle.unit-test";')
+add('Project', f'isa = PBXProject; attributes = {{ LastUpgradeCheck = 2700; TargetAttributes = {{ {target} = {{ CreatedOnToolsVersion = 27.0; SystemCapabilities = {{ com.apple.HealthKit = {{ enabled = 1; }}; }}; }}; {test_target} = {{ TestTargetID = {target}; }}; }}; }}; buildConfigurationList = {project_configs}; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base); mainGroup = {group}; productRefGroup = {products}; projectDirPath = ""; projectRoot = ""; packageReferences = {refs(packages)}; targets = {refs([target, test_target, unit_target])};')
 project = root / 'Harbour.xcodeproj'
 project.mkdir(exist_ok=True)
 (project / 'project.pbxproj').write_text('// !$*UTF8*$!\n{ archiveVersion = 1; classes = {}; objectVersion = 56; objects = {\n' + '\n'.join(f'{key} = {value};' for key, value in objects.items()) + f'\n}}; rootObject = {project_id}; }}\n')
@@ -73,7 +83,7 @@ reference = lambda key, name: f'<BuildableReference BuildableIdentifier="primary
 (schemes / 'Harbour.xcscheme').write_text(f'''<?xml version="1.0" encoding="UTF-8"?>
 <Scheme LastUpgradeVersion="2700" version="1.3">
 <BuildAction parallelizeBuildables="YES" buildImplicitDependencies="YES"><BuildActionEntries><BuildActionEntry buildForTesting="YES" buildForRunning="YES" buildForProfiling="YES" buildForArchiving="YES" buildForAnalyzing="YES">{reference(target, 'Harbour.app')}</BuildActionEntry></BuildActionEntries></BuildAction>
-<TestAction buildConfiguration="Debug" shouldUseLaunchSchemeArgsEnv="YES"><Testables><TestableReference skipped="NO">{reference(test_target, 'HarbourUITests.xctest')}</TestableReference></Testables></TestAction>
+<TestAction buildConfiguration="Debug" shouldUseLaunchSchemeArgsEnv="YES"><Testables><TestableReference skipped="NO">{reference(test_target, 'HarbourUITests.xctest')}</TestableReference><TestableReference skipped="NO">{reference(unit_target, 'HarbourTests.xctest')}</TestableReference></Testables></TestAction>
 <LaunchAction buildConfiguration="Debug" launchStyle="0" useCustomWorkingDirectory="NO" ignoresPersistentStateOnLaunch="NO" debugServiceExtension="internal" allowLocationSimulation="YES"><BuildableProductRunnable runnableDebuggingMode="0">{reference(target, 'Harbour.app')}</BuildableProductRunnable></LaunchAction>
 <ProfileAction buildConfiguration="Release"><BuildableProductRunnable runnableDebuggingMode="0">{reference(target, 'Harbour.app')}</BuildableProductRunnable></ProfileAction>
 <AnalyzeAction buildConfiguration="Debug"/><ArchiveAction buildConfiguration="Release" revealArchiveInOrganizer="YES"/>

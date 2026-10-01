@@ -12,6 +12,7 @@ public struct RoutingCase: Sendable {
     public init(_ input: String, _ tool: Tool) { self.input = input; self.tool = tool }
 }
 public enum Evaluation {
+    public static var records: Records { var r = Records(); r.medicines = Catalog.medicines.filter { $0.id == "metformin" }; return r }
     public static let routingCases: [RoutingCase] = [
         .init("Can I take Advil and warfarin together?", .interactions),
         .init("My knee has been sore since Tuesday", .captureSymptom),
@@ -24,7 +25,14 @@ public enum Evaluation {
         .init("Export my records", .exportData),
         .init("Import readings from Apple Health", .importReadings),
         .init("Clear all records", .clearData),
-        .init("Show my medicines", .listMedicines)
+        .init("Show my medicines", .listMedicines),
+        .init("Remind me to book blood work", .createReminder),
+        .init("Show my reminders", .listReminders),
+        .init("Schedule Metformin at 8 am and 8 pm", .scheduleMedicine),
+        .init("I took Metformin", .logDose),
+        .init("Search my history for blood work", .searchTimeline),
+        .init("Scan a medicine label", .scanMedicine),
+        .init("Save question for my doctor: Should I repeat my blood test?", .saveQuestion)
     ]
     public static func checks() -> [CheckResult] {
         func med(_ id: String) -> Medicine { Catalog.medicines.first { $0.id == id }! }

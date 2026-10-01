@@ -20,13 +20,13 @@ Settings is accessible directly from every main destination. Record lists and vi
 
 The chat composer keeps the model selector directly left of the microphone. `ViewThatFits` prefers the complete model name and effort, then uses the shorter Small/Balanced label when space is tight. Its final layout stacks model and effort within the same button rather than reducing the microphone/send targets or pushing them off-screen. The accessible value always includes the full model title and effort.
 
-Today groups the reading summary and two equal shortcuts with the existing 14-point gap. It omits the duplicate latest-reading row and shows the Readings section only when other reading types exist. Interactions, visits, and appointment notes are separate whole-row actions with dividers. Recent symptoms have a chevron to show navigation.
+Today groups the reading summary and two equal 190-point shortcuts with a 14-point gap. Both shortcuts navigate to their Records list; they do not create records. The agenda owns reminder entry and scheduled dose logging. Health history opens a searchable, read-only timeline. Records owns symptom, medicine, reading, and label entry. Medicine schedules belong to the medicine editor, and interaction checks belong to the Medicines list. Visits owns recording, visit notes, and appointment preparation. Each action also has a validated chat tool; there are no duplicate dashboard editors.
 
 Visits' Add notes action opens the editor immediately. A new visit is held in view state until Save succeeds; Cancel creates no empty history entry. Blank new transcripts cannot be saved. Existing transcript editing retains its previous persistence and summary invalidation behaviour. Saving new notes opens their detail screen.
 
 Primary in-content actions use a dark capsule in light mode and a light capsule in dark mode. Secondary actions use the neutral surface. Preparing a first summary is primary. Once medicine changes exist, Review is primary and Refresh summary is secondary. Medicine confirmations and emergency choices share a trailing selection indicator, keeping multiline text aligned. Save remains gated by the existing acknowledgements.
 
-Appointment note is a selectable, generated preview of the saved records. It has Copy and Share actions below the scrollable text and Done at the upper right. It no longer presents an editable text field whose changes would be discarded silently.
+Appointment preparation contains saved questions and a selectable, generated record summary. Questions persist before Copy or Share; editing a question updates the saved question rather than changing a disposable preview. Copy and Share use the same generated note. Done remains at the upper right.
 
 ## How to change it
 

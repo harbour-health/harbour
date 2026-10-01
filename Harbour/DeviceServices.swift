@@ -3,6 +3,7 @@ import HealthKit
 import Speech
 import AVFoundation
 import HarbourCore
+import UIKit
 
 @MainActor final class HealthService: ObservableObject {
     @Published var busy = false
@@ -48,57 +49,143 @@ import HarbourCore
     }
 }
 
-@MainActor final class VoiceService: ObservableObject {
-    @Published var listening = false
+@MainActor final class VoiceService: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
+    @Published private(set) var listening = false
+    @Published private(set) var speaking = false
+    @Published private(set) var finishing = false
+    @Published private(set) var transcript = ""
     @Published var error: String?
-    private let engine = AVAudioEngine()
+    private var engine = AVAudioEngine()
     private var recognition: SFSpeechRecognitionTask?
     private var request: SFSpeechAudioBufferRecognitionRequest?
     private var hasTap = false
+    private var turn = VoiceTurn()
     private var generation = UUID()
-    private let speaker = AVSpeechSynthesizer()
+    private var speaker = AVSpeechSynthesizer()
     private var audioSessionOwned = false
-    func start(transcript: @escaping (String) -> Void) async {
-        let current = UUID(); generation = current
+    private var silence: Task<Void, Never>?
+    private var finalTimeout: Task<Void, Never>?
+    private var received: ((String) -> Void)?
+    private var completed: ((String) -> Void)?
+    private var spoken: (() -> Void)?
+    private var activeUtterance: ObjectIdentifier?
+    private var observers: [NSObjectProtocol] = []
+    override init() {
+        super.init(); speaker.delegate = self
+        let center = NotificationCenter.default
+        observers.append(center.addObserver(forName: AVAudioSession.interruptionNotification, object: nil, queue: .main) { [weak self] notification in
+            guard let raw = notification.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt,
+                  AVAudioSession.InterruptionType(rawValue: raw) == .began else { return }
+            Task { @MainActor in self?.interrupt("Voice was interrupted. Start voice again when you’re ready.") }
+        })
+        observers.append(center.addObserver(forName: AVAudioSession.routeChangeNotification, object: nil, queue: .main) { [weak self] notification in
+            guard let raw = notification.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt,
+                  AVAudioSession.RouteChangeReason(rawValue: raw) == .oldDeviceUnavailable else { return }
+            Task { @MainActor in self?.interrupt("The audio device disconnected. Start voice again when you’re ready.") }
+        })
+        observers.append(center.addObserver(forName: AVAudioSession.mediaServicesWereResetNotification, object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor in
+                guard let self else { return }
+                self.interrupt("Audio restarted. Start voice again when you’re ready.")
+                self.engine = AVAudioEngine()
+                self.speaker = AVSpeechSynthesizer(); self.speaker.delegate = self
+            }
+        })
+        observers.append(center.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor in self?.stop() }
+        })
+    }
+    deinit { for observer in observers { NotificationCenter.default.removeObserver(observer) } }
+    private func interrupt(_ message: String) {
+        guard audioSessionOwned || received != nil || spoken != nil else { return }
+        stop(); error = message
+    }
+    func start(transcript: @escaping (String) -> Void, finished: ((String) -> Void)? = nil) async {
+        stop(); let current = turn.begin(); generation = current
+        received = transcript; completed = finished; self.transcript = ""; error = nil
+        guard UIApplication.shared.applicationState == .active else { stop(); return }
         let speech = await withCheckedContinuation { continuation in SFSpeechRecognizer.requestAuthorization { continuation.resume(returning: $0) } }
         guard generation == current else { return }
-        let microphone = await AVAudioApplication.requestRecordPermission()
+        guard speech == .authorized else { stop(); error = "Enable speech access in Settings."; return }
+        guard UIApplication.shared.applicationState == .active else { stop(); return }
+        let microphone = await withCheckedContinuation { continuation in AVAudioApplication.requestRecordPermission { continuation.resume(returning: $0) } }
         guard generation == current else { return }
-        guard speech == .authorized, microphone else { error = "Enable microphone and speech access in Settings."; return }
-        guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-CA")), recognizer.isAvailable, recognizer.supportsOnDeviceRecognition else { error = "On-device speech isn’t available for English on this phone."; return }
+        guard microphone else { stop(); error = "Enable microphone access in Settings."; return }
+        guard UIApplication.shared.applicationState == .active else { stop(); return }
+        guard let recognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-CA")), recognizer.isAvailable, recognizer.supportsOnDeviceRecognition else { stop(); error = "On-device speech isn’t available for English on this phone."; return }
         do {
-            stop(); generation = current; speaker.stopSpeaking(at: .immediate)
             let session = AVAudioSession.sharedInstance()
             try session.setCategory(.record, mode: .measurement, options: [.duckOthers]); try session.setActive(true); audioSessionOwned = true
-            let request = SFSpeechAudioBufferRecognitionRequest()
-            request.requiresOnDeviceRecognition = true; request.shouldReportPartialResults = true
+            let request = SFSpeechAudioBufferRecognitionRequest(); request.requiresOnDeviceRecognition = true; request.shouldReportPartialResults = true
             self.request = request
             let input = engine.inputNode, format = input.outputFormat(forBus: 0)
             guard format.sampleRate > 0 else { throw NSError(domain: "Audio", code: 1, userInfo: [NSLocalizedDescriptionKey: "No microphone is available."]) }
             input.installTap(onBus: 0, bufferSize: 1024, format: format) { buffer, _ in request.append(buffer) }; hasTap = true
-            recognition = recognizer.recognitionTask(with: request) { [weak self] result, error in
+            recognition = recognizer.recognitionTask(with: request) { [weak self] result, failure in
                 Task { @MainActor in
                     guard let self, self.generation == current else { return }
-                    if let result { transcript(result.bestTranscription.formattedString) }
-                    if error != nil || result?.isFinal == true { self.stop() }
+                    if let result {
+                        let text = result.bestTranscription.formattedString
+                        let changed = self.turn.partial(text, id: current)
+                        self.transcript = self.turn.text; self.received?(self.turn.text)
+                        if changed { self.silence?.cancel() }
+                        if changed && self.completed != nil && self.listening && !self.turn.text.isEmpty {
+                            self.silence = Task { try? await Task.sleep(for: .seconds(1.8)); if !Task.isCancelled && self.generation == current { self.finishUtterance() } }
+                        }
+                        if result.isFinal { self.deliver(current); return }
+                    }
+                    if failure != nil && !self.finishing { self.stop(); self.error = "Voice input stopped. Please try again." }
                 }
             }
             engine.prepare(); try engine.start(); listening = true
         } catch { stop(); self.error = error.localizedDescription }
     }
-    func stop() {
-        let shouldDeactivate = audioSessionOwned || speaker.isSpeaking || speaker.isPaused
-        audioSessionOwned = false; speaker.stopSpeaking(at: .immediate)
-        generation = UUID()
-        engine.stop()
-        if hasTap { engine.inputNode.removeTap(onBus: 0); hasTap = false }
-        request?.endAudio(); recognition?.cancel(); recognition = nil; request = nil; listening = false
-        if shouldDeactivate { try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation) }
+    func finishUtterance() {
+        guard listening else { return }
+        listening = false; finishing = true; silence?.cancel(); stopMicrophone(); request?.endAudio()
+        let current = generation
+        finalTimeout = Task { try? await Task.sleep(for: .seconds(2)); if !Task.isCancelled && self.generation == current { self.deliver(current) } }
     }
-    func speak(_ text: String) {
-        stop(); speaker.stopSpeaking(at: .immediate)
-        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
-        let utterance = AVSpeechUtterance(string: text); utterance.voice = AVSpeechSynthesisVoice(language: "en-CA"); utterance.rate = 0.45
-        speaker.speak(utterance)
+    private func deliver(_ current: UUID) {
+        guard current == generation else { return }
+        let value = turn.finish(id: current), callback = completed
+        stop()
+        if let value { callback?(value) }
+        else if callback != nil { error = "No speech was recognized. Please try again." }
+    }
+    private func stopMicrophone() { engine.stop(); if hasTap { engine.inputNode.removeTap(onBus: 0); hasTap = false } }
+    func stop() {
+        generation = UUID(); turn.cancel(); silence?.cancel(); finalTimeout?.cancel()
+        activeUtterance = nil; spoken = nil; speaker.stopSpeaking(at: .immediate); speaking = false
+        stopMicrophone(); request?.endAudio(); recognition?.cancel(); recognition = nil; request = nil
+        listening = false; finishing = false; received = nil; completed = nil
+        if audioSessionOwned { try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation); audioSessionOwned = false }
+    }
+    func speak(_ text: String, finished: (() -> Void)? = nil) {
+        stop(); error = nil
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { finished?(); return }
+        guard UIApplication.shared.applicationState == .active else { return }
+        spoken = finished
+        do {
+            let session = AVAudioSession.sharedInstance(); try session.setCategory(.playback, mode: .spokenAudio); try session.setActive(true); audioSessionOwned = true
+            let utterance = AVSpeechUtterance(string: text); utterance.voice = AVSpeechSynthesisVoice(language: "en-CA"); utterance.rate = 0.45
+            activeUtterance = ObjectIdentifier(utterance); speaking = true; speaker.speak(utterance)
+        } catch { stop(); self.error = "Couldn’t play the response. " + error.localizedDescription }
+    }
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        let identifier = ObjectIdentifier(utterance)
+        Task { @MainActor in
+            guard self.activeUtterance == identifier else { return }
+            let callback = self.spoken; self.activeUtterance = nil; self.spoken = nil; self.speaking = false
+            if self.audioSessionOwned { try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation); self.audioSessionOwned = false }
+            callback?()
+        }
+    }
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
+        let identifier = ObjectIdentifier(utterance)
+        Task { @MainActor in
+            guard self.activeUtterance == identifier else { return }
+            self.stop(); self.error = "Voice playback stopped. Start voice again when you’re ready."
+        }
     }
 }

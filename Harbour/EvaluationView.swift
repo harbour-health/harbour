@@ -42,9 +42,9 @@ struct EvaluationReport: Codable {
             let start = Date()
             var output = ""
             do {
-                output = try await models.generate(ToolPlanner.prompt(fixture.input))
+                output = try await models.generate(ToolPlanner.prompt(fixture.input, records: Evaluation.records), allowedTools: ToolPlanner.generationTools(fixture.input, records: Evaluation.records).map(\.rawValue))
                 let decision = try ToolPlanner.parse(output)
-                _ = try ToolPlanner.validate(decision, original: fixture.input, records: Records())
+                _ = try ToolPlanner.validate(decision, original: fixture.input, records: Evaluation.records)
                 report.runs.append(ModelRun(model: models.resolved.rawValue, effort: models.effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: decision.tool.rawValue, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: decision.tool == fixture.tool))
             } catch { report.runs.append(ModelRun(model: models.resolved.rawValue, effort: models.effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: error.localizedDescription, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: false)) }
             checkpoint()
@@ -71,7 +71,7 @@ struct EvaluationView: View {
                 Button(busy ? "Stop evaluation" : "Evaluate selected model") { if busy { task?.cancel() } else { run() } }
                 if busy { ProgressView(models.downloading == nil ? "Running fictional cases" : models.status) }
                 if !report.runs.isEmpty { LabeledContent("Passed", value: "\(report.runs.filter(\.passed).count)/\(report.runs.count)") }
-            } header: { Text("Local model") } footer: { Text("Twelve fictional prompts per effort setting. Results include model routing and latency; they do not measure clinical validity.") }
+            } header: { Text("Local model") } footer: { Text("\(Evaluation.routingCases.count) fictional prompts per effort setting. Results include model routing and latency; they do not measure clinical validity.") }
             ForEach(report.runs) { result in
                 VStack(alignment: .leading, spacing: 8) { Label(result.input, systemImage: result.passed ? "checkmark.circle" : "xmark.circle"); Text("\(result.effort) · \(String(format: "%.2f", result.elapsedSeconds)) seconds · \(result.observed)").font(.caption).foregroundStyle(.secondary) }
             }
@@ -91,9 +91,9 @@ struct EvaluationView: View {
                     let start = Date()
                     var output = ""
                     do {
-                        output = try await models.generate(ToolPlanner.prompt(fixture.input))
+                        output = try await models.generate(ToolPlanner.prompt(fixture.input, records: Evaluation.records), allowedTools: ToolPlanner.generationTools(fixture.input, records: Evaluation.records).map(\.rawValue))
                         let decision = try ToolPlanner.parse(output)
-                        _ = try ToolPlanner.validate(decision, original: fixture.input, records: Records())
+                        _ = try ToolPlanner.validate(decision, original: fixture.input, records: Evaluation.records)
                         report.runs.append(ModelRun(model: selectedModel.rawValue, effort: effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: decision.tool.rawValue, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: decision.tool == fixture.tool))
                     } catch { if Task.isCancelled { return }; report.runs.append(ModelRun(model: selectedModel.rawValue, effort: effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: error.localizedDescription, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: false)) }
                 }

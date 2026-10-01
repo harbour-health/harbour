@@ -28,7 +28,7 @@ To add artwork, add a case to `IllustrationKind`, a matching switch branch, and 
 
 ## Configuration
 
-`kind` selects `.readings`, `.medicines`, `.symptoms`, or `.conversation`. `animated` defaults to `false`; only conversation supports a gentle three-point vertical float. The system Reduce Motion setting disables that animation. Repeating animations stop when their view disappears, including the waiting mark, so switching chats does not retain an invisible animation. Keep dashboard thumbnails static. Colours are local constants in `IllustrationBoard`; there are no environment variables, gradient assets, or remote asset requests.
+`kind` selects `.readings`, `.medicines`, `.symptoms`, or `.conversation`. `animated` defaults to `false`; conversation uses a single 0.32-second arrival transition. The system Reduce Motion setting disables that animation. The waiting mark spins only while a response is pending and stops when its view disappears. Decorative illustrations do not run indefinitely. Keep dashboard thumbnails static. Colours are local constants in `IllustrationBoard`; there are no environment variables, gradient assets, or remote asset requests.
 
 ## Dependencies
 

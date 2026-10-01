@@ -1,0 +1,336 @@
+{
+  "checks": [
+    {
+      "name": "Emergency sign: Loss of consciousness",
+      "passed": true
+    },
+    {
+      "name": "Emergency sign: New confusion",
+      "passed": true
+    },
+    {
+      "name": "Emergency sign: Persistent, severe chest pain",
+      "passed": true
+    },
+    {
+      "name": "Emergency sign: Difficulty breathing",
+      "passed": true
+    },
+    {
+      "name": "Emergency sign: Severe pain not relieved by pain medicine",
+      "passed": true
+    },
+    {
+      "name": "Emergency phrase",
+      "passed": true
+    },
+    {
+      "name": "Emergency before model",
+      "passed": true
+    },
+    {
+      "name": "Negated emergency",
+      "passed": true
+    },
+    {
+      "name": "Negated then affirmative",
+      "passed": true
+    },
+    {
+      "name": "No false all-clear",
+      "passed": true
+    },
+    {
+      "name": "Brand maps to ingredient",
+      "passed": true
+    },
+    {
+      "name": "Listed pair has source",
+      "passed": true
+    },
+    {
+      "name": "Unknown pair remains unassessed",
+      "passed": true
+    },
+    {
+      "name": "Unknown product remains unresolved",
+      "passed": true
+    },
+    {
+      "name": "Duplicate ingredient",
+      "passed": true
+    },
+    {
+      "name": "Pair direction is symmetric",
+      "passed": true
+    },
+    {
+      "name": "Multiple ingredients enumerated",
+      "passed": true
+    },
+    {
+      "name": "Heart rate extracted",
+      "passed": true
+    },
+    {
+      "name": "Pressure extracted",
+      "passed": true
+    },
+    {
+      "name": "Temperature extracted",
+      "passed": true
+    },
+    {
+      "name": "Invalid pressure rejected",
+      "passed": true
+    },
+    {
+      "name": "Nonfinite reading rejected",
+      "passed": true
+    },
+    {
+      "name": "Prompt control token escaped",
+      "passed": true
+    },
+    {
+      "name": "Invalid tool rejected",
+      "passed": true
+    },
+    {
+      "name": "Malformed JSON rejected",
+      "passed": true
+    },
+    {
+      "name": "Known alias accepted",
+      "passed": true
+    },
+    {
+      "name": "Wrong tool rejected",
+      "passed": true
+    },
+    {
+      "name": "Invented medicine rejected",
+      "passed": true
+    },
+    {
+      "name": "Reply cannot give clinical advice",
+      "passed": true
+    }
+  ],
+  "complete": true,
+  "date": 812523148.46913,
+  "device": "Version 26.5 (Build 23F77)",
+  "memoryBytes": 17179869184,
+  "runs": [
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.5950629711151123,
+      "expected": "check_interactions",
+      "id": "D4709F64-D434-4DB0-8594-B3C34B76C76E",
+      "input": "Can I take Advil and warfarin together?",
+      "model": "small",
+      "observed": "I couldn\u2019t understand the model\u2019s response. Try rephrasing, or use the records tab.",
+      "passed": false,
+      "rawOutput": ": request clarification."
+    },
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.7052971124649048,
+      "expected": "capture_symptom",
+      "id": "1E92B229-0F94-4040-846A-093B06D049D1",
+      "input": "My knee has been sore since Tuesday",
+      "model": "small",
+      "observed": "capture_symptom",
+      "passed": true,
+      "rawOutput": "{\"tool\":\"record_symptom\",\"arg\":{\"condition\":\"sore knee\",\"duration\":\"since Tuesday\"}}"
+    },
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.6960899829864502,
+      "expected": "log_reading",
+      "id": "D696115D-F888-462A-B6E7-8B27AF5031D6",
+      "input": "Please save my heart rate of 72",
+      "model": "small",
+      "observed": "list_readings",
+      "passed": false,
+      "rawOutput": "{\"tool\":\"list_readings\",\"arg\":{\"measurement\":\"72\"}}"
+    },
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.8323060274124146,
+      "expected": "add_medication",
+      "id": "0A00D170-5906-43F4-8A06-4228A511F7C0",
+      "input": "Add metformin to my medicines",
+      "model": "small",
+      "observed": "add_medication",
+      "passed": true,
+      "rawOutput": "{\"tool\":\"add_medication\",\"arg\":{\"medicine\":\"metformin\"}}"
+    },
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.4518659114837646,
+      "expected": "list_readings",
+      "id": "D3F0E212-F908-476D-8F6E-18EA8997D530",
+      "input": "Show my readings",
+      "model": "small",
+      "observed": "list_readings",
+      "passed": true,
+      "rawOutput": "{\"tool\":\"list_readings\",\"arg\":\"show\"}"
+    },
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.5588409900665283,
+      "expected": "copy_note",
+      "id": "DA28B4B4-2597-4472-8ADB-505F982ACAB9",
+      "input": "Make an appointment note",
+      "model": "small",
+      "observed": "I can help record symptoms, check listed medicine pairs, organise readings, and prepare an appointment note. What would you like to do?",
+      "passed": false,
+      "rawOutput": "{\"tool\":\"reply\",\"arg\":\"Make an appointment note\"}"
+    },
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.5351409912109375,
+      "expected": "log_reading",
+      "id": "64EC2834-ED43-43BE-A791-6FC8AC94675E",
+      "input": "My temperature is 36.8",
+      "model": "small",
+      "observed": "list_readings",
+      "passed": false,
+      "rawOutput": "{\"tool\":\"list_readings\",\"arg\":{\"measurement\":\"36.8\"}}"
+    },
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.590837001800537,
+      "expected": "log_reading",
+      "id": "9B7D5D77-C0EB-46AF-AC38-C03141755C79",
+      "input": "My blood pressure is 120/80",
+      "model": "small",
+      "observed": "list_readings",
+      "passed": false,
+      "rawOutput": "{\"tool\":\"list_readings\",\"arg\":{\"measurement\":\"120\\/80\"}}"
+    },
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.278454065322876,
+      "expected": "export_data",
+      "id": "EB6CA082-FC34-44AE-AA33-9E971107F195",
+      "input": "Export my records",
+      "model": "small",
+      "observed": "export_data",
+      "passed": true,
+      "rawOutput": "{\"tool\":\"export_data\",\"arg\":\"records\"}"
+    },
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.343580961227417,
+      "expected": "import_readings",
+      "id": "0E243326-4D1B-4BE0-BBF7-2D805E9B74D3",
+      "input": "Import readings from Apple Health",
+      "model": "small",
+      "observed": "import_readings",
+      "passed": true,
+      "rawOutput": "{\"tool\":\"import_readings\",\"arg\":\"Apple Health\"}"
+    },
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.326177954673767,
+      "expected": "clear_data",
+      "id": "34588EF9-0F2D-4972-AE96-4F3C0580BCEE",
+      "input": "Clear all records",
+      "model": "small",
+      "observed": "clear_data",
+      "passed": true,
+      "rawOutput": "{\"tool\":\"clear_data\",\"arg\":\"all\"}"
+    },
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.4376699924468994,
+      "expected": "list_medications",
+      "id": "B9C60567-DD10-4495-A767-69F9BC38070E",
+      "input": "Show my medicines",
+      "model": "small",
+      "observed": "That response didn\u2019t match your request. Please rephrase it.",
+      "passed": false,
+      "rawOutput": "{\"tool\":\"show_saved_medicines\",\"arg\":\"\"}"
+    },
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.5603269338607788,
+      "expected": "create_reminder",
+      "id": "8C0ACF45-67F8-4D08-9CDF-74059DC8D243",
+      "input": "Remind me to book blood work",
+      "model": "small",
+      "observed": "create_reminder",
+      "passed": true,
+      "rawOutput": "{\"tool\":\"create_reminder\",\"arg\":{\"event\":\"book blood work\",\"time\":\"now\"}}"
+    },
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.3424370288848877,
+      "expected": "list_reminders",
+      "id": "40E5E868-20E3-48DF-A89E-95CE1F2619BA",
+      "input": "Show my reminders",
+      "model": "small",
+      "observed": "list_reminders",
+      "passed": true,
+      "rawOutput": "{\"tool\":\"list_reminders\",\"arg\":\"\"}"
+    },
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.2450439929962158,
+      "expected": "schedule_medication",
+      "id": "9F660B79-E74A-4AB7-AD60-F703FF2FFE23",
+      "input": "Schedule Metformin at 8 am and 8 pm",
+      "model": "small",
+      "observed": "I couldn\u2019t understand the model\u2019s response. Try rephrasing, or use the records tab.",
+      "passed": false,
+      "rawOutput": ": request clarification."
+    },
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.363036036491394,
+      "expected": "log_dose",
+      "id": "2420F545-1B31-48D7-8240-AD435E51AAFD",
+      "input": "I took Metformin",
+      "model": "small",
+      "observed": "I can help record symptoms, check listed medicine pairs, organise readings, and prepare an appointment note. What would you like to do?",
+      "passed": false,
+      "rawOutput": "{\"tool\":\"reply\",\"arg\":\"I took Metformin\"}"
+    },
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.3099069595336914,
+      "expected": "search_timeline",
+      "id": "FF9E9664-BBAA-4006-93C5-84EC85D2E29C",
+      "input": "Search my history for blood work",
+      "model": "small",
+      "observed": "search_timeline",
+      "passed": true,
+      "rawOutput": "{\"tool\":\"search_timeline\",\"arg\":\"blood work\"}"
+    },
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.456536054611206,
+      "expected": "scan_medication",
+      "id": "485D2F4B-965C-4145-AC61-B32A3FD043BE",
+      "input": "Scan a medicine label",
+      "model": "small",
+      "observed": "scan_medication",
+      "passed": true,
+      "rawOutput": "{\"tool\":\"scan_medication\",\"arg\":\"medicine label\"}"
+    },
+    {
+      "effort": "Standard",
+      "elapsedSeconds": 1.6186310052871704,
+      "expected": "save_question",
+      "id": "D406215F-6DF5-4112-9699-48F1E7A1913F",
+      "input": "Save question for my doctor: Should I repeat my blood test?",
+      "model": "small",
+      "observed": "save_question",
+      "passed": true,
+      "rawOutput": "{\"tool\":\"save_question\",\"arg\":{\"question\":\"Should I repeat my blood test?\"}}"
+    }
+  ],
+  "thermalState": 0
+}

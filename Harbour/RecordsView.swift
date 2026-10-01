@@ -47,14 +47,14 @@ private struct RecordList: View {
         List {
             if category == 0 {
                 Section {
-                    if store.records.symptoms.isEmpty { RecordEmptyState(kind: .symptoms, title: "No symptoms", action: "Record a symptom") { sheet = .symptom("") } }
+                    if store.records.symptoms.isEmpty { RecordEmptyState(kind: .symptoms, title: "No symptoms") }
                     ForEach(store.records.symptoms) { symptom in
                         NavigationLink { SymptomDetail(symptom: symptom) } label: { SymptomRow(symptom: symptom) }
                     }.onDelete { indexes in let ids = indexes.map { store.records.symptoms[$0].id }; for id in ids { store.removeSymptom(id) } }
                 }
             } else if category == 1 {
                 Section {
-                    if store.records.medicines.isEmpty { RecordEmptyState(kind: .medicines, title: "No medicines", action: "Add a medicine") { sheet = .medicine(nil) } }
+                    if store.records.medicines.isEmpty { RecordEmptyState(kind: .medicines, title: "No medicines") }
                     ForEach(store.records.medicines) { medicine in
                         Button { sheet = .medicine(medicine) } label: {
                             HStack(spacing: 14) {
@@ -69,7 +69,7 @@ private struct RecordList: View {
                 if !store.records.medicines.isEmpty { Section { Button { sheet = .interactions(store.records.medicines) } label: { Label("Check interactions", systemImage: "arrow.triangle.branch") } } }
             } else {
                 Section {
-                    if store.records.readings.isEmpty { RecordEmptyState(kind: .readings, title: "No readings", action: "Add a reading") { sheet = .reading(nil) } }
+                    if store.records.readings.isEmpty { RecordEmptyState(kind: .readings, title: "No readings") }
                     ForEach(store.records.readings) { reading in ReadingRow(reading: reading) }
                         .onDelete { indexes in let ids = indexes.map { store.records.readings[$0].id }; for id in ids { store.removeReading(id) } }
                 }
@@ -164,6 +164,13 @@ struct SymptomDetail: View {
 
 struct MedicineEditor: View {
     let initial: Medicine?
+    var suggestedTimes: [DoseTime] = []
+    @StateObject private var scanner = MedicineScanner()
+    @EnvironmentObject private var alerts: CareNotifications
+    @State private var times: [DoseTime] = []
+    @State private var notify = false
+    @State private var refillEnabled = false
+    @State private var refill = Date.now.addingTimeInterval(86400 * 30)
     @EnvironmentObject var store: AppStore
     @Environment(\.dismiss) private var dismiss
     @State private var query = ""
@@ -172,6 +179,15 @@ struct MedicineEditor: View {
     @State private var confirmed = false
     var body: some View {
         Form {
+            Section("Medicine label") {
+                MedicineScanButtons(scanner: scanner)
+                if scanner.busy { ProgressView("Reading label…") }
+                if let error = scanner.error { Text(error).foregroundStyle(.red) }
+                if !scanner.text.isEmpty {
+                    ForEach(CareRules.labelCandidates(scanner.text)) { candidate in Button("Use " + candidate.name) { chosen = candidate; confirmed = false } }
+                    DisclosureGroup("Label text") { Text(scanner.text).textSelection(.enabled) }
+                }
+            }
             if let chosen {
                 Section {
                     Text(chosen.name).font(.title3.weight(.semibold))
@@ -179,6 +195,7 @@ struct MedicineEditor: View {
                     if initial == nil { Button("Choose another medicine") { self.chosen = nil; confirmed = false } }
                 }
                 Section("Instructions from your label") { TextField("Dose or notes (optional)", text: $instructions, prompt: Text("Dose or notes (optional)").foregroundStyle(Palette.muted), axis: .vertical).lineLimit(2...4) }
+                ScheduleFields(times: $times, notify: $notify, refillEnabled: $refillEnabled, refill: $refill)
                 Section {
                     Button { confirmed.toggle() } label: {
                         HStack(spacing: 14) {
@@ -203,12 +220,16 @@ struct MedicineEditor: View {
             }
         }
         .scrollContentBackground(.hidden).background(Palette.canvas)
-        .drawerHeight(chosen == nil ? 600 : 500)
+        .drawerHeight(chosen == nil ? 600 : 690)
         .navigationTitle(initial == nil ? "Add medicine" : "Medicine").navigationBarTitleDisplayMode(.inline)
-        .onAppear { chosen = initial; instructions = initial?.instructions ?? "" }
+        .onAppear {
+            chosen = initial; instructions = initial?.instructions ?? ""; times = suggestedTimes
+            if let schedule = store.care.schedules.first(where: { $0.medicineID == initial?.id }) { if suggestedTimes.isEmpty { times = schedule.times }; notify = schedule.notify; refillEnabled = schedule.refill != nil; refill = schedule.refill ?? refill }
+        }
+        .onChange(of: scanner.text) { confirmed = false; let candidates = CareRules.labelCandidates(scanner.text); chosen = candidates.count == 1 ? candidates[0] : nil; instructions = CareRules.labelInstructions(scanner.text) }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
-            ToolbarItem(placement: .confirmationAction) { Button("Save") { if var chosen { chosen.instructions = instructions; store.add(chosen); dismiss() } }.disabled(chosen == nil || !confirmed).accessibilityIdentifier("saveMedicine") }
+            ToolbarItem(placement: .confirmationAction) { Button("Save") { if var chosen { chosen.instructions = instructions; Task { if notify { await alerts.requestAccess() }; if store.saveMedicine(chosen, schedule: MedicineSchedule(medicineID: chosen.id, times: times, notify: notify, refill: refillEnabled ? refill : nil)) { dismiss() } } } }.disabled(chosen == nil || !confirmed).accessibilityIdentifier("saveMedicine") }
         }
     }
 }
@@ -300,13 +321,11 @@ struct NoteView: View {
 struct RecordEmptyState: View {
     var kind: IllustrationKind
     var title: String
-    var action: String
-    var perform: () -> Void
     var body: some View {
         VStack(spacing: 20) {
             HarbourIllustration(kind: kind).frame(width: 260, height: 200)
             Text(title).font(.title2.weight(.medium))
-            Button(action: perform) { Label(action, systemImage: "plus").font(.title3.weight(.medium)).padding(.vertical, 12) }.buttonStyle(PressFeedback())
+
         }.frame(maxWidth: .infinity).padding(.vertical, 30).listRowBackground(Color.clear).listRowSeparator(.hidden)
     }
 }

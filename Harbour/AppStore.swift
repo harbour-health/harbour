@@ -1,6 +1,13 @@
 import Foundation
 import HarbourCore
 
+struct ChatTimelineEntry: Codable, Identifiable {
+    var id: String
+    var title: String
+    var detail: String
+    var date: Date
+    init(_ entry: TimelineEntry) { id = entry.id; title = entry.title; detail = entry.detail; date = entry.date }
+}
 struct ChatMessage: Codable, Identifiable {
     var id = UUID()
     var isUser = false
@@ -8,6 +15,8 @@ struct ChatMessage: Codable, Identifiable {
     var report: InteractionReport?
     var readings: [Reading]?
     var medicines: [Medicine]?
+    var reminders: [CareReminder]?
+    var timeline: [ChatTimelineEntry]?
     var date = Date()
 }
 struct Archive: Codable {
@@ -16,6 +25,7 @@ struct Archive: Codable {
     var messages: [ChatMessage] = []
     var chatTitle: String?
     var visits: [DoctorVisit]?
+    var care: CareData?
 }
 struct ShareFile: Identifiable { let id = UUID(); let url: URL }
 
@@ -26,6 +36,7 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
     let file: URL
     private var loadFailed = false
     var visits: [DoctorVisit] { archive.visits ?? [] }
+    var care: CareData { archive.care ?? CareData() }
     var records: Records { archive.records }
     var messages: [ChatMessage] { archive.messages }
     var chatTitle: String {
@@ -37,8 +48,8 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
         guard messages.first(where: \.isUser)?.id == firstMessage else { return }
         update { $0.chatTitle = title }
     }
-    init() {
-        let folder = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("Harbour")
+    init(folder customFolder: URL? = nil) {
+        let folder = customFolder ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("Harbour")
         file = folder.appendingPathComponent("records.json")
         do {
             try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
@@ -49,7 +60,7 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
             }
         } catch { loadFailed = true; self.error = "Your saved records could not be opened. The original file has been kept. \(error.localizedDescription)" }
     }
-    @discardableResult private func update(_ change: (inout Archive) -> Void) -> Bool {
+    @discardableResult func update(_ change: (inout Archive) -> Void) -> Bool {
         guard !loadFailed else { error = "The saved file could not be read. Changes are blocked to preserve it. Export or recover the file before resetting records in Settings."; return false }
         var next = archive; change(&next)
         do {
@@ -59,11 +70,50 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
             return true
         } catch { self.error = "Couldn’t save this change. \(error.localizedDescription)"; return false }
     }
-    func add(_ medicine: Medicine) { update { value in
-        if let i = value.records.medicines.firstIndex(where: { $0.id == medicine.id }) { value.records.medicines[i] = medicine }
-        else { value.records.medicines.append(medicine) }
+    func add(_ medicine: Medicine) { _ = saveMedicine(medicine, schedule: care.schedules.first { $0.medicineID == medicine.id }) }
+    @discardableResult func saveMedicine(_ medicine: Medicine, schedule: MedicineSchedule?) -> Bool {
+        let name = medicine.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard !medicine.id.isEmpty, !name.isEmpty, medicine.name.count <= 500 else { error = "Enter a medicine name of up to 500 characters."; return false }
+        guard !records.medicines.contains(where: { $0.id != medicine.id && $0.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == name }) else { error = "This medicine is already saved. Open it in Medicines to make changes."; return false }
+        do { if let schedule { try CareRules.validate(schedule, medicines: [medicine]) } }
+        catch { self.error = error.localizedDescription; return false }
+        return update { value in
+            var care = CareRules.preservingDoseSources(value.care ?? CareData(), medicines: value.records.medicines)
+            let existing = value.records.medicines.firstIndex { $0.id == medicine.id }
+            if let existing { value.records.medicines[existing] = medicine }
+            else { value.records.medicines.append(medicine) }
+            care.medicineEvents.insert(MedicineEvent(text: "\(existing == nil ? "Added" : "Updated") \(medicine.name)"), at: 0)
+            care.schedules.removeAll { $0.medicineID == medicine.id }
+            if let schedule, !schedule.times.isEmpty || schedule.refill != nil { care.schedules.append(schedule) }
+            value.care = care
+        }
+    }
+    func removeMedicine(_ id: String) { update {
+        $0.care = CareRules.preservingDoseSources($0.care ?? CareData(), medicines: $0.records.medicines)
+        if let name = $0.records.medicines.first(where: { $0.id == id })?.name {
+            if $0.care == nil { $0.care = CareData() }
+            $0.care!.medicineEvents.insert(MedicineEvent(text: "Removed " + name), at: 0)
+        }
+        $0.records.medicines.removeAll { $0.id == id }; $0.care?.schedules.removeAll { $0.medicineID == id }
     } }
-    func removeMedicine(_ id: String) { update { $0.records.medicines.removeAll { $0.id == id } } }
+    @discardableResult func saveReminder(_ reminder: CareReminder) -> Bool {
+        do { try CareRules.validate(reminder, visits: visits) } catch { self.error = error.localizedDescription; return false }
+        return update { if $0.care == nil { $0.care = CareData() }; $0.care!.reminders.removeAll { $0.id == reminder.id }; $0.care!.reminders.append(reminder) }
+    }
+    func removeReminder(_ id: UUID) { update { $0.care?.reminders.removeAll { $0.id == id } } }
+    @discardableResult func logDose(_ log: DoseLog) -> Bool {
+        do { try CareRules.validate(log, care: care, medicines: records.medicines) } catch { self.error = error.localizedDescription; return false }
+        guard let medicine = records.medicines.first(where: { $0.id == log.medicineID }),
+              let schedule = care.schedules.first(where: { $0.medicineID == log.medicineID }),
+              let time = schedule.times.first(where: { CareRules.doses(on: log.scheduled, schedule: MedicineSchedule(medicineID: medicine.id, times: [$0])).contains(log.scheduled) }) else { error = CareError.missingMedicine.localizedDescription; return false }
+        let saved = log.preservingSource(medicine: medicine, time: time)
+        return update { if $0.care == nil { $0.care = CareData() }; $0.care!.doses.removeAll { $0.id == saved.id }; $0.care!.doses.append(saved) }
+    }
+    @discardableResult func saveQuestion(_ question: AppointmentQuestion) -> Bool {
+        guard !question.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, question.text.count <= 1000, question.date.timeIntervalSince1970.isFinite else { error = "Enter a question of up to 1,000 characters."; return false }
+        return update { if $0.care == nil { $0.care = CareData() }; $0.care!.questions.removeAll { $0.id == question.id }; $0.care!.questions.append(question) }
+    }
+    func removeQuestion(_ id: UUID) { update { $0.care?.questions.removeAll { $0.id == id } } }
     func add(_ reading: Reading) { update { if !$0.records.readings.contains(where: { $0.id == reading.id }) { $0.records.readings.append(reading); $0.records.readings.sort { $0.date > $1.date } } } }
     func importReadings(_ readings: [Reading]) { update { value in
         let existing = Set(value.records.readings.map(\.id))
@@ -96,10 +146,17 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
             if let index = visits.firstIndex(where: { $0.id == visit.id }) { visits[index] = visit }
             else { visits.insert(visit, at: 0) }
             value.visits = visits
+            if value.care != nil {
+                for index in value.care!.reminders.indices where value.care!.reminders[index].visitID == visit.id {
+                    if (try? CareRules.validate(value.care!.reminders[index], visits: visits)) == nil {
+                        value.care!.reminders[index].visitID = nil; value.care!.reminders[index].quote = nil
+                    }
+                }
+            }
         }
     }
     func deleteVisit(_ visit: DoctorVisit) {
-        if update({ $0.visits?.removeAll { $0.id == visit.id } }), let audio = audioURL(for: visit) {
+        if update({ $0.visits?.removeAll { $0.id == visit.id }; if $0.care != nil { for i in $0.care!.reminders.indices where $0.care!.reminders[i].visitID == visit.id { $0.care!.reminders[i].visitID = nil; $0.care!.reminders[i].quote = nil } } }), let audio = audioURL(for: visit) {
             do { if FileManager.default.fileExists(atPath: audio.path) { try FileManager.default.removeItem(at: audio) } }
             catch { self.error = "The visit was removed, but its audio couldn’t be deleted. \(error.localizedDescription)" }
         }
@@ -115,6 +172,10 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
             let medicines = try VisitReview.applying(selected, from: visit, to: records.medicines)
             return update { value in
                 guard let index = value.visits?.firstIndex(where: { $0.id == id }) else { return }
+                if value.care == nil { value.care = CareData() }
+                value.care = CareRules.preservingDoseSources(value.care!, medicines: value.records.medicines)
+                for change in visit.summary!.medicines where selected.contains(change.id) { value.care!.medicineEvents.insert(MedicineEvent(text: change.action.rawValue + " " + change.medicine.name), at: 0) }
+                value.care!.schedules.removeAll { schedule in !medicines.contains { $0.id == schedule.medicineID } }
                 value.records.medicines = medicines
                 value.visits![index].appliedChanges = visit.summary!.medicines.filter { selected.contains($0.id) }
             }
@@ -132,7 +193,7 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
         do {
             let encoder = JSONEncoder(); encoder.outputFormatting = [.prettyPrinted, .sortedKeys]; encoder.dateEncodingStrategy = .iso8601
             let destination = FileManager.default.temporaryDirectory.appendingPathComponent("Harbour-records.json")
-            try encoder.encode(records).write(to: destination, options: [.atomic, .completeFileProtection])
+            try encoder.encode(CareBackup(records: records, care: care, visits: visits)).write(to: destination, options: [.atomic, .completeFileProtection])
             shareFile = ShareFile(url: destination)
         } catch { self.error = error.localizedDescription }
     }
@@ -142,22 +203,22 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
             let size = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize ?? 0
             guard size < 5_000_000 else { throw CocoaError(.fileReadTooLarge) }
             let decoder = JSONDecoder(); decoder.dateDecodingStrategy = .iso8601
-            let incoming = try decoder.decode(Records.self, from: Data(contentsOf: url))
-            guard incoming.schemaVersion == 1,
-                  incoming.readings.allSatisfy({ ReadingParser.valid($0.value, kind: $0.kind) }),
-                  incoming.medicines.allSatisfy({ !$0.name.trimmingCharacters(in: .whitespaces).isEmpty }) else { throw CocoaError(.coderReadCorrupt) }
-            // Ingredient mapping is rebuilt from our catalog; file-supplied ingredients aren't trusted.
-            update { value in
-                for imported in incoming.medicines {
-                    var medicine = Catalog.medicines.first { $0.name.caseInsensitiveCompare(imported.name) == .orderedSame } ?? Medicine(name: imported.name)
-                    medicine.instructions = imported.instructions
-                    if !value.records.medicines.contains(where: { $0.name.caseInsensitiveCompare(medicine.name) == .orderedSame }) { value.records.medicines.append(medicine) }
-                }
-                let readingIDs = Set(value.records.readings.map(\.id)), symptomIDs = Set(value.records.symptoms.map(\.id))
-                value.records.readings.append(contentsOf: incoming.readings.filter { !readingIDs.contains($0.id) })
-                value.records.symptoms.append(contentsOf: incoming.symptoms.filter { !symptomIDs.contains($0.id) })
-                value.records.readings.sort { $0.date > $1.date }; value.records.symptoms.sort { $0.date > $1.date }
-            }
+            let data = try Data(contentsOf: url)
+            guard data.count < 5_000_000 else { throw CocoaError(.fileReadTooLarge) }
+            let backup = try? decoder.decode(CareBackup.self, from: data)
+            if let backup { guard backup.version == 2 else { throw CareError.invalid } }
+            let incoming = try backup?.records ?? decoder.decode(Records.self, from: data)
+            let incomingBackup = backup ?? CareBackup(records: incoming, care: CareData(), visits: [])
+            let merged = try incomingBackup.merging(into: CareBackup(records: records, care: care, visits: visits))
+            // The validated merge is prepared before the atomic write, so conflicts cannot partially import.
+            if update({ value in
+                value.records = merged.records; value.care = merged.care
+                // Preserve local audio references; imported visits never bring file paths.
+                let localIDs = Set((value.visits ?? []).map(\.id))
+                if value.visits == nil { value.visits = [] }
+                value.visits!.append(contentsOf: merged.visits.filter { !localIDs.contains($0.id) })
+            }) { error = nil }
+
         } catch { self.error = "Couldn’t import these records. \(error.localizedDescription)" }
     }
 }

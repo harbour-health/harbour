@@ -1,6 +1,6 @@
 # Harbour for iOS
 
-Native SwiftUI companion with local-model chat, editable voice input, symptom records, medicine comparison, readings, appointment notes, read-only Apple Health import, and doctor visit recording with editable transcripts and reviewed medicine changes. The app has no web view, inference server, analytics, or account requirement.
+Native SwiftUI companion with local-model chat, voice conversation, editable dictation, follow-up reminders, medicine schedules and dose logs, refill reminders, label scanning, searchable history, saved appointment questions, symptom records, medicine comparison, readings, appointment notes, read-only Apple Health import, and doctor visit recording with editable transcripts and reviewed medicine changes. The app has no web view, inference server, analytics, or account requirement.
 
 ## Screenshots
 
@@ -33,7 +33,6 @@ See [every screen below](#all-screens) and [capture details](docs/screenshots.md
 Requires a Mac, Xcode with an iOS SDK, and CMake for the simulator inference library. Minimum app target: iOS 18.0.
 
 ```sh
-cd csi4900/ios
 bash scripts/prepare-runtime.sh
 open Harbour.xcodeproj
 ```
@@ -44,10 +43,10 @@ Qwen Small downloads when the first chat message is sent, or from **Settings →
 
 ## Screens
 
-- **Today:** recent readings and entry points to symptoms, medicines, interactions, and appointment notes.
-- **Chat:** freeform messages; optional topic hints; model and effort controls beside the microphone; validated tool calls and locally generated conversation titles.
+- **Today:** recent readings, upcoming reminders and doses, refill dates, and searchable health history.
+- **Chat:** typed or spoken messages; optional topic hints; model and effort controls beside the microphone; validated tool calls and locally generated conversation titles.
 - **Records:** a large category browser leading to dedicated symptom, medicine, and reading lists, with native entry sheets and swipe deletion.
-- **Visits:** a large recorder with pause/resume, saved audio, direct note entry, editable transcripts, source-quoted notes and follow-up, and confirmed medicine changes.
+- **Visits:** a large recorder with pause/resume, saved audio, direct note entry, editable transcripts, source-quoted notes and follow-up, confirmed medicine changes, and appointment preparation with saved questions.
 - **Settings:** appearance, optional Face ID or app PIN lock, model downloads, Apple Health import, record import/export, reset, and evaluation.
 
 Settings is available at the upper right of every main screen. Forms use Cancel and Save/Review; read-only drawers use Done. See [navigation and actions](docs/navigation-and-actions.md) for the shared control conventions.
@@ -82,7 +81,7 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 <!-- screenshot-gallery:start -->
 ## All screens
 
-90 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
+115 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
 
 ### Today
 
@@ -90,6 +89,7 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | :---: | :---: |
 | <strong>Today</strong><br>[<img src="docs/screenshots/01-today.png" alt="Today" width="220">](docs/screenshots/01-today.png) | <strong>Today · Dark</strong><br>[<img src="docs/screenshots/31-today-dark.png" alt="Today · Dark" width="220">](docs/screenshots/31-today-dark.png) |
 | <strong>System appearance · Dark</strong><br>[<img src="docs/screenshots/43-system-dark.png" alt="System appearance · Dark" width="220">](docs/screenshots/43-system-dark.png) | <strong>Floating navigation · scrolled</strong><br>[<img src="docs/screenshots/66-floating-navigation.png" alt="Floating navigation · scrolled" width="220">](docs/screenshots/66-floating-navigation.png) |
+| <strong>Today · Largest text</strong><br>[<img src="docs/screenshots/116-today-large-text.png" alt="Today · Largest text" width="220">](docs/screenshots/116-today-large-text.png) |  |
 
 ### Chat
 
@@ -176,5 +176,28 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | :---: | :---: |
 | <strong>Evaluation</strong><br>[<img src="docs/screenshots/17-evaluation.png" alt="Evaluation" width="220">](docs/screenshots/17-evaluation.png) | <strong>Evaluation results</strong><br>[<img src="docs/screenshots/29-evaluation-results.png" alt="Evaluation results" width="220">](docs/screenshots/29-evaluation-results.png) |
 | <strong>Evaluation drawer · Dark</strong><br>[<img src="docs/screenshots/86-evaluation-drawer-dark.png" alt="Evaluation drawer · Dark" width="220">](docs/screenshots/86-evaluation-drawer-dark.png) |  |
+
+### Reminders, schedules, and preparation
+
+| | |
+| :---: | :---: |
+| <strong>Recognized medicine label</strong><br>[<img src="docs/screenshots/91-label-scan.png" alt="Recognized medicine label" width="220">](docs/screenshots/91-label-scan.png) | <strong>Medicine schedule</strong><br>[<img src="docs/screenshots/92-medicine-schedule.png" alt="Medicine schedule" width="220">](docs/screenshots/92-medicine-schedule.png) |
+| <strong>Reminder</strong><br>[<img src="docs/screenshots/93-reminder.png" alt="Reminder" width="220">](docs/screenshots/93-reminder.png) | <strong>Log a dose</strong><br>[<img src="docs/screenshots/94-dose-log.png" alt="Log a dose" width="220">](docs/screenshots/94-dose-log.png) |
+| <strong>Today · Agenda</strong><br>[<img src="docs/screenshots/95-agenda.png" alt="Today · Agenda" width="220">](docs/screenshots/95-agenda.png) | <strong>Health timeline</strong><br>[<img src="docs/screenshots/96-timeline.png" alt="Health timeline" width="220">](docs/screenshots/96-timeline.png) |
+| <strong>Search health history</strong><br>[<img src="docs/screenshots/97-timeline-search.png" alt="Search health history" width="220">](docs/screenshots/97-timeline-search.png) | <strong>Appointment preparation</strong><br>[<img src="docs/screenshots/98-appointment-preparation.png" alt="Appointment preparation" width="220">](docs/screenshots/98-appointment-preparation.png) |
+| <strong>Agenda · Dark</strong><br>[<img src="docs/screenshots/99-agenda-dark.png" alt="Agenda · Dark" width="220">](docs/screenshots/99-agenda-dark.png) | <strong>Health timeline · Dark</strong><br>[<img src="docs/screenshots/100-timeline-dark.png" alt="Health timeline · Dark" width="220">](docs/screenshots/100-timeline-dark.png) |
+| <strong>Appointment preparation · Dark</strong><br>[<img src="docs/screenshots/101-preparation-dark.png" alt="Appointment preparation · Dark" width="220">](docs/screenshots/101-preparation-dark.png) | <strong>Medicine schedule · Dark</strong><br>[<img src="docs/screenshots/102-schedule-dark.png" alt="Medicine schedule · Dark" width="220">](docs/screenshots/102-schedule-dark.png) |
+| <strong>Remind later · Dark</strong><br>[<img src="docs/screenshots/103-dose-later-dark.png" alt="Remind later · Dark" width="220">](docs/screenshots/103-dose-later-dark.png) |  |
+
+### Voice and care tools in chat
+
+| | |
+| :---: | :---: |
+| <strong>Voice options</strong><br>[<img src="docs/screenshots/104-voice-options.png" alt="Voice options" width="220">](docs/screenshots/104-voice-options.png) | <strong>Chat · Reminder confirmation</strong><br>[<img src="docs/screenshots/105-chat-reminder-review.png" alt="Chat · Reminder confirmation" width="220">](docs/screenshots/105-chat-reminder-review.png) |
+| <strong>Reminders in chat</strong><br>[<img src="docs/screenshots/106-chat-reminders.png" alt="Reminders in chat" width="220">](docs/screenshots/106-chat-reminders.png) | <strong>Chat · Schedule confirmation</strong><br>[<img src="docs/screenshots/107-chat-schedule-review.png" alt="Chat · Schedule confirmation" width="220">](docs/screenshots/107-chat-schedule-review.png) |
+| <strong>Chat · Dose confirmation</strong><br>[<img src="docs/screenshots/108-chat-dose-review.png" alt="Chat · Dose confirmation" width="220">](docs/screenshots/108-chat-dose-review.png) | <strong>Health history in chat</strong><br>[<img src="docs/screenshots/109-chat-history.png" alt="Health history in chat" width="220">](docs/screenshots/109-chat-history.png) |
+| <strong>Chat · Appointment question</strong><br>[<img src="docs/screenshots/110-chat-question-review.png" alt="Chat · Appointment question" width="220">](docs/screenshots/110-chat-question-review.png) | <strong>Chat · Label entry</strong><br>[<img src="docs/screenshots/111-chat-label-scan.png" alt="Chat · Label entry" width="220">](docs/screenshots/111-chat-label-scan.png) |
+| <strong>Medicine label entry</strong><br>[<img src="docs/screenshots/112-label-entry.png" alt="Medicine label entry" width="220">](docs/screenshots/112-label-entry.png) | <strong>On-device voice unavailable</strong><br>[<img src="docs/screenshots/114-voice-input-error.png" alt="On-device voice unavailable" width="220">](docs/screenshots/114-voice-input-error.png) |
+| <strong>Reminder notifications</strong><br>[<img src="docs/screenshots/115-notification-setting.png" alt="Reminder notifications" width="220">](docs/screenshots/115-notification-setting.png) |  |
 
 <!-- screenshot-gallery:end -->

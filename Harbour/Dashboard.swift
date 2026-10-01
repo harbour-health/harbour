@@ -14,6 +14,7 @@ extension EnvironmentValues {
 
 struct NavigationDock: View {
     @EnvironmentObject private var recorder: VisitRecorder
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @Binding var selection: Int
     var body: some View {
         HStack(spacing: 10) {
@@ -21,7 +22,12 @@ struct NavigationDock: View {
             item("Chat", symbol: "bubble.left.and.bubble.right", selectedSymbol: "bubble.left.and.bubble.right.fill", index: 1)
             item("Records", symbol: "heart.text.square", selectedSymbol: "heart.text.square.fill", index: 2)
             item("Visits", symbol: "waveform", selectedSymbol: "waveform", index: 3)
-        }.padding(7).background(.regularMaterial, in: Capsule()).overlay(Capsule().strokeBorder(Palette.line.opacity(0.6)))
+        }.padding(7)
+            .background {
+                if reduceTransparency { Capsule().fill(Palette.surface) }
+                else { Capsule().fill(.regularMaterial) }
+            }
+            .overlay(Capsule().strokeBorder(Palette.line.opacity(0.6)))
             .shadow(color: .black.opacity(0.10), radius: 16, y: 6).padding(.bottom, 12)
     }
     private func item(_ title: String, symbol: String, selectedSymbol: String, index: Int) -> some View {
@@ -31,12 +37,14 @@ struct NavigationDock: View {
                 .background(selection == index ? Palette.line.opacity(0.5) : .clear, in: Capsule())
         }.buttonStyle(PressFeedback()).accessibilityLabel(title).accessibilityIdentifier("nav-" + title.lowercased())
             .accessibilityAddTraits(selection == index ? .isSelected : [])
+            .accessibilityShowsLargeContentViewer { Label(title, systemImage: selectedSymbol) }
     }
 }
 
 struct ReadingSummary: View {
     let readings: [Reading]
-    var add: () -> Void
+    @Environment(\.dynamicTypeSize) private var typeSize
+    @ScaledMetric(relativeTo: .largeTitle) private var valueSize: CGFloat = 46
     private var latest: Reading? { readings.first }
     private var samples: [Reading] { guard let kind = latest?.kind else { return [] }; return readings.filter { $0.kind == kind }.prefix(30).sorted { $0.date < $1.date } }
     private func numeric(_ reading: Reading) -> Double? { Double(reading.value.split(separator: "/").first.map(String.init) ?? reading.value) }
@@ -44,14 +52,16 @@ struct ReadingSummary: View {
         VStack(alignment: .leading, spacing: 18) {
             HStack {
                 Label(latest?.kind.rawValue ?? "Readings", systemImage: latest?.kind.symbol ?? "waveform.path.ecg").font(.body.weight(.semibold))
-                Spacer(); Button(action: add) { Image(systemName: "plus").frame(width: 44, height: 44) }.accessibilityLabel("Add a reading").accessibilityIdentifier("addReading")
+                Spacer()
             }
             if let latest {
-                HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    Text(latest.value).font(.system(size: 46, weight: .bold, design: .rounded)).minimumScaleFactor(0.7)
+                let valueLayout = typeSize.isAccessibilitySize
+                    ? AnyLayout(VStackLayout(alignment: .leading, spacing: 2))
+                    : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 6))
+                valueLayout {
+                    Text(latest.value).font(.system(size: valueSize, weight: .bold, design: .rounded)).lineLimit(1).minimumScaleFactor(0.7)
                     Text(latest.kind.unit).font(.title3.weight(.medium))
-                    Spacer()
-                }.foregroundStyle(Palette.ink)
+                }.foregroundStyle(Palette.ink).frame(maxWidth: .infinity, alignment: .leading)
                 if samples.count > 1 {
                     if latest.kind == .bloodPressure { Text("Systolic").font(.subheadline).foregroundStyle(Palette.muted) }
                     Chart(samples) { reading in
@@ -62,10 +72,17 @@ struct ReadingSummary: View {
                     }.chartXAxis(.hidden).chartYAxis(.hidden).chartYScale(domain: .automatic(includesZero: false)).frame(height: 58)
                         .accessibilityLabel(latest.kind == .bloodPressure ? "Recorded systolic blood pressure over time" : "Recorded \(latest.kind.rawValue.lowercased()) over time")
                 }
-                HStack {
-                    Text(latest.date, format: .dateTime.month(.abbreviated).day().hour().minute())
-                    Spacer(); let count = readings.filter { $0.kind == latest.kind }.count
-                    Text("\(count) \(count == 1 ? "reading" : "readings")")
+                let count = readings.filter { $0.kind == latest.kind }.count
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 16) {
+                        Text(latest.date, format: .dateTime.month(.abbreviated).day().hour().minute()).fixedSize()
+                        Spacer(minLength: 0)
+                        Text("\(count) \(count == 1 ? "reading" : "readings")").fixedSize()
+                    }
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(latest.date, format: .dateTime.month(.abbreviated).day().hour().minute())
+                        Text("\(count) \(count == 1 ? "reading" : "readings")")
+                    }
                 }.font(.subheadline).foregroundStyle(Palette.muted)
             } else { Text("No readings yet").font(.title2.weight(.medium)) }
         }.padding(.horizontal, 22).padding(.bottom, 22).padding(.top, 12)

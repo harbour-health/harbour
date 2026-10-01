@@ -10,9 +10,9 @@ struct HarbourIllustration: View {
     var animated: Bool = false
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var floating = false
+    @State private var appeared = false
 
-    private var shouldFloat: Bool {
+    private var shouldAnimate: Bool {
         animated && kind == .conversation && !reduceMotion
     }
 
@@ -29,11 +29,10 @@ struct HarbourIllustration: View {
             case .conversation: board.conversation()
             }
         }
-        .offset(y: shouldFloat && floating ? -3 : 0)
-        .animation(shouldFloat && floating ? .easeInOut(duration: 3.4).repeatForever(autoreverses: true) : nil, value: floating)
-        .onAppear { floating = shouldFloat }
-        .onDisappear { floating = false }
-        .onChange(of: shouldFloat) { _, enabled in floating = enabled }
+        .offset(y: shouldAnimate && !appeared ? 5 : 0)
+        .opacity(shouldAnimate && !appeared ? 0.85 : 1)
+        .animation(shouldAnimate ? .easeOut(duration: 0.32) : nil, value: appeared)
+        .onAppear { appeared = true }
         .accessibilityHidden(true)
         .allowsHitTesting(false)
     }

@@ -2,7 +2,7 @@ import Foundation
 import llama
 
 public enum ModelError: LocalizedError {
-    case load, context, promptTooLong, tokenize, decode
+    case load, context, promptTooLong, tokenize, decode, sampler, grammar
     public var errorDescription: String? {
         switch self {
         case .load: "The model could not be opened. Remove it and download it again."
@@ -10,6 +10,8 @@ public enum ModelError: LocalizedError {
         case .promptTooLong: "The message is too long. Please shorten it."
         case .tokenize: "The model could not read this message."
         case .decode: "The model stopped unexpectedly. Please try again."
+        case .sampler: "The model could not start generating a response. Please try again."
+        case .grammar: "The model could not prepare the required response format. Please try again."
         }
     }
 }
@@ -48,8 +50,11 @@ public actor LocalModel {
         guard let ctx = llama_init_from_model(loaded, cp) else { llama_model_free(loaded); throw ModelError.context }
         model = loaded; context = ctx; path = file.path
     }
-    public func generate(file: URL, prompt: String, maxTokens: Int = 160) throws -> String {
+    public func generate(file: URL, prompt: String, maxTokens: Int = 160, grammar: String? = nil) throws -> String {
         try Task.checkCancellation()
+        if let grammar, grammar.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || grammar.contains("\0") {
+            throw ModelError.grammar
+        }
         try load(file)
         guard let model, let context else { throw ModelError.load }
         let vocab = llama_model_get_vocab(model)
@@ -61,8 +66,14 @@ public actor LocalModel {
         guard Int(count) + maxTokens < 2048 else { throw ModelError.promptTooLong }
         tokens = Array(tokens.prefix(Int(count)))
         llama_memory_clear(llama_get_memory(context), true)
-        let sampler = llama_sampler_init_greedy()!
+        guard let sampler = llama_sampler_chain_init(llama_sampler_chain_default_params()) else { throw ModelError.sampler }
         defer { llama_sampler_free(sampler) }
+        if let grammar {
+            guard let constrained = llama_sampler_init_grammar(vocab, grammar, "root") else { throw ModelError.grammar }
+            llama_sampler_chain_add(sampler, constrained)
+        }
+        guard let greedy = llama_sampler_init_greedy() else { throw ModelError.sampler }
+        llama_sampler_chain_add(sampler, greedy)
         var batch = llama_batch_init(512, 0, 1)
         defer { llama_batch_free(batch) }
         func decode(_ items: [llama_token], start: Int) throws {

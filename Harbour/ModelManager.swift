@@ -121,13 +121,14 @@ private final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchec
         status = "Ready"; return destination
     }
     func cancelDownload() { downloadCancelled = true; activeDownload?.cancel() }
-    func generate(_ prompt: String, maxTokens: Int? = nil) async throws -> String {
+    func generate(_ prompt: String, maxTokens: Int? = nil, allowedTools: [String]? = nil) async throws -> String {
         guard !generating else { throw NSError(domain: "Inference", code: 1, userInfo: [NSLocalizedDescriptionKey: "The model is already working on a request."]) }
         generating = true
         defer { generating = false }
+        let grammar = try allowedTools.map { try ToolOutputGrammar.make(allowedTools: $0) }
         let chosen = resolved, url = try await ensure(chosen)
         status = "Thinking"
-        return try await runtime.generate(file: url, prompt: prompt, maxTokens: maxTokens ?? effort.tokens)
+        return try await runtime.generate(file: url, prompt: prompt, maxTokens: maxTokens ?? effort.tokens, grammar: grammar)
     }
     func remove(_ model: ModelChoice) async throws {
         guard !generating else { throw NSError(domain: "Inference", code: 2, userInfo: [NSLocalizedDescriptionKey: "Stop the current request before removing its model."]) }

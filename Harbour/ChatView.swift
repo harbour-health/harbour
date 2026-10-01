@@ -8,6 +8,8 @@ struct ChatView: View {
     @EnvironmentObject var health: HealthService
     @Binding var sheet: AppSheet?
     @StateObject private var voice = VoiceService()
+    @State private var voiceMode = false
+    @Environment(\.scenePhase) private var scenePhase
     @State private var draft = ""
     @State private var hint: String?
     @State private var task: Task<Void, Never>?
@@ -28,16 +30,16 @@ struct ChatView: View {
                 VStack(alignment: .leading, spacing: 28) {
                     if store.messages.isEmpty {
                         VStack(spacing: 16) {
-                            HarbourIllustration(kind: .conversation, animated: true).frame(width: 240, height: 200)
+                            HarbourIllustration(kind: .conversation, animated: true).frame(width: 204, height: 160)
                             Text("What’s on your mind?").font(.largeTitle.weight(.medium)).multilineTextAlignment(.center)
-                        }.frame(maxWidth: .infinity).padding(.top, 26).padding(.bottom, 16)
+                        }.frame(maxWidth: .infinity).padding(.top, 12).padding(.bottom, 16)
                         VStack(alignment: .leading, spacing: 4) {
                             starter("Check medicines", symbol: "pills", colour: Palette.blue, hint: "Interactions")
                             starter("Record a symptom", symbol: "cross.case", colour: Palette.coral, hint: "Symptoms")
                             starter("Add a reading", symbol: "waveform.path.ecg", colour: Palette.coral, hint: "Readings")
                         }.padding(.horizontal, 20).frame(maxWidth: 400).frame(maxWidth: .infinity)
                     }
-                    ForEach(store.messages) { message in MessageView(message: message, speak: { if !recorder.active { voice.speak(message.text) } }).id(message.id).transition(.opacity.combined(with: .move(edge: .bottom))) }
+                    ForEach(store.messages) { message in MessageView(message: message, speak: { if !recorder.active { voice.speak(message.spokenText) } }).id(message.id).transition(.opacity.combined(with: .move(edge: .bottom))) }
                     if busy {
                         HStack(spacing: 12) { HarbourMark(size: 32, spinning: true).foregroundStyle(Palette.blue); Text(models.downloading == nil ? "Thinking…" : models.status).font(.subheadline).foregroundStyle(Palette.muted) }.id("pending")
                         if models.downloading != nil { VStack(alignment: .leading, spacing: 8) { ProgressView(value: models.progress); Text(models.status == "Verifying download" ? models.status : "\(Int(models.progress * 100))% downloaded").font(.caption).foregroundStyle(Palette.muted) } }
@@ -65,17 +67,29 @@ struct ChatView: View {
         .confirmationDialog("Delete all records and chat?", isPresented: $deleteConfirmation, titleVisibility: .visible) { Button("Delete all", role: .destructive) { store.clear() }; Button("Cancel", role: .cancel) {} }
         .confirmationDialog("Remove \(removal?.name ?? "medicine") from your list?", isPresented: Binding(get: { removal != nil }, set: { if !$0 { removal = nil } }), titleVisibility: .visible) { Button("Remove", role: .destructive) { if let removal { store.removeMedicine(removal.id); store.append(ChatMessage(text: "Removed \(removal.name) from your list.")) }; removal = nil } }
         .alert("Voice input", isPresented: Binding(get: { voice.error != nil }, set: { if !$0 { voice.error = nil } })) { Button("OK") { voice.error = nil } } message: { Text(voice.error ?? "") }
+        .onChange(of: sheet?.id) { voice.stop() }
+        .onChange(of: modelSheet) { if modelSheet { voice.stop() } }
+        .onChange(of: toolSheet) { if toolSheet { voice.stop() } }
+        .onChange(of: scenePhase) { if scenePhase == .background || (scenePhase == .inactive && (voice.listening || voice.finishing || voice.speaking)) { cancel() } }
+        .onChange(of: recorder.active) { if recorder.active { cancel() } }
+        .onChange(of: voice.error) { if voice.error != nil { voiceMode = false } }
         .onDisappear { cancel() }
     }
     private func starter(_ title: String, symbol: String, colour: Color, hint: String) -> some View {
         Button { self.hint = hint; focused = true } label: {
             HStack(spacing: 14) { Image(systemName: symbol).font(.title2).foregroundStyle(colour).frame(width: 32); Text(title).font(.title3.weight(.medium)).foregroundStyle(Palette.ink); Spacer(); Image(systemName: "arrow.up.left").font(.body).foregroundStyle(Palette.muted) }
                 .padding(.vertical, 14).contentShape(Rectangle())
-        }.buttonStyle(PressFeedback())
+        }.buttonStyle(PressFeedback()).accessibilityIdentifier("starter-" + hint.lowercased())
     }
     private var composer: some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 12) {
+                if voiceMode {
+                    HStack {
+                        Label(voice.listening ? "Listening" : voice.finishing ? "Finishing…" : voice.speaking ? "Speaking" : busy ? "Thinking…" : "Voice paused", systemImage: "waveform").symbolEffect(.variableColor, options: .repeating, isActive: !reduceMotion && (voice.listening || voice.speaking)).foregroundStyle(Palette.coral)
+                        Spacer(); Button("End voice") { voiceMode = false; voice.stop() }.font(.body.weight(.medium)).frame(minHeight: AppLayout.controlSize).contentShape(Rectangle())
+                    }.accessibilityIdentifier("voiceModeStatus")
+                }
                 TextField("Ask, record, or check something…", text: $draft, prompt: Text("Ask, record, or check something…").foregroundStyle(Palette.muted), axis: .vertical)
                     .lineLimit(2...6).font(.title3).focused($focused).accessibilityIdentifier("chatInput")
                     .padding(.horizontal, 6).padding(.top, 6)
@@ -100,12 +114,21 @@ struct ChatView: View {
                         }
                             .padding(.horizontal, 10).frame(minHeight: 48).contentShape(RoundedRectangle(cornerRadius: 10))
                     }.layoutPriority(-1).accessibilityLabel("Choose model").accessibilityValue(models.resolved.title + ", " + models.effort.rawValue).accessibilityIdentifier("modelSelector")
-                    Button {
-                        if voice.listening { voice.stop() } else {
-                            let original = draft
-                            Task { await voice.start { transcript in draft = original.isEmpty ? transcript : original + " " + transcript } }
-                        }
-                    } label: { Image(systemName: voice.listening ? "mic.fill" : "mic").foregroundStyle(voice.listening ? Color.red : Color.primary).frame(width: 44, height: 48) }.accessibilityLabel(voice.listening ? "Stop recording" : "Record voice").disabled(busy || recorder.active)
+                    if voiceMode {
+                        Button {
+                            if voice.listening { voice.finishUtterance() }
+                            else if voice.speaking { voice.stop(); startVoiceTurn() }
+                            else if !busy { startVoiceTurn() }
+                        } label: { Image(systemName: voice.listening ? "mic.fill" : "waveform").foregroundStyle(Palette.coral).frame(width: 44, height: 48) }.accessibilityLabel(voice.listening ? "Finish speaking" : "Resume voice")
+                    } else {
+                        Menu {
+                            Button("Voice conversation", systemImage: "waveform") { focused = false; voiceMode = true; startVoiceTurn() }
+                            Button(voice.listening ? "Finish dictation" : "Dictate message", systemImage: "mic") {
+                                if voice.listening { voice.finishUtterance() }
+                                else { let original = draft; Task { await voice.start { transcript in draft = original.isEmpty ? transcript : original + " " + transcript } } }
+                            }
+                        } label: { Image(systemName: voice.listening ? "mic.fill" : "mic").foregroundStyle(voice.listening ? Palette.coral : Palette.ink).frame(width: 44, height: 48) }.accessibilityLabel("Voice options").disabled(busy || recorder.active)
+                    }
                     Button { busy ? cancel() : send() } label: {
                         Image(systemName: busy ? "stop.fill" : "arrow.up").font(.body.weight(.semibold))
                             .foregroundStyle(Palette.canvas).frame(width: 44, height: 44).background(Palette.ink, in: Circle())
@@ -134,7 +157,15 @@ struct ChatView: View {
             }.padding(24).frame(maxWidth: .infinity, alignment: .topLeading).measuredDrawerHeight(chrome: 24)
         }.background(Palette.canvas)
     }
-    private func cancel() { operationID = UUID(); task?.cancel(); task = nil; busy = false; voice.stop() }
+    private func startVoiceTurn() {
+        guard voiceMode, !busy, sheet == nil, !modelSheet, !toolSheet, !recorder.active, scenePhase == .active else { return }
+        Task { guard voiceMode, !busy, sheet == nil, !modelSheet, !toolSheet, !recorder.active, scenePhase == .active else { return }; await voice.start(transcript: { draft = $0 }, finished: { text in draft = text; send() }) }
+    }
+    private func speakReply() {
+        guard voiceMode, let reply = store.messages.last, !reply.isUser else { return }
+        voice.speak(reply.spokenText, finished: { startVoiceTurn() })
+    }
+    private func cancel() { voiceMode = false; operationID = UUID(); task?.cancel(); task = nil; busy = false; voice.stop() }
     private func send() {
         let input = draft.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !input.isEmpty else { return }
@@ -145,15 +176,15 @@ struct ChatView: View {
         // Emergency wording is checked before any download or model inference.
         if HealthRules.emergencyCue(input) {
             store.append(ChatMessage(text: HealthRules.guidance(Symptom(text: input))))
-            sheet = .symptom(input); return
+            sheet = .symptom(input); speakReply(); return
         }
         busy = true
         let currentID = UUID(); operationID = currentID
         let chosenHint = hint
         task = Task {
-            defer { if operationID == currentID { busy = false; task = nil } }
+            defer { if operationID == currentID { busy = false; task = nil; speakReply() } }
             do {
-                let output = try await models.generate(ToolPlanner.prompt(input, hint: chosenHint))
+                let output = try await models.generate(ToolPlanner.prompt(input, hint: chosenHint, records: store.records), allowedTools: ToolPlanner.generationTools(input, records: store.records).map(\.rawValue))
                 try Task.checkCancellation()
                 let decision = try ToolPlanner.parse(output)
                 let action = try ToolPlanner.validate(decision, original: input, records: store.records)
@@ -177,6 +208,17 @@ struct ChatView: View {
         case .export: store.export()
         case .note: sheet = .note
         case .clear: deleteConfirmation = true
+        case .reminder(let text): sheet = .reminder(CareReminder(title: text)); store.append(ChatMessage(text: "Review the reminder and choose its date."))
+        case .reminders: store.append(ChatMessage(text: store.care.reminders.isEmpty ? "No reminders saved." : "Reminders", reminders: store.care.reminders.sorted { $0.due < $1.due }))
+        case .schedule(let medicine, let times): sheet = .schedule(medicine, times); store.append(ChatMessage(text: "Confirm the times and refill date from your prescription."))
+        case .dose(let medicine, let status):
+            guard let schedule = store.care.schedules.first(where: { $0.medicineID == medicine.id }), let date = CareRules.doses(on: .now, schedule: schedule).last(where: { $0 <= Date.now }) ?? CareRules.doses(on: .now, schedule: schedule).first else { store.append(ChatMessage(text: "Save a schedule for " + medicine.name + " first.")); return }
+            sheet = .dose(medicine, date, status); store.append(ChatMessage(text: "Confirm the scheduled dose before saving " + status.rawValue.lowercased() + "."))
+        case .timeline(let query):
+            let results = HealthTimeline.entries(records: store.records, care: store.care, visits: store.visits, query: query)
+            store.append(ChatMessage(text: results.isEmpty ? "No matching records." : "Health history", timeline: results.prefix(20).map(ChatTimelineEntry.init)))
+        case .scan: sheet = .scanMedicine; store.append(ChatMessage(text: "Choose a label photo, then confirm the product and instructions."))
+        case .question(let text): sheet = .question(text); store.append(ChatMessage(text: "Review your question before saving it."))
         }
     }
 }
@@ -185,14 +227,33 @@ struct MessageView: View {
     @EnvironmentObject private var recorder: VisitRecorder
     let message: ChatMessage
     var speak: () -> Void
-    private var rich: Bool { message.report != nil || message.readings != nil || message.medicines != nil }
+    private var rich: Bool { message.report != nil || message.readings?.isEmpty == false || message.medicines?.isEmpty == false }
+    private var careResult: Bool { message.reminders?.isEmpty == false || message.timeline?.isEmpty == false }
     var body: some View {
         if message.isUser {
             HStack { Spacer(minLength: 36); Text(message.text).padding(.horizontal, 18).padding(.vertical, 15).background(Palette.surface, in: RoundedRectangle(cornerRadius: 24)).textSelection(.enabled) }
         } else {
             VStack(alignment: .leading, spacing: 18) {
                 HStack(spacing: 10) { HarbourMark(size: 24).foregroundStyle(Palette.blue); Text("Harbour").font(.body.weight(.semibold)) }
-                if rich {
+                if careResult {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text(message.text).font(.title3.weight(.semibold))
+                        if let reminders = message.reminders {
+                            ForEach(reminders) { reminder in
+                                HStack(alignment: .top, spacing: 12) {
+                                    Image(systemName: reminder.completed ? "checkmark.circle.fill" : "checklist").foregroundStyle(Palette.coral).frame(width: 24)
+                                    VStack(alignment: .leading, spacing: 6) { Text(reminder.title); Text(reminder.due, format: .dateTime.month(.abbreviated).day().hour().minute()).font(.subheadline).foregroundStyle(Palette.muted) }
+                                }
+                            }
+                        }
+                        if let timeline = message.timeline {
+                            ForEach(timeline) { entry in
+                                VStack(alignment: .leading, spacing: 6) { Text(entry.title).font(.body.weight(.medium)); Text(entry.date, format: .dateTime.month(.abbreviated).day().year()).font(.subheadline).foregroundStyle(Palette.muted); if !entry.detail.isEmpty { Text(entry.detail).font(.subheadline).lineLimit(3).foregroundStyle(Palette.muted) } }
+                                    .padding(.leading, 16).overlay(alignment: .leading) { RoundedRectangle(cornerRadius: 2).fill(Palette.blue).frame(width: 3) }
+                            }
+                        }
+                    }
+                } else if rich {
                     VStack(alignment: .leading, spacing: 0) {
                         HStack {
                             Text(message.text).font(.title2.weight(.semibold)).fixedSize(horizontal: false, vertical: true)
@@ -200,6 +261,8 @@ struct MessageView: View {
                             HarbourIllustration(kind: message.readings != nil ? .readings : .medicines).frame(width: 125, height: 100)
                         }.padding(.leading, 22).background(message.readings != nil ? Palette.coralWash : Palette.blueWash)
                         VStack(alignment: .leading, spacing: 18) {
+                            if let reminders = message.reminders { ForEach(reminders) { reminder in VStack(alignment: .leading, spacing: 6) { Label(reminder.title, systemImage: reminder.completed ? "checkmark.circle" : "checklist"); Text(reminder.due, style: .date).foregroundStyle(Palette.muted) }.padding(.vertical, 8) } }
+                            if let timeline = message.timeline { ForEach(timeline) { entry in VStack(alignment: .leading, spacing: 6) { Text(entry.title).font(.headline); Text(entry.date, style: .date).foregroundStyle(Palette.muted); Text(entry.detail).lineLimit(3).foregroundStyle(Palette.muted) }.padding(.vertical, 8) } }
                             if let report = message.report { InteractionView(report: report) }
                             if let readings = message.readings {
                                 ForEach(readings) { reading in ReadingRow(reading: reading); if reading.id != readings.last?.id { Divider().overlay(Palette.line) } }
@@ -223,5 +286,22 @@ struct MessageView: View {
                 Button(action: speak) { Image(systemName: "speaker.wave.2").font(.body).foregroundStyle(Palette.muted).frame(width: 44, height: 44) }.accessibilityLabel("Read response aloud").disabled(recorder.active)
             }.frame(maxWidth: .infinity, alignment: .leading)
         }
+    }
+}
+
+
+extension ChatMessage {
+    var spokenText: String {
+        var text = self.text
+        if let medicines = self.medicines { text += ". " + medicines.map { $0.name + ($0.instructions.isEmpty ? "" : ", " + $0.instructions) }.joined(separator: ". ") }
+        if let readings = self.readings { text += ". " + readings.map { $0.kind.rawValue + " " + $0.value + " " + $0.kind.unit }.joined(separator: ". ") }
+        if let report = self.report { text += ". " + report.alerts.map(\.summary).joined(separator: ". "); if !report.unassessed.isEmpty || !report.unresolved.isEmpty { text += ". Some interactions could not be assessed." }; if !report.duplicates.isEmpty { text += ". Duplicate ingredients: " + report.duplicates.joined(separator: ", ") } }
+        if let reminders = self.reminders {
+            text += ". " + reminders.map { $0.title + ", " + $0.due.formatted(date: .abbreviated, time: .shortened) + ($0.completed ? ", completed" : "") }.joined(separator: ". ")
+        }
+        if let timeline = self.timeline {
+            text += ". " + timeline.map { $0.title + ", " + $0.date.formatted(date: .abbreviated, time: .shortened) + ($0.detail.isEmpty ? "" : ", " + $0.detail) }.joined(separator: ". ")
+        }
+        return text
     }
 }

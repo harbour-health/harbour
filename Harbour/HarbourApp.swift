@@ -2,9 +2,9 @@ import SwiftUI
 import HarbourCore
 
 enum AppSheet: Identifiable {
-    case symptom(String), medicine(Medicine?), reading(Reading?), interactions([Medicine]), settings, note
-    var drawerHeight: CGFloat { switch self { case .symptom: 690; case .medicine: 600; case .reading: 320; case .interactions: 420; case .settings: 640; case .note: 440 } }
-    var id: String { switch self { case .symptom: "symptom"; case .medicine: "medicine"; case .reading: "reading"; case .interactions: "interactions"; case .settings: "settings"; case .note: "note" } }
+    case symptom(String), medicine(Medicine?), reading(Reading?), interactions([Medicine]), settings, note, reminder(CareReminder), dose(Medicine, Date, DoseStatus?), timeline(String), question(String), scanMedicine, schedule(Medicine, [DoseTime])
+    var drawerHeight: CGFloat { switch self { case .symptom: 690; case .medicine: 600; case .reading: 320; case .interactions: 420; case .settings: 640; case .note, .question: 640; case .reminder: 590; case .dose: 450; case .timeline: 720; case .scanMedicine, .schedule: 690 } }
+    var id: String { switch self { case .symptom: "symptom"; case .medicine: "medicine"; case .reading: "reading"; case .interactions: "interactions"; case .settings: "settings"; case .note: "note"; case .reminder: "reminder"; case .dose: "dose"; case .timeline: "timeline"; case .question: "question"; case .scanMedicine: "scan"; case .schedule: "schedule" } }
 }
 
 @main struct HarbourApp: App {
@@ -13,10 +13,11 @@ enum AppSheet: Identifiable {
     @StateObject private var health = HealthService()
     @StateObject private var recorder = VisitRecorder()
     @StateObject private var lock = AppLock()
+    @StateObject private var alerts = CareNotifications()
     @AppStorage("appearance") private var appearance = AppearanceChoice.system.rawValue
     var body: some Scene {
         WindowGroup {
-            LockShell().environmentObject(lock).environmentObject(store).environmentObject(models).environmentObject(health).environmentObject(recorder)
+            LockShell().environmentObject(lock).environmentObject(store).environmentObject(models).environmentObject(health).environmentObject(recorder).environmentObject(alerts)
                 .tint(Palette.ink)
                 .preferredColorScheme((AppearanceChoice(rawValue: appearance) ?? .system).scheme)
         }
@@ -40,13 +41,15 @@ struct LockShell: View {
 struct RootView: View {
     @EnvironmentObject var store: AppStore
     @EnvironmentObject var models: ModelManager
+    @EnvironmentObject private var alerts: CareNotifications
+    @Environment(\.scenePhase) private var scenePhase
     @State private var tab = 0
     @State private var sheet: AppSheet?
     @State private var recordCategory: Int?
     @State private var keyboardVisible = false
     var body: some View {
         TabView(selection: $tab) {
-            NavigationStack { TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1; tab = 2 }, openVisits: { tab = 3 }).toolbar(.hidden, for: .tabBar) }
+            NavigationStack { TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1; tab = 2 }, openSymptoms: { recordCategory = 0; tab = 2 }, openVisits: { tab = 3 }).toolbar(.hidden, for: .tabBar) }
                 .tabItem { Label("Today", systemImage: "house") }.tag(0)
             NavigationStack { ChatView(sheet: $sheet).toolbar(.hidden, for: .tabBar) }
                 .tabItem { Label("Chat", systemImage: "bubble.left.and.bubble.right") }.tag(1)
@@ -71,7 +74,13 @@ struct RootView: View {
                 case .reading(let reading): ReadingEditor(initial: reading)
                 case .interactions(let medicines): ScrollView { InteractionView(report: HealthRules.check(medicines)).padding(24).measuredDrawerHeight() }.navigationTitle("Interactions").navigationBarTitleDisplayMode(.inline).toolbar { closeButton }
                 case .settings: SettingsView()
-                case .note: NoteView()
+                case .note: PreparationView()
+                case .question(let text): PreparationView(initialQuestion: text)
+                case .reminder(let reminder): ReminderEditor(initial: reminder, saved: store.care.reminders.contains { $0.id == reminder.id })
+                case .dose(let medicine, let date, let status): DoseEditor(medicine: medicine, scheduled: date, proposed: status)
+                case .timeline(let query): HealthHistoryView(initialQuery: query).toolbar { closeButton }
+                case .scanMedicine: MedicineEditor(initial: nil)
+                case .schedule(let medicine, let times): MedicineEditor(initial: medicine, suggestedTimes: times)
                 }
             }
             .background(Palette.canvas)
@@ -80,6 +89,9 @@ struct RootView: View {
         }
         .sheet(item: Binding(get: { if case nil = sheet { return store.shareFile }; return nil }, set: { store.shareFile = $0 })) { ShareView(url: $0.url) }
         .alert("Couldn’t complete that", isPresented: Binding(get: { store.error != nil }, set: { if !$0 { store.error = nil } })) { Button("OK") { store.error = nil } } message: { Text(store.error ?? "") }
+        .task(id: store.archive.care) { await alerts.sync(care: store.care, medicines: store.records.medicines) }
+        .onChange(of: store.records.medicines.map(\.id)) { Task { await alerts.sync(care: store.care, medicines: store.records.medicines) } }
+        .onChange(of: scenePhase) { if scenePhase == .active { Task { await alerts.sync(care: store.care, medicines: store.records.medicines) } } }
         .task { if ProcessInfo.processInfo.arguments.contains("--evaluate-model") { await SimulatorEvaluation.run(models: models, store: store) } }
     }
     private var closeButton: some ToolbarContent { ToolbarItem(placement: .confirmationAction) { Button("Done") { sheet = nil } } }
@@ -142,13 +154,14 @@ struct TodayView: View {
     @Binding var sheet: AppSheet?
     var openChat: () -> Void
     var openMedicines: () -> Void
+    var openSymptoms: () -> Void
     var openVisits: () -> Void
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppLayout.sectionSpacing) {
                 Text(Date.now, format: .dateTime.weekday(.wide).month(.wide).day()).font(.body).foregroundStyle(Palette.muted).padding(.top, 2)
                 VStack(spacing: 14) {
-                    ReadingSummary(readings: store.records.readings) { sheet = .reading(nil) }
+                    ReadingSummary(readings: store.records.readings)
                     if typeSize.isAccessibilitySize { VStack(spacing: 16) { shortcuts } }
                     else { HStack(alignment: .top, spacing: 14) { shortcuts } }
                 }
@@ -167,24 +180,8 @@ struct TodayView: View {
                         }
                     }
                 }
-                VStack(alignment: .leading, spacing: 0) {
-                    Button { sheet = .interactions(store.records.medicines) } label: { FeatureRow(title: "Check interactions", symbol: "arrow.triangle.branch", colour: Palette.blue) }.buttonStyle(PressFeedback())
-                    Divider().overlay(Palette.line)
-                    Button(action: openVisits) { FeatureRow(title: "Doctor visits", symbol: "waveform", colour: Palette.coral) }.buttonStyle(PressFeedback())
-                    Divider().overlay(Palette.line)
-                    Button { sheet = .note } label: { FeatureRow(title: "Appointment note", symbol: "note.text", colour: Palette.coral) }.buttonStyle(PressFeedback())
-                }
-                if !store.records.symptoms.isEmpty {
-                    VStack(alignment: .leading, spacing: 14) {
-                        Text("Recent symptoms").font(.title2.weight(.semibold))
-                        ForEach(store.records.symptoms.prefix(2)) { symptom in
-                            NavigationLink { SymptomDetail(symptom: symptom) } label: {
-                                HStack(spacing: 14) { SymptomRow(symptom: symptom).frame(maxWidth: .infinity, alignment: .leading); Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Palette.muted) }
-                            }.buttonStyle(.plain)
-                            Divider().overlay(Palette.line)
-                        }
-                    }
-                }
+                AgendaView(sheet: $sheet)
+                NavigationLink { HealthHistoryView() } label: { FeatureRow(title: "Timeline", subtitle: nil, symbol: "clock.arrow.circlepath", colour: Palette.blue) }.buttonStyle(.plain)
             }.padding(.horizontal, AppLayout.screenInset).padding(.bottom, 32).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity)
         }.contentMargins(.bottom, dockClearance, for: .scrollContent)
             .background(Palette.canvas).foregroundStyle(Palette.ink)
@@ -192,7 +189,7 @@ struct TodayView: View {
     }
     @ViewBuilder private var shortcuts: some View {
         illustratedShortcut("Medicines", detail: "\(store.records.medicines.count) recorded", kind: .medicines, colour: Palette.blueWash, action: openMedicines).accessibilityIdentifier("openMedicines")
-        illustratedShortcut("Symptoms", detail: "Record a symptom", kind: .symptoms, colour: Palette.coralWash) { sheet = .symptom("") }
+        illustratedShortcut("Symptoms", detail: "\(store.records.symptoms.count) recorded", kind: .symptoms, colour: Palette.coralWash, action: openSymptoms)
             .accessibilityIdentifier("addSymptom")
     }
     private func illustratedShortcut(_ title: String, detail: String, kind: IllustrationKind, colour: Color, action: @escaping () -> Void) -> some View {
@@ -203,7 +200,7 @@ struct TodayView: View {
                     Text(title).font(.system(.title3, design: .rounded, weight: .bold))
                     Text(detail).font(.body).lineLimit(2)
                 }.padding(18)
-            }.frame(maxWidth: .infinity).frame(height: typeSize.isAccessibilitySize ? 320 : 210)
+            }.frame(maxWidth: .infinity).frame(height: typeSize.isAccessibilitySize ? 320 : 190)
                 .overlay(alignment: .bottomTrailing) {
                 HarbourIllustration(kind: kind).frame(width: 180, height: 150).offset(x: 56, y: 32)
                 }
