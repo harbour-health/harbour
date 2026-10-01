@@ -488,3 +488,88 @@ import XCTest
         app.buttons["Add record"].tap(); XCTAssertTrue(app.textFields["readingValue"].waitForExistence(timeout: 5)); app.buttons["Cancel"].tap()
     }
 }
+
+@MainActor final class HarbourVisitTests: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+    private func capture(_ name: String) {
+        let item = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); item.name = name; item.lifetime = .keepAlways; add(item)
+    }
+    func testVisitNotesLocalSummaryAndConfirmedMedicineChanges() {
+        let app = XCUIApplication(); app.launch()
+        app.buttons["nav-visits"].tap(); capture("67-visits")
+        app.buttons["recordVisit"].tap(); capture("68-visit-recorder")
+        app.navigationBars.buttons.firstMatch.tap()
+        app.buttons["addVisitNotes"].tap()
+        app.buttons["editVisitTranscript"].tap()
+        let title = app.textFields["visitTitleInput"]
+        title.tap(); title.press(forDuration: 1.2)
+        if app.menuItems["Select All"].exists { app.menuItems["Select All"].tap() }
+        title.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 40) + "Medication review")
+        let transcript = app.textViews["visitTranscriptInput"]
+        transcript.tap(); transcript.typeText("Start metformin 500 mg twice daily. Book blood work in two weeks.")
+        app.buttons["Done"].tap(); app.buttons["saveVisitTranscript"].tap()
+        capture("69-visit-notes")
+        app.buttons["summariseVisit"].tap()
+        XCTAssertTrue(app.buttons["reviewVisitMedicines"].waitForExistence(timeout: 120), app.debugDescription)
+        XCTAssertTrue(app.staticTexts["Book blood work in two weeks."].exists)
+        capture("70-visit-summary")
+        app.buttons["reviewVisitMedicines"].tap()
+        XCTAssertFalse(app.buttons["saveVisitMedicines"].isEnabled)
+        app.buttons["visit-change-metformin"].tap()
+        XCTAssertFalse(app.buttons["saveVisitMedicines"].isEnabled)
+        app.buttons["confirmVisitMedicines"].tap(); capture("71-visit-medicine-review")
+        app.buttons["Cancel"].tap(); app.buttons["reviewVisitMedicines"].tap()
+        XCTAssertFalse(app.buttons["saveVisitMedicines"].isEnabled)
+        app.buttons["visit-change-metformin"].tap(); app.buttons["confirmVisitMedicines"].tap(); app.buttons["saveVisitMedicines"].tap()
+        XCTAssertTrue(app.staticTexts["Medicine changes saved"].waitForExistence(timeout: 5))
+        app.terminate(); app.launch(); app.buttons["nav-visits"].tap()
+        XCTAssertTrue(app.buttons.containing(NSPredicate(format: "label CONTAINS %@", "Medication review")).firstMatch.waitForExistence(timeout: 5))
+        app.buttons.containing(NSPredicate(format: "label CONTAINS %@", "Medication review")).firstMatch.tap()
+        XCTAssertTrue(app.staticTexts["Medicine changes saved"].exists)
+        app.buttons["Transcript"].tap(); capture("72-visit-transcript")
+        XCTAssertTrue(app.staticTexts["savedVisitTranscript"].exists)
+        app.buttons["Visit options"].tap(); app.buttons["Share notes"].tap()
+        XCTAssertTrue(app.otherElements["ActivityListView"].waitForExistence(timeout: 5))
+    }
+    func testRecorderPauseResumeAndAudioPersistence() {
+        let app = XCUIApplication(); app.launch()
+        app.buttons["nav-visits"].tap(); app.buttons["recordVisit"].tap()
+        addUIInterruptionMonitor(withDescription: "Microphone and speech") { alert in
+            for name in ["Allow", "OK", "Allow While Using App"] { if alert.buttons[name].exists { alert.buttons[name].tap(); return true } }
+            return false
+        }
+        app.buttons["visitRecordingControl"].tap()
+        for _ in 0..<4 {
+            if app.buttons["Pause recording"].exists { break }
+            if app.alerts.firstMatch.exists { for name in ["Allow", "OK"] { if app.alerts.buttons[name].exists { app.alerts.buttons[name].tap() } } }
+            RunLoop.current.run(until: Date().addingTimeInterval(1))
+        }
+        XCTAssertTrue(app.buttons["Pause recording"].waitForExistence(timeout: 30), app.debugDescription)
+        capture("73-visit-recording")
+        app.buttons["Pause recording"].tap(); XCTAssertTrue(app.buttons["Resume recording"].waitForExistence(timeout: 5)); capture("74-visit-paused")
+        app.buttons["Resume recording"].tap(); XCTAssertTrue(app.buttons["Pause recording"].waitForExistence(timeout: 5))
+        app.buttons["nav-chat"].tap(); XCTAssertFalse(app.buttons["Record voice"].isEnabled)
+        app.buttons["nav-visits"].tap(); XCTAssertTrue(app.buttons["Pause recording"].waitForExistence(timeout: 5))
+        app.buttons["finishVisitRecording"].tap()
+        XCTAssertTrue(app.buttons["Play visit audio"].waitForExistence(timeout: 20), app.debugDescription)
+        app.buttons["Play visit audio"].tap(); XCTAssertTrue(app.buttons["Pause visit audio"].waitForExistence(timeout: 5)); capture("75-visit-audio")
+        app.buttons["Pause visit audio"].tap()
+        app.terminate(); app.launch(); app.buttons["nav-visits"].tap()
+        XCTAssertTrue(app.buttons.containing(NSPredicate(format: "label CONTAINS %@", "Doctor visit")).firstMatch.waitForExistence(timeout: 5))
+    }
+    func testZUpdatedMainScreensAndDarkVisits() {
+        let app = XCUIApplication(); app.launch()
+        app.buttons["nav-today"].tap(); app.buttons["Settings"].tap(); app.buttons["Appearance"].tap(); app.buttons["appearance-light"].tap()
+        app.navigationBars.buttons.firstMatch.tap(); app.buttons["Done"].tap(); capture("01-today")
+        app.buttons["nav-chat"].tap(); app.buttons["New chat"].tap(); capture("11-chat-empty")
+        app.buttons["nav-records"].tap(); capture("64-records")
+        app.buttons["nav-visits"].tap(); capture("67-visits")
+        app.buttons["nav-today"].tap(); app.buttons["Settings"].tap(); capture("16-settings")
+        app.buttons["Appearance"].tap(); app.buttons["appearance-dark"].tap(); app.navigationBars.buttons.firstMatch.tap(); capture("38-settings-dark"); app.buttons["Done"].tap()
+        capture("31-today-dark"); app.buttons["nav-chat"].tap(); capture("32-chat-dark"); app.buttons["nav-records"].tap(); capture("65-records-dark")
+        app.buttons["nav-visits"].tap(); capture("76-visits-dark"); app.buttons["recordVisit"].tap(); capture("77-visit-recorder-dark")
+        app.navigationBars.buttons.firstMatch.tap()
+        app.buttons.containing(NSPredicate(format: "label CONTAINS %@", "Medication review")).firstMatch.tap(); capture("78-visit-summary-dark")
+        app.buttons["nav-today"].tap(); app.buttons["Settings"].tap(); app.buttons["Appearance"].tap(); app.buttons["appearance-light"].tap()
+    }
+}

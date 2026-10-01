@@ -10,11 +10,12 @@ enum AppSheet: Identifiable {
     @StateObject private var store = AppStore()
     @StateObject private var models = ModelManager()
     @StateObject private var health = HealthService()
+    @StateObject private var recorder = VisitRecorder()
     @StateObject private var lock = AppLock()
     @AppStorage("appearance") private var appearance = AppearanceChoice.system.rawValue
     var body: some Scene {
         WindowGroup {
-            LockShell().environmentObject(lock).environmentObject(store).environmentObject(models).environmentObject(health)
+            LockShell().environmentObject(lock).environmentObject(store).environmentObject(models).environmentObject(health).environmentObject(recorder)
                 .tint(Palette.ink)
                 .preferredColorScheme((AppearanceChoice(rawValue: appearance) ?? .system).scheme)
         }
@@ -23,6 +24,7 @@ enum AppSheet: Identifiable {
 
 struct LockShell: View {
     @EnvironmentObject var lock: AppLock
+    @EnvironmentObject var recorder: VisitRecorder
     @EnvironmentObject var store: AppStore
     @Environment(\.scenePhase) private var phase
     var body: some View {
@@ -30,7 +32,7 @@ struct LockShell: View {
             .background(PrivacyCurtain(covered: phase != .active && !(phase == .inactive && lock.presentingAuthentication)))
             .accessibilityHidden(phase != .active)
             .transaction { if lock.locked { $0.disablesAnimations = true } }
-            .onChange(of: phase) { if phase == .background { lock.lock(); store.shareFile = nil } }
+            .onChange(of: phase) { if phase == .background { Task { await recorder.finish(interrupted: true) }; lock.lock(); store.shareFile = nil } }
     }
 }
 
@@ -43,12 +45,14 @@ struct RootView: View {
     @State private var keyboardVisible = false
     var body: some View {
         TabView(selection: $tab) {
-            NavigationStack { TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1; tab = 2 }).toolbar(.hidden, for: .tabBar) }
+            NavigationStack { TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1; tab = 2 }, openVisits: { tab = 3 }).toolbar(.hidden, for: .tabBar) }
                 .tabItem { Label("Today", systemImage: "house") }.tag(0)
             NavigationStack { ChatView(sheet: $sheet).toolbar(.hidden, for: .tabBar) }
                 .tabItem { Label("Chat", systemImage: "bubble.left.and.bubble.right") }.tag(1)
             NavigationStack { RecordsView(sheet: $sheet, category: $recordCategory).toolbar(.hidden, for: .tabBar) }
                 .tabItem { Label("Records", systemImage: "heart.text.square") }.tag(2)
+            NavigationStack { VisitsView().toolbar(.hidden, for: .tabBar) }
+                .tabItem { Label("Visits", systemImage: "waveform") }.tag(3)
         }
         .toolbar(.hidden, for: .tabBar)
         .environment(\.floatingDockClearance, keyboardVisible ? 0 : 86)
@@ -136,6 +140,7 @@ struct TodayView: View {
     @Binding var sheet: AppSheet?
     var openChat: () -> Void
     var openMedicines: () -> Void
+    var openVisits: () -> Void
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 32) {
@@ -158,6 +163,7 @@ struct TodayView: View {
                         if let reading = store.records.readings.first(where: { $0.kind == kind }) { ReadingRow(reading: reading); Divider().overlay(Palette.line) }
                     }
                     Button { sheet = .interactions(store.records.medicines) } label: { FeatureRow(title: "Check interactions", symbol: "arrow.triangle.branch", colour: Palette.blue) }.buttonStyle(PressFeedback())
+                    Button(action: openVisits) { FeatureRow(title: "Doctor visits", symbol: "waveform", colour: Palette.coral) }.buttonStyle(PressFeedback())
                     Button { sheet = .note } label: { FeatureRow(title: "Appointment note", symbol: "note.text", colour: Palette.coral) }.buttonStyle(PressFeedback())
                 }
                 if !store.records.symptoms.isEmpty {

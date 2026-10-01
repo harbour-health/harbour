@@ -10,13 +10,15 @@ Apple Health import requests access to heart rate, body temperature, and the sys
 
 Read authorization intentionally cannot prove that the user granted access. An empty query reports that no readings are available; it does not claim permission was granted or denied. Import runs when explicitly requested, rather than continuously in the background. [Apple’s authorization documentation](https://developer.apple.com/documentation/healthkit/authorizing-access-to-health-data) explains this privacy boundary.
 
-Voice input requests microphone and speech authorization only when the microphone is used. `SFSpeechRecognizer` must support on-device recognition; `requiresOnDeviceRecognition` is always true. Transcription updates the draft and is never submitted automatically. An unsupported recognizer or denied permission produces a visible error. Audio remains in the recognition pipeline rather than being written into record storage. Read-aloud uses AVSpeechSynthesizer.
+Voice input requests microphone and speech authorization only when the microphone is used. `SFSpeechRecognizer` must support on-device recognition; `requiresOnDeviceRecognition` is always true. Transcription updates the draft and is never submitted automatically. An unsupported recognizer or denied permission produces a visible error. Chat dictation audio remains in the recognition pipeline rather than being written into record storage. The separate [doctor visit recorder](doctor-visits.md) explicitly saves audio and handles longer sessions. Read-aloud uses AVSpeechSynthesizer.
 
 ## How to change it
 
 Edit `DeviceServices.swift`. For a new HealthKit metric, request only its required quantity types, convert units explicitly, add a `ReadingKind`, and test ingestion and duplicate handling. Check physical-device permission flows whenever changing capabilities or privacy strings. Do not treat successful authorization-request completion as proof of read access.
 
 For additional speech locales, check on-device support before starting. Keep transcripts editable. Stop recognition when leaving chat, sending, or starting read-aloud. Model chat does not require speech to be enabled.
+
+Chat dictation and read-aloud controls are disabled while a visit recorder is active. `VoiceService.stop` deactivates the shared audio session only if it owns recording/read-aloud activity, so leaving idle Chat cannot cut off a visit recording.
 
 Voice starts carry a generation ID. Stopping or leaving chat invalidates pending permission requests and queued recognition callbacks, so granting a delayed permission cannot start recording after navigation or update a later draft.
 

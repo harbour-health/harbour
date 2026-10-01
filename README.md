@@ -1,6 +1,6 @@
 # Harbour for iOS
 
-Native SwiftUI companion with local-model chat, editable voice input, symptom records, medicine comparison, readings, appointment notes, and read-only Apple Health import. The app has no web view, inference server, analytics, or account requirement.
+Native SwiftUI companion with local-model chat, editable voice input, symptom records, medicine comparison, readings, appointment notes, read-only Apple Health import, and doctor visit recording with editable transcripts and reviewed medicine changes. The app has no web view, inference server, analytics, or account requirement.
 
 ## Screenshots
 
@@ -17,6 +17,14 @@ Native iPhone simulator captures with fictional test records. Select an image to
 | Today | Chat | Records | Settings |
 | :---: | :---: | :---: | :---: |
 | [<img src="docs/screenshots/31-today-dark.png" alt="Today dashboard in dark mode" width="220">](docs/screenshots/31-today-dark.png) | [<img src="docs/screenshots/32-chat-dark.png" alt="New chat in dark mode" width="220">](docs/screenshots/32-chat-dark.png) | [<img src="docs/screenshots/65-records-dark.png" alt="Records browser in dark mode" width="220">](docs/screenshots/65-records-dark.png) | [<img src="docs/screenshots/38-settings-dark.png" alt="Settings in dark mode" width="220">](docs/screenshots/38-settings-dark.png) |
+
+### Doctor visits
+
+| Visits | Recorder | Visit summary | Medicine review |
+| :---: | :---: | :---: | :---: |
+| [<img src="docs/screenshots/67-visits.png" alt="Doctor visit history" width="220">](docs/screenshots/67-visits.png) | [<img src="docs/screenshots/68-visit-recorder.png" alt="Doctor visit recorder with a large start button" width="220">](docs/screenshots/68-visit-recorder.png) | [<img src="docs/screenshots/70-visit-summary.png" alt="Locally extracted visit summary and follow-up" width="220">](docs/screenshots/70-visit-summary.png) | [<img src="docs/screenshots/71-visit-medicine-review.png" alt="Review medicine changes before saving" width="220">](docs/screenshots/71-visit-medicine-review.png) |
+
+See [doctor visits](docs/doctor-visits.md) for recording, transcript recovery, and medicine review. Physical-device speech accuracy still needs testing.
 
 See [all captures](docs/screenshots/) and [capture details](docs/screenshots.md) for entry sheets, chat results, model downloads, and app lock.
 
@@ -39,6 +47,7 @@ Qwen Small downloads when the first chat message is sent, or from **Settings →
 - **Today:** recent readings and entry points to symptoms, medicines, interactions, and appointment notes.
 - **Chat:** freeform messages; optional topic hints; model and effort controls beside the microphone; validated tool calls and locally generated conversation titles.
 - **Records:** a large category browser leading to dedicated symptom, medicine, and reading lists, with native entry sheets and swipe deletion.
+- **Visits:** a large recorder with pause/resume, saved audio, editable transcripts, source-quoted notes and follow-up, and confirmed medicine changes.
 - **Settings:** appearance, optional Face ID or app PIN lock, model downloads, Apple Health import, record import/export, reset, and evaluation.
 
 The current medicine catalog maps 11 names to ingredients and checks four cited pairs. Other pairs are unassessed. Symptom guidance uses fixed Ontario wording and does not establish a diagnosis. This is the existing honours-project scope carried into native code.

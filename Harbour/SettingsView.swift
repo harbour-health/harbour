@@ -3,6 +3,7 @@ import UniformTypeIdentifiers
 import HarbourCore
 
 struct SettingsView: View {
+    @EnvironmentObject var recorder: VisitRecorder
     @EnvironmentObject var store: AppStore
     @EnvironmentObject var models: ModelManager
     @EnvironmentObject var health: HealthService
@@ -22,13 +23,13 @@ struct SettingsView: View {
             Section("Data") {
                 Button { store.export() } label: { Label("Export records", systemImage: "square.and.arrow.up") }
                 Button { importing = true } label: { Label("Import records", systemImage: "square.and.arrow.down") }
-                Button("Delete all records and chat", role: .destructive) { deleting = true }
+                Button("Delete all records and chat", role: .destructive) { deleting = true }.disabled(recorder.active)
             }
             Section { NavigationLink { EvaluationView() } label: { Label("Evaluation", systemImage: "checkmark.seal") } }
         }.scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle("Settings").navigationBarTitleDisplayMode(.inline)
         .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
         .fileImporter(isPresented: $importing, allowedContentTypes: [.json]) { result in switch result { case .success(let url): store.importFile(url); case .failure(let error): store.error = error.localizedDescription } }
-        .alert("Delete all records and chat?", isPresented: $deleting) { Button("Delete all", role: .destructive) { store.clear() }; Button("Cancel", role: .cancel) {} }
+        .alert("Delete all records and chat?", isPresented: $deleting) { Button("Delete all", role: .destructive) { store.clear() }; Button("Cancel", role: .cancel) {} } message: { Text("This includes doctor visits and their recordings.") }
     }
 }
 struct ModelsView: View {

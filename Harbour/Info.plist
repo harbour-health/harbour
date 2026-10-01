@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
-    <key>NSMicrophoneUsageDescription</key><string>Record a message for on-device transcription. You can edit it before sending.</string>
-    <key>NSSpeechRecognitionUsageDescription</key><string>Transcribe your voice on this device into an editable message.</string>
+    <key>NSMicrophoneUsageDescription</key><string>Record voice messages or your doctor visits on this device. You choose when recording starts and stops.</string>
+    <key>NSSpeechRecognitionUsageDescription</key><string>Transcribe voice messages and doctor visits on this device into editable text.</string>
     <key>NSHealthShareUsageDescription</key><string>Import heart rate, blood pressure, and temperature readings that you choose to share.</string>
     <key>NSFaceIDUsageDescription</key><string>Use Face ID to unlock your Harbour health records.</string>
     <key>ITSAppUsesNonExemptEncryption</key><false/>

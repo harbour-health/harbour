@@ -93,3 +93,15 @@ Physical-device signing/install, Face ID matching and device-passcode fallback, 
 ## Dependencies
 
 XCTest, Xcode/xcrun simctl, the core fixture suite, the native inference package, Qwen weights, and `scripts/prepare-runtime.sh`. No external inference or evaluation service is used.
+
+## Doctor visit verification
+
+`swift test --package-path HarbourCore` includes source-quote validation, invented dose/name rejection, speculative/negated changes, omitted-negation attacks, model-omitted follow-up recovery, stale medicine baselines, conflicting/repeated application, transcript edits, Codable persistence, and bounded chunking. The complete core suite now has 26 tests.
+
+`HarbourVisitTests` exercises the native recorder's start/pause/resume/finish and audio playback/persistence; real Qwen extraction from typed fictional visit notes; medicine selection/acknowledgement, cancel, atomic save, and relaunch; sharing; and light/dark captures of the four main destinations and visit screens. A focused audio-ownership regression switches to Chat and back during recording and verifies competing dictation is disabled. The QA simulator's native AAC recordings can be opened with AVAudioFile. It lacks on-device English speech support, and the recorder correctly reports audio-only capture. These checks do not establish medical speech accuracy or long appointment endurance.
+
+The final visit suite passed all three flows in `harbour-visits-release-check.xcresult`; `harbour-visits-audio-ownership.xcresult` passed the focused audio regression after the shared-session cleanup change. An unsigned generic iPhone build also succeeded; it verifies compilation rather than actual device behaviour.
+
+The first microphone attempt stalled while using the async permission API. Callback-based permission waiters fixed the simulator path and allow explicit cancellation with generation invalidation. Later completed native flows supersede those failed attempts. Do not treat the early incomplete result bundles as final evidence. Use `-collect-test-diagnostics never` for targeted simulator runs when verbose diagnostic collection stalls after a failure; preserve the actual test outcomes.
+
+Remaining device acceptance: 30–90-minute sessions, iOS 18 legacy rollover and saved-audio chunk retry, iOS 26 live/file analysis with downloaded/installed speech assets, noise and overlapping speakers, actual medicine/dose transcription errors, phone calls, storage exhaustion, abrupt process death during AAC writing, screen lock/background protection, and clinically reviewed extraction recall/precision. Speaker attribution and clinical correctness are not established by source quotes.

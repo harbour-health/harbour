@@ -22,6 +22,8 @@ The optional archive field `chatTitle` stores [locally generated conversation me
 
 JSON export uses ISO-8601 dates. JSON import validates the version and readings, merges records, and rebuilds medicine ingredient mappings from the catalog. File-supplied ingredient claims are not trusted. Unknown names remain unconfirmed. Appointment notes use recorded facts and can be edited before sharing.
 
+The optional archive field `visits` and UUID-named AAC files store [doctor visits](doctor-visits.md). Recording checkpoints preserve recoverable partial transcripts. Extracted facts are exact quotes; medicine changes enter a separate confirmation flow and atomically update both medicines and the visit audit. Missing optional visit data preserves compatibility with older archives.
+
 ## How to change it
 
 Add or alter tools in `HarbourCore/ToolPlanner.swift`, then update `ChatView.execute`, fixtures, and tests. Introduce a new record schema with an explicit migration; do not silently decode incompatible data as empty. Replace the narrow medication fixture with a versioned, clinically governed dataset before making broader interaction claims. The current negation-aware phrase matcher has limited coverage; a negative result never rules out an emergency.

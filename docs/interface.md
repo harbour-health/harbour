@@ -2,7 +2,7 @@
 
 ## What it is
 
-A native SwiftUI health companion with Today, Chat, and Records destinations. The summary hierarchy and floating navigation take inspiration from the supplied Wealthsimple reference, with original Harbour artwork and familiar iOS controls.
+A native SwiftUI health companion with Today, Chat, Records, and Visits destinations. The summary hierarchy and floating navigation take inspiration from the supplied Wealthsimple reference, with original Harbour artwork and familiar iOS controls.
 
 ## How it works
 
@@ -19,6 +19,8 @@ Chat has an original animated conversation illustration, three open starter rows
 Assistant tool results have a single illustrated surface per result. Medicines, readings, and cited interaction findings render as structured content inside that surface, without nested cards. Unsupported interaction pairs remain explicitly unassessed. Record mutations still require their existing confirmation sheets. The waiting mark spins and new messages appear with a short transition; Reduce Motion disables these effects and the illustration float. Buttons have restrained press feedback.
 
 Records uses an Apple Health-inspired category browser instead of segmented tabs. Three full-width rows provide large category labels, coloured glyphs, saved counts, and chevrons. Each opens a dedicated list with its own large title and Add record action; the native back button returns to the browser. Flat lists retain native swipe deletion. Today’s medicine shortcut sets the optional category destination before selecting Records, so it still opens Medicines directly. The navigation binding resets when the user goes back and is not stored with health records. Illustrated empty states expose a direct add action. Input forms retain native grouping for familiar pickers, keyboard handling, and confirmation controls. Emergency options use rounded, lightly coloured selection buttons. There are no marketing sections or prototype disclaimers in navigation; clinical instructions and provenance remain visible where needed.
+
+Visits follows the [Google Recorder](https://support.google.com/pixelphone/answer/16267367?hl=en) pattern with one large recording control, timer, waveform, and separate finish action. Its history uses open rows; a single illustrated recording entry point sits above them. Saved visit details separate summary and editable transcript, with source quotes and a deliberate medicine review step. See [Doctor visits](doctor-visits.md) for the recording lifecycle.
 
 ## How to change it
 

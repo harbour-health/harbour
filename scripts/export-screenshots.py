@@ -45,6 +45,12 @@ TITLES = {
     '63-health-access-reminder': 'Apple Health access reminder',
     '64-records': 'Records', '65-records-dark': 'Records · Dark',
     '66-floating-navigation': 'Floating navigation · scrolled',
+    '67-visits': 'Visits', '68-visit-recorder': 'Visit recorder',
+    '69-visit-notes': 'Visit notes', '70-visit-summary': 'Local visit summary',
+    '71-visit-medicine-review': 'Visit medicine confirmation', '72-visit-transcript': 'Visit transcript',
+    '73-visit-recording': 'Recording · audio-only simulator', '74-visit-paused': 'Paused · audio-only simulator',
+    '75-visit-audio': 'Playback · audio-only simulator', '76-visits-dark': 'Visits · Dark',
+    '77-visit-recorder-dark': 'Visit recorder · Dark', '78-visit-summary-dark': 'Visit summary · Dark',
 }
 
 parser = argparse.ArgumentParser()

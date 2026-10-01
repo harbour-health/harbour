@@ -15,6 +15,7 @@ struct Archive: Codable {
     var records = Records()
     var messages: [ChatMessage] = []
     var chatTitle: String?
+    var visits: [DoctorVisit]?
 }
 struct ShareFile: Identifiable { let id = UUID(); let url: URL }
 
@@ -24,6 +25,7 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
     @Published var shareFile: ShareFile?
     let file: URL
     private var loadFailed = false
+    var visits: [DoctorVisit] { archive.visits ?? [] }
     var records: Records { archive.records }
     var messages: [ChatMessage] { archive.messages }
     var chatTitle: String {
@@ -47,14 +49,15 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
             }
         } catch { loadFailed = true; self.error = "Your saved records could not be opened. The original file has been kept. \(error.localizedDescription)" }
     }
-    private func update(_ change: (inout Archive) -> Void) {
-        guard !loadFailed else { error = "The saved file could not be read. Changes are blocked to preserve it. Export or recover the file before resetting records in Settings."; return }
+    @discardableResult private func update(_ change: (inout Archive) -> Void) -> Bool {
+        guard !loadFailed else { error = "The saved file could not be read. Changes are blocked to preserve it. Export or recover the file before resetting records in Settings."; return false }
         var next = archive; change(&next)
         do {
             let data = try JSONEncoder().encode(next)
             try data.write(to: file, options: [.atomic, .completeFileProtection])
             archive = next
-        } catch { self.error = "Couldn’t save this change. \(error.localizedDescription)" }
+            return true
+        } catch { self.error = "Couldn’t save this change. \(error.localizedDescription)"; return false }
     }
     func add(_ medicine: Medicine) { update { value in
         if let i = value.records.medicines.firstIndex(where: { $0.id == medicine.id }) { value.records.medicines[i] = medicine }
@@ -77,7 +80,53 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
             do { try FileManager.default.copyItem(at: file, to: file.deletingLastPathComponent().appendingPathComponent("unreadable-\(UUID().uuidString).json")); loadFailed = false }
             catch { self.error = "Couldn’t preserve the unreadable file. \(error.localizedDescription)"; return }
         }
-        update { $0 = Archive() }
+        if update({ $0 = Archive() }), FileManager.default.fileExists(atPath: visitAudioDirectory.path) {
+            do { try FileManager.default.removeItem(at: visitAudioDirectory) }
+            catch { self.error = "Records were cleared, but the saved recordings couldn’t be deleted. Unlock the phone and try Delete all again. \(error.localizedDescription)" }
+        }
+    }
+    var visitAudioDirectory: URL { file.deletingLastPathComponent().appendingPathComponent("VisitAudio") }
+    func audioURL(for visit: DoctorVisit) -> URL? {
+        guard let name = visit.audioFilename, name == visit.id.uuidString + ".m4a" else { return nil }
+        return visitAudioDirectory.appendingPathComponent(name)
+    }
+    @discardableResult func saveVisit(_ visit: DoctorVisit) -> Bool {
+        update { value in
+            var visits = value.visits ?? []
+            if let index = visits.firstIndex(where: { $0.id == visit.id }) { visits[index] = visit }
+            else { visits.insert(visit, at: 0) }
+            value.visits = visits
+        }
+    }
+    func deleteVisit(_ visit: DoctorVisit) {
+        if update({ $0.visits?.removeAll { $0.id == visit.id } }), let audio = audioURL(for: visit) {
+            do { if FileManager.default.fileExists(atPath: audio.path) { try FileManager.default.removeItem(at: audio) } }
+            catch { self.error = "The visit was removed, but its audio couldn’t be deleted. \(error.localizedDescription)" }
+        }
+    }
+    func saveVisitSummary(_ summary: VisitSummary, id: UUID, transcript: String, baseline: [Medicine]) {
+        guard var visit = visits.first(where: { $0.id == id }), visit.transcript == transcript else { return }
+        visit.summary = summary; visit.medicineBaseline = baseline
+        saveVisit(visit)
+    }
+    func applyVisitChanges(id: UUID, selected: Set<UUID>) -> Bool {
+        guard let visit = visits.first(where: { $0.id == id }) else { return false }
+        do {
+            let medicines = try VisitReview.applying(selected, from: visit, to: records.medicines)
+            return update { value in
+                guard let index = value.visits?.firstIndex(where: { $0.id == id }) else { return }
+                value.records.medicines = medicines
+                value.visits![index].appliedChanges = visit.summary!.medicines.filter { selected.contains($0.id) }
+            }
+        } catch { self.error = error.localizedDescription; return false }
+    }
+    func shareVisit(_ visit: DoctorVisit) {
+        do {
+            let text = "\(visit.title)\n\(visit.date.formatted())\n\n" + (visit.summary.map { "Notes\n" + $0.highlights.map(\.quote).joined(separator: "\n") + "\n\nFollow-up\n" + $0.followUps.map(\.quote).joined(separator: "\n") + "\n\n" } ?? "") + "Transcript\n" + visit.transcript
+            let url = FileManager.default.temporaryDirectory.appendingPathComponent("Harbour-visit.txt")
+            try Data(text.utf8).write(to: url, options: [.atomic, .completeFileProtection])
+            shareFile = ShareFile(url: url)
+        } catch { self.error = error.localizedDescription }
     }
     func export() {
         do {

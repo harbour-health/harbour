@@ -57,6 +57,7 @@ import HarbourCore
     private var hasTap = false
     private var generation = UUID()
     private let speaker = AVSpeechSynthesizer()
+    private var audioSessionOwned = false
     func start(transcript: @escaping (String) -> Void) async {
         let current = UUID(); generation = current
         let speech = await withCheckedContinuation { continuation in SFSpeechRecognizer.requestAuthorization { continuation.resume(returning: $0) } }
@@ -68,7 +69,7 @@ import HarbourCore
         do {
             stop(); generation = current; speaker.stopSpeaking(at: .immediate)
             let session = AVAudioSession.sharedInstance()
-            try session.setCategory(.record, mode: .measurement, options: [.duckOthers]); try session.setActive(true)
+            try session.setCategory(.record, mode: .measurement, options: [.duckOthers]); try session.setActive(true); audioSessionOwned = true
             let request = SFSpeechAudioBufferRecognitionRequest()
             request.requiresOnDeviceRecognition = true; request.shouldReportPartialResults = true
             self.request = request
@@ -86,11 +87,13 @@ import HarbourCore
         } catch { stop(); self.error = error.localizedDescription }
     }
     func stop() {
+        let shouldDeactivate = audioSessionOwned || speaker.isSpeaking || speaker.isPaused
+        audioSessionOwned = false; speaker.stopSpeaking(at: .immediate)
         generation = UUID()
         engine.stop()
         if hasTap { engine.inputNode.removeTap(onBus: 0); hasTap = false }
         request?.endAudio(); recognition?.cancel(); recognition = nil; request = nil; listening = false
-        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        if shouldDeactivate { try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation) }
     }
     func speak(_ text: String) {
         stop(); speaker.stopSpeaking(at: .immediate)

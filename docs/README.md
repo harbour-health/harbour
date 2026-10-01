@@ -2,6 +2,7 @@
 
 - [Architecture](architecture.md) — modules, persistence, tool execution, and change points.
 - [Local models](local-models.md) — runtime setup, pinned weights, downloads, and cancellation.
+- [Doctor visits](doctor-visits.md) — local recording, transcript recovery, source-grounded summaries, and confirmed medicine updates.
 - [Health and voice](health-and-voice.md) — native permissions, HealthKit queries, and speech.
 - [Interface](interface.md) — floating navigation, dashboard spacing, Records browser, chat composer, and accessibility.
 - [App lock](app-lock.md) — Face ID, Keychain-backed PIN, retry delays, and lifecycle gating.

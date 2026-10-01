@@ -12,11 +12,13 @@
 
 ## How to change it
 
-The gallery currently contains 66 native captures. The new Records browser has light/dark captures numbered 64 and 65; capture 66 shows scrolled content around the floating navigation. Main app screens and editors have paired appearance captures. Download and Health permission/status images were refreshed on a disposable simulator without removing existing models. PIN setup and retry captures show a fictional test credential, never a user's PIN. The Face ID capture shows the unavailable/enrollment error, not a successful biometric match.
+The gallery currently contains 78 native captures. The new Records browser has light/dark captures numbered 64 and 65; capture 66 shows scrolled content around the floating navigation. Main app screens and editors have paired appearance captures. Download and Health permission/status images were refreshed on a disposable simulator without removing existing models. PIN setup and retry captures show a fictional test credential, never a user's PIN. The Face ID capture shows the unavailable/enrollment error, not a successful biometric match.
 
-The root README shows Today, Chat, Records, and Settings in separate light/dark tables. It embeds the original PNGs at 220 pixels wide with descriptive alt text and links to their full-resolution files. Update those relative image paths when replacing the featured captures; keep the originals in `docs/screenshots/` so they render directly on GitHub without a running gallery server.
+The root README shows Today, Chat, Records, and Settings in separate light/dark tables, plus a doctor visit workflow table. It embeds the original PNGs at 220 pixels wide with descriptive alt text and links to their full-resolution files. Update those relative image paths when replacing the featured captures; keep the originals in `docs/screenshots/` so they render directly on GitHub without a running gallery server.
 
 Add a numbered capture to the UI screenshot flow and its title to `TITLES` in the export script. Wait for the destination screen before capturing. Pass multiple result bundles to combine flows; a later capture with the same name replaces the earlier version. Inspect the actual PNGs after export, especially keyboards, long forms, share sheets, and download progress.
+
+The visit flow adds captures 67–78: history, idle recorder, typed notes, the real local-model summary, medicine confirmation, transcript, audio-only recording/pause/playback, and paired dark screens. The producing simulator does not support on-device English `SpeechTranscriber`, so recording explicitly shows its audio-only warning. Those captures use the native microphone/AAC pipeline; they are not successful speech-recognition evidence. Source notes for the summary are typed fictional fixtures, processed by the actual local Qwen model. Main light/dark captures were refreshed for the four-destination dock. Older editor/permission captures remain historical UI workflow evidence with their original manifest provenance.
 
 ## Configuration
 

@@ -2,6 +2,7 @@ import SwiftUI
 import HarbourCore
 
 struct ChatView: View {
+    @EnvironmentObject var recorder: VisitRecorder
     @EnvironmentObject var store: AppStore
     @EnvironmentObject var models: ModelManager
     @EnvironmentObject var health: HealthService
@@ -36,7 +37,7 @@ struct ChatView: View {
                             starter("Add a reading", symbol: "waveform.path.ecg", colour: Palette.coral, hint: "Readings")
                         }.padding(.horizontal, 20).frame(maxWidth: 400).frame(maxWidth: .infinity)
                     }
-                    ForEach(store.messages) { message in MessageView(message: message, speak: { voice.speak(message.text) }).id(message.id).transition(.opacity.combined(with: .move(edge: .bottom))) }
+                    ForEach(store.messages) { message in MessageView(message: message, speak: { if !recorder.active { voice.speak(message.text) } }).id(message.id).transition(.opacity.combined(with: .move(edge: .bottom))) }
                     if busy {
                         HStack(spacing: 12) { HarbourMark(size: 32, spinning: true).foregroundStyle(Palette.blue); Text(models.downloading == nil ? "Thinking…" : models.status).font(.subheadline).foregroundStyle(Palette.muted) }.id("pending")
                         if models.downloading != nil { VStack(alignment: .leading, spacing: 8) { ProgressView(value: models.progress); Text(models.status == "Verifying download" ? models.status : "\(Int(models.progress * 100))% downloaded").font(.caption).foregroundStyle(Palette.muted) } }
@@ -93,7 +94,7 @@ struct ChatView: View {
                             let original = draft
                             Task { await voice.start { transcript in draft = original.isEmpty ? transcript : original + " " + transcript } }
                         }
-                    } label: { Image(systemName: voice.listening ? "mic.fill" : "mic").foregroundStyle(voice.listening ? Color.red : Color.primary).frame(width: 44, height: 48) }.accessibilityLabel(voice.listening ? "Stop recording" : "Record voice").disabled(busy)
+                    } label: { Image(systemName: voice.listening ? "mic.fill" : "mic").foregroundStyle(voice.listening ? Color.red : Color.primary).frame(width: 44, height: 48) }.accessibilityLabel(voice.listening ? "Stop recording" : "Record voice").disabled(busy || recorder.active)
                     Button { busy ? cancel() : send() } label: {
                         Image(systemName: busy ? "stop.fill" : "arrow.up").font(.body.weight(.semibold))
                             .foregroundStyle(Palette.canvas).frame(width: 44, height: 44).background(Palette.ink, in: Circle())
@@ -162,6 +163,7 @@ struct ChatView: View {
 }
 
 struct MessageView: View {
+    @EnvironmentObject private var recorder: VisitRecorder
     let message: ChatMessage
     var speak: () -> Void
     private var rich: Bool { message.report != nil || message.readings != nil || message.medicines != nil }
@@ -199,7 +201,7 @@ struct MessageView: View {
                         }.padding(22)
                     }.background(Palette.surface, in: RoundedRectangle(cornerRadius: 26)).clipShape(RoundedRectangle(cornerRadius: 26))
                 } else { Text(message.text).font(.body).textSelection(.enabled).fixedSize(horizontal: false, vertical: true) }
-                Button(action: speak) { Image(systemName: "speaker.wave.2").font(.body).foregroundStyle(Palette.muted).frame(width: 44, height: 44) }.accessibilityLabel("Read response aloud")
+                Button(action: speak) { Image(systemName: "speaker.wave.2").font(.body).foregroundStyle(Palette.muted).frame(width: 44, height: 44) }.accessibilityLabel("Read response aloud").disabled(recorder.active)
             }.frame(maxWidth: .infinity, alignment: .leading)
         }
     }
