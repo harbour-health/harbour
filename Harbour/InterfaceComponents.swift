@@ -3,6 +3,8 @@ import SwiftUI
 enum AppLayout {
     static let screenInset: CGFloat = 24
     static let sectionSpacing: CGFloat = 28
+    static let surfaceInset: CGFloat = 22
+    static let loadingMarkSize: CGFloat = 20
     static let controlSize: CGFloat = 44
     static let contentWidth: CGFloat = 760
 }

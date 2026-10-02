@@ -59,3 +59,7 @@ The **Harbour testing** internal group contains this build and the account holde
 ## Chat and voice update
 
 Version 0.1 build 2 was signed and uploaded on October 1, 2026, with internal-only distribution retained. It contains ordinary local-model replies and recent chat context, model-selected tools without keyword routing, and localized voice selection/preview/speed settings. Release archive and upload logs are under `/private/tmp/harbour-testflight-chat-voice/` in the producing workspace. Apple accepted and processed the upload; build 2 is now Testing in the existing Harbour testing internal group. Automatic distribution remains disabled. Its existing llama dSYM warning remains non-blocking. No public App Store submission or external beta review was made for this update.
+
+## Spacing and loading update
+
+Version 0.1 build 3 was signed and accepted by Apple on October 1, 2026 at 9:54 PM Toronto time. It contains equal reading-summary insets and shared 20-point loading marks for chat and visits. Release archive/upload logs are under `/private/tmp/harbour-testflight-spacing-build3/`. Internal-only distribution remains enabled; no public release or external review was submitted. At upload acceptance, Apple processing and existing-group assignment are still pending. The upstream llama symbol-upload warning remains unchanged.

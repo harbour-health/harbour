@@ -967,6 +967,16 @@ import XCTest
                 let image = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); image.name = name; image.lifetime = .keepAlways; add(image)
             }
         }
+        app.buttons["nav-chat"].tap()
+        let input = app.textFields["chatInput"]
+        input.tap(); input.typeText("Hello")
+        if app.buttons["Done"].exists { app.buttons["Done"].tap() }
+        app.buttons["Send message"].tap()
+        XCTAssertTrue(app.buttons["Stop"].waitForExistence(timeout: 5))
+        Thread.sleep(forTimeInterval: 1)
+        let loading = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        loading.name = "146-chat-loading"; loading.lifetime = .keepAlways; add(loading)
+        app.buttons["Stop"].tap(); app.buttons["New chat"].tap()
     }
 }
 

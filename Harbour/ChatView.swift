@@ -41,7 +41,7 @@ struct ChatView: View {
                     }
                     ForEach(store.messages) { message in MessageView(message: message, speak: { if !recorder.active { voice.speak(message.spokenText) } }).id(message.id).transition(.opacity.combined(with: .move(edge: .bottom))) }
                     if busy {
-                        HStack(spacing: 12) { HarbourMark(size: 32, spinning: true).foregroundStyle(Palette.blue); Text(models.downloading == nil ? L10n.string("Thinking…") : models.status).font(.subheadline).foregroundStyle(Palette.muted) }.id("pending")
+                        HStack(spacing: 12) { HarbourMark(size: AppLayout.loadingMarkSize, spinning: true).foregroundStyle(Palette.blue); Text(models.downloading == nil ? L10n.string("Thinking…") : models.status).font(.subheadline).foregroundStyle(Palette.muted) }.id("pending")
                         if models.downloading != nil { VStack(alignment: .leading, spacing: 8) { ProgressView(value: models.progress); Text(models.isVerifying ? models.status : L10n.format("%lld%% downloaded", Int64(models.progress * 100))).font(.caption).foregroundStyle(Palette.muted) } }
                     }
                     Color.clear.frame(height: 1).id("bottom")
@@ -280,7 +280,7 @@ struct MessageView: View {
                                     if medicine.id != medicines.last?.id { Divider().overlay(Palette.line) }
                                 }
                             }
-                        }.padding(22)
+                        }.padding(AppLayout.surfaceInset)
                     }.background(Palette.surface, in: RoundedRectangle(cornerRadius: 26)).clipShape(RoundedRectangle(cornerRadius: 26))
                 } else { Text(message.text).font(.body).textSelection(.enabled).fixedSize(horizontal: false, vertical: true).accessibilityIdentifier("chatReply") }
                 Button(action: speak) { Image(systemName: "speaker.wave.2").font(.body).foregroundStyle(Palette.muted).frame(width: 44, height: 44) }.accessibilityLabel("Read response aloud").disabled(recorder.active)

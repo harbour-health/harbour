@@ -207,7 +207,7 @@ struct VisitDetailView: View {
                         }.padding(.vertical, 24)
                     }
                     if busy {
-                        HStack(spacing: 12) { HarbourMark(size: 24, spinning: true).foregroundStyle(Palette.blue); Text(status).font(.body); Spacer(); Button("Cancel") { task?.cancel(); models.cancelDownload() } }
+                        HStack(spacing: 12) { HarbourMark(size: AppLayout.loadingMarkSize, spinning: true).foregroundStyle(Palette.blue); Text(status).font(.body); Spacer(); Button("Cancel") { task?.cancel(); models.cancelDownload() } }
                         if models.downloading != nil { ProgressView(value: models.progress).tint(Palette.blue) }
                     } else if !visit.transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                         Button { summarise(visit) } label: { Label(L10n.string(visit.summary == nil ? "Prepare summary" : "Refresh summary"), systemImage: "sparkles") }.buttonStyle(ActionButtonStyle(secondary: visit.summary != nil)).disabled(recorder.active).accessibilityIdentifier("summariseVisit")

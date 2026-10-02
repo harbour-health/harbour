@@ -88,6 +88,7 @@ TITLES = {
     '143-freeform-chat': 'Model conversation and follow-up context',
     '144-voice': 'Voice selection and preview',
     '145-french-voice': 'Voix et aperçu · Français',
+    '146-chat-loading': 'Chat · Compact loading mark',
 
 }
 
@@ -169,7 +170,7 @@ except ImportError:
 if args.update_readme:
     groups = {
         'Today': {1, 31, 43, 66, 116},
-        'Chat': {10, 11, 12, 13, 28, 32, 36, 42, 44, 45, 46, 47, 53, 58, 89},
+        'Chat': {10, 11, 12, 13, 28, 32, 36, 42, 44, 45, 46, 47, 53, 58, 89, 146},
         'Records': {2, 3, 4, 22, 33, 34, 35, 64, 65},
         'Entry and review': {5, 6, 7, 8, 9, 20, 21, 23, 24, 25, 48, 49, 50, 51, 52, 79, 81, 82, 84, 85, 90},
         'Doctor visits': set(range(67, 79)) | {83, 87, 88, 142},

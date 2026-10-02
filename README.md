@@ -85,7 +85,7 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 <!-- screenshot-gallery:start -->
 ## All screens
 
-144 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
+145 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
 
 ### Today
 
@@ -106,7 +106,7 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | <strong>Medicines in chat</strong><br>[<img src="docs/screenshots/44-chat-medicines.png" alt="Medicines in chat" width="220">](docs/screenshots/44-chat-medicines.png) | <strong>Medicines in chat · Dark</strong><br>[<img src="docs/screenshots/45-chat-medicines-dark.png" alt="Medicines in chat · Dark" width="220">](docs/screenshots/45-chat-medicines-dark.png) |
 | <strong>Readings in chat</strong><br>[<img src="docs/screenshots/46-chat-readings.png" alt="Readings in chat" width="220">](docs/screenshots/46-chat-readings.png) | <strong>Readings in chat · Dark</strong><br>[<img src="docs/screenshots/47-chat-readings-dark.png" alt="Readings in chat · Dark" width="220">](docs/screenshots/47-chat-readings-dark.png) |
 | <strong>Selected topic · Dark</strong><br>[<img src="docs/screenshots/53-selected-topic-dark.png" alt="Selected topic · Dark" width="220">](docs/screenshots/53-selected-topic-dark.png) | <strong>Generated chat title</strong><br>[<img src="docs/screenshots/58-generated-chat-title.png" alt="Generated chat title" width="220">](docs/screenshots/58-generated-chat-title.png) |
-| <strong>Chat · Small phone</strong><br>[<img src="docs/screenshots/89-chat-small-phone.png" alt="Chat · Small phone" width="220">](docs/screenshots/89-chat-small-phone.png) |  |
+| <strong>Chat · Small phone</strong><br>[<img src="docs/screenshots/89-chat-small-phone.png" alt="Chat · Small phone" width="220">](docs/screenshots/89-chat-small-phone.png) | <strong>Chat · Compact loading mark</strong><br>[<img src="docs/screenshots/146-chat-loading.png" alt="Chat · Compact loading mark" width="220">](docs/screenshots/146-chat-loading.png) |
 
 ### Records
 

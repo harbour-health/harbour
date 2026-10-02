@@ -190,7 +190,7 @@ struct ReadingSummary: View {
                     }
                 }.font(.subheadline).foregroundStyle(Palette.muted)
             } else { Text("No readings yet").font(.title2.weight(.medium)) }
-        }.padding(.horizontal, 22).padding(.bottom, 22).padding(.top, 12)
+        }.padding(AppLayout.surfaceInset)
             .background(Palette.surface, in: RoundedRectangle(cornerRadius: 28))
             .accessibilityIdentifier("readingSummary")
     }
