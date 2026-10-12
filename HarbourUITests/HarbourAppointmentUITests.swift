@@ -17,9 +17,32 @@ import XCTest
         XCTAssertFalse(save.isEnabled)
         app.buttons["Done"].tap()
         app.switches["confirmAppointmentDate"].tap()
+        let capture = XCTAttachment(screenshot: app.screenshot()); capture.name = "Appointment draft"; capture.lifetime = .keepAlways; add(capture)
         XCTAssertTrue(save.isEnabled); save.tap()
         XCTAssertTrue(app.staticTexts["Fictional clinic appointment"].waitForExistence(timeout: 5))
         app.terminate(); app.launch(); app.buttons["nav-records"].tap(); app.buttons["record-category-3"].tap()
         XCTAssertTrue(app.staticTexts["Fictional clinic appointment"].waitForExistence(timeout: 5))
+    }
+}
+
+@MainActor final class HarbourMedicationDraftUITests: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+    func testCompactMedicationApprovalAndFrequencyInBothThemes() {
+        for appearance in ["Light", "Dark"] {
+            let app = XCUIApplication()
+            app.launchArguments = ["--ui-test-unlocked", "--medication-draft-fixture", "-appearance", appearance, "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
+            app.launch()
+            let approve = app.buttons["approveMedication"]
+            XCTAssertTrue(approve.waitForExistence(timeout: 5)); XCTAssertTrue(approve.isEnabled)
+            XCTAssertTrue(app.staticTexts["500 mg 2 times daily"].exists)
+            XCTAssertTrue(app.staticTexts["2 per day"].exists)
+            let capture = XCTAttachment(screenshot: app.screenshot()); capture.name = "Medication approval " + appearance; capture.lifetime = .keepAlways; add(capture)
+            approve.tap()
+            let frequency = app.buttons["frequency-metformin"]
+            for _ in 0..<5 { if frequency.isHittable { break }; app.swipeUp() }
+            XCTAssertTrue(frequency.waitForExistence(timeout: 5))
+            XCTAssertTrue(app.staticTexts["2 per day"].exists)
+            app.terminate()
+        }
     }
 }

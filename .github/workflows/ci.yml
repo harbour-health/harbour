@@ -68,6 +68,7 @@ jobs:
             -skip-testing:HarbourTests/HarbourCareServiceTests/testNativeVoiceActuallyCompletesShortUtterance \
             -only-testing:HarbourUITests/AppearanceAndLockVisualTests \
             -only-testing:HarbourUITests/HarbourAppointmentUITests \
+            -only-testing:HarbourUITests/HarbourMedicationDraftUITests \
             -only-testing:HarbourUITests/HarbourUITests/testMedicineConfirmationAndExport \
             -only-testing:HarbourUITests/HarbourUITests/testRecordsAndPersistence \
             -only-testing:HarbourUITests/HarbourUITests/testChatHintPreservesDraftAndModelSelector \
@@ -90,6 +91,21 @@ jobs:
           swift run --package-path HarbourRuntime model-probe "$PWD/build/models/small.gguf" 2>&1 | tee build/model-small.log || status=1
           swift run --package-path HarbourRuntime model-probe "$PWD/build/models/balanced.gguf" 2>&1 | tee build/model-balanced.log || status=1
           exit "$status"
+
+      - name: Export simulator screenshots
+        if: always()
+        run: |
+          if [ -d build/Harbour-CI.xcresult ]; then
+            xcrun xcresulttool export attachments --path build/Harbour-CI.xcresult --output-path build/screenshots
+          fi
+
+      - name: Upload simulator screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: harbour-ci-screenshots
+          path: build/screenshots
+          if-no-files-found: ignore
 
       - name: Upload simulator test results
         if: always()

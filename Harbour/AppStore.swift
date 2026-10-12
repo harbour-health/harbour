@@ -127,7 +127,7 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
     func removeQuestion(_ id: UUID) { update { $0.care?.questions.removeAll { $0.id == id } } }
     @discardableResult func saveAppointment(_ appointment: Appointment) -> Bool {
         do { try AppointmentRules.validate(appointment, visits: visits) }
-        catch { error = L10n.string(error.localizedDescription); return false }
+        catch { self.error = L10n.string(error.localizedDescription); return false }
         return update { value in
             value.records.appointments.removeAll { $0.id == appointment.id }
             value.records.appointments.append(appointment)
