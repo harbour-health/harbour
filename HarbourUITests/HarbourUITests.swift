@@ -1406,6 +1406,16 @@ import XCTest
         XCTAssertTrue(app.buttons["saveMedicine"].waitForExistence(timeout: 180), app.debugDescription)
         XCTAssertTrue(app.buttons["addDoseTime"].exists)
         XCTAssertFalse(app.buttons["saveMedicine"].isEnabled)
+        let first = app.descendants(matching: .any)["doseTime-0"].firstMatch
+        let second = app.descendants(matching: .any)["doseTime-1"].firstMatch
+        XCTAssertTrue(first.exists); XCTAssertTrue(second.exists)
+        XCTAssertFalse(app.descendants(matching: .any)["doseTime-2"].firstMatch.exists)
+        func displayedTime(_ element: XCUIElement) -> String {
+            ([element.label, element.value as? String ?? ""] + element.staticTexts.allElementsBoundByIndex.map(\.label) + element.buttons.allElementsBoundByIndex.map(\.label)).joined(separator: " ")
+        }
+        let morning = displayedTime(first), evening = displayedTime(second)
+        XCTAssertNotNil(morning.range(of: "(?i)\\b0?8\\s*[:h]\\s*00\\b", options: .regularExpression), morning)
+        XCTAssertNotNil(evening.range(of: "(?i)\\b20\\s*[:h]\\s*30\\b|\\b0?8\\s*:\\s*30\\s*p\\.?m\\.?", options: .regularExpression), evening)
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = french ? "qwen35-french-schedule-review" : "qwen35-english-schedule-review"
         attachment.lifetime = .keepAlways; add(attachment)
