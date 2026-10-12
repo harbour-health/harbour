@@ -34,6 +34,23 @@ final class VisitTests: XCTestCase {
         let conflictOutput = #"{"highlights":[],"medicines":[{"action":"start","name":"metformin","instructions":"500 mg twice weekly at 8 am and 8 pm","quote":"Start metformin 500 mg twice weekly at 8 am and 8 pm."}],"followUps":[]}"#
         XCTAssertTrue(try VisitReview.parse(conflictOutput, transcript: conflict, medicines: []).medicines.isEmpty)
     }
+    func testSharedQuoteDoesNotLendFrequencyOrTimesAcrossMedicines() throws {
+        let frequencyQuote = "Start amlodipine as prescribed and continue metformin 500 mg twice daily."
+        let frequencyOutput = #"{"highlights":[],"medicines":[{"action":"start","name":"amlodipine","instructions":"as prescribed","quote":"Start amlodipine as prescribed and continue metformin 500 mg twice daily."},{"action":"update","name":"metformin","instructions":"500 mg twice daily","quote":"Start amlodipine as prescribed and continue metformin 500 mg twice daily."}],"followUps":[],"appointments":[]}"#
+        let savedMetformin = Catalog.medicines.first { $0.id == "metformin" }!
+        let frequencyChanges = try VisitReview.parse(frequencyOutput, transcript: frequencyQuote, medicines: [savedMetformin]).medicines
+        XCTAssertEqual(frequencyChanges.count, 2)
+        let amlodipineChange = try XCTUnwrap(frequencyChanges.first { $0.medicine.id == "amlodipine" })
+        let metforminChange = try XCTUnwrap(frequencyChanges.first { $0.medicine.id == "metformin" })
+        XCTAssertNil(amlodipineChange.frequency)
+        XCTAssertEqual(metforminChange.frequency, MedicationFrequency(count: 2, period: .day))
+
+        let timeQuote = "Start metformin 500 mg at 8 am and start amlodipine 5 mg at 9 am."
+        let timeOutput = #"{"highlights":[],"medicines":[{"action":"start","name":"metformin","instructions":"500 mg at 8 am","quote":"Start metformin 500 mg at 8 am and start amlodipine 5 mg at 9 am."},{"action":"start","name":"amlodipine","instructions":"5 mg at 9 am","quote":"Start metformin 500 mg at 8 am and start amlodipine 5 mg at 9 am."}],"followUps":[],"appointments":[]}"#
+        let timeChanges = try VisitReview.parse(timeOutput, transcript: timeQuote, medicines: []).medicines
+        XCTAssertEqual(timeChanges.first { $0.medicine.id == "metformin" }?.times, [DoseTime(hour: 8, minute: 0)])
+        XCTAssertEqual(timeChanges.first { $0.medicine.id == "amlodipine" }?.times, [DoseTime(hour: 9, minute: 0)])
+    }
     func testVisitSummaryEvaluationFixturesMatchExpectedOutputs() {
         for fixture in Evaluation.visitSummaryCases {
             XCTAssertTrue(fixture.matches(fixture.expectedJSON), fixture.name)
@@ -42,6 +59,18 @@ final class VisitTests: XCTestCase {
     func testLegacyVisitMedicineChangeDecodesWithoutScheduleFields() throws {
         let json = #"{"id":"00000000-0000-0000-0000-000000000001","action":"start","medicine":{"id":"metformin","name":"Metformin","ingredients":["metformin"],"instructions":"500 mg twice daily"},"quote":"Start metformin 500 mg twice daily."}"#
         let change = try JSONDecoder().decode(VisitMedicineChange.self, from: Data(json.utf8))
+        XCTAssertNil(change.frequency)
+        XCTAssertTrue(change.times.isEmpty)
+    }
+    func testLegacyVisitChangeWithFrequencyTextStillAppliesWithoutStoredSchedule() throws {
+        let json = #"{"id":"00000000-0000-0000-0000-000000000001","action":"start","medicine":{"id":"metformin","name":"Metformin","ingredients":["metformin"],"instructions":"500 mg twice daily"},"quote":"Start metformin 500 mg twice daily."}"#
+        let change = try JSONDecoder().decode(VisitMedicineChange.self, from: Data(json.utf8))
+        var visit = DoctorVisit(transcript: "Start metformin 500 mg twice daily.")
+        var summary = VisitSummary(); summary.medicines = [change]
+        visit.summary = summary; visit.medicineBaseline = []
+
+        let medicines = try VisitReview.applying([change.id], from: visit, to: [])
+        XCTAssertEqual(medicines.first?.id, "metformin")
         XCTAssertNil(change.frequency)
         XCTAssertTrue(change.times.isEmpty)
     }
