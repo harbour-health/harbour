@@ -16,6 +16,7 @@ permissions:
 
 jobs:
   deterministic-tests:
+    if: github.event_name != 'workflow_dispatch' || !inputs.run_model_evals
     runs-on: macos-latest
     timeout-minutes: 90
     steps:
@@ -137,4 +138,3 @@ jobs:
           name: harbour-model-accuracy
           path: build/model-*.log
           if-no-files-found: ignore
-

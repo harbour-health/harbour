@@ -67,6 +67,7 @@ public enum Evaluation {
         .init("Please record that my knee has been sore since Tuesday", .captureSymptom),
         .init("Please save my heart rate of 72", .logReading),
         .init("Add metformin to my medications", .addMedicine),
+        .init("Remove metformin from my medications", .removeMedicine),
         .init("Show my readings", .listReadings),
         .init("Make an appointment note", .appointmentNote),
         .init("My temperature is 36.8", .logReading),

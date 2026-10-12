@@ -85,4 +85,7 @@ final class HarbourCoreTests: XCTestCase {
             for tool in Tool.allCases { XCTAssertTrue(prompt.contains(tool.rawValue), "\(fixture.input): \(tool.rawValue)") }
         }
     }
+    func testEveryToolHasARoutingEvaluation() {
+        XCTAssertEqual(Set(Evaluation.routingCases.map(\.tool)), Set(Tool.allCases))
+    }
 }
