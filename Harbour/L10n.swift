@@ -29,4 +29,15 @@ enum L10n {
     static func ingredientNames(_ ingredients: [String]) -> String {
         ingredients.map(string).joined(separator: ", ")
     }
+
+    static func frequency(_ frequency: MedicationFrequency) -> String {
+        format("%d per %@", frequency.count, string(frequency.period.rawValue))
+    }
+
+    static func doseTimes(_ times: [DoseTime]) -> String {
+        times.map { time in
+            let date = Calendar.current.date(bySettingHour: time.hour, minute: time.minute, second: 0, of: .now) ?? .now
+            return date.formatted(Date.FormatStyle(date: .omitted, time: .shortened).locale(locale))
+        }.joined(separator: ", ")
+    }
 }

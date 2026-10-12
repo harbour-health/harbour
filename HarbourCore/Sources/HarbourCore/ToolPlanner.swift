@@ -15,6 +15,7 @@ public struct ConversationTurn: Equatable, Sendable {
 }
 
 public enum Tool: String, Codable, CaseIterable, Sendable {
+    case createAppointment = "create_appointment", listAppointments = "list_appointments"
     case reply, captureSymptom = "capture_symptom", addMedicine = "add_medication", removeMedicine = "remove_medication", listMedicines = "list_medications", interactions = "check_interactions", logReading = "log_reading", listReadings = "list_readings", importReadings = "import_readings", exportData = "export_data", appointmentNote = "copy_note", clearData = "clear_data", createReminder = "create_reminder", listReminders = "list_reminders", scheduleMedicine = "schedule_medication", logDose = "log_dose", searchTimeline = "search_timeline", scanMedicine = "scan_medication", saveQuestion = "save_question"
 }
 public struct ToolDecision: Codable, Equatable, Sendable {
@@ -23,7 +24,8 @@ public struct ToolDecision: Codable, Equatable, Sendable {
     public init(tool: Tool, arg: String = "") { self.tool = tool; self.arg = arg }
 }
 public enum ValidatedAction: Equatable, Sendable {
-    case reply(String), symptom(String), add(Medicine), remove(Medicine), medicines, interactions([Medicine]), reading(Reading), readings, importHealth, export, note, clear, reminder(String), reminders, schedule(Medicine, [DoseTime]), dose(Medicine, DoseStatus), timeline(String), scan, question(String)
+    case appointment(String), appointments
+    case reply(String), symptom(String), add(Medicine, [DoseTime], MedicationFrequency?), remove(Medicine), medicines, interactions([Medicine]), reading(Reading), readings, importHealth, export, note, clear, reminder(String), reminders, schedule(Medicine, [DoseTime], MedicationFrequency?), dose(Medicine, DoseStatus), timeline(String), scan, question(String)
 }
 public enum PlannerError: LocalizedError {
     case malformed, forbidden, missingMedicine, missingReading, emptyReply
@@ -60,7 +62,8 @@ public enum ToolPlanner {
         <|im_start|>system
         Choose the correct action for the LAST user message. Use conversation history to understand references. Default to reply for greetings, explanations, questions about concepts, and any request that is not an app action. Do not execute a negated request. A selected topic is only a hint. Output only {"tool":"TOOL_NAME","arg":""}.
         Available tools: \(tools).
-        reply: answer normally or ask for missing facts. capture_symptom: user wants to record a symptom. add_medication: put one named medicine on their list. remove_medication: remove one saved medicine. list_medications: display their medicine list. check_interactions: compare medicines for interactions. log_reading: user supplies a numeric heart rate, blood pressure, or temperature to record. list_readings: display measurements already saved, not add or import any. import_readings: synchronize Apple Health. export_data: export the records. copy_note: prepare notes for a doctor's appointment. clear_data: delete ALL records after confirmation. create_reminder: set a new reminder. list_reminders: display reminders already saved, not create one. schedule_medication: set times explicitly supplied for a saved medicine. log_dose: mark a saved medicine taken or skipped. search_timeline: find a record in health history. scan_medication: open a camera or photo to read a medicine label. save_question: save a question to ask a doctor.
+        create_appointment: record an appointment, consultation, or follow-up visit. list_appointments: display saved appointments. Use copy_note only for preparing questions or notes, not booking an appointment.
+        reply: answer normally or ask for missing facts. capture_symptom: user wants to record a symptom. add_medication: put one named medicine on their list. remove_medication: remove one saved medicine. list_medications: display their medicine list. check_interactions: compare medicines for interactions. log_reading: user supplies a numeric heart rate, blood pressure, or temperature to record. list_readings: display measurements already saved, not add or import any. import_readings: synchronize Apple Health. export_data: export the records. copy_note: prepare notes for a doctor's appointment. clear_data: delete ALL records after confirmation. create_reminder: set a new reminder. list_reminders: display reminders already saved, not create one. schedule_medication: save an explicitly stated frequency or clock times for a saved medicine; frequency alone does not create clock reminders. log_dose: mark a saved medicine taken or skipped. search_timeline: find a record in health history. scan_medication: open a camera or photo to read a medicine label. save_question: save a question to ask a doctor.
         A health question is not a request to record a symptom. Do not invent missing measurements, medicines, doses, or times. Do not select writes for quoted, hypothetical, or third-person reports. A missing fact needs reply. Record changes open review screens; the user confirms them.
         Examples of intent (not the current request):
         "Tell me about your day" -> {"tool":"reply","arg":""}
@@ -76,6 +79,8 @@ public enum ToolPlanner {
         "Prepare notes for my next doctor visit" -> {"tool":"copy_note","arg":""}
         "What reminders have I set?" -> {"tool":"list_reminders","arg":""}
         "I swallowed my scheduled aspirin" -> {"tool":"log_dose","arg":""}
+        "Add my dentist appointment next Tuesday at 2 pm" -> {"tool":"create_appointment","arg":""}
+        "Show my appointments" -> {"tool":"list_appointments","arg":""}
         Saved records (a limited snapshot, not a complete history): \(escaped(context))
         Optional topic (not an action): \(escaped(json(hint ?? "none")))
         <|im_end|>
@@ -91,7 +96,7 @@ public enum ToolPlanner {
             let medicines = records.medicines.prefix(12).map(\.name).joined(separator: ", ")
             let symptoms = records.symptoms.prefix(4).map { String($0.text.prefix(150)) }.joined(separator: "; ")
             let readings = records.readings.prefix(6).map { $0.kind.rawValue + " " + $0.value + " " + $0.kind.unit }.joined(separator: "; ")
-            return "Saved medicines: " + medicines + "\nSaved symptoms: " + symptoms + "\nRecent readings: " + readings
+            return "Saved medications: " + medicines + "\nSaved symptoms: " + symptoms + "\nRecent readings: " + readings
         } ?? ""
         let past = history.suffix(6).map { turn in
             "<|im_start|>" + (turn.isUser ? "user" : "assistant") + "\n" + escaped(String(turn.text.prefix(500))) + "\n<|im_end|>\n"
@@ -139,6 +144,10 @@ public enum ToolPlanner {
         if [.addMedicine, .removeMedicine, .scheduleMedicine, .logDose, .clearData].contains(decision.tool),
            matches(input, "\\b(?:ne|n')\\s*.{0,60}\\b(?:pas|jamais|plus)\\b|\\b(?:pas|jamais|sans|si|puis-je|dois-je|devrais-je|faudrait-il|pourrais-je|peut-etre|do not|don't|never|without|should i|could i|can i|what if)\\b") { throw PlannerError.forbidden }
         switch decision.tool {
+        case .createAppointment:
+            guard AppointmentRules.isAppointment(original) else { throw PlannerError.forbidden }
+            return .appointment(original)
+        case .listAppointments: return .appointments
         case .reply:
             let answer = decision.arg.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !answer.isEmpty else { throw PlannerError.emptyReply }
@@ -147,8 +156,18 @@ public enum ToolPlanner {
             return .reply(answer)
         case .captureSymptom: return .symptom(original)
         case .addMedicine:
-            let meds = Catalog.mentioned(in: original)
-            guard meds.count == 1 else { throw PlannerError.missingMedicine }; return .add(meds[0])
+            let meds = Catalog.mentioned(in: original, saved: records.medicines)
+            guard meds.count == 1 else { throw PlannerError.missingMedicine }
+            let times = CareRules.times(in: original)
+            let frequency = CareRules.frequency(in: original) ?? (times.isEmpty ? nil : MedicationFrequency(count: times.count, period: .day))
+            var medication = meds[0]
+            for name in Catalog.names(for: medication) {
+                guard let range = original.range(of: "\\b" + NSRegularExpression.escapedPattern(for: name) + "\\b", options: [.regularExpression, .caseInsensitive]) else { continue }
+                let instructions = original[range.upperBound...].trimmingCharacters(in: .whitespacesAndNewlines)
+                if instructions.count <= 180, instructions.range(of: "^[,:-]?\\s*[0-9]+(?:[.,][0-9]+)?\\s*(?:mg|mcg|g|ml|units?|tablets?|capsules?)\\b", options: [.regularExpression, .caseInsensitive]) != nil { medication.instructions = instructions }
+                break
+            }
+            return .add(medication, times, frequency)
         case .removeMedicine:
             let meds = Catalog.mentioned(in: original, saved: records.medicines).filter { candidate in records.medicines.contains { $0.id == candidate.id } }
             guard meds.count == 1 else { throw PlannerError.missingMedicine }; return .remove(meds[0])
@@ -177,7 +196,12 @@ public enum ToolPlanner {
             let meds = Catalog.mentioned(in: original, saved: records.medicines).filter { m in records.medicines.contains { $0.id == m.id } }
             guard meds.count == 1 else { throw CareError.missingMedicine }
             let medicine = records.medicines.first { $0.id == meds[0].id }!
-            if decision.tool == .scheduleMedicine { return .schedule(medicine, CareRules.times(in: original)) }
+            if decision.tool == .scheduleMedicine {
+                let times = CareRules.times(in: original)
+                let frequency = CareRules.frequency(in: original) ?? (times.isEmpty ? nil : MedicationFrequency(count: times.count, period: .day))
+                guard !times.isEmpty || frequency != nil else { throw CareError.invalid }
+                return .schedule(medicine, times, frequency)
+            }
             let input = InputLanguage.folded(original)
             guard !matches(input, "\\b(pas|jamais|sans|peut-etre|pourrais|devrais|hier|autrefois|auparavant|ma mere|mon pere|ma soeur|mon frere|mon mari|ma femme|elle|elles|il|ils)\\b|\\bsi\\s") else { throw CareError.invalid }
             let taken = matches(input, "\\b(taken|took|pris|prise)\\b"), skipped = matches(input, "\\b(skipped|skip|saute|sautee|omettre|omis|omise)\\b"), later = matches(input, "remind later|snooze|rappelle(?:r)? plus tard|reporter")

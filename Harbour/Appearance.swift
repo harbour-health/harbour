@@ -44,10 +44,10 @@ struct AppearanceView: View {
                         Spacer()
                         if appearance == choice.rawValue { Image(systemName: "checkmark").font(.headline) }
                     }.foregroundStyle(Palette.ink).padding(.vertical, 12).contentShape(Rectangle())
-                }.accessibilityIdentifier("appearance-" + choice.rawValue.lowercased())
+                }.buttonStyle(.plain).accessibilityIdentifier("appearance-" + choice.rawValue.lowercased())
                     .accessibilityAddTraits(appearance == choice.rawValue ? .isSelected : [])
                     .listRowBackground(Palette.surface)
-            }
+            }.id(appearance)
         }.scrollContentBackground(.hidden).background(Palette.canvas)
             .drawerHeight(350).navigationTitle("Appearance").navigationBarTitleDisplayMode(.inline)
     }

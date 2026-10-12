@@ -20,8 +20,20 @@ import HarbourRuntime
             fflush(stdout)
         }
         print("\(passed)/\(cases.count) model routing cases passed")
+        var transcriptPassed = 0
+        for fixture in Evaluation.visitSummaryCases {
+            let start = Date()
+            do {
+                let output = try await runtime.generate(file: file, prompt: VisitReview.prompt(fixture.transcript, medicines: Evaluation.records.medicines), maxTokens: 650)
+                let success = fixture.matches(output)
+                if success { transcriptPassed += 1 }
+                print("\(success ? "PASS" : "FAIL") transcript: \(fixture.name) | \(String(format: "%.2f", Date().timeIntervalSince(start)))s | \(output)")
+            } catch { print("FAIL transcript: \(fixture.name) | \(error)") }
+            fflush(stdout)
+        }
+        print("\(transcriptPassed)/\(Evaluation.visitSummaryCases.count) transcript cases passed")
         fflush(stdout)
         await runtime.unload()
-        if passed != cases.count { exit(1) }
+        if passed != cases.count || transcriptPassed != Evaluation.visitSummaryCases.count { exit(1) }
     }
 }

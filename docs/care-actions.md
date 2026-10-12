@@ -34,7 +34,7 @@ Export now uses a version 2 `CareBackup` with records, care data, and visit text
 
 ## Configuration
 
-At most eight daily times per medicine; duplicate/out-of-range times are rejected. New reminder drafts start one hour in the future; the user must review their actual date. Past historical reminders remain valid. Reminder titles are limited to 500 characters and appointment questions to 1,000. The timeline displays the newest 300 matching entries; chat returns the newest 20. The current device calendar and time zone determine daily dose slots. Spring daylight-saving gaps move a nonexistent time forward; repeated autumn times produce one slot.
+At most eight explicit daily clock times per medicine; duplicate/out-of-range times are rejected. A structured frequency can record a count per day, week, or month. Frequency without explicit clock times creates no dose slots or timed notifications. The editor checks that explicit daily times agree with a saved daily frequency. New reminder drafts start one hour in the future; the user must review their actual date. Past historical reminders remain valid. Reminder titles are limited to 500 characters and appointment questions to 1,000. The timeline displays the newest 300 matching entries; chat returns the newest 20. The current device calendar and time zone determine daily dose slots. Spring daylight-saving gaps move a nonexistent time forward; repeated autumn times produce one slot.
 
 ## Dependencies
 

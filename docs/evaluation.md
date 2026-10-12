@@ -1,5 +1,15 @@
 # Evaluation
 
+## Medication and appointment checks
+
+The current suite adds transcript-to-record cases for twice daily, numeric daily counts, weekly/monthly frequency, multiple explicit clock times, appointment details, Canadian French appointments, and negated changes. `Evaluation.visitSummaryCases` supplies expected JSON and structured facts. Core tests run those fixed outputs on every push/PR; these are parser and validation regressions, not measurements of model accuracy or speech-recognition accuracy.
+
+The in-app Evaluation screen, simulator evaluation mode, and `model-probe` also run these transcripts through the actual local model. Reports/logs retain raw output and failures. Scoring checks proposal counts, exact instructions, grounded quotes, frequency, and explicit times. Raw invented medication proposals count as failures even when the validator rejects them. Appointment recall is checked against the raw model array so the source-sentence fallback cannot hide a missed extraction.
+
+`.github/workflows/ci.yml` runs Core/Runtime tests, localization checks, hosted persistence/service tests, and selected simulator workflows on pushes and pull requests. It caches the pinned native framework and uploads the xcresult. A manual workflow dispatch with `run_model_evals` downloads hash-verified Small and Balanced weights and runs both probes, retaining both logs even if one model fails. The ordinary CI path does not download model weights or exercise real speech recognition.
+
+No new real-model results have been measured on the Windows development host. Review remains enabled: chat medication drafts use a compact summary with Save, Cancel, and Edit details; visit medication changes and appointment dates still need confirmation. Passing fixed fixtures alone is insufficient evidence for automatic saves.
+
 ## What it is
 
 Reproducible native checks for the fixed health harness, validated tool calls, saved records, SwiftUI flows, and real on-device-runtime inference. This is an engineering feasibility suite; it does not establish clinical benefit or complete symptom/interaction coverage.

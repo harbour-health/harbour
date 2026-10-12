@@ -13,7 +13,37 @@ final class VisitTests: XCTestCase {
         let changed = try VisitReview.applying([visit.summary!.medicines[0].id], from: visit, to: [])
         XCTAssertEqual(changed[0].instructions, "500 mg twice daily")
         XCTAssertEqual(changed[0].ingredients, ["metformin"])
+        XCTAssertEqual(visit.summary?.medicines[0].frequency, MedicationFrequency(count: 2, period: .day))
+        XCTAssertEqual(visit.summary?.medicines[0].times, [])
         XCTAssertThrowsError(try VisitReview.applying([], from: visit, to: []))
+    }
+    func testVisitFrequencyAndExplicitTimesStayStructured() throws {
+        let weekly = "Start metformin 500 mg 2 times per week."
+        let weeklyOutput = #"{"highlights":[],"medicines":[{"action":"start","name":"metformin","instructions":"500 mg 2 times per week","quote":"Start metformin 500 mg 2 times per week."}],"followUps":[]}"#
+        let weeklyChange = try XCTUnwrap(VisitReview.parse(weeklyOutput, transcript: weekly, medicines: []).medicines.first)
+        XCTAssertEqual(weeklyChange.frequency, MedicationFrequency(count: 2, period: .week))
+        XCTAssertTrue(weeklyChange.times.isEmpty)
+
+        let timed = "Start metformin 500 mg at 8 am and 8 pm."
+        let timedOutput = #"{"highlights":[],"medicines":[{"action":"start","name":"metformin","instructions":"500 mg at 8 am and 8 pm","quote":"Start metformin 500 mg at 8 am and 8 pm."}],"followUps":[]}"#
+        let timedChange = try XCTUnwrap(VisitReview.parse(timedOutput, transcript: timed, medicines: []).medicines.first)
+        XCTAssertEqual(timedChange.frequency, MedicationFrequency(count: 2, period: .day))
+        XCTAssertEqual(timedChange.times, [DoseTime(hour: 8, minute: 0), DoseTime(hour: 20, minute: 0)])
+
+        let conflict = "Start metformin 500 mg twice weekly at 8 am and 8 pm."
+        let conflictOutput = #"{"highlights":[],"medicines":[{"action":"start","name":"metformin","instructions":"500 mg twice weekly at 8 am and 8 pm","quote":"Start metformin 500 mg twice weekly at 8 am and 8 pm."}],"followUps":[]}"#
+        XCTAssertTrue(try VisitReview.parse(conflictOutput, transcript: conflict, medicines: []).medicines.isEmpty)
+    }
+    func testVisitSummaryEvaluationFixturesMatchExpectedOutputs() {
+        for fixture in Evaluation.visitSummaryCases {
+            XCTAssertTrue(fixture.matches(fixture.expectedJSON), fixture.name)
+        }
+    }
+    func testLegacyVisitMedicineChangeDecodesWithoutScheduleFields() throws {
+        let json = #"{"id":"00000000-0000-0000-0000-000000000001","action":"start","medicine":{"id":"metformin","name":"Metformin","ingredients":["metformin"],"instructions":"500 mg twice daily"},"quote":"Start metformin 500 mg twice daily."}"#
+        let change = try JSONDecoder().decode(VisitMedicineChange.self, from: Data(json.utf8))
+        XCTAssertNil(change.frequency)
+        XCTAssertTrue(change.times.isEmpty)
     }
     func testInventedDoseQuoteAndMedicineAreRejected() throws {
         for modified in [output.replacingOccurrences(of: "500 mg twice daily\",\"quote", with: "900 mg\",\"quote"), output.replacingOccurrences(of: "metformin", with: "imaginarypill"), output.replacingOccurrences(of: "Start metformin 500 mg twice daily.", with: "Stop warfarin.")] {
@@ -43,7 +73,7 @@ final class VisitTests: XCTestCase {
     func testTranscriptEditsInvalidateMutation() throws {
         var visit = DoctorVisit(transcript: source)
         visit.summary = try VisitReview.parse(output, transcript: source, medicines: []); visit.medicineBaseline = []
-        visit.transcript = "Do not change medicines."
+        visit.transcript = "Do not change medications."
         XCTAssertThrowsError(try VisitReview.applying([visit.summary!.medicines[0].id], from: visit, to: []))
     }
     func testModelOmittedFollowUpIsPreservedFromSource() throws {

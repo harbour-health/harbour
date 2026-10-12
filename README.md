@@ -47,7 +47,7 @@ English and Canadian French follow the iOS app language setting. French includes
 
 - **Today:** recent readings, upcoming reminders and doses, refill dates, and searchable health history.
 - **Chat:** typed or spoken messages; optional topic hints; model and effort controls beside the microphone; model-written replies with recent conversation context, model-selected tool calls, and locally generated conversation titles.
-- **Records:** a large category browser leading to dedicated symptom, medicine, and reading lists, with native entry sheets and swipe deletion.
+- **Records:** dedicated symptom, medication, reading, and appointment lists, with shared entry sheets and swipe deletion. Medication schedules support explicit clock times or a count per day, week, or month.
 - **Visits:** a large recorder with pause/resume, saved audio, direct note entry, editable transcripts, source-quoted notes and follow-up, confirmed medicine changes, and appointment preparation with saved questions.
 - **Settings:** appearance, optional Face ID or app PIN lock, model downloads, voice choice and preview, Apple Health import, record import/export, reset, and evaluation.
 
@@ -67,6 +67,8 @@ xcodebuild -project Harbour.xcodeproj -scheme Harbour \
 `testLocalModelChat` downloads Qwen Small if missing; budget network access and roughly 500 MB of free space. Other UI tests exercise manual entry, persisted records, draft preservation, and model controls. See [chat agent](docs/chat-agent.md) for conversation/tool handling and [evaluation](docs/evaluation.md) for measured model results and limits.
 
 The Xcode project is checked in. If adding source files, regenerate with `python3 scripts/generate-project.py`; this resets generated project settings, so change the generator for persistent configuration changes.
+
+GitHub CI runs deterministic evals, localization checks, hosted tests, and simulator smoke tests on every push and PR. Manual workflow dispatch can also run real Small/Balanced model evals. See [appointments](docs/appointments.md) and [evaluation](docs/evaluation.md) for the new workflows and coverage limits.
 
 ## Documentation
 

@@ -22,6 +22,16 @@ struct EvaluationReport: Codable {
     var complete = false
 }
 @MainActor enum SimulatorEvaluation {
+    static func evaluateVisit(_ fixture: VisitSummaryEvaluationCase, models: ModelManager) async -> ModelRun {
+        let start = Date(); var output = ""
+        do {
+            output = try await models.generate(VisitReview.prompt(fixture.transcript, medicines: Evaluation.records.medicines), maxTokens: 650)
+            let passed = fixture.matches(output)
+            return ModelRun(model: models.resolved.rawValue, effort: models.effort.rawValue, input: fixture.transcript, expected: fixture.expectedJSON, observed: passed ? "Matched transcript facts" : "Transcript mismatch", rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: passed)
+        } catch {
+            return ModelRun(model: models.resolved.rawValue, effort: models.effort.rawValue, input: fixture.transcript, expected: fixture.expectedJSON, observed: error.localizedDescription, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: false)
+        }
+    }
     static func run(models: ModelManager, store: AppStore) async {
         let previousModel = models.selection
         models.selection = ProcessInfo.processInfo.arguments.contains("--evaluate-balanced") ? .balanced : .small
@@ -50,6 +60,10 @@ struct EvaluationReport: Codable {
             } catch { report.runs.append(ModelRun(model: models.resolved.rawValue, effort: models.effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: error.localizedDescription, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: false)) }
             checkpoint()
         }
+        for fixture in Evaluation.visitSummaryCases {
+            if Task.isCancelled { return }
+            report.runs.append(await evaluateVisit(fixture, models: models)); checkpoint()
+        }
         }
         report.complete = true; checkpoint()
     }
@@ -72,7 +86,7 @@ struct EvaluationView: View {
                 Button(L10n.string(busy ? "Stop evaluation" : "Evaluate selected model")) { if busy { task?.cancel() } else { run() } }
                 if busy { ProgressView(models.downloading == nil ? L10n.string("Running fictional cases") : models.status) }
                 if !report.runs.isEmpty { LabeledContent("Passed", value: "\(report.runs.filter(\.passed).count)/\(report.runs.count)") }
-            } header: { Text("Local model") } footer: { Text(L10n.format("%d fictional prompts per effort setting. Results include model routing and latency; they do not measure clinical validity.", Evaluation.routingCases.count)) }
+            } header: { Text("Local model") } footer: { Text(L10n.format("%d fictional prompts per effort setting. Results include model routing and latency; they do not measure clinical validity.", Evaluation.routingCases.count + Evaluation.visitSummaryCases.count)) }
             ForEach(report.runs) { result in
                 VStack(alignment: .leading, spacing: 8) { Label(L10n.string(result.input), systemImage: result.passed ? "checkmark.circle" : "xmark.circle"); Text(L10n.format("%@ · %.2f seconds · %@", L10n.string(result.effort), result.elapsedSeconds, L10n.string(result.observed))).font(.caption).foregroundStyle(.secondary) }
             }
@@ -81,6 +95,7 @@ struct EvaluationView: View {
         .onDisappear { task?.cancel() }
     }
     private func checkTitle(_ check: CheckResult) -> String {
+        if check.name.hasPrefix("Transcript fixture: ") { return L10n.format("Transcript fixture: %@", L10n.string(String(check.name.dropFirst("Transcript fixture: ".count)))) }
         for sign in EmergencySign.allCases where check.name == "Emergency sign: " + sign.rawValue {
             return L10n.format("Emergency sign: %@", L10n.string(sign.rawValue))
         }
@@ -104,6 +119,11 @@ struct EvaluationView: View {
                         _ = try ToolPlanner.validate(decision, original: fixture.input, records: Evaluation.records)
                         report.runs.append(ModelRun(model: selectedModel.rawValue, effort: effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: decision.tool.rawValue, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: decision.tool == fixture.tool))
                     } catch { if Task.isCancelled { return }; report.runs.append(ModelRun(model: selectedModel.rawValue, effort: effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: error.localizedDescription, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: false)) }
+                }
+                for fixture in Evaluation.visitSummaryCases {
+                    if Task.isCancelled { return }
+                    let result = await SimulatorEvaluation.evaluateVisit(fixture, models: models)
+                    if Task.isCancelled { return }; report.runs.append(result)
                 }
             }
             report.complete = true

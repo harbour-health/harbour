@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      run_model_evals:
+        description: Run real Small and Balanced model routing and transcript evals
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-tests:
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: xcodebuild -version
+
+      - name: Cache simulator runtime framework
+        id: runtime-cache
+        uses: actions/cache@v4
+        with:
+          path: HarbourRuntime/Vendor/llama.xcframework
+          key: ${{ runner.os }}-llama-b10549-${{ hashFiles('scripts/prepare-runtime.sh', 'HarbourRuntime/Package.swift') }}
+
+      - name: Prepare simulator runtime framework
+        if: steps.runtime-cache.outputs.cache-hit != 'true'
+        run: |
+          brew install cmake
+          bash scripts/prepare-runtime.sh
+
+      - name: Test Core rules and evaluation cases
+        run: swift test --package-path HarbourCore
+
+      - name: Audit localization
+        run: python3 scripts/audit-localization.py
+
+      - name: Test deterministic runtime parsing
+        run: swift test --package-path HarbourRuntime
+
+      - name: Run native iOS smoke and visual regression tests
+        run: |
+          mkdir -p build
+          device_id="$(xcrun simctl list devices available --json | python3 -c 'import json,sys; devices=json.load(sys.stdin)["devices"]; print(next(d["udid"] for runtime, entries in devices.items() if "iOS" in runtime for d in entries if d["name"].startswith("iPhone")))')"
+          xcodebuild test \
+            -project Harbour.xcodeproj \
+            -scheme Harbour \
+            -destination "platform=iOS Simulator,id=$device_id" \
+            -derivedDataPath build/DerivedData \
+            -resultBundlePath build/Harbour-CI.xcresult \
+            -parallel-testing-enabled NO \
+            -only-testing:HarbourTests \
+            -skip-testing:HarbourTests/HarbourCareServiceTests/testNativeVoiceActuallyCompletesShortUtterance \
+            -only-testing:HarbourUITests/AppearanceAndLockVisualTests \
+            -only-testing:HarbourUITests/HarbourAppointmentUITests \
+            -only-testing:HarbourUITests/HarbourUITests/testMedicineConfirmationAndExport \
+            -only-testing:HarbourUITests/HarbourUITests/testRecordsAndPersistence \
+            -only-testing:HarbourUITests/HarbourUITests/testChatHintPreservesDraftAndModelSelector \
+            -only-testing:HarbourUITests/HarbourAppearanceTests/testScreensAndAppearancePersistence \
+            -only-testing:HarbourUITests/HarbourNavigationTests/testDashboardNavigationAndSystemAppearance \
+            -only-testing:HarbourUITests/HarbourVisitTests/testMedicineReviewDrawerScreens \
+            -only-testing:HarbourUITests/HarbourStreamlineTests/testMainActionsDraftRetentionAndVisitCreation \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+
+      - name: Run real model evaluations
+        if: github.event_name == 'workflow_dispatch' && inputs.run_model_evals
+        run: |
+          set -euo pipefail
+          mkdir -p build/models
+          curl --fail --location --retry 2 'https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/9217f5db79a29953eb74d5343926648285ec7e67/qwen2.5-0.5b-instruct-q4_k_m.gguf' -o build/models/small.gguf
+          curl --fail --location --retry 2 'https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/91cad51170dc346986eccefdc2dd33a9da36ead9/qwen2.5-1.5b-instruct-q4_k_m.gguf' -o build/models/balanced.gguf
+          echo '74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db  build/models/small.gguf' | shasum -a 256 -c -
+          echo '6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e  build/models/balanced.gguf' | shasum -a 256 -c -
+          status=0
+          swift run --package-path HarbourRuntime model-probe "$PWD/build/models/small.gguf" 2>&1 | tee build/model-small.log || status=1
+          swift run --package-path HarbourRuntime model-probe "$PWD/build/models/balanced.gguf" 2>&1 | tee build/model-balanced.log || status=1
+          exit "$status"
+
+      - name: Upload simulator test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: harbour-ci-results
+          path: |
+            build/Harbour-CI.xcresult
+            build/model-*.log
+          if-no-files-found: ignore

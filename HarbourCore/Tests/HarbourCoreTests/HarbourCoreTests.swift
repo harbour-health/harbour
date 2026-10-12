@@ -32,7 +32,7 @@ final class HarbourCoreTests: XCTestCase {
     }
     func testMedicineCannotBeInvented() throws {
         let action = try ToolPlanner.validate(.init(tool: .addMedicine, arg: "warfarin"), original: "Add metformin", records: Records())
-        guard case .add(let medicine) = action else { return XCTFail("Expected medicine") }
+        guard case .add(let medicine, _, _) = action else { return XCTFail("Expected medicine") }
         XCTAssertEqual(medicine.id, "metformin")
     }
     func testAmbiguousMedicineAddRequiresClarification() {
@@ -64,7 +64,7 @@ final class HarbourCoreTests: XCTestCase {
         for output in ["{\"tool\":\"execute\",\"arg\":\"rm\"}", "{\"tool\":\"reply\",\"arg\":73}", "{}", "null", "{\"tool\":\"diagnose\"}"] { XCTAssertThrowsError(try ToolPlanner.parse(output)) }
     }
     func testHintDoesNotRestrictOrExecuteTool() {
-        let prompt = ToolPlanner.prompt("My knee is sore", hint: "Medicines")
+        let prompt = ToolPlanner.prompt("My knee is sore", hint: "Medications")
         for tool in Tool.allCases { XCTAssertTrue(prompt.contains(tool.rawValue), tool.rawValue) }
         XCTAssertEqual(ToolPlanner.availableTools, Tool.allCases)
     }

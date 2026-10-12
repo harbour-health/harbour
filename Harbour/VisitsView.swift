@@ -147,6 +147,7 @@ struct VisitDetailView: View {
     @State private var tab = 0
     @State private var editing = false
     @State private var reviewing = false
+    @State private var appointmentDraft: Appointment?
     @State private var deleting = false
     @State private var task: Task<Void, Never>?
     @State private var busy = false
@@ -184,21 +185,39 @@ struct VisitDetailView: View {
                         if !summary.highlights.isEmpty { quotes(summary.highlights, title: "Notes", symbol: "note.text") }
                         if !summary.medicines.isEmpty {
                             VStack(alignment: .leading, spacing: 18) {
-                                Label("Medicines", systemImage: "pills").font(.title2.weight(.semibold)).foregroundStyle(Palette.blue)
+                                Label("Medications", systemImage: "pills").font(.title2.weight(.semibold)).foregroundStyle(Palette.blue)
                                 ForEach(summary.medicines) { change in
                                     VStack(alignment: .leading, spacing: 8) {
                                         Text(L10n.format("%@ %@", L10n.string(change.action.rawValue.capitalized), L10n.medicineName(change.medicine))).font(.title3.weight(.semibold))
                                         if !change.medicine.instructions.isEmpty { Text(change.medicine.instructions).font(.body) }
+                                        if let frequency = change.frequency { Text(L10n.frequency(frequency)).font(.body.weight(.medium)) }
+                                        if !change.times.isEmpty { Text(L10n.doseTimes(change.times)).font(.body).foregroundStyle(Palette.muted) }
                                         Text("“" + change.quote + "”").font(.body).foregroundStyle(Palette.muted)
                                     }
                                     Divider()
                                 }
                                 if visit.appliedChanges.isEmpty {
                                     Button { reviewing = true } label: { Label("Review medicine changes", systemImage: "checkmark.circle") }.buttonStyle(ActionButtonStyle()).disabled(recorder.active || busy).accessibilityIdentifier("reviewVisitMedicines")
-                                } else { Label("Medicine changes saved", systemImage: "checkmark.circle.fill").font(.body.weight(.medium)).foregroundStyle(Palette.blue) }
+                                } else { Label("Medication changes saved", systemImage: "checkmark.circle.fill").font(.body.weight(.medium)).foregroundStyle(Palette.blue) }
                             }
                         }
                         if !summary.followUps.isEmpty { quotes(summary.followUps, title: "Follow-up", symbol: "calendar") }
+                        if let appointments = summary.appointments, !appointments.isEmpty {
+                            VStack(alignment: .leading, spacing: 16) {
+                                Label("Appointments", systemImage: "calendar").font(.title2.weight(.semibold)).foregroundStyle(Palette.blue)
+                                ForEach(appointments) { item in
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text(item.quote).font(.body)
+                                        if store.records.appointments.contains(where: { $0.visitID == visit.id && $0.quote == item.quote }) {
+                                            Label("Appointment saved", systemImage: "checkmark.circle.fill").foregroundStyle(Palette.blue)
+                                        } else {
+                                            Button("Add appointment", systemImage: "calendar.badge.plus") { appointmentDraft = AppointmentRules.draft(from: item.quote, visitID: visit.id, now: visit.date) }
+                                                .disabled(recorder.active || busy).accessibilityIdentifier("addVisitAppointment")
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         if summary.highlights.isEmpty && summary.followUps.isEmpty && summary.medicines.isEmpty { Text("No details extracted. Review the transcript.").font(.title3) }
                     } else {
                         VStack(alignment: .leading, spacing: 20) {
@@ -225,6 +244,7 @@ struct VisitDetailView: View {
             }
             .sheet(isPresented: $editing) { if let visit { NavigationStack { VisitTranscriptEditor(visit: visit) }.floatingDrawer(height: 520) } }
             .sheet(isPresented: $reviewing) { NavigationStack { VisitMedicineReview(id: id) }.floatingDrawer(height: 520) }
+            .sheet(item: $appointmentDraft) { draft in NavigationStack { AppointmentEditor(initial: draft) }.floatingDrawer(height: 620) }
             .confirmationDialog("Delete this visit and its recording?", isPresented: $deleting, titleVisibility: .visible) { Button("Delete visit", role: .destructive) { if let visit { store.deleteVisit(visit) }; dismiss() } }
             .alert("Visit", isPresented: Binding(get: { error != nil || playback.error != nil }, set: { if !$0 { error = nil; playback.error = nil } })) { Button("OK") { error = nil; playback.error = nil } } message: { Text(error ?? playback.error ?? "") }
             .task {
@@ -323,6 +343,8 @@ struct VisitMedicineReview: View {
                             VStack(alignment: .leading, spacing: 10) {
                                 Text(L10n.format("%@ %@", L10n.string(change.action.rawValue.capitalized), L10n.medicineName(change.medicine))).font(.title3.weight(.semibold))
                                 if !change.medicine.instructions.isEmpty { Text(change.medicine.instructions).font(.body) }
+                                if let frequency = change.frequency { Text(L10n.frequency(frequency)).font(.body.weight(.medium)) }
+                                if !change.times.isEmpty { Text(L10n.doseTimes(change.times)).font(.body).foregroundStyle(Palette.muted) }
                                 Text("“" + change.quote + "”").font(.body).foregroundStyle(Palette.muted)
                             }.frame(maxWidth: .infinity, alignment: .leading)
                             SelectionIndicator(selected: selected.contains(change.id))
@@ -338,7 +360,7 @@ struct VisitMedicineReview: View {
                     }.foregroundStyle(acknowledged ? Palette.blue : Palette.ink).padding(18).background(Palette.surface, in: RoundedRectangle(cornerRadius: 22))
                 }.buttonStyle(.plain).accessibilityIdentifier("confirmVisitMedicines").accessibilityAddTraits(acknowledged ? .isSelected : [])
             }.padding(24).measuredDrawerHeight()
-        }.background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle("Medicine changes").navigationBarTitleDisplayMode(.inline)
+        }.background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle("Medication changes").navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) { Button("Save") { if store.applyVisitChanges(id: id, selected: selected) { dismiss() } }.disabled(selected.isEmpty || !acknowledged || visit?.appliedChanges.isEmpty != true).accessibilityIdentifier("saveVisitMedicines") }

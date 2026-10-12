@@ -45,10 +45,13 @@ for filename, filetype in [('Info.plist', 'text.plist.xml'), ('Harbour.entitleme
     source_refs.append(add(filename, f'isa = PBXFileReference; lastKnownFileType = {filetype}; path = {filename}; sourceTree = "<group>";'))
 app = add('AppProduct', 'isa = PBXFileReference; explicitFileType = wrapper.application; path = Harbour.app; sourceTree = BUILT_PRODUCTS_DIR;')
 test_product = add('TestProduct', 'isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = HarbourUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR;')
-test_ref = add('UITestSource', 'isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarbourUITests.swift; sourceTree = "<group>";')
-test_build = add('UITestBuild', f'isa = PBXBuildFile; fileRef = {test_ref};')
+test_refs, test_builds = [], []
+for path in sorted((root / 'HarbourUITests').glob('*.swift')):
+    ref = add('UITestSource-' + path.name, f'isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "{path.name}"; sourceTree = "<group>";')
+    test_refs.append(ref)
+    test_builds.append(add('UITestBuild-' + path.name, f'isa = PBXBuildFile; fileRef = {ref};'))
 source_group = add('Sources', f'isa = PBXGroup; children = {refs(source_refs)}; path = Harbour; sourceTree = "<group>";')
-test_group = add('TestGroup', f'isa = PBXGroup; children = {refs([test_ref])}; path = HarbourUITests; sourceTree = "<group>";')
+test_group = add('TestGroup', f'isa = PBXGroup; children = {refs(test_refs)}; path = HarbourUITests; sourceTree = "<group>";')
 products = add('Products', f'isa = PBXGroup; children = {refs([app, test_product])}; name = Products; sourceTree = "<group>";')
 group = add('RootGroup', f'isa = PBXGroup; children = {refs([source_group, test_group, products])}; sourceTree = "<group>";')
 packages, product_deps, package_builds = [], [], []
@@ -61,7 +64,7 @@ for name in ['HarbourCore', 'HarbourRuntime']:
 sources = add('SourcePhase', f'isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = {refs(builds)}; runOnlyForDeploymentPostprocessing = 0;')
 frameworks = add('LinkPhase', f'isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = {refs(package_builds)}; runOnlyForDeploymentPostprocessing = 0;')
 resources = add('ResourcePhase', f'isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = {refs(resource_builds)}; runOnlyForDeploymentPostprocessing = 0;')
-test_sources = add('TestSources', f'isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = {refs([test_build])}; runOnlyForDeploymentPostprocessing = 0;')
+test_sources = add('TestSources', f'isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = {refs(test_builds)}; runOnlyForDeploymentPostprocessing = 0;')
 test_frameworks = add('TestFrameworks', 'isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0;')
 
 def config_list(name, settings):

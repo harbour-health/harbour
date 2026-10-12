@@ -2,9 +2,10 @@ import SwiftUI
 import HarbourCore
 
 enum AppSheet: Identifiable {
-    case symptom(String), medicine(Medicine?), reading(Reading?), interactions([Medicine]), settings, note, reminder(CareReminder), dose(Medicine, Date, DoseStatus?), timeline(String), question(String), scanMedicine, schedule(Medicine, [DoseTime])
-    var drawerHeight: CGFloat { switch self { case .symptom: 690; case .medicine: 600; case .reading: 320; case .interactions: 420; case .settings: 640; case .note, .question: 640; case .reminder: 590; case .dose: 450; case .timeline: 720; case .scanMedicine, .schedule: 690 } }
-    var id: String { switch self { case .symptom: "symptom"; case .medicine: "medicine"; case .reading: "reading"; case .interactions: "interactions"; case .settings: "settings"; case .note: "note"; case .reminder: "reminder"; case .dose: "dose"; case .timeline: "timeline"; case .question: "question"; case .scanMedicine: "scan"; case .schedule: "schedule" } }
+    case appointment(Appointment)
+    case symptom(String), medicine(Medicine?), medicineDraft(Medicine, [DoseTime], MedicationFrequency?), reading(Reading?), interactions([Medicine]), settings, note, reminder(CareReminder), dose(Medicine, Date, DoseStatus?), timeline(String), question(String), scanMedicine, schedule(Medicine, [DoseTime], MedicationFrequency?)
+    var drawerHeight: CGFloat { switch self { case .appointment: 620; case .symptom: 690; case .medicine, .medicineDraft: 600; case .reading: 320; case .interactions: 420; case .settings: 640; case .note, .question: 640; case .reminder: 590; case .dose: 450; case .timeline: 720; case .scanMedicine, .schedule: 690 } }
+    var id: String { switch self { case .appointment: "appointment"; case .symptom: "symptom"; case .medicine: "medicine"; case .medicineDraft: "medicineDraft"; case .reading: "reading"; case .interactions: "interactions"; case .settings: "settings"; case .note: "note"; case .reminder: "reminder"; case .dose: "dose"; case .timeline: "timeline"; case .question: "question"; case .scanMedicine: "scan"; case .schedule: "schedule" } }
 }
 
 @main struct HarbourApp: App {
@@ -74,8 +75,10 @@ struct RootView: View {
         .sheet(item: $sheet) { item in
             NavigationStack {
                 switch item {
+                case .appointment(let appointment): AppointmentEditor(initial: appointment, saved: store.records.appointments.contains { $0.id == appointment.id })
                 case .symptom(let text): SymptomEditor(initial: text)
                 case .medicine(let medicine): MedicineEditor(initial: medicine)
+                case .medicineDraft(let medicine, let times, let frequency): MedicationDraftReview(medication: medicine, times: times, frequency: frequency)
                 case .reading(let reading): ReadingEditor(initial: reading)
                 case .interactions(let medicines): ScrollView { InteractionView(report: HealthRules.check(medicines)).padding(24).measuredDrawerHeight() }.navigationTitle("Interactions").navigationBarTitleDisplayMode(.inline).toolbar { closeButton }
                 case .settings: SettingsView()
@@ -85,7 +88,7 @@ struct RootView: View {
                 case .dose(let medicine, let date, let status): DoseEditor(medicine: medicine, scheduled: date, proposed: status)
                 case .timeline(let query): HealthHistoryView(initialQuery: query).toolbar { closeButton }
                 case .scanMedicine: MedicineEditor(initial: nil)
-                case .schedule(let medicine, let times): MedicineEditor(initial: medicine, suggestedTimes: times)
+                case .schedule(let medicine, let times, let frequency): MedicineEditor(initial: medicine, suggestedTimes: times, suggestedFrequency: frequency)
                 }
             }
             .background(Palette.canvas)
@@ -198,7 +201,7 @@ struct TodayView: View {
             .navigationTitle("Today").toolbar { ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) } }
     }
     @ViewBuilder private var shortcuts: some View {
-        illustratedShortcut("Medicines", detail: L10n.format("%lld recorded", Int64(store.records.medicines.count)), kind: .medicines, colour: Palette.blueWash, action: openMedicines).accessibilityIdentifier("openMedicines")
+        illustratedShortcut("Medications", detail: L10n.format("%lld recorded", Int64(store.records.medicines.count)), kind: .medicines, colour: Palette.blueWash, action: openMedicines).accessibilityIdentifier("openMedicines")
         illustratedShortcut("Symptoms", detail: L10n.format("%lld recorded", Int64(store.records.symptoms.count)), kind: .symptoms, colour: Palette.coralWash, action: openSymptoms)
             .accessibilityIdentifier("addSymptom")
     }

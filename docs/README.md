@@ -1,5 +1,7 @@
 # Developer documentation
 
+- [Appointments](appointments.md) - records, shared drafts, transcript sources, and migration.
+
 - [Architecture](architecture.md) — modules, persistence, tool execution, and change points.
 - [Chat agent](chat-agent.md) — generated conversation, model-selected tools, history, and validation.
 - [Local models](local-models.md) — runtime setup, pinned weights, downloads, and cancellation.
