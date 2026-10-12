@@ -159,4 +159,31 @@ final class WriteRequestValidationTests: XCTestCase {
             XCTAssertEqual(try ToolPlanner.validate(.init(tool: .clearData), original: original, records: records), .clear, original)
         }
     }
+
+    func testWholeArchiveDeletionAllowsSavedModifiersAroundDomainAndLocation() throws {
+        for original in [
+            "Erase all records saved in this app.", "Delete all my stored health records.",
+            "Clear every record recorded within Harbour.", "Erase all records in this app, please.",
+            "Effacez toutes mes données de santé enregistrées.",
+            "Supprimez tous les dossiers sauvegardés dans cette application.",
+            "Efface toutes mes données stockées de santé dans Harbour.",
+            "Efface tout enregistré dans l'application."
+        ] {
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .clearData), original: original, records: records), .clear, original)
+        }
+    }
+
+    func testSavedModifiersCannotAuthorizeADeletionSubset() {
+        for original in [
+            "Delete all records saved yesterday.", "Delete all records stored about my knee.",
+            "Delete all records saved in this app except medicines.",
+            "Delete all stored health records but only the readings.",
+            "Efface toutes mes données de santé enregistrées hier.",
+            "Efface tous mes dossiers sauvegardés du 3 mai.",
+            "Supprime tous les dossiers enregistrés concernant mon genou.",
+            "Efface toutes mes données stockées dans cette application sauf les médicaments."
+        ] {
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .clearData), original: original, records: records), original)
+        }
+    }
 }

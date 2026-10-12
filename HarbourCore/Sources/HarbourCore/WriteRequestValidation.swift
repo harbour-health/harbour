@@ -72,10 +72,11 @@ enum WriteRequestValidation {
             // A whole-archive target may identify this app or health-data domain,
             // but date/topic/exclusion qualifiers describe an unsupported subset.
             let remainder = String(object[target.upperBound...])
+            let stored = wholeApp == nil ? "(?:\\s+(?:saved|stored|recorded|enregistre(?:e)?s?|sauvegarde(?:e)?s?|stocke(?:e)?s?))?" : ""
             let healthDomain = "(?:\\s+de sante)?"
             let appLocation = "(?:\\s+(?:from|in|on|of|within|inside|de|dans)\\s+(?:" + app + "))?"
             let courtesy = "(?:\\s*[,.;!?]?\\s*(?:please|thanks|thank you|svp|s'il vous plait|merci))?"
-            guard match(remainder, "^" + healthDomain + appLocation + courtesy + "\\s*[.!?]*\\s*$") != nil else { return false }
+            guard match(remainder, "^" + stored + healthDomain + stored + appLocation + stored + courtesy + "\\s*[.!?]*\\s*$") != nil else { return false }
             if wholeApp == nil {
                 guard Catalog.mentioned(in: original).isEmpty,
                       match(scope, "\\b(?:reading|measurement|symptom|reminder|question|releve|mesure|symptome|rappel)\\b") == nil else { return false }

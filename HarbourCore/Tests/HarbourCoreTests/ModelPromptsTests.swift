@@ -65,11 +65,63 @@ final class ModelPromptsTests: XCTestCase {
         XCTAssertTrue(raw.contains("executes no record operation"))
         XCTAssertTrue(raw.contains("including negation"))
         XCTAssertTrue(raw.contains("separate review and confirmation"))
+        XCTAssertTrue(raw.contains("received and understood the instruction"))
+        XCTAssertTrue(raw.contains("Do not replace it with a capability, review or confirmation explanation"))
         for language in [ModelLanguage.english, .french] {
             let localized = ModelPrompts.localized(raw, language: language, purpose: .prose)
             XCTAssertTrue(localized.contains("Source directions"))
             XCTAssertTrue(localized.contains("\"totalCount\":1"))
             XCTAssertTrue(localized.contains(language == .english ? "no record operation is executed" : "aucune opération sur les dossiers n’est exécutée"))
+            XCTAssertTrue(localized.contains(language == .english ? "received and understood the instruction and the requested preservation or avoidance" : "reçu et compris la consigne, ainsi que la conservation ou l’évitement demandé"))
+        }
+    }
+
+    func testMissingMedicineNameNeedsClarificationDespiteAProvidedSavedList() throws {
+        var records = Records()
+        records.medicines = [try XCTUnwrap(Catalog.medicines.first { $0.id == "aspirin" })]
+        let savedNameJSON = String(decoding: try JSONEncoder().encode(records.medicines[0].name), as: UTF8.self)
+        let requests: [(Tool, String)] = [
+            (.addMedicine, "Put the new capsule on my list."),
+            (.removeMedicine, "Remove the capsule from my list."),
+            (.scheduleMedicine, "Set the capsule schedule at 10 am."),
+            (.logDose, "I took the capsule."),
+            (.addMedicine, "Ajoute la nouvelle capsule à ma liste.")
+        ]
+        for (tool, request) in requests {
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: tool, arg: "aspirin"), original: request, records: records), request)
+            let router = ToolPlanner.prompt(request, records: records)
+            for available in ToolPlanner.availableTools { XCTAssertTrue(router.contains(available.rawValue), request) }
+            XCTAssertTrue(router.contains("require the LAST user message to identify one medicine by name"))
+            XCTAssertTrue(router.contains("If the medicine name or another required source fact is missing, choose reply"))
+            let reply = ToolPlanner.conversationPrompt(request, records: records)
+            XCTAssertTrue(reply.contains("briefly ask for that missing fact"))
+            XCTAssertTrue(reply.contains("\"name\":" + savedNameJSON))
+            for language in [ModelLanguage.english, .french] {
+                let localizedRouter = ModelPrompts.localized(router, language: language, purpose: .routing)
+                let localizedReply = ModelPrompts.localized(reply, language: language, purpose: .prose)
+                XCTAssertTrue(localizedRouter.contains(language == .english ? "If a required fact is missing, select reply" : "Si un fait requis manque, choisis reply"))
+                XCTAssertTrue(localizedReply.contains(language == .english ? "ask for it briefly" : "demande ce fait brièvement"))
+                XCTAssertTrue(localizedReply.contains(request))
+                XCTAssertTrue(localizedReply.contains("\"name\":" + savedNameJSON))
+            }
+        }
+    }
+
+    func testGeneralFactualRepliesRequestOnlyNecessaryCausalExplanation() {
+        let requests: [(ModelLanguage, String)] = [
+            (.english, "How does a zipper work?"),
+            (.french, "Pourquoi le sucre se dissout-il dans l'eau ?")
+        ]
+        for (language, request) in requests {
+            let raw = ToolPlanner.conversationPrompt(request, records: Records())
+            let localized = ModelPrompts.localized(raw, language: language, purpose: .prose)
+            XCTAssertTrue(raw.contains("name the main causal process and explain how it produces the result, then stop"))
+            XCTAssertTrue(localized.contains(language == .english ? "one or two short sentences" : "une ou deux phrases courtes"))
+            XCTAssertTrue(localized.contains(language == .english ? "rather than inventing it" : "plutôt que de l’inventer"))
+            XCTAssertTrue(localized.contains(request))
+            XCTAssertTrue(localized.contains("\"totalCount\":0"))
+            XCTAssertFalse(localized.contains("1–3 short sentences"))
+            XCTAssertFalse(localized.contains("1 à 3 phrases courtes"))
         }
     }
 
