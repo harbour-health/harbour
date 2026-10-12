@@ -16,7 +16,9 @@ import XCTest
         let save = app.buttons["saveAppointment"]
         XCTAssertFalse(save.isEnabled)
         app.buttons["Done"].tap()
-        app.switches["confirmAppointmentDate"].tap()
+        let confirmation = app.switches["confirmAppointmentDate"]
+        confirmation.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
+        XCTAssertEqual(confirmation.value as? String, "1")
         let capture = XCTAttachment(screenshot: app.screenshot()); capture.name = "Appointment draft"; capture.lifetime = .keepAlways; add(capture)
         XCTAssertTrue(save.isEnabled); save.tap()
         XCTAssertTrue(app.staticTexts["Fictional clinic appointment"].waitForExistence(timeout: 5))
@@ -35,13 +37,13 @@ import XCTest
             let approve = app.buttons["approveMedication"]
             XCTAssertTrue(approve.waitForExistence(timeout: 5)); XCTAssertTrue(approve.isEnabled)
             XCTAssertTrue(app.staticTexts["500 mg 2 times daily"].exists)
-            XCTAssertTrue(app.staticTexts["2 per day"].exists)
+            XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "2 per day")).firstMatch.exists)
             let capture = XCTAttachment(screenshot: app.screenshot()); capture.name = "Medication approval " + appearance; capture.lifetime = .keepAlways; add(capture)
             approve.tap()
             let frequency = app.buttons["frequency-metformin"]
             for _ in 0..<5 { if frequency.isHittable { break }; app.swipeUp() }
             XCTAssertTrue(frequency.waitForExistence(timeout: 5))
-            XCTAssertTrue(app.staticTexts["2 per day"].exists)
+            XCTAssertTrue(app.staticTexts.containing(NSPredicate(format: "label CONTAINS %@", "2 per day")).firstMatch.exists)
             app.terminate()
         }
     }

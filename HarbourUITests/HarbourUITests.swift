@@ -38,7 +38,7 @@ import XCTest
 @MainActor final class HarbourUITests: XCTestCase {
     override func setUpWithError() throws { continueAfterFailure = false }
     func testMedicineConfirmationAndExport() {
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication(); app.launchArguments = ["--ui-test-unlocked"]; app.launch()
         app.buttons["nav-records"].tap(); selectRecords(app, "Medications")
         for medicine in ["warfarin", "advil"] {
             app.buttons["Add record"].tap(); app.buttons["catalog-" + medicine].tap()
@@ -73,7 +73,7 @@ import XCTest
         let screenshot = XCTAttachment(screenshot: app.screenshot()); screenshot.name = "Native chat"; screenshot.lifetime = .keepAlways; add(screenshot)
     }
     func testRecordsAndPersistence() {
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication(); app.launchArguments = ["--ui-test-unlocked"]; app.launch()
         app.buttons["nav-records"].tap(); selectRecords(app, "Readings"); app.buttons["Add record"].tap()
         let value = app.textFields["readingValue"]
         XCTAssertTrue(value.waitForExistence(timeout: 5)); value.tap(); value.typeText("72")
@@ -94,7 +94,7 @@ import XCTest
         XCTAssertTrue(app.staticTexts["Sore knee since Tuesday"].firstMatch.exists)
     }
     func testChatHintPreservesDraftAndModelSelector() {
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication(); app.launchArguments = ["--ui-test-unlocked"]; app.launch()
         app.buttons["nav-chat"].tap()
         let input = app.textFields["chatInput"]
         XCTAssertTrue(input.waitForExistence(timeout: 5)); input.tap(); input.typeText("Hello there")
@@ -229,7 +229,7 @@ import XCTest
         let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
     }
     func testScreensAndAppearancePersistence() {
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication(); app.launchArguments = ["--ui-test-unlocked"]; app.launch()
         for dark in [false, true] {
             appearance(app, dark ? "Dark" : "Light")
             app.terminate(); app.launch()
@@ -303,8 +303,12 @@ import XCTest
 
 @MainActor final class HarbourNavigationTests: XCTestCase {
     func testDashboardNavigationAndSystemAppearance() {
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication(); app.launchArguments = ["--ui-test-unlocked"]; app.launch()
         app.buttons["openMedicines"].tap()
+        if !app.staticTexts["Warfarin"].firstMatch.exists {
+            app.buttons["Add record"].tap(); app.buttons["catalog-warfarin"].tap()
+            app.buttons["confirmMedicine"].tap(); app.buttons["saveMedicine"].tap()
+        }
         XCTAssertTrue(app.staticTexts["Warfarin"].firstMatch.waitForExistence(timeout: 5))
         XCTAssertTrue(app.navigationBars["Medications"].exists)
         app.buttons["Add record"].tap()
@@ -506,7 +510,7 @@ import XCTest
     }
     func testMedicineReviewDrawerScreens() {
         let app = XCUIApplication()
-        app.launchArguments = ["--verify-drawers", "--medicine-review-fixture", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
+        app.launchArguments = ["--ui-test-unlocked", "--verify-drawers", "--medicine-review-fixture", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
         app.launch()
         let title = "Medication drawer review"
         for dark in [false, true] {
@@ -769,7 +773,7 @@ import XCTest
     }
     func testMainActionsDraftRetentionAndVisitCreation() {
         XCUIDevice.shared.orientation = .portrait
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication(); app.launchArguments = ["--ui-test-unlocked"]; app.launch()
         for dark in [false, true] {
             appearance(app, dark: dark)
             app.swipeDown(); app.swipeDown(); capture(dark ? "31-today-dark" : "01-today")
