@@ -1415,7 +1415,8 @@ import XCTest
         }
         let morning = displayedTime(first), evening = displayedTime(second)
         XCTAssertNotNil(morning.range(of: "(?i)\\b0?8\\s*[:h]\\s*00\\b", options: .regularExpression), morning)
-        XCTAssertNotNil(evening.range(of: "(?i)\\b20\\s*[:h]\\s*30\\b|\\b0?8\\s*:\\s*30\\s*p\\.?m\\.?", options: .regularExpression), evening)
+        XCTAssertNil(morning.range(of: "(?i)\\bp\\s*\\.?\\s*m\\.?", options: .regularExpression), morning)
+        XCTAssertNotNil(evening.range(of: "(?i)\\b20\\s*[:h]\\s*30\\b|\\b0?8\\s*:\\s*30\\s*p\\s*\\.?\\s*m\\.?", options: .regularExpression), evening)
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = french ? "qwen35-french-schedule-review" : "qwen35-english-schedule-review"
         attachment.lifetime = .keepAlways; add(attachment)
@@ -1430,7 +1431,9 @@ import XCTest
         send(french ? "Ne supprime pas mes dossiers." : "Do not delete my records.", app: app, french: french)
         let reply = app.staticTexts["chatReply"].firstMatch
         XCTAssertTrue(reply.waitForExistence(timeout: 180), app.debugDescription)
-        XCTAssertFalse(app.confirmationDialogs.firstMatch.exists)
+        XCTAssertFalse(app.alerts.firstMatch.exists)
+        XCTAssertFalse(app.sheets.firstMatch.exists)
+        XCTAssertFalse(app.buttons[french ? "Tout supprimer" : "Delete all"].exists)
         let text = reply.label.lowercased()
         for forbidden in ["no access", "cannot access", "can't access", "pas accès", "aucun accès", "i deleted", "have deleted", "j'ai supprimé", "j’ai supprimé", "ont été supprimés"] {
             XCTAssertFalse(text.contains(forbidden), text)

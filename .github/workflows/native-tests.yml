@@ -23,10 +23,23 @@ jobs:
           xcodebuild -version | tee build/ci/xcode.txt
           swift --version | tee build/ci/swift.txt
           xcrun simctl list devices available --json > build/ci/simulators.json
+          echo "XCODE_BUILD=$(xcodebuild -version | tail -n 1 | tr ' ' '-')" >> "$GITHUB_ENV"
       - name: Core tests
         run: swift test --package-path HarbourCore
+      - name: Restore pinned native runtime
+        id: runtime-cache
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: HarbourRuntime/Vendor/llama.xcframework
+          key: llama-b10549-${{ runner.os }}-${{ runner.arch }}-${{ env.XCODE_BUILD }}-${{ hashFiles('scripts/prepare-runtime.sh', 'scripts/runtime-privacy.py') }}
       - name: Prepare native runtime
         run: bash scripts/prepare-runtime.sh
+      - name: Cache verified native runtime
+        if: steps.runtime-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: HarbourRuntime/Vendor/llama.xcframework
+          key: ${{ steps.runtime-cache.outputs.cache-primary-key }}
       - name: Runtime tests
         run: swift test --package-path HarbourRuntime
       - name: Select simulator

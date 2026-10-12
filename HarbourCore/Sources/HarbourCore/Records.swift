@@ -132,8 +132,13 @@ public enum ReadingParser {
         let portion = String(input[match.1.upperBound...].prefix(36)).components(separatedBy: .newlines).first!
         guard portion.range(of: "[0-9]+(?:[.,][0-9]+)?[eE][+-]?[0-9]+", options: .regularExpression) == nil else { return nil }
         let number = kind == .bloodPressure ? "[0-9]{2,3}\\s*/\\s*[0-9]{2,3}" : "[0-9]{1,3}(?:[.,][0-9]+)?"
-        let numeric = "(?<![0-9.,/+−-])" + number + "(?![0-9.,/]|[eE][+-]?[0-9])"
+        // A final sentence mark is not part of the value; adjacent numeric
+        // punctuation still cannot split a malformed decimal or pressure.
+        let numeric = "(?<![0-9.,/+−-])" + number + "(?![0-9/]|[eE][+-]?[0-9]|[.,](?!\\s|$))"
         guard let valueRange = portion.range(of: numeric, options: .regularExpression) else { return nil }
+        let suffix = String(portion[valueRange.upperBound...])
+        // A dose/quantity unit cannot become a typed vital-sign measurement.
+        guard suffix.range(of: "^\\s*(?:mg|mcg|ug|µg|μg|g|kg|ml|l|iu|units?|unites?|milligrams?|milligrammes?|micrograms?|microgrammes?|grams?|grammes?|kilograms?|kilogrammes?|milliliters?|millilitres?)\\b", options: .regularExpression) == nil else { return nil }
         let value = normalizedValue(String(portion[valueRange]))
         guard valid(value, kind: kind) else { return nil }
         return Reading(kind: kind, value: value)

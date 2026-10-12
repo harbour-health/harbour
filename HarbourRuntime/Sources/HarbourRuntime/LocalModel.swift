@@ -38,7 +38,7 @@ public actor LocalModel {
         unload()
         if !backendStarted { llama_backend_init(); backendStarted = true }
         var mp = llama_model_default_params()
-        #if targetEnvironment(simulator)
+        #if targetEnvironment(simulator) || os(Linux)
         mp.n_gpu_layers = 0
         #else
         mp.n_gpu_layers = 99
@@ -50,6 +50,20 @@ public actor LocalModel {
         cp.n_threads_batch = cp.n_threads
         guard let ctx = llama_init_from_model(loaded, cp) else { llama_model_free(loaded); throw ModelError.context }
         model = loaded; context = ctx; path = file.path
+    }
+    /// Evaluation diagnostics use the production vocabulary and tokenization options.
+    /// This does not decode, sample, or alter the inference memory.
+    public func tokenCount(file: URL, prompt: String, promptFormat: ModelPromptFormat = .qwen25) throws -> Int {
+        let prompt = try promptFormat.prepare(prompt)
+        try load(file)
+        guard let model else { throw ModelError.load }
+        let vocab = llama_model_get_vocab(model)
+        var tokens = [llama_token](repeating: 0, count: prompt.utf8.count + 16)
+        let count = tokens.withUnsafeMutableBufferPointer { buffer in
+            llama_tokenize(vocab, prompt, Int32(prompt.utf8.count), buffer.baseAddress, Int32(buffer.count), false, true)
+        }
+        guard count > 0 else { throw ModelError.tokenize }
+        return Int(count)
     }
     public func generate(file: URL, prompt: String, maxTokens: Int = 160, grammar: String? = nil, stopAtJSON: Bool = true, promptFormat: ModelPromptFormat = .qwen25) throws -> String {
         try Task.checkCancellation()

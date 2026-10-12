@@ -1,0 +1,11 @@
+{
+  "baseline_commit": "e8028af",
+  "localization_origin": "Harbour/ModelManager.swift private localizedPrompt at e8028af; only API names and language selection adapted",
+  "english_localization": "unchanged prompt",
+  "french_localization": "original e8028af instruction and insertion semantics",
+  "title_builder_and_validator": "shared moved implementation preserves original e8028af strings, bounds, and parsing semantics",
+  "baseline_title_grammar": "French only; baseline run must preserve this setting",
+  "visit_grammar": "Original structural helper plus transcript overload included for API linkage only; disabled for baseline generation; dynamic acceptance diagnostics skipped",
+  "original_app_source_sha256": "76b8462a0f4f37563aaadc474cbbe5ee908340fccb0fef57286fbb3fbf6a0b83",
+  "adapter_sha256": "24b336d8ad640c0d4aec81afef262e4d8acf0615788134cf8258b26e7275c50d"
+}

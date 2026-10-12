@@ -68,6 +68,12 @@ xcodebuild -project Harbour.xcodeproj -scheme Harbour \
 
 `testLocalModelChat` downloads Qwen Small if missing; budget network access and roughly 500 MB of free space. Other UI tests exercise manual entry, persisted records, draft preservation, and model controls. See [chat agent](docs/chat-agent.md) for conversation/tool handling and [evaluation](docs/evaluation.md) for measured model results and limits.
 
+The frozen [model quality fixture v1](evaluation/harbour-model-quality-v1.json) contains 121 synthetic cases (59 development, 62 held out; 60 English, 61 Canadian French), covering all 19 tools, grounded replies, titles, visit quotes, and the known scheduling, negated deletion, and sky explanation regressions. SHA-256: `7a013eae0da56e0d829513ebd4c33a54eccd45c4ce6e8da4ffa81857d42fb5d9`. Standard effort across Small, Balanced, and Qwen3.5 yields 363 cases; Quick/Extended on 19 representative cases adds 114 runs, and repeats for eight timing cases add 48 runs. [The scorer](evaluation/score.py) separates production validation, semantic facts, source fidelity, pending qualitative reviews, and latency. Repeated deterministic outputs count toward timing only. Run its checks with `python3 -m unittest discover -s evaluation -p test_score.py`.
+
+The comparison gate requires complete reviews for every model and safe accepted actions on all guarded cases. Qwen3.5 must pass its critical grounding, extraction, scheduling, and qualitative checks, reach at least 95% raw routing intent accuracy, and have no matched English routing loss against Balanced. Paired French or grounding regressions block the gate for any model. Ordinary Small and Balanced quality misses are reported without requiring those models to pass every case.
+
+A reviewer may explicitly adjudicate a lexical false positive such as a faithful French synonym missing from a required-word pattern, with the frozen criterion and source evidence recorded. Automatic failures remain visible alongside adjudicated results. Tool intent, accepted unsafe actions, source quotes, validation limits, and unsupported numeric facts cannot be overridden, and fixture expectations remain frozen.
+
 The Xcode project is checked in. If adding source files, regenerate with `python3 scripts/generate-project.py`; this resets generated project settings, so change the generator for persistent configuration changes.
 
 ## Documentation
