@@ -13,7 +13,7 @@ for model in small balanced; do
     args=(--evaluate-model --evaluate-all-efforts)
     if [[ "$model" == balanced ]]; then args+=(--evaluate-balanced); fi
     xcrun simctl launch --terminate-running-process "$device" "$bundle" "${args[@]}"
-    echo "Evaluating $model: 19 fictional prompts at each of three effort settings."
+    echo "Evaluating $model: routing and transcript cases at each of three effort settings."
     previous_count=-1
     finished=no
     for ((attempt=0; attempt<900; attempt++)); do
@@ -25,7 +25,7 @@ print(len(report['runs']), 'yes' if report.get('complete', False) else 'no')
 PY
 )"
             read -r count finished <<< "$progress"
-            if [[ "$count" != "$previous_count" ]]; then echo "$model: $count/57 cases completed"; previous_count="$count"; fi
+            if [[ "$count" != "$previous_count" ]]; then echo "$model: $count cases completed"; previous_count="$count"; fi
             if [[ "$finished" == yes ]]; then break; fi
         fi
         sleep 2

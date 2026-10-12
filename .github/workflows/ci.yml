@@ -22,6 +22,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event_name == 'workflow_dispatch' && github.run_id || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   deterministic-tests:
     if: github.event_name != 'workflow_dispatch' || !inputs.run_model_evals
@@ -158,18 +162,16 @@ jobs:
           EVAL_SCOPE: ${{ inputs.eval_scope }}
         run: |
           set -euo pipefail
-          scope_args=()
-          if [ "$EVAL_SCOPE" = transcripts ]; then scope_args+=(--transcripts-only); fi
-          swift run --package-path HarbourRuntime --configuration release --skip-build model-probe "$PWD/build/models/small.gguf" --cpu "${scope_args[@]}" 2>&1 | tee build/model-small.log
+          if [ "$EVAL_SCOPE" = transcripts ]; then set -- --transcripts-only; else set --; fi
+          swift run --package-path HarbourRuntime --configuration release --skip-build model-probe "$PWD/build/models/small.gguf" --cpu "$@" 2>&1 | tee build/model-small.log
       - name: Measure Balanced model accuracy
         if: always() && !cancelled() && steps.model-download.outcome == 'success' && steps.probe-build.outcome == 'success'
         env:
           EVAL_SCOPE: ${{ inputs.eval_scope }}
         run: |
           set -euo pipefail
-          scope_args=()
-          if [ "$EVAL_SCOPE" = transcripts ]; then scope_args+=(--transcripts-only); fi
-          swift run --package-path HarbourRuntime --configuration release --skip-build model-probe "$PWD/build/models/balanced.gguf" --cpu "${scope_args[@]}" 2>&1 | tee build/model-balanced.log
+          if [ "$EVAL_SCOPE" = transcripts ]; then set -- --transcripts-only; else set --; fi
+          swift run --package-path HarbourRuntime --configuration release --skip-build model-probe "$PWD/build/models/balanced.gguf" --cpu "$@" 2>&1 | tee build/model-balanced.log
       - name: Upload model accuracy results
         if: always()
         uses: actions/upload-artifact@v4
