@@ -4,9 +4,10 @@ import HarbourRuntime
 
 @main struct Probe {
     static func main() async throws {
-        guard CommandLine.arguments.count > 1 else { print("Usage: model-probe /path/model.gguf [--cpu]"); return }
+        guard CommandLine.arguments.count > 1 else { print("Usage: model-probe /path/model.gguf [--cpu] [--transcripts-only]"); return }
         let file = URL(fileURLWithPath: CommandLine.arguments[1]), runtime = LocalModel(useGPU: !CommandLine.arguments.contains("--cpu"))
-        let cases = Evaluation.routingCases.map { ($0.input, $0.tool) }
+        let transcriptsOnly = CommandLine.arguments.contains("--transcripts-only")
+        let cases = transcriptsOnly ? [] : Evaluation.routingCases.map { ($0.input, $0.tool) }
         var passed = 0
         for (input, expected) in cases {
             let start = Date()
@@ -19,7 +20,8 @@ import HarbourRuntime
             print("\(success ? "PASS" : "FAIL") \(input) | \(String(format: "%.2f", Date().timeIntervalSince(start)))s | \(output) | \(decision?.arg ?? "")")
             fflush(stdout)
         }
-        print("\(passed)/\(cases.count) model routing cases passed")
+        if transcriptsOnly { print("Routing cases skipped: transcript-only run") }
+        else { print("\(passed)/\(cases.count) model routing cases passed") }
         var transcriptPassed = 0
         for fixture in Evaluation.visitSummaryCases {
             let start = Date()
