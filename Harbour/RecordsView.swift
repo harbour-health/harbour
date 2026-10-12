@@ -225,8 +225,6 @@ struct MedicineEditor: View {
                     LabeledContent("Active ingredients", value: chosen.ingredients.isEmpty ? L10n.string("Unconfirmed") : L10n.ingredientNames(chosen.ingredients))
                     if initial == nil { Button("Choose another medicine") { self.chosen = nil; confirmed = false } }
                 }
-                Section("Instructions from your label") { TextField("Dose or notes (optional)", text: $instructions, prompt: Text("Dose or notes (optional)").foregroundStyle(Palette.muted), axis: .vertical).lineLimit(2...4).focused($editing) }
-                ScheduleFields(times: $times, frequencyEnabled: $frequencyEnabled, frequencyCount: $frequencyCount, frequencyPeriod: $frequencyPeriod, notify: $notify, refillEnabled: $refillEnabled, refill: $refill)
                 Section {
                     Button { confirmed.toggle() } label: {
                         HStack(spacing: 14) {
@@ -236,6 +234,8 @@ struct MedicineEditor: View {
                         }.padding(.vertical, 8).contentShape(Rectangle())
                     }.buttonStyle(.plain).accessibilityIdentifier("confirmMedicine").accessibilityValue(L10n.string(confirmed ? "Confirmed" : "Not confirmed")).accessibilityAddTraits(confirmed ? .isSelected : [])
                 } footer: { Text(L10n.string(chosen.ingredients.isEmpty ? "This medicine will be saved with unconfirmed ingredients. Its interactions cannot be assessed." : "Brand formulations can differ. Check the active ingredients on your package.")) }
+                Section("Instructions from your label") { TextField("Dose or notes (optional)", text: $instructions, prompt: Text("Dose or notes (optional)").foregroundStyle(Palette.muted), axis: .vertical).lineLimit(2...4).focused($editing) }
+                ScheduleFields(times: $times, frequencyEnabled: $frequencyEnabled, frequencyCount: $frequencyCount, frequencyPeriod: $frequencyPeriod, notify: $notify, refillEnabled: $refillEnabled, refill: $refill)
             } else {
                 Section {
                     TextField("Medication name", text: $query, prompt: Text("Medication name").foregroundStyle(Palette.muted)).autocorrectionDisabled().focused($editing).accessibilityIdentifier("medicineSearch")
