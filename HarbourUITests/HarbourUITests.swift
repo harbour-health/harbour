@@ -40,12 +40,20 @@ import XCTest
     func testMedicineConfirmationAndExport() {
         let app = XCUIApplication(); app.launchArguments = ["--ui-test-unlocked"]; app.launch()
         app.buttons["nav-records"].tap(); selectRecords(app, "Medications")
-        for medicine in ["warfarin", "advil"] {
+        for (medicine, savedName) in [("warfarin", "Warfarin"), ("advil", "Advil")] {
             app.buttons["Add record"].tap(); app.buttons["catalog-" + medicine].tap()
             XCTAssertFalse(app.buttons["saveMedicine"].isEnabled)
             app.buttons["confirmMedicine"].tap(); XCTAssertTrue(app.buttons["saveMedicine"].isEnabled); app.buttons["saveMedicine"].tap()
+            let dismissed = expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: app.buttons["saveMedicine"])
+            XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 5), .completed, app.debugDescription)
+            XCTAssertTrue(app.navigationBars["Medications"].waitForExistence(timeout: 5), app.debugDescription)
+            XCTAssertTrue(app.staticTexts[savedName].firstMatch.waitForExistence(timeout: 5), app.debugDescription)
         }
-        openInteractions(app)
+        let interactions = app.buttons["Check interactions"]
+        let ready = expectation(for: NSPredicate { _, _ in interactions.exists && interactions.isHittable }, evaluatedWith: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 5), .completed, app.debugDescription)
+        interactions.tap()
+        XCTAssertTrue(app.navigationBars["Interactions"].waitForExistence(timeout: 5), app.debugDescription)
         XCTAssertTrue(app.descendants(matching: .any)["interactionSource"].firstMatch.waitForExistence(timeout: 5))
         app.buttons["Done"].tap(); app.buttons["nav-today"].tap(); app.buttons["Settings"].tap()
         app.buttons["Export records"].tap()
