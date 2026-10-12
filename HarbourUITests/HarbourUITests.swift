@@ -263,10 +263,10 @@ import XCTest
                 app.buttons["Evaluation"].tap(); capture("17-evaluation"); app.navigationBars["Evaluation"].buttons.firstMatch.tap()
                 app.buttons["Export records"].tap()
                 let activity = app.otherElements["ActivityListView"]
-                XCTAssertTrue(activity.waitForExistence(timeout: 5)); capture("18-export")
+                XCTAssertTrue(activity.waitForExistence(timeout: 5))
                 let close = app.buttons["Close"]
-                if close.exists { close.tap() }
-                else { activity.swipeDown() }
+                XCTAssertTrue(close.waitForExistence(timeout: 30), app.debugDescription)
+                capture("18-export"); close.tap()
                 XCTAssertTrue(app.buttons["Delete all records and chat"].waitForExistence(timeout: 5))
                 app.buttons["Delete all records and chat"].tap(); capture("27-delete-confirmation"); app.alerts.buttons["Cancel"].tap()
             }
