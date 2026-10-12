@@ -43,7 +43,7 @@ struct EvaluationReport: Codable {
             let start = Date()
             var output = ""
             do {
-                output = try await models.generate(ToolPlanner.prompt(fixture.input, records: Evaluation.records), allowedTools: ToolPlanner.availableTools.map(\.rawValue))
+                output = try await models.generate(ToolPlanner.prompt(fixture.input, records: Evaluation.records), allowedTools: ToolPlanner.availableTools.map(\.rawValue), purpose: .routing)
                 var decision = try ToolPlanner.parse(output)
                 if decision.tool == .reply { decision.arg = try await models.generate(ToolPlanner.conversationPrompt(fixture.input, records: Evaluation.records), maxTokens: effort.chatTokens, stopAtJSON: false); output += "\nReply: " + decision.arg }
                 _ = try ToolPlanner.validate(decision, original: fixture.input, records: Evaluation.records)
@@ -99,7 +99,7 @@ struct EvaluationView: View {
                     let start = Date()
                     var output = ""
                     do {
-                        output = try await models.generate(ToolPlanner.prompt(fixture.input, records: Evaluation.records), allowedTools: ToolPlanner.availableTools.map(\.rawValue))
+                        output = try await models.generate(ToolPlanner.prompt(fixture.input, records: Evaluation.records), allowedTools: ToolPlanner.availableTools.map(\.rawValue), purpose: .routing)
                         var decision = try ToolPlanner.parse(output)
                         if decision.tool == .reply { decision.arg = try await models.generate(ToolPlanner.conversationPrompt(fixture.input, records: Evaluation.records), maxTokens: effort.chatTokens, stopAtJSON: false); output += "\nReply: " + decision.arg }
                         _ = try ToolPlanner.validate(decision, original: fixture.input, records: Evaluation.records)

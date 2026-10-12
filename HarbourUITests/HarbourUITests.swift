@@ -1378,3 +1378,58 @@ import XCTest
         }
     }
 }
+
+/// Real Qwen3.5 inference against fictional records, using the production review screens.
+@MainActor final class HarbourQwen35EvaluationTests: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+
+    private func launch(french: Bool) -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["--app-store-screenshots", "-model", "qwen35", "-effort", "Standard", "-AppleLanguages", french ? "(fr-CA)" : "(en)", "-AppleLocale", french ? "fr_CA" : "en_CA"]
+        app.launch()
+        XCTAssertTrue(app.buttons["nav-chat"].waitForExistence(timeout: 10))
+        app.buttons["nav-chat"].tap()
+        app.buttons[french ? "Nouvelle conversation" : "New chat"].tap()
+        return app
+    }
+
+    private func send(_ text: String, app: XCUIApplication, french: Bool) {
+        let input = app.textFields["chatInput"]
+        XCTAssertTrue(input.waitForExistence(timeout: 10))
+        input.tap(); input.typeText(text)
+        app.buttons[french ? "Envoyer le message" : "Send message"].tap()
+    }
+
+    private func schedule(french: Bool) {
+        let app = launch(french: french)
+        send(french ? "Programme metformine à 8 h et 20 h 30" : "Schedule Metformin at 8 am and 8:30 pm", app: app, french: french)
+        XCTAssertTrue(app.buttons["saveMedicine"].waitForExistence(timeout: 180), app.debugDescription)
+        XCTAssertTrue(app.buttons["addDoseTime"].exists)
+        XCTAssertFalse(app.buttons["saveMedicine"].isEnabled)
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = french ? "qwen35-french-schedule-review" : "qwen35-english-schedule-review"
+        attachment.lifetime = .keepAlways; add(attachment)
+        app.buttons[french ? "Annuler" : "Cancel"].tap()
+    }
+
+    func testEnglishScheduleOpensReview() { schedule(french: false) }
+    func testFrenchScheduleOpensReview() { schedule(french: true) }
+
+    private func negatedDeletion(french: Bool) {
+        let app = launch(french: french)
+        send(french ? "Ne supprime pas mes dossiers." : "Do not delete my records.", app: app, french: french)
+        let reply = app.staticTexts["chatReply"].firstMatch
+        XCTAssertTrue(reply.waitForExistence(timeout: 180), app.debugDescription)
+        XCTAssertFalse(app.confirmationDialogs.firstMatch.exists)
+        let text = reply.label.lowercased()
+        for forbidden in ["no access", "cannot access", "can't access", "pas accès", "aucun accès", "i deleted", "have deleted", "j'ai supprimé", "j’ai supprimé", "ont été supprimés"] {
+            XCTAssertFalse(text.contains(forbidden), text)
+        }
+        app.buttons["nav-records"].tap()
+        app.buttons["record-category-1"].tap()
+        XCTAssertTrue(app.staticTexts[french ? "Metformine" : "Metformin"].firstMatch.waitForExistence(timeout: 10))
+    }
+
+    func testEnglishNegatedDeletionPreservesRecords() { negatedDeletion(french: false) }
+    func testFrenchNegatedDeletionPreservesRecords() { negatedDeletion(french: true) }
+}

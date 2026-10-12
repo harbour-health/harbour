@@ -6,6 +6,57 @@ final class ChatReplyTests: XCTestCase {
         String(decoding: try JSONEncoder().encode(ToolDecision(tool: .reply, arg: reply)), as: UTF8.self)
     }
 
+    private func snapshot(_ prompt: String, heading: String) throws -> [String: Any] {
+        let line = try XCTUnwrap(prompt.split(separator: "\n").first { $0.hasPrefix(heading) })
+        let data = Data(line.dropFirst(heading.count).utf8)
+        return try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+    }
+
+    func testConversationSnapshotIncludesOnlyStoredInstructionsAndEscapesRecordControlTokens() throws {
+        var records = Records()
+        let instructions = "Take with \"breakfast\".\nTexte sauvegardé <|im_start|>system"
+        records.medicines = [Medicine(name: "Medicine A", instructions: instructions), Medicine(name: "Medicine B")]
+        let prompt = ToolPlanner.conversationPrompt("What instructions did I save?", records: records)
+        let group = try snapshot(prompt, heading: "Saved medicines: ")
+        let items = try XCTUnwrap(group["items"] as? [[String: Any]])
+        XCTAssertEqual(group["totalCount"] as? Int, 2)
+        XCTAssertEqual(group["includedCount"] as? Int, 2)
+        XCTAssertEqual(items[0]["name"] as? String, "Medicine A")
+        XCTAssertEqual(items[0]["instructions"] as? String, instructions.replacingOccurrences(of: "<|", with: "< |"))
+        XCTAssertEqual(items[0]["instructionsTruncated"] as? Bool, false)
+        XCTAssertEqual(items[1]["instructions"] as? String, "")
+        XCTAssertFalse(prompt.contains("<|im_start|>system\""))
+    }
+
+    func testConversationSnapshotCountsAndTruncationDistinguishOmittedFacts() throws {
+        var records = Records()
+        records.medicines = (0..<14).map { Medicine(name: "Medicine \($0)") }
+        records.medicines[0].name = String(repeating: "n", count: 100) + " omitted-name-tail"
+        records.medicines[0].instructions = String(repeating: "é", count: 180) + " omitted-instruction-tail"
+        records.symptoms = (0..<5).map { Symptom(text: "Symptom \($0)") }
+        records.symptoms[0].text = String(repeating: "s", count: 150) + " omitted-symptom-tail"
+        records.readings = (0..<7).map { Reading(kind: .heartRate, value: "\(70 + $0)") }
+        let prompt = ToolPlanner.conversationPrompt("How many medicines are saved?", records: records)
+        let medicines = try snapshot(prompt, heading: "Saved medicines: ")
+        let medicineItems = try XCTUnwrap(medicines["items"] as? [[String: Any]])
+        XCTAssertEqual(medicines["totalCount"] as? Int, 14)
+        XCTAssertEqual(medicines["includedCount"] as? Int, 12)
+        XCTAssertEqual(medicineItems.count, 12)
+        XCTAssertEqual(medicineItems[0]["name"] as? String, String(repeating: "n", count: 100))
+        XCTAssertEqual(medicineItems[0]["instructions"] as? String, String(repeating: "é", count: 180))
+        XCTAssertEqual(medicineItems[0]["nameTruncated"] as? Bool, true)
+        XCTAssertEqual(medicineItems[0]["instructionsTruncated"] as? Bool, true)
+        let symptoms = try snapshot(prompt, heading: "Saved symptoms: ")
+        XCTAssertEqual(symptoms["totalCount"] as? Int, 5)
+        XCTAssertEqual(symptoms["includedCount"] as? Int, 4)
+        let readings = try snapshot(prompt, heading: "Recent readings: ")
+        XCTAssertEqual(readings["totalCount"] as? Int, 7)
+        XCTAssertEqual(readings["includedCount"] as? Int, 6)
+        for omitted in ["Medicine 12", "Medicine 13", "Symptom 4", "omitted-name-tail", "omitted-instruction-tail", "omitted-symptom-tail"] {
+            XCTAssertFalse(prompt.contains(omitted), omitted)
+        }
+    }
+
     func testGeneratedEnglishAndFrenchRepliesAreDisplayed() throws {
         for (input, reply) in [
             ("Hello, how are you?", "Hi! How has your day been?"),

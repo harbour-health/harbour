@@ -112,7 +112,7 @@ def main() -> int:
     if args.prepare_only:
         print('Preparation complete. No iOS compilation or device validation was performed.')
         return 0
-    environment = dict(os.environ, HARBOUR_DEVICE_RUNTIME='1')
+    environment = dict(os.environ, HARBOUR_DEVICE_RUNTIME='1', HARBOUR_LINUX_RUNTIME='0')
     with destination.open('rb') as stream:
         minimum_os = plistlib.load(stream)['MinimumOSVersion']
     subprocess.run([executable, 'dev', 'build', '--configuration', args.configuration, '--triple', 'arm64-apple-ios' + minimum_os], cwd=ROOT, env=environment, check=True)

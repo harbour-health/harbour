@@ -62,4 +62,26 @@ final class VisitTests: XCTestCase {
         XCTAssertTrue(chunks.allSatisfy { $0.count <= VisitReview.chunkCharacters })
         XCTAssertEqual(chunks.joined(separator: " "), long)
     }
+
+    func testFrenchQuoteObjectsRemainVerbatimAndBareStringsFail() throws {
+        let source = "Commencez metformine 500 mg deux fois par jour. Prenez rendez-vous pour une prise de sang."
+        let structured = #"{"highlights":[{"quote":"Commencez metformine 500 mg deux fois par jour."}],"medicines":[{"action":"start","name":"metformine","instructions":"500 mg deux fois par jour","quote":"Commencez metformine 500 mg deux fois par jour."}],"followUps":[{"quote":"Prenez rendez-vous pour une prise de sang."}]}"#
+        let summary = try VisitReview.parse(structured, transcript: source, medicines: [])
+        XCTAssertEqual(summary.highlights.map(\.quote), ["Commencez metformine 500 mg deux fois par jour."])
+        XCTAssertEqual(summary.medicines.first?.medicine.id, "metformin")
+        XCTAssertEqual(summary.medicines.first?.medicine.instructions, "500 mg deux fois par jour")
+        XCTAssertEqual(summary.followUps.map(\.quote), ["Prenez rendez-vous pour une prise de sang."])
+        let bareHighlights = structured.replacingOccurrences(of: #"[{"quote":"Commencez metformine 500 mg deux fois par jour."}]"#, with: #"["Commencez metformine 500 mg deux fois par jour."]"#)
+        let bareFollowUps = structured.replacingOccurrences(of: #"[{"quote":"Prenez rendez-vous pour une prise de sang."}]"#, with: #"["Prenez rendez-vous pour une prise de sang."]"#)
+        XCTAssertThrowsError(try VisitReview.parse(bareHighlights, transcript: source, medicines: []))
+        XCTAssertThrowsError(try VisitReview.parse(bareFollowUps, transcript: source, medicines: []))
+    }
+
+    func testWellFormedVisitObjectsStillRequireSourceGrounding() throws {
+        let ungrounded = #"{"highlights":[{"quote":"Your results are normal."}],"medicines":[{"action":"start","name":"metformin","instructions":"900 mg daily","quote":"Start metformin 900 mg daily."}],"followUps":[]}"#
+        let summary = try VisitReview.parse(ungrounded, transcript: "Discussed exercise and sleep.", medicines: [])
+        XCTAssertTrue(summary.highlights.isEmpty)
+        XCTAssertTrue(summary.medicines.isEmpty)
+        XCTAssertTrue(summary.followUps.isEmpty)
+    }
 }
