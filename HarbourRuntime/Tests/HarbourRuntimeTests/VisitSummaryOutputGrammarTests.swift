@@ -43,7 +43,7 @@ final class VisitSummaryOutputGrammarTests: XCTestCase {
 
     func testNativeRuntimeParsesAllOutputGrammarsWithoutModelWeights() throws {
         // These character-only grammars need no vocabulary until token sampling.
-        for grammar in [VisitSummaryOutputGrammar.make(), TitleOutputGrammar.make(), ToolOutputGrammar.make(allowedTools: ["reply"])] {
+        for grammar in [VisitSummaryOutputGrammar.make(), TitleOutputGrammar.make(), try ToolOutputGrammar.make(allowedTools: ["reply"])] {
             let sampler = try XCTUnwrap(llama_sampler_init_grammar(nil, grammar, "root"))
             llama_sampler_free(sampler)
         }
