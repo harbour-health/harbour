@@ -16,6 +16,8 @@ import re
 import unicodedata
 from pathlib import Path
 
+from provenance import paired_identity_matches, verify_run_manifest
+
 
 WRITE_TOOLS = {
     "capture_symptom", "add_medication", "remove_medication", "log_reading",
@@ -355,7 +357,7 @@ def expected_keys(cases, models, efforts, repeats):
             for repeat in range(repeats if effort=="standard" and case.get("timingSubset", False) else 1)}
 
 
-def make_report(suite, suite_sha, rows, *, models=None, efforts=None, repeats=1, scope="all", baseline=None, reviews=None):
+def make_report(suite, suite_sha, rows, *, models=None, efforts=None, repeats=1, scope="all", baseline=None, reviews=None, provenance=None):
     models = models or suite["models"]
     efforts = efforts or ["standard"]
     cases = [c for c in suite["cases"] if scope=="all" or c["split"]==scope]
@@ -379,6 +381,9 @@ def make_report(suite, suite_sha, rows, *, models=None, efforts=None, repeats=1,
     missing = sorted(wanted-seen)
     unrequested = sorted(seen-wanted)
     blocks = []
+    provenance = provenance or dict(status="missing", reason="No run manifest supplied")
+    if provenance.get("status") != "verified":
+        blocks.append("run_provenance_not_verified")
     if missing or unexpected or duplicates or unrequested:
         blocks.append("incomplete_or_mismatched_matrix")
     if scope != "all":
@@ -419,6 +424,11 @@ def make_report(suite, suite_sha, rows, *, models=None, efforts=None, repeats=1,
     elif baseline.get("suite", {}).get("sha256") != suite_sha:
         blocks.append("baseline_fixture_digest_mismatch")
     else:
+        before_provenance = baseline.get("provenance", {})
+        if before_provenance.get("status") != "verified":
+            blocks.append("paired_baseline_provenance_not_verified")
+        elif provenance.get("status") == "verified" and not paired_identity_matches(before_provenance["identity"], provenance["identity"]):
+            blocks.append("paired_execution_identity_mismatch")
         previous = {row_key(r):r for r in baseline.get("results", []) if r.get("repeatIndex", 0)==0}
         regressions, unmatched, lexical_adjudications = [], [], []
         for result in primary:
@@ -455,7 +465,7 @@ def make_report(suite, suite_sha, rows, *, models=None, efforts=None, repeats=1,
                                  meaning="Fixture regression and review gate only. CPU evaluation does not establish device speed, clinical safety, or end-to-end iOS behavior."),
                 defaultModelChecks=dict(model="qwen35",rawStandardRoutingRate=route_rate,requiredRoutingRate=.95,
                                         groundingOrExtractionFailures=critical_failures,englishRoutingRegressionsAgainstBalanced=english_regressions),
-                comparison=comparison,groups=groups(results),timings=timing,nondeterministicRepeats=nondeterministic,diagnostics=diagnostics,results=results)
+                provenance=provenance,comparison=comparison,groups=groups(results),timings=timing,nondeterministicRepeats=nondeterministic,diagnostics=diagnostics,results=results)
 
 
 def load_reviews(path, suite_sha):
@@ -482,6 +492,7 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--baseline", type=Path, help="Previous scored report from this exact frozen fixture digest")
     parser.add_argument("--manual-reviews", type=Path)
+    parser.add_argument("--run-manifest", type=Path, help="Collection or single-run stream/metadata hash bindings; required for a release gate pass")
     parser.add_argument("--review-queue", type=Path, help="Write pending review entries with inputs and outputs")
     parser.add_argument("--models", default="small,balanced,qwen35")
     parser.add_argument("--efforts", default="standard")
@@ -494,7 +505,8 @@ def main():
     rows = read_rows(args.rows)
     reviews = load_reviews(args.manual_reviews, suite_sha)
     baseline = json.loads(args.baseline.read_text(encoding="utf-8-sig")) if args.baseline else None
-    report = make_report(suite,suite_sha,rows,models=args.models.split(","),efforts=args.efforts.split(","),repeats=args.repeats,scope=args.scope,baseline=baseline,reviews=reviews)
+    provenance = verify_run_manifest(args.run_manifest, args.rows, suite_sha)
+    report = make_report(suite,suite_sha,rows,models=args.models.split(","),efforts=args.efforts.split(","),repeats=args.repeats,scope=args.scope,baseline=baseline,reviews=reviews,provenance=provenance)
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     if args.review_queue:

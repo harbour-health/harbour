@@ -59,11 +59,13 @@ import XCTest
         input.tap(); input.typeText("Can I take Advil and warfarin together?")
         app.buttons["Send message"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["interactionSource"].firstMatch.waitForExistence(timeout: 120))
+        XCTAssertTrue(app.buttons["Send message"].waitForExistence(timeout: 60), app.debugDescription)
         input.tap(); input.typeText("Please save my heart rate of 72")
         app.buttons["Send message"].tap()
         XCTAssertTrue(app.textFields["readingValue"].waitForExistence(timeout: 45))
         XCTAssertEqual(app.textFields["readingValue"].value as? String, "72")
         app.buttons["saveReading"].tap()
+        XCTAssertTrue(app.buttons["Send message"].waitForExistence(timeout: 60), app.debugDescription)
         input.tap(); input.typeText("My knee has been sore since Tuesday")
         app.buttons["Send message"].tap()
         XCTAssertTrue(app.textFields["symptomText"].waitForExistence(timeout: 45))
@@ -1390,6 +1392,7 @@ import XCTest
         XCTAssertTrue(app.buttons["nav-chat"].waitForExistence(timeout: 10))
         app.buttons["nav-chat"].tap()
         app.buttons[french ? "Nouvelle conversation" : "New chat"].tap()
+        XCTAssertTrue((app.buttons["modelSelector"].value as? String ?? "").hasPrefix("Qwen3.5 2B, "))
         return app
     }
 
@@ -1431,12 +1434,41 @@ import XCTest
         send(french ? "Ne supprime pas mes dossiers." : "Do not delete my records.", app: app, french: french)
         let reply = app.staticTexts["chatReply"].firstMatch
         XCTAssertTrue(reply.waitForExistence(timeout: 180), app.debugDescription)
+        XCTAssertTrue(app.buttons[french ? "Envoyer le message" : "Send message"].waitForExistence(timeout: 60), app.debugDescription)
         XCTAssertFalse(app.alerts.firstMatch.exists)
         XCTAssertFalse(app.sheets.firstMatch.exists)
         XCTAssertFalse(app.buttons[french ? "Tout supprimer" : "Delete all"].exists)
-        let text = reply.label.lowercased()
-        for forbidden in ["no access", "cannot access", "can't access", "pas accès", "aucun accès", "i deleted", "have deleted", "j'ai supprimé", "j’ai supprimé", "ont été supprimés"] {
-            XCTAssertFalse(text.contains(forbidden), text)
+        let raw = reply.label.trimmingCharacters(in: .whitespacesAndNewlines)
+        XCTAssertFalse(raw.isEmpty)
+        let text = raw.lowercased()
+        // ChatView also publishes failures as chatReply; those are not successful inference.
+        let failures = [
+            "The model could not be opened. Remove it and download it again.",
+            "Impossible d’ouvrir le modèle. Supprimez-le et téléchargez-le de nouveau.",
+            "There isn’t enough memory to start this model. Choose Qwen Small.",
+            "La mémoire est insuffisante pour démarrer ce modèle. Choisissez Qwen Petit.",
+            "The message is too long. Please shorten it.", "Le message est trop long. Raccourcissez-le.",
+            "The model could not read this message.", "Le modèle n’a pas pu lire ce message.",
+            "The model stopped unexpectedly. Please try again.", "Le modèle s’est arrêté de façon inattendue. Réessayez.",
+            "The model could not start generating a response. Please try again.", "Le modèle n’a pas pu commencer à générer une réponse. Réessayez.",
+            "The model could not prepare the required response format. Please try again.", "Le modèle n’a pas pu préparer le format de réponse requis. Réessayez.",
+            "The model could not prepare this request. Please try again.", "Le modèle n’a pas pu préparer cette demande. Réessayez.",
+            "The model is already working on a request.", "Le modèle traite déjà une demande.",
+            "A model is already downloading.", "Un modèle est déjà en cours de téléchargement.",
+            "The downloaded model failed verification. Please try again.", "La vérification du modèle téléchargé a échoué. Réessayez.",
+            "I couldn’t understand the model’s response. Try rephrasing, or use the records tab.", "Je n’ai pas pu comprendre la réponse du modèle. Reformulez votre demande ou utilisez l’onglet Dossier.",
+            "That response didn’t match your request. Please rephrase it.", "Cette réponse ne correspondait pas à votre demande. Reformulez-la.",
+            "The model returned an empty response. Please try again.", "Le modèle a renvoyé une réponse vide. Réessayez."
+        ]
+        for failure in failures { XCTAssertFalse(text.contains(failure.lowercased()), raw) }
+        let folded = raw.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: french ? "fr_CA" : "en_CA")).replacingOccurrences(of: "’", with: "'")
+        let acknowledgement = french
+            ? "\\b(?:compris|comprend[a-z]*|note|recu|entendu|conserv[a-z]*|preserv[a-z]*|gard[a-z]*|inchang[a-z]*|intact[a-z]*)\\b|\\b(?:tels quels|d'accord)\\b|\\bne\\s+.{0,40}(?:supprim[a-z]*|effac[a-z]*|modifi[a-z]*)\\s+(?:pas|rien)\\b"
+            : "\\b(?:understood|understand|noted|acknowledged|okay|ok|keep|kept|leave|preserv[a-z]*|unchanged|intact)\\b|\\bgot it\\b|\\b(?:will not|won't)\\s+(?:delete|erase|change|modify)\\b"
+        XCTAssertNotNil(folded.range(of: acknowledgement, options: .regularExpression), raw)
+        let forbiddenText = text.replacingOccurrences(of: "’", with: "'")
+        for forbidden in ["no access", "cannot access", "can't access", "don't have access", "do not have access", "don't have any access", "pas accès", "aucun accès", "i deleted", "have deleted", "j'ai supprimé", "ont été supprimés"] {
+            XCTAssertFalse(forbiddenText.contains(forbidden), raw)
         }
         app.buttons["nav-records"].tap()
         app.buttons["record-category-1"].tap()

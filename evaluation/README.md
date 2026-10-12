@@ -18,10 +18,13 @@ python3 scripts/evaluate-models.py \
   --output-directory /workspace/build/eval-final \
   --efforts quick,standard,extended --repeats 3 \
   --context-checks --grammar-checks
+python3 scripts/collect-model-evidence.py \
+  --runs build/eval-final --output build/eval-final/run-manifest.json
 python3 evaluation/score.py \
   --rows build/eval-final/small.jsonl build/eval-final/balanced.jsonl build/eval-final/qwen35.jsonl \
   --efforts quick,standard,extended --repeats 3 \
   --baseline build/eval-baseline/score.json \
+  --run-manifest build/eval-final/run-manifest.json \
   --output build/eval-final/score.json \
   --review-queue build/eval-final/reviews.json
 ```
@@ -29,6 +32,8 @@ python3 evaluation/score.py \
 The download helper verifies pinned revisions, byte counts, and SHA-256 values. The runtime helper verifies its source archive and builds into an isolated prefix. The runner refuses to overwrite an output directory, evaluates models sequentially, and records source, executable, suite, prompt, runtime, and model provenance.
 
 Prepare the baseline with `python3 scripts/prepare-eval-baseline.py --output-directory build/eval-baseline-workspace`. It exports the original Core builders and validators from `e8028af`, with the versioned compatibility adapter. Run that workspace's `scripts/evaluate-models.py` with `--baseline-prompts`; this flag alone does not restore old Core source. Use the same suite, models, host, native runtime, and sampling settings for both workspaces. One baseline repeat suffices for paired quality comparisons; repeat the representative final timing cases three times.
+
+The baseline may run development and held-out phases separately using the identical preserved source and executable. Collect both directories with `collect-model-evidence.py --runs DEV_DIRECTORY HELDOUT_DIRECTORY --output MANIFEST_PATH`, then give all six JSONL streams and that manifest to the scorer. The collector rejects duplicate cases and changed run identities, and preserves each process's separate cold-load boundary. Capture the CPU, memory, affinity, and resource limits with `scripts/capture-eval-host.py --output HOST_SNAPSHOT_PATH`.
 
 ## Evidence and scoring
 
@@ -45,5 +50,7 @@ Review every required open-ended answer for relevance, factual grounding, langua
 A reviewer may adjudicate only a `required_fact_missing` lexical match when the answer faithfully states the expected fact in different words. The decision must identify that failure, criterion, and supporting answer text. Preserve the original automatic result beside the adjudicated result. Routing, unsafe actions, extraction fields, bounds, and unsupported numeric facts cannot be overridden this way.
 
 The default-model gate requires at least 95% raw Standard routing, every critical grounding/extraction and guard/schedule case passing, safe accepted actions across all models, no paired French or grounding regressions, and no English routing miss on a matched case Balanced routes correctly. Complete matrices and required reviews are mandatory. Failed required Qwen3.5 reviews block readiness; ordinary Small/Balanced quality misses remain visible in the report.
+
+Release scoring also requires a verified run manifest. It binds the scored streams to complete run metadata, exact file hashes, pinned model/runtime identities, and row prompt/grammar hashes. Baseline/final pairing checks comparable host, runtime, model, and budget identities while permitting the intentional prompt and validation changes. Partial development runs can be scored without a manifest, with readiness blocked.
 
 These are purposive engineering regression cases, not population accuracy estimates or clinical safety validation. Linux CPU timing and memory do not predict physical iPhone Metal performance. Native simulator tests separately check app integration and confirmation flows.

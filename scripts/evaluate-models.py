@@ -112,6 +112,8 @@ def main():
                 tail = (output / f"{name}.stderr.log").read_text(errors="replace")[-5000:]
                 raise RuntimeError(f"Native evaluator failed for {name}, exit {return_code}:\n{tail}")
             rows = [json.loads(line) for line in (output / f"{name}.jsonl").read_text().splitlines() if line]
+            metadata.setdefault("resultSHA256", {})[name] = digest(output / f"{name}.jsonl")
+            metadata.setdefault("rowCounts", {})[name] = {"total": len(rows), "quality": sum(row["kind"] in {"routing", "prose", "title", "visit"} for row in rows), "diagnostic": sum(row["kind"] not in {"routing", "prose", "title", "visit"} for row in rows)}
             metadata["promptSHA256"][name] = [{"caseID": row["caseID"], "effort": row["effort"], "repeatIndex": row["repeatIndex"],
                 "prompt": hashlib.sha256(row["prompt"].encode()).hexdigest(),
                 "replyPrompt": hashlib.sha256(row["replyPrompt"].encode()).hexdigest() if row.get("replyPrompt") else None}
