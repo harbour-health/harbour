@@ -116,9 +116,9 @@ final class ModelPromptsTests: XCTestCase {
         for (language, request) in requests {
             let raw = ToolPlanner.conversationPrompt(request, records: Records())
             let localized = ModelPrompts.localized(raw, language: language, purpose: .prose)
-            XCTAssertTrue(raw.contains("name the main causal process and explain how it produces the result, then stop"))
-            XCTAssertTrue(localized.contains(language == .english ? "one or two short sentences" : "une ou deux phrases courtes"))
-            XCTAssertTrue(localized.contains(language == .english ? "rather than inventing it" : "plutôt que de l’inventer"))
+            XCTAssertTrue(raw.contains("only the essential explanation in one concise sentence"))
+            XCTAssertTrue(localized.contains(language == .english ? "one concise sentence" : "une seule phrase concise"))
+            XCTAssertTrue(localized.contains(language == .english ? "omit unsupported details" : "omets les détails non fondés"))
             XCTAssertTrue(localized.contains(request))
             XCTAssertTrue(localized.contains("\"totalCount\":0"))
             XCTAssertFalse(localized.contains("1–3 short sentences"))
@@ -133,6 +133,8 @@ final class ModelPromptsTests: XCTestCase {
         XCTAssertTrue(raw.contains("Field descriptions below are placeholders"))
         XCTAssertTrue(raw.contains("complete dose, frequency and any clock times that apply specifically to that medicine"))
         XCTAssertTrue(raw.contains("exactly the four top-level keys"))
+        XCTAssertTrue(raw.contains("An empty medicines array means no supported explicit medicine instruction is stated"))
+        XCTAssertFalse(raw.contains("Independent classification examples"))
         XCTAssertFalse(raw.contains("500 mg twice daily"))
         for language in [ModelLanguage.english, .french] {
             let localized = ModelPrompts.localized(raw, language: language, purpose: .visit)

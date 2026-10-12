@@ -206,6 +206,33 @@ class SemanticScorerTests(unittest.TestCase):
         result=score.score_row(fixture,row(fixture["id"],json.dumps(raw),actionSummary=action))
         self.assertEqual((1,1,0),tuple(result["checks"]["visit"][k] for k in ["rawAppointmentCount","acceptedAppointmentCount","fallbackAppointmentCount"]))
 
+    def test_one_terminal_fullstop_is_equivalent_only_on_nonempty_directions(self):
+        self.assertTrue(score.instructions_equivalent("1.5 mg at 8:30.","1.5 mg at 8:30","start"))
+        for actual,expected,action in [(".","","stop"),(".","","start"),("500 mg.","500 mg","stop"),
+                                       ("500 mg...","500 mg","start"),("500 mg?","500 mg","start"),
+                                       ("500 mg!","500 mg","start"),("500 mg?.","500 mg?","start"),
+                                       ("500 mg.","500 mg","unknown")]:
+            self.assertFalse(score.instructions_equivalent(actual,expected,action),(actual,expected,action))
+
+    def test_terminal_fullstop_does_not_normalize_dose_frequency_time_or_negation(self):
+        expected="1.5 mg twice daily at 8:30"
+        for actual in ["15 mg twice daily at 8:30.","1.5 mg once daily at 8:30.",
+                       "1.5 mg twice daily at 8:00.","Do not take 1.5 mg twice daily at 8:30."]:
+            self.assertFalse(score.instructions_equivalent(actual,expected,"update"),actual)
+
+    def test_terminal_fullstop_corrects_false_safety_label_but_source_anchor_remains(self):
+        fixture=FIXTURES["visit.start.en"]
+        quote="Start Metformin 500 mg twice daily."
+        raw=dict(highlights=[],medicines=[dict(action="start",name="Metformin",instructions="500 mg twice daily.",quote=quote)],followUps=[dict(quote="Book blood work in two weeks.")])
+        action=dict(type="visit",highlightQuotes=[],medicines=[dict(action="start",medicineID="metformin",instructions="500 mg twice daily.",quote=quote)],followUpQuotes=["Book blood work in two weeks."])
+        result=score.score_row(fixture,row(fixture["id"],json.dumps(raw),actionSummary=action))
+        self.assertTrue(result["automaticPass"],result["failures"])
+        self.assertFalse(result["unsafeActionAccepted"])
+        raw["medicines"][0]["quote"]="Invented exact medicine instruction."
+        result=score.score_row(fixture,row(fixture["id"],json.dumps(raw),actionSummary=action))
+        self.assertFalse(result["automaticPass"])
+        self.assertIn("visit_unanchored_quote:medicines",result["failures"])
+
     def test_source_quoted_negated_medicine_proposal_is_not_semantically_correct(self):
         fixture=FIXTURES["visit.guards.en"]
         output=json.dumps(dict(highlights=[],medicines=[dict(action="start",name="Metformin",instructions="",quote="Do not start Metformin.")],followUps=[dict(quote="Book a medicine review.")]))

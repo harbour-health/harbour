@@ -25,7 +25,7 @@ public struct VisitSummaryEvaluationCase: Sendable {
         self.expectedInstructions = expectedInstructions; self.expectedFrequency = expectedFrequency; self.expectedTimes = expectedTimes
         self.expectedAppointments = expectedAppointments
     }
-    public func matches(_ output: String) -> Bool {
+    public func matches(_ output: String, allowTerminalPeriodEquivalence: Bool = false) -> Bool {
         guard let summary = try? VisitReview.parse(output, transcript: transcript, medicines: Evaluation.records.medicines),
               summary.medicines.count == (expectedMedicineID == nil ? 0 : 1),
               Set((summary.appointments ?? []).map(\.quote)) == Set(expectedAppointments),
@@ -38,7 +38,17 @@ public struct VisitSummaryEvaluationCase: Sendable {
         guard Set(rawAppointments.compactMap { $0["quote"] }.map(VisitReview.normalise)) == Set(expectedAppointments) else { return false }
         guard let id = expectedMedicineID else { return true }
         guard let medication = summary.medicines.first else { return false }
-        return medication.action == .start && medication.medicine.id == id && medication.medicine.instructions == expectedInstructions && medication.frequency == expectedFrequency && medication.times == expectedTimes
+        func instructionsMatch() -> Bool {
+            if !allowTerminalPeriodEquivalence { return medication.medicine.instructions == expectedInstructions }
+            let actual = VisitReview.normalise(medication.medicine.instructions), expected = VisitReview.normalise(expectedInstructions)
+            guard !actual.isEmpty, !expected.isEmpty else { return actual == expected }
+            func withoutSentencePeriod(_ text: String) -> String {
+                guard text.hasSuffix("."), !["..", "?.", "!."].contains(where: text.hasSuffix) else { return text }
+                return String(text.dropLast()).trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+            return withoutSentencePeriod(actual) == withoutSentencePeriod(expected)
+        }
+        return medication.action == .start && medication.medicine.id == id && instructionsMatch() && medication.frequency == expectedFrequency && medication.times == expectedTimes
     }
 }
 public enum Evaluation {

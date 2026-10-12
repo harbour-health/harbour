@@ -113,6 +113,19 @@ def compare_subset(actual, expected):
     return failures
 
 
+def instructions_equivalent(actual, expected, action):
+    actual, expected = normalized_quote(actual), normalized_quote(expected)
+    if action in {"start", "update"} and actual and expected:
+        def sentence_text(text):
+            # One optional sentence full stop changes no dose/directions. Preserve
+            # decimals, all wording, ellipses and question/exclamation punctuation.
+            if text.endswith(".") and not text.endswith(("..", "?.", "!.")):
+                return text[:-1].rstrip()
+            return text
+        return sentence_text(actual) == sentence_text(expected)
+    return actual == expected
+
+
 def medicine_match(proposal, expected, *, accepted):
     if proposal.get("action") != expected["action"]:
         return False
@@ -123,7 +136,7 @@ def medicine_match(proposal, expected, *, accepted):
         # The frozen fixtures explicitly include the source surface spelling.
         if folded(proposal.get("name", "")) != folded(expected["name"]):
             return False
-    return normalized_quote(proposal.get("instructions", "")) == normalized_quote(expected["instructions"])
+    return instructions_equivalent(proposal.get("instructions", ""), expected["instructions"], expected["action"])
 
 
 def score_visit(fixture, row):
@@ -486,6 +499,7 @@ def make_report(suite, suite_sha, rows, *, models=None, efforts=None, repeats=1,
                 matrix=dict(scope=scope,models=models,efforts=efforts,repeats=repeats,expectedRuns=len(wanted),observedRuns=len(seen),missing=missing,unrequested=unrequested,unexpectedCases=unexpected,duplicates=duplicates),
                 scoringMethod=dict(adjudication="An identified reviewer may resolve only an actual required_fact_missing lexical proxy with explicit frozen criterion and source evidence. Preserve the automatic failure and report adjudicated results separately. Intent, unsafe actions, source quotes, validation/bounds and unsupported numeric facts cannot be overridden.",
                                    schemaCompatibility="Accept legacy three-field visits or the same fields plus source-anchored appointment quotes. Preserve every original medicine/follow-up expectation. Report raw/accepted/fallback appointment counts; v1 does not measure appointment recall, frequency coverage, or the two newly added appointment tool intents.",
+                                   instructionComparison="Before heldout evaluation, corrected punctuation-only false safety labels: one optional terminal sentence full stop is equivalent on nonempty start/update instructions. Preserve source anchoring, wording, decimals, dose/frequency/times/negation; no question/exclamation/ellipsis normalization and no empty/stop-instruction normalization.",
                                    catalogCoverage="Frozen v1 targets the original 19 tools. The merged current catalog can expose 21; create_appointment is included in accepted-mutation guard checks. Separate main routing and nine-transcript controls measure the added appointment/frequency behavior. Paired results include the changed catalog, prompts and validation."),
                 releaseGate=dict(status="blocked" if blocks else "passed",reasons=sorted(set(blocks)),
                                  meaning="Fixture regression and review gate only. CPU evaluation does not establish device speed, clinical safety, or end-to-end iOS behavior."),

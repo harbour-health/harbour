@@ -84,6 +84,7 @@ private struct EvalResult: Codable {
     var validationError: String?
     var fallbackUsed = false
     var actionSummary: ActionSummary?
+    var records: Records?
     var baselinePrompts: Bool
     var expectedAcceptance: Bool?
     var grammarAccepted: Bool?
@@ -185,7 +186,7 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
         guard FileManager.default.createFile(atPath: output.path, contents: nil) else { throw NSError(domain: "Output", code: 1) }
         let stream = try FileHandle(forWritingTo: output)
         defer { try? stream.close() }
-        let encoder = JSONEncoder(); encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
+        let encoder = JSONEncoder(); encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]; encoder.dateEncodingStrategy = .iso8601
         func emit(_ row: EvalResult) throws {
             try stream.write(contentsOf: encoder.encode(row)); try stream.write(contentsOf: Data([10])); try stream.synchronize()
         }
@@ -200,6 +201,7 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                     var result = EvalResult(caseID: fixture.id, split: fixture.split, kind: fixture.kind, language: fixture.language.rawValue,
                         model: options.modelID, effort: effort, repeatIndex: repeatIndex, coldLoad: firstLoad, baselinePrompts: options.baseline)
                     let records = fixture.resolvedRecords
+                    result.records = records
                     var prompt = "", replyPrompt: String?
                     let started = Date()
                     do {
