@@ -53,7 +53,7 @@ import XCTest
         let screenshot = XCTAttachment(screenshot: app.screenshot()); screenshot.name = "Native export"; screenshot.lifetime = .keepAlways; add(screenshot)
     }
     func testLocalModelChat() {
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication(); app.launchArguments = ["-model", "small"]; app.launch()
         app.buttons["nav-chat"].tap(); app.buttons["New chat"].tap()
         let input = app.textFields["chatInput"]
         input.tap(); input.typeText("Can I take Advil and warfarin together?")
@@ -104,6 +104,36 @@ import XCTest
         app.buttons["modelSelector"].tap()
         XCTAssertTrue(app.staticTexts["Qwen Small"].firstMatch.waitForExistence(timeout: 5))
         XCTAssertTrue(app.sliders["Generation effort"].exists)
+    }
+    func testQwen35FallbackSelectionAndPersistenceWithoutDownloading() {
+        let app = XCUIApplication()
+        let languageArguments = ["-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
+        app.launchArguments = languageArguments + ["-model", "unrecognized-model"]
+        app.launch()
+        app.buttons["nav-chat"].tap()
+        let selector = app.buttons["modelSelector"]
+        XCTAssertTrue(selector.waitForExistence(timeout: 5))
+        XCTAssertTrue((selector.value as? String ?? "").hasPrefix("Qwen3.5 2B, "))
+        selector.tap()
+        for title in ["Automatic", "Qwen Small", "Qwen Balanced", "Qwen3.5 2B"] {
+            XCTAssertTrue(app.staticTexts[title].firstMatch.waitForExistence(timeout: 5), title)
+        }
+        app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Qwen Small")).firstMatch.tap()
+        app.buttons["Done"].tap()
+        XCTAssertTrue((selector.value as? String ?? "").hasPrefix("Qwen Small, "))
+
+        app.terminate()
+        app.launchArguments = languageArguments
+        app.launch()
+        app.buttons["nav-chat"].tap()
+        XCTAssertTrue((app.buttons["modelSelector"].value as? String ?? "").hasPrefix("Qwen Small, "))
+        app.buttons["modelSelector"].tap()
+        app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Qwen3.5 2B")).firstMatch.tap()
+        app.buttons["Done"].tap()
+        app.terminate()
+        app.launch()
+        app.buttons["nav-chat"].tap()
+        XCTAssertTrue((app.buttons["modelSelector"].value as? String ?? "").hasPrefix("Qwen3.5 2B, "))
     }
     func testScreenshots() {
         let app = XCUIApplication(); app.launch()

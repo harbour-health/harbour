@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-12",
+  "model": {
+    "repository": "unsloth/Qwen3.5-2B-GGUF",
+    "revision": "f6d5376be1edb4d416d56da11e5397a961aca8ae",
+    "filename": "Qwen3.5-2B-Q4_K_M.gguf",
+    "bytes": 1280835840,
+    "sha256": "aaf42c8b7c3cab2bf3d69c355048d4a0ee9973d48f16c731c0520ee914699223",
+    "downloaded_and_verified": true
+  },
+  "runtime": {
+    "version": "b10549",
+    "commit": "b2e5e9b28",
+    "archive": "llama-b10549-bin-win-cpu-x64.zip",
+    "sha256": "11d38f2ed878489b2c3d02b3d1a67683c02fbfb3d265876b9ede749a8dff5f1c",
+    "context": 4096,
+    "batch": 512,
+    "threads": 4,
+    "gpu_layers": 0,
+    "temperature": 0,
+    "grammar": "Harbour ToolOutputGrammar 19-tools equivalent",
+    "prompt_cache": false
+  },
+  "host": {
+    "os": "Windows 11 Home 10.0.26200",
+    "cpu": "Intel Core i7-11700K",
+    "physical_memory_bytes": 85783187456
+  },
+  "prompt_format": {
+    "tokenizer_repository": "Qwen/Qwen3.5-2B",
+    "revision": "15852e8c16360a2fea060d615a32b45270f8a8fc",
+    "suffix": "LF + <think> + LF LF + </think> + LF LF",
+    "add_bos": false,
+    "eos": "<|im_end|>"
+  },
+  "source": {
+    "tool_planner_sha256": "dfb9cb4bef66085911a183a62c9350ad6ac168527af5cc4e11b14102413a23c4",
+    "visits_sha256": "ec07c2a932d9647effaca31b4f4d70a2e1e4aa2ac638fea9aa2233ec4c56c587",
+    "evaluation_sha256": "61a57bef8c12dbd58cd52e74edd6a70a4ed66017bf96e21913f62c60c4b90da5"
+  }
+}

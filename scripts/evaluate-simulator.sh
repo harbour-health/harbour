@@ -6,14 +6,15 @@ output="${2:-$root/docs/results/care-tools}"
 bundle="com.matteopolak.harbour"
 container="$(xcrun simctl get_app_container "$device" "$bundle" data)"
 mkdir -p "$output"
-for model in small balanced; do
+for model in small balanced qwen35; do
     report="$container/Library/Application Support/Harbour/model-evaluation-$model.json"
     # Only delete this generated evaluation artifact; never the records archive.
     rm -f "$report"
     args=(--evaluate-model --evaluate-all-efforts)
     if [[ "$model" == balanced ]]; then args+=(--evaluate-balanced); fi
+    if [[ "$model" == qwen35 ]]; then args+=(--evaluate-qwen35); fi
     xcrun simctl launch --terminate-running-process "$device" "$bundle" "${args[@]}"
-    echo "Evaluating $model: 19 fictional prompts at each of three effort settings."
+    echo "Evaluating $model: current fictional routing fixtures at each of three effort settings."
     previous_count=-1
     finished=no
     for ((attempt=0; attempt<900; attempt++)); do
@@ -25,7 +26,7 @@ print(len(report['runs']), 'yes' if report.get('complete', False) else 'no')
 PY
 )"
             read -r count finished <<< "$progress"
-            if [[ "$count" != "$previous_count" ]]; then echo "$model: $count/57 cases completed"; previous_count="$count"; fi
+            if [[ "$count" != "$previous_count" ]]; then echo "$model: $count cases completed"; previous_count="$count"; fi
             if [[ "$finished" == yes ]]; then break; fi
         fi
         sleep 2

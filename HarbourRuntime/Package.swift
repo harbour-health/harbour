@@ -9,6 +9,6 @@ let package = Package(
         .binaryTarget(name: "LlamaBinary", path: "Vendor/llama.xcframework"),
         .target(name: "HarbourRuntime", dependencies: ["LlamaBinary"]),
         .executableTarget(name: "ModelProbe", dependencies: ["HarbourRuntime", "HarbourCore"]),
-        .testTarget(name: "HarbourRuntimeTests", dependencies: ["HarbourRuntime"])
+        .testTarget(name: "HarbourRuntimeTests", dependencies: ["HarbourRuntime", "HarbourCore"])
     ]
 )

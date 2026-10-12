@@ -5,6 +5,88 @@ import AVFoundation
 import HarbourCore
 @testable import Harbour
 
+@MainActor final class HarbourModelPreferenceTests: XCTestCase {
+    private func withPreferences(_ body: (UserDefaults, URL) throws -> Void) throws {
+        let suite = "model-preferences-test-" + UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(suite)
+        defer {
+            defaults.removePersistentDomain(forName: suite)
+            try? FileManager.default.removeItem(at: directory)
+        }
+        try body(defaults, directory)
+    }
+
+    func testFreshAndUnrecognizedPreferencesChooseQwen35() throws {
+        try withPreferences { defaults, directory in
+            let fresh = ModelManager(defaults: defaults, directory: directory)
+            XCTAssertEqual(fresh.selection, .qwen35)
+            XCTAssertEqual(fresh.resolved, .qwen35)
+            XCTAssertEqual(fresh.effort, .standard)
+
+            defaults.set("a-model-from-an-unknown-version", forKey: "model")
+            defaults.set("an-unknown-effort", forKey: "effort")
+            let restored = ModelManager(defaults: defaults, directory: directory)
+            XCTAssertEqual(restored.selection, .qwen35)
+            XCTAssertEqual(restored.effort, .standard)
+        }
+    }
+
+    func testExistingModelChoicesAndEffortSurviveUpgrade() throws {
+        try withPreferences { defaults, directory in
+            for choice in [ModelChoice.small, .balanced, .automatic] {
+                defaults.set(choice.rawValue, forKey: "model")
+                defaults.set(Effort.extended.rawValue, forKey: "effort")
+                let restored = ModelManager(defaults: defaults, directory: directory)
+                XCTAssertEqual(restored.selection, choice)
+                XCTAssertEqual(restored.effort, .extended)
+                XCTAssertEqual(defaults.string(forKey: "model"), choice.rawValue)
+            }
+        }
+    }
+
+    func testChangingModelAndEffortPersistsAcrossManagers() throws {
+        try withPreferences { defaults, directory in
+            let manager = ModelManager(defaults: defaults, directory: directory)
+            manager.selection = .small
+            manager.effort = .quick
+            let small = ModelManager(defaults: defaults, directory: directory)
+            XCTAssertEqual(small.selection, .small)
+            XCTAssertEqual(small.effort, .quick)
+
+            small.selection = .qwen35
+            small.effort = .extended
+            let qwen35 = ModelManager(defaults: defaults, directory: directory)
+            XCTAssertEqual(qwen35.selection, .qwen35)
+            XCTAssertEqual(qwen35.resolved, .qwen35)
+            XCTAssertEqual(qwen35.effort, .extended)
+        }
+    }
+
+    func testAutomaticSelectionRetainsMemoryPowerAndThermalSafeguards() {
+        let choose = ModelChoice.automaticModel
+        XCTAssertEqual(choose(7_999_999_999, false, .nominal), .small)
+        XCTAssertEqual(choose(8_000_000_000, false, .nominal), .qwen35)
+        XCTAssertEqual(choose(16_000_000_000, true, .nominal), .small)
+        for thermalState in [ProcessInfo.ThermalState.fair, .serious, .critical] {
+            XCTAssertEqual(choose(16_000_000_000, false, thermalState), .small)
+        }
+    }
+
+    func testQwen35PinsVerifiedWeightsAndUsesNonThinkingPrompt() throws {
+        let model = ModelChoice.qwen35
+        XCTAssertEqual(model.size, 1_280_835_840)
+        XCTAssertEqual(model.hash, "aaf42c8b7c3cab2bf3d69c355048d4a0ee9973d48f16c731c0520ee914699223")
+        XCTAssertEqual(model.url.absoluteString, "https://huggingface.co/unsloth/Qwen3.5-2B-GGUF/resolve/f6d5376be1edb4d416d56da11e5397a961aca8ae/Qwen3.5-2B-Q4_K_M.gguf")
+        XCTAssertEqual(model.url.lastPathComponent, model.filename)
+        let prompt = "<|im_start|>assistant"
+        XCTAssertEqual(try model.promptFormat.prepare(prompt), prompt + "\n<think>\n\n</think>\n\n")
+        for legacy in [ModelChoice.small, .balanced] {
+            XCTAssertEqual(try legacy.promptFormat.prepare(prompt), prompt)
+        }
+    }
+}
+
 @MainActor final class HarbourCareServiceTests: XCTestCase {
     private func temporaryStore() -> AppStore { AppStore(folder: FileManager.default.temporaryDirectory.appendingPathComponent("care-test-" + UUID().uuidString)) }
     func testLegacyArchiveAndNewCareSurviveRelaunch() throws {

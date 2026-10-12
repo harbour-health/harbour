@@ -42,7 +42,7 @@ struct ModelsView: View {
     @State private var downloadTask: Task<Void, Never>?
     var body: some View {
         Form {
-            Section("Model") {
+            Section {
                 ForEach(ModelChoice.allCases) { choice in
                     Button { models.selection = choice } label: {
                         HStack {
@@ -51,17 +51,21 @@ struct ModelsView: View {
                         }.foregroundStyle(Palette.ink).padding(.vertical, 5)
                     }.disabled(models.downloading != nil || models.generating)
                 }
-            }
+            } header: { Text("Model") } footer: { Text("New installs default to Qwen3.5 2B. Automatic chooses a model based on this device.") }
             Section {
                 Text(models.effort.title).font(.headline)
                 EffortSlider(value: Binding(get: { Double(Effort.allCases.firstIndex(of: models.effort) ?? 1) }, set: { models.effort = Effort.allCases[Int($0.rounded())] })).frame(height: 48).padding(.vertical, 6)
                 HStack { Text("Quick"); Spacer(); Text("Extended") }.font(.subheadline).foregroundStyle(Palette.muted)
             } header: { Text("Effort") } footer: { Text("Effort changes the maximum output length. It does not establish better medical judgement.") }
             Section("Downloads") {
-                ForEach([ModelChoice.small, .balanced]) { choice in
+                ForEach(ModelChoice.allCases.filter { $0 != .automatic }) { choice in
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
-                            Text(choice.title); Spacer()
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text(choice.title)
+                                Text(ByteCountFormatter.string(fromByteCount: choice.size, countStyle: .file)).font(.subheadline).foregroundStyle(Palette.muted)
+                            }
+                            Spacer()
                             if models.installed(choice) {
                                 Button("Remove", role: .destructive) { Task { do { try await models.remove(choice) } catch { store.error = L10n.string(error.localizedDescription) } } }.disabled(models.downloading != nil || models.generating)
                             } else if models.downloading == choice {

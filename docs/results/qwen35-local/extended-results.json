@@ -1,0 +1,284 @@
+[
+  {
+    "output": "{\"tool\":\"list_medications\",\"arg\":\"\"}",
+    "seconds": 8.23,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 811,
+      "prompt_ms": 7124.542,
+      "prompt_per_token_ms": 8.78488532675709,
+      "prompt_per_second": 113.83187859654697,
+      "predicted_n": 12,
+      "predicted_ms": 1072.97,
+      "predicted_per_token_ms": 97.54272727272728,
+      "predicted_per_second": 10.2519175745827
+    },
+    "stop_type": "eos",
+    "input": "Affiche mes médicaments",
+    "expected": "list_medications",
+    "french": true,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"list_readings\",\"arg\":\"\"}",
+    "seconds": 8.17,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 812,
+      "prompt_ms": 7288.23,
+      "prompt_per_token_ms": 8.975652709359606,
+      "prompt_per_second": 111.41251030771531,
+      "predicted_n": 11,
+      "predicted_ms": 883.596,
+      "predicted_per_token_ms": 88.3596,
+      "predicted_per_second": 11.317389395153441
+    },
+    "stop_type": "eos",
+    "input": "Affiche mes relevés",
+    "expected": "list_readings",
+    "french": true,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"reply\",\"arg\":\"\"}",
+    "seconds": 8.05,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 824,
+      "prompt_ms": 7298.17,
+      "prompt_per_token_ms": 8.857002427184467,
+      "prompt_per_second": 112.90501591494855,
+      "predicted_n": 9,
+      "predicted_ms": 740.959,
+      "predicted_per_token_ms": 92.619875,
+      "predicted_per_second": 10.796818717364928
+    },
+    "stop_type": "eos",
+    "input": "Programme metformine à 8 h et 20 h 30",
+    "expected": "schedule_medication",
+    "french": true,
+    "passed": false
+  },
+  {
+    "output": "{\"tool\":\"log_dose\",\"arg\":\"\"}",
+    "seconds": 7.92,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 813,
+      "prompt_ms": 7036.586,
+      "prompt_per_token_ms": 8.65508733087331,
+      "prompt_per_second": 115.53898438816778,
+      "predicted_n": 11,
+      "predicted_ms": 889.363,
+      "predicted_per_token_ms": 88.9363,
+      "predicted_per_second": 11.244002730043864
+    },
+    "stop_type": "eos",
+    "input": "J'ai pris metformine",
+    "expected": "log_dose",
+    "french": true,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"reply\",\"arg\":\"\"}",
+    "seconds": 7.77,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 813,
+      "prompt_ms": 7060.051,
+      "prompt_per_token_ms": 8.683949569495695,
+      "prompt_per_second": 115.1549755093837,
+      "predicted_n": 9,
+      "predicted_ms": 700.664,
+      "predicted_per_token_ms": 87.583,
+      "predicted_per_second": 11.417740885788339
+    },
+    "stop_type": "eos",
+    "input": "Ne supprime pas mes dossiers",
+    "expected": "reply",
+    "french": true,
+    "passed": true
+  },
+  {
+    "output": "Hello! I'm doing well, thanks for asking. How about you? Is there anything you'd like to chat about or need help with today?",
+    "seconds": 4.0,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 146,
+      "prompt_ms": 1334.774,
+      "prompt_per_token_ms": 9.142287671232875,
+      "prompt_per_second": 109.38181295110633,
+      "predicted_n": 31,
+      "predicted_ms": 2638.98,
+      "predicted_per_token_ms": 87.966,
+      "predicted_per_second": 11.368028556487733
+    },
+    "stop_type": "eos",
+    "kind": "prose",
+    "input": "Hello, how are you?",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "The sky appears blue because of a phenomenon called **Rayleigh scattering**.\n\nSunlight is made up of all colors of the rainbow. When it hits the Earth's atmosphere, the shorter wavelengths (like blue and violet) scatter in all directions much more easily than the longer wavelengths (like red). This scattered blue light is what we see when we look up at the sky.\n\n*Note: Violet light scatters even more than blue, but our eyes are less sensitive to violet, so we perceive the sky as blue.*\n\nDo you have any other questions about the atmosphere or weather?",
+    "seconds": 12.53,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 146,
+      "prompt_ms": 1333.997,
+      "prompt_per_token_ms": 9.136965753424658,
+      "prompt_per_second": 109.4455234906825,
+      "predicted_n": 119,
+      "predicted_ms": 11193.986,
+      "predicted_per_token_ms": 94.86428813559323,
+      "predicted_per_second": 10.541374627411539
+    },
+    "stop_type": "eos",
+    "kind": "prose",
+    "input": "Why is the sky blue?",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "Blood pressure measures the force that blood exerts against the walls of your arteries as it flows through your circulatory system. It is typically measured in two numbers: systolic pressure (the force when the heart beats) and diastolic pressure (the force when the heart rests between beats).\n\nHigh blood pressure (hypertension) can strain your heart and blood vessels, while low blood pressure (hypotension) can cause dizziness or fainting. If you have concerns about your readings, please consult a healthcare professional.",
+    "seconds": 11.23,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 146,
+      "prompt_ms": 1344.688,
+      "prompt_per_token_ms": 9.21019178082192,
+      "prompt_per_second": 108.57537213093296,
+      "predicted_n": 107,
+      "predicted_ms": 9877.876,
+      "predicted_per_token_ms": 93.18750943396226,
+      "predicted_per_second": 10.731051898201596
+    },
+    "stop_type": "eos",
+    "kind": "prose",
+    "input": "What does blood pressure measure?",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "I cannot delete your records or access any saved information about your medications or health history. My role is to provide helpful information and assist with general health topics, but I do not have access to your personal data or medical records.\n\nIf you have concerns about your medication or health, I recommend consulting your healthcare provider or pharmacist for personalized advice. Is there anything else I can help you with today?",
+    "seconds": 8.27,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 145,
+      "prompt_ms": 1279.387,
+      "prompt_per_token_ms": 8.823358620689655,
+      "prompt_per_second": 113.33552709227153,
+      "predicted_n": 80,
+      "predicted_ms": 6987.434,
+      "predicted_per_token_ms": 88.44853164556962,
+      "predicted_per_second": 11.306010189148118
+    },
+    "stop_type": "eos",
+    "kind": "prose",
+    "input": "Do not delete my records",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "Le ciel est bleu en raison d'un phénomène appelé **diffusion de Rayleigh**. Lorsque le soleil se lève ou se couche, ses rayons lumineux traversent une plus grande quantité d'air. Les petites particules d'air (comme les molécules d'azote et d'oxygène) scintillent et dispersent ces rayons vers toutes les directions, créant un ciel bleu.\n\nÀ l'opposé, les rayons du soleil qui traversent moins d'air sont moins dispersés et arrivent directement vers nos yeux, ce qui donne l'impression d'un ciel plus clair.\n\nPuisqu'il n'y a pas de médicaments sauvegardés ou de données de santé spécifiques dans ce contexte, je ne peux pas vous donner de conseils médicaux personnalisés.\n\n**Question pour vous aider à mieux comprendre :**\nQuel est le rôle des particules d'air dans la diffusion de la lumière ?",
+    "seconds": 19.69,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 238,
+      "prompt_ms": 2103.347,
+      "prompt_per_token_ms": 8.837592436974791,
+      "prompt_per_second": 113.15298902178289,
+      "predicted_n": 194,
+      "predicted_ms": 17572.43,
+      "predicted_per_token_ms": 91.04886010362695,
+      "predicted_per_second": 10.983113889200299
+    },
+    "stop_type": "eos",
+    "kind": "prose",
+    "input": "Pourquoi le ciel est-il bleu ?",
+    "french": true,
+    "passed": true
+  },
+  {
+    "output": "{\"title\": \"Why is the sky blue\"}",
+    "seconds": 1.5,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 59,
+      "prompt_ms": 615.006,
+      "prompt_per_token_ms": 10.423830508474575,
+      "prompt_per_second": 95.9340234079017,
+      "predicted_n": 11,
+      "predicted_ms": 862.004,
+      "predicted_per_token_ms": 86.2004,
+      "predicted_per_second": 11.600874241882869
+    },
+    "stop_type": "eos",
+    "kind": "title",
+    "input": "Why is the sky blue?",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\n  \"title\": \"Pourquoi le ciel est-il bleu ?\"\n}",
+    "seconds": 3.27,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 191,
+      "prompt_ms": 1719.641,
+      "prompt_per_token_ms": 9.003356020942409,
+      "prompt_per_second": 111.06969419780057,
+      "predicted_n": 19,
+      "predicted_ms": 1530.822,
+      "predicted_per_token_ms": 85.04566666666666,
+      "predicted_per_second": 11.758388630422088
+    },
+    "stop_type": "eos",
+    "kind": "title",
+    "input": "Pourquoi le ciel est-il bleu ?",
+    "french": true,
+    "passed": true
+  },
+  {
+    "output": "{\n  \"highlights\": [\n    {\n      \"quote\": \"Start metformin 500 mg twice daily.\"\n    }\n  ],\n  \"medicines\": [\n    {\n      \"action\": \"start\",\n      \"name\": \"metformin\",\n      \"instructions\": \"500 mg twice daily\",\n      \"quote\": \"Start metformin 500 mg twice daily.\"\n    }\n  ],\n  \"followUps\": [\n    {\n      \"quote\": \"Book blood work in two weeks.\"\n    }\n  ]\n}",
+    "seconds": 13.12,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 201,
+      "prompt_ms": 1784.346,
+      "prompt_per_token_ms": 8.87734328358209,
+      "prompt_per_second": 112.64631411172498,
+      "predicted_n": 133,
+      "predicted_ms": 11329.811,
+      "predicted_per_token_ms": 85.83190151515151,
+      "predicted_per_second": 11.650679786273576
+    },
+    "stop_type": "eos",
+    "kind": "visit",
+    "input": "Start metformin 500 mg twice daily. Book blood work in two weeks.",
+    "french": false,
+    "savedMedicines": [],
+    "passed": true
+  },
+  {
+    "output": "{\n  \"highlights\": [\n    \"Commencez metformine 500 mg deux fois par jour.\",\n    \"Prenez rendez-vous pour une prise de sang.\"\n  ],\n  \"medicines\": [\n    {\n      \"action\": \"start\",\n      \"name\": \"metformine\",\n      \"instructions\": \"500 mg deux fois par jour\",\n      \"quote\": \"Commencez metformine 500 mg deux fois par jour.\"\n    }\n  ],\n  \"followUps\": [\n    {\n      \"quote\": \"Prenez rendez-vous pour une prise de sang.\"\n    }\n  ]\n}",
+    "seconds": 16.11,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 298,
+      "prompt_ms": 2643.875,
+      "prompt_per_token_ms": 8.872063758389261,
+      "prompt_per_second": 112.71334688667203,
+      "predicted_n": 150,
+      "predicted_ms": 13458.653,
+      "predicted_per_token_ms": 90.32653020134228,
+      "predicted_per_second": 11.070944469702875
+    },
+    "stop_type": "eos",
+    "kind": "visit",
+    "input": "Commencez metformine 500 mg deux fois par jour. Prenez rendez-vous pour une prise de sang.",
+    "french": true,
+    "savedMedicines": [],
+    "passed": false
+  }
+]

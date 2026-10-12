@@ -1,0 +1,21 @@
+{
+  "output": "{\"tool\":\"reply\",\"arg\":\"\"}",
+  "seconds": 7.89,
+  "timings": {
+    "cache_n": 0,
+    "prompt_n": 824,
+    "prompt_ms": 7110.621,
+    "prompt_per_token_ms": 8.629394417475728,
+    "prompt_per_second": 115.88298687273587,
+    "predicted_n": 9,
+    "predicted_ms": 713.991,
+    "predicted_per_token_ms": 89.248875,
+    "predicted_per_second": 11.20462302746113
+  },
+  "stop_type": "eos",
+  "input": "Programme Metformin à 8 h et 20 h 30",
+  "expected": "schedule_medication",
+  "french": true,
+  "passed": false,
+  "diagnostic": "Same French scheduling request with the stored canonical medicine name; original miss retained in extended-results.json."
+}

@@ -2,7 +2,7 @@ import Foundation
 import llama
 
 public enum ModelError: LocalizedError {
-    case load, context, promptTooLong, tokenize, decode, sampler, grammar
+    case load, context, promptTooLong, tokenize, decode, sampler, grammar, promptFormat
     public var errorDescription: String? {
         switch self {
         case .load: "The model could not be opened. Remove it and download it again."
@@ -12,6 +12,7 @@ public enum ModelError: LocalizedError {
         case .decode: "The model stopped unexpectedly. Please try again."
         case .sampler: "The model could not start generating a response. Please try again."
         case .grammar: "The model could not prepare the required response format. Please try again."
+        case .promptFormat: "The model could not prepare this request. Please try again."
         }
     }
 }
@@ -50,8 +51,9 @@ public actor LocalModel {
         guard let ctx = llama_init_from_model(loaded, cp) else { llama_model_free(loaded); throw ModelError.context }
         model = loaded; context = ctx; path = file.path
     }
-    public func generate(file: URL, prompt: String, maxTokens: Int = 160, grammar: String? = nil, stopAtJSON: Bool = true) throws -> String {
+    public func generate(file: URL, prompt: String, maxTokens: Int = 160, grammar: String? = nil, stopAtJSON: Bool = true, promptFormat: ModelPromptFormat = .qwen25) throws -> String {
         try Task.checkCancellation()
+        let prompt = try promptFormat.prepare(prompt)
         if let grammar, grammar.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || grammar.contains("\0") {
             throw ModelError.grammar
         }

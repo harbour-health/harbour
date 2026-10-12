@@ -1,0 +1,194 @@
+[
+  {
+    "input" : "Hello, how are you?",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Why is the sky blue?",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "What does blood pressure measure?",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Do not delete my records",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Can I take Advil and warfarin together?",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Please record that my knee has been sore since Tuesday",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Please save my heart rate of 72",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Add metformin to my medicines",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Show my readings",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Make an appointment note",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "My temperature is 36.8",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "My blood pressure is 120\/80",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Export my records",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Import readings from Apple Health",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Clear all records",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Show my medicines",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Remind me to book blood work",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Show my reminders",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Schedule Metformin at 8 am and 8 pm",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "I took Metformin",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Search my history for blood work",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Scan a medicine label",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Save question for my doctor: Should I repeat my blood test?",
+    "kind" : "routing",
+    "passed" : true
+  },
+  {
+    "input" : "Affiche mes médicaments",
+    "kind" : "extended-routing",
+    "passed" : true
+  },
+  {
+    "input" : "Affiche mes relevés",
+    "kind" : "extended-routing",
+    "passed" : true
+  },
+  {
+    "error" : "Error Domain=UnexpectedTool Code=2 \"(null)\"",
+    "input" : "Programme metformine à 8 h et 20 h 30",
+    "kind" : "extended-routing",
+    "passed" : false
+  },
+  {
+    "input" : "J'ai pris metformine",
+    "kind" : "extended-routing",
+    "passed" : true
+  },
+  {
+    "input" : "Ne supprime pas mes dossiers",
+    "kind" : "extended-routing",
+    "passed" : true
+  },
+  {
+    "input" : "Hello, how are you?",
+    "kind" : "prose",
+    "passed" : true
+  },
+  {
+    "input" : "Why is the sky blue?",
+    "kind" : "prose",
+    "passed" : true
+  },
+  {
+    "input" : "What does blood pressure measure?",
+    "kind" : "prose",
+    "passed" : true
+  },
+  {
+    "input" : "Do not delete my records",
+    "kind" : "prose",
+    "passed" : true
+  },
+  {
+    "input" : "Pourquoi le ciel est-il bleu ?",
+    "kind" : "prose",
+    "passed" : true
+  },
+  {
+    "input" : "Why is the sky blue?",
+    "kind" : "title",
+    "passed" : true
+  },
+  {
+    "input" : "Pourquoi le ciel est-il bleu ?",
+    "kind" : "title",
+    "passed" : true
+  },
+  {
+    "input" : "Start metformin 500 mg twice daily. Book blood work in two weeks.",
+    "kind" : "visit",
+    "passed" : true
+  },
+  {
+    "error" : "invalidOutput",
+    "input" : "Commencez metformine 500 mg deux fois par jour. Prenez rendez-vous pour une prise de sang.",
+    "kind" : "visit",
+    "passed" : false
+  },
+  {
+    "input" : "Ne supprime pas mes dossiers",
+    "kind" : "prose",
+    "passed" : true
+  }
+]

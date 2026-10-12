@@ -24,7 +24,8 @@ struct EvaluationReport: Codable {
 @MainActor enum SimulatorEvaluation {
     static func run(models: ModelManager, store: AppStore) async {
         let previousModel = models.selection
-        models.selection = ProcessInfo.processInfo.arguments.contains("--evaluate-balanced") ? .balanced : .small
+        if ProcessInfo.processInfo.arguments.contains("--evaluate-qwen35") { models.selection = .qwen35 }
+        else { models.selection = ProcessInfo.processInfo.arguments.contains("--evaluate-balanced") ? .balanced : .small }
         var report = EvaluationReport()
         let previous = models.effort
         defer { models.effort = previous; models.selection = previousModel }

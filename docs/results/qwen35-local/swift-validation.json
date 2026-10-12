@@ -1,0 +1,121 @@
+{
+  "date": "2026-10-12",
+  "swift_environment": {
+    "execution_host": "connected Linux host",
+    "host_os": "Ubuntu 24.04.4 LTS x86_64",
+    "container_image": "docker.io/library/swift:6.2-noble",
+    "container_digest": "sha256:eccc7a97f9b9881d9659e2e788081fd7675f86d39793b51200bfb178398b3784",
+    "swift_version": "6.2.4 (swift-6.2.4-RELEASE)",
+    "swift_target": "x86_64-unknown-linux-gnu",
+    "network_during_tests": "disabled"
+  },
+  "model_inference_environment": {
+    "execution_host": "local Windows workspace computer",
+    "runtime": "llama.cpp b10549 Windows CPU x64",
+    "details_file": "provenance.json"
+  },
+  "core_tests": {
+    "passed": 87,
+    "total": 87,
+    "failures": 0,
+    "package": "unmodified copied HarbourCore package, Sources and Tests"
+  },
+  "portable_runtime_tests": {
+    "passed": 16,
+    "total": 16,
+    "failures": 0,
+    "copied_source_files": [
+      "JSONEnvelope.swift",
+      "ToolOutputGrammar.swift",
+      "TitleOutputGrammar.swift",
+      "ModelPromptFormat.swift"
+    ],
+    "extracted_source": "ModelError enum from LocalModel.swift; unchanged enum body",
+    "copied_test_files": [
+      "JSONEnvelopeTests.swift",
+      "TitleOutputGrammarTests.swift",
+      "ModelPromptFormatTests.swift",
+      "ToolOutputGrammarTests.swift"
+    ],
+    "excluded_test": "ToolOutputGrammarTests.testInvalidGrammarFailsBeforeLoadingModel",
+    "excluded_native_sources": [
+      "LocalModel actor",
+      "llama.xcframework",
+      "ModelProbe executable"
+    ],
+    "temporary_package": "HarbourRuntime library and tests with HarbourCore dependency; no binaryTarget"
+  },
+  "app_source_syntax": {
+    "result": "passed",
+    "command": "swiftc -frontend -parse Harbour/*.swift HarbourTests/*.swift HarbourUITests/*.swift",
+    "scope": "syntax only; imports and Apple target types were not typechecked"
+  },
+  "native_app_tests": {
+    "status": "not_run",
+    "reason": "Windows local host and connected Linux host do not provide Xcode, iOS Simulator, UIKit or Combine",
+    "hosted_regressions_added": 5,
+    "ui_regressions_added": 1,
+    "legacy_real_model_ui_test": "explicit -model small launch argument"
+  },
+  "production_validation": {
+    "status": "complete with two retained model misses",
+    "passed": 36,
+    "total": 38,
+    "results_by_kind": {
+      "routing": {
+        "passed": 23,
+        "total": 23
+      },
+      "extended-routing": {
+        "passed": 4,
+        "total": 5
+      },
+      "prose": {
+        "passed": 6,
+        "total": 6
+      },
+      "title": {
+        "passed": 2,
+        "total": 2
+      },
+      "visit": {
+        "passed": 1,
+        "total": 2
+      }
+    },
+    "results_file": "swift-production-outputs.json",
+    "input_files": [
+      "routing-results.json",
+      "extended-results.json",
+      "french-negation-reply.json"
+    ],
+    "records": "Evaluation.records for tool validation; empty saved medicines for both visit fixtures",
+    "methods": [
+      "ToolPlanner.parse",
+      "ToolPlanner.validate",
+      "VisitReview.parse"
+    ],
+    "title_check": "same title envelope and bounds conditions as ModelManager.title; no mocked inference",
+    "misses": [
+      {
+        "error": "Error Domain=UnexpectedTool Code=2 \"(null)\"",
+        "input": "Programme metformine à 8 h et 20 h 30",
+        "kind": "extended-routing",
+        "passed": false
+      },
+      {
+        "error": "invalidOutput",
+        "input": "Commencez metformine 500 mg deux fois par jour. Prenez rendez-vous pour une prise de sang.",
+        "kind": "visit",
+        "passed": false
+      }
+    ],
+    "limits": "Parse, routing and source validation do not establish prose factual accuracy, clinical validity, French language quality or physical iPhone performance."
+  },
+  "source_sha256": {
+    "HarbourCore/Sources/HarbourCore/ToolPlanner.swift": "dfb9cb4bef66085911a183a62c9350ad6ac168527af5cc4e11b14102413a23c4",
+    "HarbourCore/Sources/HarbourCore/Visits.swift": "ec07c2a932d9647effaca31b4f4d70a2e1e4aa2ac638fea9aa2233ec4c56c587",
+    "HarbourCore/Sources/HarbourCore/Evaluation.swift": "61a57bef8c12dbd58cd52e74edd6a70a4ed66017bf96e21913f62c60c4b90da5",
+    "HarbourRuntime/Sources/HarbourRuntime/ModelPromptFormat.swift": "8c0d9a23a3a1c94c2fb4fbcc9ca6961f023b294850c28b1e55286c4395bbc4a9"
+  }
+}

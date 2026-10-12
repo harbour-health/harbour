@@ -4,16 +4,51 @@ import HarbourRuntime
 import HarbourCore
 
 enum ModelChoice: String, CaseIterable, Identifiable, Codable {
-    case automatic, small, balanced
+    case automatic, small, balanced, qwen35
+    static let defaultModel: ModelChoice = .qwen35
     var id: String { rawValue }
-    var title: String { switch self { case .automatic: L10n.string("Automatic"); case .small: L10n.string("Qwen Small"); case .balanced: L10n.string("Qwen Balanced") } }
-    var size: Int64 { self == .balanced ? 1_117_320_736 : 491_400_032 }
-    var hash: String { self == .balanced ? "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e" : "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db" }
-    var filename: String { self == .balanced ? "qwen2.5-1.5b-instruct-q4_k_m.gguf" : "qwen2.5-0.5b-instruct-q4_k_m.gguf" }
+    var title: String {
+        switch self {
+        case .automatic: L10n.string("Automatic")
+        case .small: L10n.string("Qwen Small")
+        case .balanced: L10n.string("Qwen Balanced")
+        case .qwen35: L10n.string("Qwen3.5 2B")
+        }
+    }
+    var compactTitle: String { switch self { case .automatic: title; case .small: L10n.string("Small"); case .balanced: L10n.string("Balanced"); case .qwen35: L10n.string("Qwen3.5") } }
+    var chatTitle: String { switch self { case .automatic: title; case .small: "Qwen 0.5B"; case .balanced: "Qwen 1.5B"; case .qwen35: L10n.string("Qwen3.5 2B") } }
+    var size: Int64 {
+        switch self { case .small: 491_400_032; case .balanced: 1_117_320_736; case .automatic, .qwen35: 1_280_835_840 }
+    }
+    var hash: String {
+        switch self {
+        case .small: "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db"
+        case .balanced: "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e"
+        case .automatic, .qwen35: "aaf42c8b7c3cab2bf3d69c355048d4a0ee9973d48f16c731c0520ee914699223"
+        }
+    }
+    var filename: String {
+        switch self {
+        case .small: "qwen2.5-0.5b-instruct-q4_k_m.gguf"
+        case .balanced: "qwen2.5-1.5b-instruct-q4_k_m.gguf"
+        case .automatic, .qwen35: "Qwen3.5-2B-Q4_K_M.gguf"
+        }
+    }
     var url: URL {
-        let repo = self == .balanced ? "Qwen2.5-1.5B-Instruct-GGUF" : "Qwen2.5-0.5B-Instruct-GGUF"
-        let revision = self == .balanced ? "91cad51170dc346986eccefdc2dd33a9da36ead9" : "9217f5db79a29953eb74d5343926648285ec7e67"
-        return URL(string: "https://huggingface.co/Qwen/\(repo)/resolve/\(revision)/\(filename)")!
+        let repo: String, revision: String
+        switch self {
+        case .small:
+            repo = "Qwen/Qwen2.5-0.5B-Instruct-GGUF"; revision = "9217f5db79a29953eb74d5343926648285ec7e67"
+        case .balanced:
+            repo = "Qwen/Qwen2.5-1.5B-Instruct-GGUF"; revision = "91cad51170dc346986eccefdc2dd33a9da36ead9"
+        case .automatic, .qwen35:
+            repo = "unsloth/Qwen3.5-2B-GGUF"; revision = "f6d5376be1edb4d416d56da11e5397a961aca8ae"
+        }
+        return URL(string: "https://huggingface.co/\(repo)/resolve/\(revision)/\(filename)")!
+    }
+    var promptFormat: ModelPromptFormat { self == .qwen35 ? .qwen35 : .qwen25 }
+    static func automaticModel(memoryBytes: UInt64, isLowPowerModeEnabled: Bool, thermalState: ProcessInfo.ThermalState) -> ModelChoice {
+        memoryBytes >= 8_000_000_000 && !isLowPowerModeEnabled && thermalState == .nominal ? .qwen35 : .small
     }
 }
 enum Effort: String, CaseIterable, Identifiable {
@@ -59,8 +94,8 @@ private final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchec
 }
 
 @MainActor final class ModelManager: ObservableObject {
-    @Published var selection: ModelChoice { didSet { UserDefaults.standard.set(selection.rawValue, forKey: "model") } }
-    @Published var effort: Effort { didSet { UserDefaults.standard.set(effort.rawValue, forKey: "effort") } }
+    @Published var selection: ModelChoice { didSet { defaults.set(selection.rawValue, forKey: "model") } }
+    @Published var effort: Effort { didSet { defaults.set(effort.rawValue, forKey: "effort") } }
     @Published var downloading: ModelChoice?
     @Published private(set) var isVerifying = false
     @Published var progress: Double = 0
@@ -70,13 +105,15 @@ private final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchec
     @Published private(set) var generating = false
     private var activeDownload: ModelDownload?
     private var downloadCancelled = false
+    private let defaults: UserDefaults
     let directory: URL
-    init() {
-        selection = ModelChoice(rawValue: UserDefaults.standard.string(forKey: "model") ?? "") ?? .automatic
-        effort = Effort(rawValue: UserDefaults.standard.string(forKey: "effort") ?? "") ?? .standard
-        directory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("Models")
-        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        var excluded = directory
+    init(defaults: UserDefaults = .standard, directory: URL? = nil) {
+        self.defaults = defaults
+        selection = ModelChoice(rawValue: defaults.string(forKey: "model") ?? "") ?? .defaultModel
+        effort = Effort(rawValue: defaults.string(forKey: "effort") ?? "") ?? .standard
+        self.directory = directory ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("Models")
+        try? FileManager.default.createDirectory(at: self.directory, withIntermediateDirectories: true)
+        var excluded = self.directory
         var values = URLResourceValues(); values.isExcludedFromBackup = true
         try? excluded.setResourceValues(values)
     }
@@ -85,7 +122,7 @@ private final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchec
         #if targetEnvironment(simulator)
         return .small
         #else
-        return ProcessInfo.processInfo.physicalMemory >= 8_000_000_000 && !ProcessInfo.processInfo.isLowPowerModeEnabled && ProcessInfo.processInfo.thermalState == .nominal ? .balanced : .small
+        return ModelChoice.automaticModel(memoryBytes: ProcessInfo.processInfo.physicalMemory, isLowPowerModeEnabled: ProcessInfo.processInfo.isLowPowerModeEnabled, thermalState: ProcessInfo.processInfo.thermalState)
         #endif
     }
     func file(_ model: ModelChoice) -> URL { directory.appendingPathComponent(model.filename) }
@@ -134,7 +171,7 @@ private final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchec
         let grammar = try allowedTools.map { try ToolOutputGrammar.make(allowedTools: $0) } ?? responseGrammar
         let chosen = resolved, url = try await ensure(chosen)
         status = L10n.string("Thinking")
-        return try await runtime.generate(file: url, prompt: localizedPrompt(prompt), maxTokens: maxTokens ?? effort.tokens, grammar: grammar, stopAtJSON: stopAtJSON)
+        return try await runtime.generate(file: url, prompt: localizedPrompt(prompt), maxTokens: maxTokens ?? effort.tokens, grammar: grammar, stopAtJSON: stopAtJSON, promptFormat: chosen.promptFormat)
     }
     func chatDecision(_ input: String, hint: String? = nil, records: Records, history: [ConversationTurn] = []) async throws -> ToolDecision {
         let output = try await generate(ToolPlanner.prompt(input, hint: hint, records: records, history: history), allowedTools: ToolPlanner.availableTools.map(\.rawValue))

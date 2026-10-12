@@ -106,7 +106,7 @@ struct ChatView: View {
                                 modelLabel(compact: false).fixedSize(horizontal: true, vertical: false)
                                 modelLabel(compact: true).fixedSize(horizontal: true, vertical: false)
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text(L10n.string(models.resolved == .balanced ? "Balanced" : "Small")).font(.body.weight(.medium))
+                                    Text(models.resolved.compactTitle).font(.body.weight(.medium))
                                     Text(models.effort.title).font(.body).foregroundStyle(Palette.muted)
                                 }
                             }
@@ -143,7 +143,7 @@ struct ChatView: View {
     }
     private func modelLabel(compact: Bool) -> some View {
         HStack(spacing: 5) {
-            Text(compact ? L10n.string(models.resolved == .balanced ? "Balanced" : "Small") : (models.resolved == .balanced ? "Qwen 1.5B" : "Qwen 0.5B")).font(.body.weight(.medium))
+            Text(compact ? models.resolved.compactTitle : models.resolved.chatTitle).font(.body.weight(.medium))
             Text(models.effort.title).font(.body).foregroundStyle(Palette.muted)
         }
     }

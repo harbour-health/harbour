@@ -1,0 +1,462 @@
+[
+  {
+    "output": "{\"tool\":\"reply\",\"arg\":\"\"}",
+    "seconds": 8.25,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 723,
+      "prompt_ms": 7148.599,
+      "prompt_per_token_ms": 9.887412171507608,
+      "prompt_per_second": 101.13869864570667,
+      "predicted_n": 9,
+      "predicted_ms": 736.155,
+      "predicted_per_token_ms": 92.019375,
+      "predicted_per_second": 10.867276592565425
+    },
+    "stop_type": "eos",
+    "input": "Hello, how are you?",
+    "expected": "reply",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"reply\",\"arg\":\"\"}",
+    "seconds": 7.84,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 723,
+      "prompt_ms": 7041.324,
+      "prompt_per_token_ms": 9.739037344398339,
+      "prompt_per_second": 102.67955287954368,
+      "predicted_n": 9,
+      "predicted_ms": 805.032,
+      "predicted_per_token_ms": 100.629,
+      "predicted_per_second": 9.937493167973447
+    },
+    "stop_type": "eos",
+    "input": "Why is the sky blue?",
+    "expected": "reply",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"reply\",\"arg\":\"\"}",
+    "seconds": 7.5,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 723,
+      "prompt_ms": 6570.245,
+      "prompt_per_token_ms": 9.087475795297372,
+      "prompt_per_second": 110.04155857201673,
+      "predicted_n": 9,
+      "predicted_ms": 917.681,
+      "predicted_per_token_ms": 114.710125,
+      "predicted_per_second": 8.717626277540887
+    },
+    "stop_type": "eos",
+    "input": "What does blood pressure measure?",
+    "expected": "reply",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"reply\",\"arg\":\"\"}",
+    "seconds": 7.98,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 722,
+      "prompt_ms": 7178.73,
+      "prompt_per_token_ms": 9.942839335180055,
+      "prompt_per_second": 100.57489277351287,
+      "predicted_n": 9,
+      "predicted_ms": 808.509,
+      "predicted_per_token_ms": 101.063625,
+      "predicted_per_second": 9.894756892007386
+    },
+    "stop_type": "eos",
+    "input": "Do not delete my records",
+    "expected": "reply",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"check_interactions\",\"arg\":\"\"}",
+    "seconds": 7.94,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 728,
+      "prompt_ms": 6832.429,
+      "prompt_per_token_ms": 9.38520467032967,
+      "prompt_per_second": 106.55068643962491,
+      "predicted_n": 11,
+      "predicted_ms": 1090.591,
+      "predicted_per_token_ms": 109.05909999999999,
+      "predicted_per_second": 9.169340293473907
+    },
+    "stop_type": "eos",
+    "input": "Can I take Advil and warfarin together?",
+    "expected": "check_interactions",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"capture_symptom\",\"arg\":\"\"}",
+    "seconds": 8.5,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 727,
+      "prompt_ms": 7359.755,
+      "prompt_per_token_ms": 10.123459422283357,
+      "prompt_per_second": 98.78046212136137,
+      "predicted_n": 11,
+      "predicted_ms": 1137.185,
+      "predicted_per_token_ms": 113.71849999999999,
+      "predicted_per_second": 8.79364395414994
+    },
+    "stop_type": "eos",
+    "input": "Please record that my knee has been sore since Tuesday",
+    "expected": "capture_symptom",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"log_reading\",\"arg\":\"\"}",
+    "seconds": 8.08,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 726,
+      "prompt_ms": 7070.277,
+      "prompt_per_token_ms": 9.738673553719009,
+      "prompt_per_second": 102.68338850090315,
+      "predicted_n": 10,
+      "predicted_ms": 1011.181,
+      "predicted_per_token_ms": 112.35344444444445,
+      "predicted_per_second": 8.90048369184152
+    },
+    "stop_type": "eos",
+    "input": "Please save my heart rate of 72",
+    "expected": "log_reading",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"add_medication\",\"arg\":\"\"}",
+    "seconds": 8.28,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 724,
+      "prompt_ms": 7045.244,
+      "prompt_per_token_ms": 9.731,
+      "prompt_per_second": 102.76436131949441,
+      "predicted_n": 12,
+      "predicted_ms": 1223.855,
+      "predicted_per_token_ms": 111.25954545454546,
+      "predicted_per_second": 8.987992858631129
+    },
+    "stop_type": "eos",
+    "input": "Add metformin to my medicines",
+    "expected": "add_medication",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"list_readings\",\"arg\":\"\"}",
+    "seconds": 7.56,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 720,
+      "prompt_ms": 6563.249,
+      "prompt_per_token_ms": 9.115623611111111,
+      "prompt_per_second": 109.70176508616389,
+      "predicted_n": 11,
+      "predicted_ms": 1006.334,
+      "predicted_per_token_ms": 100.6334,
+      "predicted_per_second": 9.937058670381802
+    },
+    "stop_type": "eos",
+    "input": "Show my readings",
+    "expected": "list_readings",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"copy_note\",\"arg\":\"\"}",
+    "seconds": 7.58,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 721,
+      "prompt_ms": 6476.366,
+      "prompt_per_token_ms": 8.982477115117891,
+      "prompt_per_second": 111.32786504036369,
+      "predicted_n": 10,
+      "predicted_ms": 1094.452,
+      "predicted_per_token_ms": 121.60577777777777,
+      "predicted_per_second": 8.223293483862243
+    },
+    "stop_type": "eos",
+    "input": "Make an appointment note",
+    "expected": "copy_note",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"log_reading\",\"arg\":\"\"}",
+    "seconds": 8.23,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 725,
+      "prompt_ms": 7045.762,
+      "prompt_per_token_ms": 9.718292413793103,
+      "prompt_per_second": 102.89873543840966,
+      "predicted_n": 10,
+      "predicted_ms": 1184.979,
+      "predicted_per_token_ms": 131.66433333333333,
+      "predicted_per_second": 7.595071305061102
+    },
+    "stop_type": "eos",
+    "input": "My temperature is 36.8",
+    "expected": "log_reading",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"log_reading\",\"arg\":\"\"}",
+    "seconds": 8.19,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 728,
+      "prompt_ms": 7185.65,
+      "prompt_per_token_ms": 9.870398351648351,
+      "prompt_per_second": 101.31303361560889,
+      "predicted_n": 10,
+      "predicted_ms": 973.235,
+      "predicted_per_token_ms": 108.13722222222222,
+      "predicted_per_second": 9.247509594291204
+    },
+    "stop_type": "eos",
+    "input": "My blood pressure is 120/80",
+    "expected": "log_reading",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"export_data\",\"arg\":\"\"}",
+    "seconds": 8.23,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 720,
+      "prompt_ms": 7143.576,
+      "prompt_per_token_ms": 9.921633333333334,
+      "prompt_per_second": 100.78985650884096,
+      "predicted_n": 10,
+      "predicted_ms": 1088.686,
+      "predicted_per_token_ms": 120.9651111111111,
+      "predicted_per_second": 8.266846455268094
+    },
+    "stop_type": "eos",
+    "input": "Export my records",
+    "expected": "export_data",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"import_readings\",\"arg\":\"\"}",
+    "seconds": 8.09,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 722,
+      "prompt_ms": 7096.639,
+      "prompt_per_token_ms": 9.829139889196677,
+      "prompt_per_second": 101.73830175101199,
+      "predicted_n": 11,
+      "predicted_ms": 989.032,
+      "predicted_per_token_ms": 98.9032,
+      "predicted_per_second": 10.110896310736152
+    },
+    "stop_type": "eos",
+    "input": "Import readings from Apple Health",
+    "expected": "import_readings",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"clear_data\",\"arg\":\"\"}",
+    "seconds": 7.36,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 720,
+      "prompt_ms": 6523.167,
+      "prompt_per_token_ms": 9.059954166666667,
+      "prompt_per_second": 110.3758343148351,
+      "predicted_n": 10,
+      "predicted_ms": 831.594,
+      "predicted_per_token_ms": 92.39933333333335,
+      "predicted_per_second": 10.822588907567875
+    },
+    "stop_type": "eos",
+    "input": "Clear all records",
+    "expected": "clear_data",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"list_medications\",\"arg\":\"\"}",
+    "seconds": 7.7,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 720,
+      "prompt_ms": 6575.469,
+      "prompt_per_token_ms": 9.132595833333333,
+      "prompt_per_second": 109.49789284992447,
+      "predicted_n": 12,
+      "predicted_ms": 1133.664,
+      "predicted_per_token_ms": 103.06036363636363,
+      "predicted_per_second": 9.703051345019334
+    },
+    "stop_type": "eos",
+    "input": "Show my medicines",
+    "expected": "list_medications",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"create_reminder\",\"arg\":\"\"}",
+    "seconds": 7.58,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 724,
+      "prompt_ms": 6640.296,
+      "prompt_per_token_ms": 9.17167955801105,
+      "prompt_per_second": 109.03128414757413,
+      "predicted_n": 11,
+      "predicted_ms": 930.866,
+      "predicted_per_token_ms": 93.0866,
+      "predicted_per_second": 10.742684768806681
+    },
+    "stop_type": "eos",
+    "input": "Remind me to book blood work",
+    "expected": "create_reminder",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"list_reminders\",\"arg\":\"\"}",
+    "seconds": 8.33,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 720,
+      "prompt_ms": 6889.555,
+      "prompt_per_token_ms": 9.568826388888889,
+      "prompt_per_second": 104.50602397397219,
+      "predicted_n": 11,
+      "predicted_ms": 1428.516,
+      "predicted_per_token_ms": 142.85160000000002,
+      "predicted_per_second": 7.000271610538489
+    },
+    "stop_type": "eos",
+    "input": "Show my reminders",
+    "expected": "list_reminders",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"schedule_medication\",\"arg\":\"\"}",
+    "seconds": 10.39,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 729,
+      "prompt_ms": 7433.397,
+      "prompt_per_token_ms": 10.196703703703704,
+      "prompt_per_second": 98.07090889939015,
+      "predicted_n": 11,
+      "predicted_ms": 2955.673,
+      "predicted_per_token_ms": 295.5673,
+      "predicted_per_second": 3.3833242039968563
+    },
+    "stop_type": "eos",
+    "input": "Schedule Metformin at 8 am and 8 pm",
+    "expected": "schedule_medication",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"log_dose\",\"arg\":\"\"}",
+    "seconds": 9.12,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 722,
+      "prompt_ms": 8133.633,
+      "prompt_per_token_ms": 11.265419667590027,
+      "prompt_per_second": 88.7672212404961,
+      "predicted_n": 11,
+      "predicted_ms": 986.588,
+      "predicted_per_token_ms": 98.6588,
+      "predicted_per_second": 10.135943271152701
+    },
+    "stop_type": "eos",
+    "input": "I took Metformin",
+    "expected": "log_dose",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"search_timeline\",\"arg\":\"\"}",
+    "seconds": 7.47,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 723,
+      "prompt_ms": 6714.832,
+      "prompt_per_token_ms": 9.287457814661135,
+      "prompt_per_second": 107.67209067926048,
+      "predicted_n": 10,
+      "predicted_ms": 759.006,
+      "predicted_per_token_ms": 84.334,
+      "predicted_per_second": 11.857613773804161
+    },
+    "stop_type": "eos",
+    "input": "Search my history for blood work",
+    "expected": "search_timeline",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"scan_medication\",\"arg\":\"\"}",
+    "seconds": 7.83,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 721,
+      "prompt_ms": 6830.057,
+      "prompt_per_token_ms": 9.473033287101249,
+      "prompt_per_second": 105.56280862663371,
+      "predicted_n": 11,
+      "predicted_ms": 971.363,
+      "predicted_per_token_ms": 97.1363,
+      "predicted_per_second": 10.294812546905739
+    },
+    "stop_type": "eos",
+    "input": "Scan a medicine label",
+    "expected": "scan_medication",
+    "french": false,
+    "passed": true
+  },
+  {
+    "output": "{\"tool\":\"save_question\",\"arg\":\"\"}",
+    "seconds": 7.36,
+    "timings": {
+      "cache_n": 0,
+      "prompt_n": 730,
+      "prompt_ms": 6592.543,
+      "prompt_per_token_ms": 9.030880821917808,
+      "prompt_per_second": 110.73117005076797,
+      "predicted_n": 10,
+      "predicted_ms": 775.041,
+      "predicted_per_token_ms": 86.11566666666667,
+      "predicted_per_second": 11.612288898264737
+    },
+    "stop_type": "eos",
+    "input": "Save question for my doctor: Should I repeat my blood test?",
+    "expected": "save_question",
+    "french": false,
+    "passed": true
+  }
+]
