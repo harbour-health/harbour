@@ -4,8 +4,8 @@ import HarbourRuntime
 
 @main struct Probe {
     static func main() async throws {
-        guard CommandLine.arguments.count > 1 else { print("Usage: model-probe /path/model.gguf"); return }
-        let file = URL(fileURLWithPath: CommandLine.arguments[1]), runtime = LocalModel()
+        guard CommandLine.arguments.count > 1 else { print("Usage: model-probe /path/model.gguf [--cpu]"); return }
+        let file = URL(fileURLWithPath: CommandLine.arguments[1]), runtime = LocalModel(useGPU: !CommandLine.arguments.contains("--cpu"))
         let cases = Evaluation.routingCases.map { ($0.input, $0.tool) }
         var passed = 0
         for (input, expected) in cases {
@@ -24,7 +24,7 @@ import HarbourRuntime
         for fixture in Evaluation.visitSummaryCases {
             let start = Date()
             do {
-                let output = try await runtime.generate(file: file, prompt: VisitReview.prompt(fixture.transcript, medicines: Evaluation.records.medicines), maxTokens: 650)
+                let output = try await runtime.generate(file: file, prompt: VisitReview.prompt(fixture.transcript, medicines: Evaluation.records.medicines), maxTokens: 650, grammar: VisitSummaryOutputGrammar.make())
                 let success = fixture.matches(output)
                 if success { transcriptPassed += 1 }
                 print("\(success ? "PASS" : "FAIL") transcript: \(fixture.name) | \(String(format: "%.2f", Date().timeIntervalSince(start)))s | \(output)")

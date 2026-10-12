@@ -22,7 +22,8 @@ public actor LocalModel {
     private var context: OpaquePointer?
     private var path: String?
     private var backendStarted = false
-    public init() {}
+    private let useGPU: Bool
+    public init(useGPU: Bool = true) { self.useGPU = useGPU }
     deinit {
         if let context { llama_free(context) }
         if let model { llama_model_free(model) }
@@ -40,7 +41,7 @@ public actor LocalModel {
         #if targetEnvironment(simulator)
         mp.n_gpu_layers = 0
         #else
-        mp.n_gpu_layers = 99
+        mp.n_gpu_layers = useGPU ? 99 : 0
         #endif
         guard let loaded = llama_model_load_from_file(file.path, mp) else { throw ModelError.load }
         var cp = llama_context_default_params()

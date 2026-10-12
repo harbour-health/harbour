@@ -1,5 +1,6 @@
 import SwiftUI
 import HarbourCore
+import HarbourRuntime
 
 private func visitTime(_ seconds: TimeInterval) -> String {
     let value = max(0, Int(seconds)); return String(format: "%02d:%02d", value / 60, value % 60)
@@ -269,7 +270,7 @@ struct VisitDetailView: View {
                 var combined = VisitSummary()
                 for (index, chunk) in chunks.enumerated() {
                     try Task.checkCancellation(); status = L10n.format("Preparing summary · %d of %d", index + 1, chunks.count)
-                    let output = try await models.generate(VisitReview.prompt(chunk, medicines: baseline), maxTokens: 650)
+                    let output = try await models.generate(VisitReview.prompt(chunk, medicines: baseline), maxTokens: 650, responseGrammar: VisitSummaryOutputGrammar.make())
                     try Task.checkCancellation()
                     combined.merge(try VisitReview.parse(output, transcript: chunk, medicines: baseline))
                 }

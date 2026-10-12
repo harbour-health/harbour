@@ -79,8 +79,8 @@ public enum ToolPlanner {
         "Prepare notes for my next doctor visit" -> {"tool":"copy_note","arg":""}
         "What reminders have I set?" -> {"tool":"list_reminders","arg":""}
         "I swallowed my scheduled aspirin" -> {"tool":"log_dose","arg":""}
-        "Add my dentist appointment next Tuesday at 2 pm" -> {"tool":"create_appointment","arg":""}
-        "Show my appointments" -> {"tool":"list_appointments","arg":""}
+        "Save my optometrist appointment Friday at 10 am" -> {"tool":"create_appointment","arg":""}
+        "List my upcoming appointments" -> {"tool":"list_appointments","arg":""}
         Saved records (a limited snapshot, not a complete history): \(escaped(context))
         Optional topic (not an action): \(escaped(json(hint ?? "none")))
         <|im_end|>

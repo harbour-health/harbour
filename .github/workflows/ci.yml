@@ -148,12 +148,12 @@ jobs:
       - name: Measure Small model accuracy
         run: |
           set -euo pipefail
-          swift run --package-path HarbourRuntime --configuration release --skip-build model-probe "$PWD/build/models/small.gguf" 2>&1 | tee build/model-small.log
+          swift run --package-path HarbourRuntime --configuration release --skip-build model-probe "$PWD/build/models/small.gguf" --cpu 2>&1 | tee build/model-small.log
       - name: Measure Balanced model accuracy
         if: always() && !cancelled() && steps.model-download.outcome == 'success' && steps.probe-build.outcome == 'success'
         run: |
           set -euo pipefail
-          swift run --package-path HarbourRuntime --configuration release --skip-build model-probe "$PWD/build/models/balanced.gguf" 2>&1 | tee build/model-balanced.log
+          swift run --package-path HarbourRuntime --configuration release --skip-build model-probe "$PWD/build/models/balanced.gguf" --cpu 2>&1 | tee build/model-balanced.log
       - name: Upload model accuracy results
         if: always()
         uses: actions/upload-artifact@v4
