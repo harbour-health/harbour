@@ -1,5 +1,6 @@
 import Foundation
 import XCTest
+import llama
 @testable import HarbourRuntime
 
 final class VisitSummaryOutputGrammarTests: XCTestCase {
@@ -8,12 +9,12 @@ final class VisitSummaryOutputGrammarTests: XCTestCase {
         XCTAssertTrue(grammar.contains(#"root ::= ws "{" ws "\"highlights\"" ws ":" ws quotes ws "," ws "\"medicines\"" ws ":" ws medicines ws "," ws "\"followUps\"" ws ":" ws quotes ws "," ws "\"appointments\"" ws ":" ws quotes ws "}" ws"#))
         XCTAssertTrue(grammar.contains(#"quotes ::= "[" ws (quote (ws "," ws quote){0,11})? ws "]""#))
         XCTAssertTrue(grammar.contains(#"medicines ::= "[" ws (medicine (ws "," ws medicine){0,11})? ws "]""#))
-        XCTAssertTrue(grammar.contains(#"medicine ::= active_medicine | stop_medicine"#))
-        XCTAssertTrue(grammar.contains(#"active_action ::= "\"start\"" | "\"update\"""#))
+        XCTAssertTrue(grammar.contains(#"medicine ::= active-medicine | stop-medicine"#))
+        XCTAssertTrue(grammar.contains(#"active-action ::= "\"start\"" | "\"update\"""#))
         XCTAssertTrue(grammar.contains(#"character{4,600}"#))
         XCTAssertTrue(grammar.contains(#"character{1,100}"#))
         XCTAssertTrue(grammar.contains(#"character{1,180}"#))
-        XCTAssertTrue(grammar.contains(#""\"stop\"" ws "," ws "\"name\"" ws ":" ws name_string ws "," ws "\"instructions\"" ws ":" ws "\"\"""#))
+        XCTAssertTrue(grammar.contains(#""\"stop\"" ws "," ws "\"name\"" ws ":" ws name-string ws "," ws "\"instructions\"" ws ":" ws "\"\"""#))
         XCTAssertFalse(grammar.contains(".*"))
     }
 
@@ -35,8 +36,17 @@ final class VisitSummaryOutputGrammarTests: XCTestCase {
 
     func testGrammarContainsOnlyTheSupportedMedicationFields() {
         let grammar = VisitSummaryOutputGrammar.make()
-        XCTAssertTrue(grammar.contains(#"active_medicine ::= "{" ws "\"action\"" ws ":" ws active_action ws "," ws "\"name\"" ws ":" ws name_string ws "," ws "\"instructions\"" ws ":" ws instruction_string ws "," ws "\"quote\"" ws ":" ws quote_string ws "}""#))
+        XCTAssertTrue(grammar.contains(#"active-medicine ::= "{" ws "\"action\"" ws ":" ws active-action ws "," ws "\"name\"" ws ":" ws name-string ws "," ws "\"instructions\"" ws ":" ws instruction-string ws "," ws "\"quote\"" ws ":" ws quote-string ws "}""#))
         XCTAssertFalse(grammar.contains("metformin"))
         XCTAssertFalse(grammar.contains("twice daily"))
+    }
+
+    func testNativeRuntimeParsesAllOutputGrammarsWithoutModelWeights() throws {
+        // These character-only grammars need no vocabulary until token sampling.
+        for grammar in [VisitSummaryOutputGrammar.make(), TitleOutputGrammar.make(), ToolOutputGrammar.make(allowedTools: ["reply"])] {
+            let sampler = try XCTUnwrap(llama_sampler_init_grammar(nil, grammar, "root"))
+            llama_sampler_free(sampler)
+        }
+        XCTAssertNil(llama_sampler_init_grammar(nil, "root ::= invalid_rule\ninvalid_rule ::= \"x\"", "root"))
     }
 }
