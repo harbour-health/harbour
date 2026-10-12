@@ -60,19 +60,18 @@ final class ModelPromptsTests: XCTestCase {
     func testConversationContractStatesReadAccessReplyStateAndNegationInBothLanguages() {
         var records = Records()
         records.medicines = [Medicine(name: "Source name", instructions: "Source directions")]
-        let raw = ToolPlanner.conversationPrompt("Keep my saved information as it is", records: records)
-        XCTAssertTrue(raw.contains("You have read access"))
-        XCTAssertTrue(raw.contains("executes no record operation"))
-        XCTAssertTrue(raw.contains("including negation"))
-        XCTAssertTrue(raw.contains("separate review and confirmation"))
-        XCTAssertTrue(raw.contains("received and understood the instruction"))
-        XCTAssertTrue(raw.contains("Do not replace it with a capability, review or confirmation explanation"))
         for language in [ModelLanguage.english, .french] {
+            let raw = ToolPlanner.conversationPrompt("Keep my saved information as it is", records: records, language: language)
+            let policy = ModelPrompts.proseInstruction(language: language)
             let localized = ModelPrompts.localized(raw, language: language, purpose: .prose)
+            XCTAssertEqual(localized.components(separatedBy: policy).count, 2, "Policy must appear exactly once")
             XCTAssertTrue(localized.contains("Source directions"))
             XCTAssertTrue(localized.contains("\"totalCount\":1"))
-            XCTAssertTrue(localized.contains(language == .english ? "no record operation is executed" : "aucune opération sur les dossiers n’est exécutée"))
-            XCTAssertTrue(localized.contains(language == .english ? "received and understood the instruction and the requested preservation or avoidance" : "reçu et compris la consigne, ainsi que la conservation ou l’évitement demandé"))
+            XCTAssertTrue(localized.contains(language == .english ? "executes no record operation" : "Aucune opération sur les dossiers n’est exécutée"))
+            XCTAssertTrue(localized.contains(language == .english ? "received and understood the instruction" : "reçu et compris la consigne"))
+            XCTAssertTrue(localized.contains(language == .english ? "including negation" : "y compris la négation"))
+            XCTAssertTrue(localized.contains(language == .english ? "opposite-action refusal" : "refus de l'action opposée"))
+            XCTAssertTrue(localized.contains(language == .english ? "Reply in natural Canadian English" : "Réponds en français canadien naturel"))
         }
     }
 
@@ -99,9 +98,9 @@ final class ModelPromptsTests: XCTestCase {
             XCTAssertTrue(reply.contains("\"name\":" + savedNameJSON))
             for language in [ModelLanguage.english, .french] {
                 let localizedRouter = ModelPrompts.localized(router, language: language, purpose: .routing)
-                let localizedReply = ModelPrompts.localized(reply, language: language, purpose: .prose)
+                let localizedReply = ModelPrompts.localized(ToolPlanner.conversationPrompt(request, records: records, language: language), language: language, purpose: .prose)
                 XCTAssertTrue(localizedRouter.contains(language == .english ? "If a required fact is missing, select reply" : "Si un fait requis manque, choisis reply"))
-                XCTAssertTrue(localizedReply.contains(language == .english ? "ask for it briefly" : "demande ce fait brièvement"))
+                XCTAssertTrue(localizedReply.contains(language == .english ? "briefly ask for that missing fact" : "demande ce fait brièvement"))
                 XCTAssertTrue(localizedReply.contains(request))
                 XCTAssertTrue(localizedReply.contains("\"name\":" + savedNameJSON))
             }
@@ -114,9 +113,9 @@ final class ModelPromptsTests: XCTestCase {
             (.french, "Pourquoi le sucre se dissout-il dans l'eau ?")
         ]
         for (language, request) in requests {
-            let raw = ToolPlanner.conversationPrompt(request, records: Records())
+            let raw = ToolPlanner.conversationPrompt(request, records: Records(), language: language)
             let localized = ModelPrompts.localized(raw, language: language, purpose: .prose)
-            XCTAssertTrue(raw.contains("only the essential explanation in one concise sentence"))
+            XCTAssertTrue(raw.contains(language == .english ? "only the essential explanation in one concise sentence" : "l'explication essentielle en une seule phrase concise"))
             XCTAssertTrue(localized.contains(language == .english ? "one concise sentence" : "une seule phrase concise"))
             XCTAssertTrue(localized.contains(language == .english ? "omit unsupported details" : "omets les détails non fondés"))
             XCTAssertTrue(localized.contains(request))
@@ -134,6 +133,7 @@ final class ModelPromptsTests: XCTestCase {
         XCTAssertTrue(raw.contains("complete dose, frequency and any clock times that apply specifically to that medicine"))
         XCTAssertTrue(raw.contains("exactly the four top-level keys"))
         XCTAssertTrue(raw.contains("An empty medicines array means no supported explicit medicine instruction is stated"))
+        XCTAssertTrue(raw.contains("placing it only in appointments does not replace followUps"))
         XCTAssertFalse(raw.contains("Independent classification examples"))
         XCTAssertFalse(raw.contains("500 mg twice daily"))
         for language in [ModelLanguage.english, .french] {
