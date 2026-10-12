@@ -64,11 +64,28 @@ private struct LabelCamera: UIViewControllerRepresentable {
 }
 struct ScheduleFields: View {
     @Binding var times: [DoseTime]
+    @Binding var frequencyEnabled: Bool
+    @Binding var frequencyCount: Int
+    @Binding var frequencyPeriod: MedicationFrequencyPeriod
     @Binding var notify: Bool
     @Binding var refillEnabled: Bool
     @Binding var refill: Date
+    private var frequencyMatchesTimes: Bool {
+        !frequencyEnabled || (MedicationFrequency(count: frequencyCount, period: frequencyPeriod).valid && (times.isEmpty || (frequencyPeriod == .day && frequencyCount == times.count)))
+    }
     var body: some View {
         Section(L10n.string("Schedule")) {
+            Toggle(L10n.string("Save frequency"), isOn: $frequencyEnabled)
+            if frequencyEnabled {
+                Stepper(L10n.format("%d per %@", frequencyCount, L10n.string(frequencyPeriod.rawValue)), value: $frequencyCount, in: 1...(frequencyPeriod == .day ? 24 : 31))
+                Picker(L10n.string("Period"), selection: $frequencyPeriod) {
+                    ForEach(MedicationFrequencyPeriod.allCases, id: \.self) { period in Text(L10n.string(period.rawValue.capitalized)).tag(period) }
+                }
+                if times.isEmpty { Text(L10n.string("Frequency without a clock time will not create dose reminders.")).font(.footnote).foregroundStyle(Palette.muted) }
+                else if !frequencyMatchesTimes {
+                    Text(L10n.string(MedicationFrequency(count: frequencyCount, period: frequencyPeriod).valid ? "Choose a daily frequency that matches the number of clock times, or remove the times." : "Choose a valid frequency count.")).font(.footnote).foregroundStyle(.red)
+                }
+            }
             ForEach(times.indices, id: \.self) { index in
                 HStack {
                     DatePicker(L10n.format("Time %d", index + 1), selection: Binding(get: { Calendar.current.date(bySettingHour: times[index].hour, minute: times[index].minute, second: 0, of: .now) ?? .now }, set: { let p = Calendar.current.dateComponents([.hour, .minute], from: $0); times[index] = DoseTime(hour: p.hour ?? 0, minute: p.minute ?? 0) }), displayedComponents: .hourAndMinute).accessibilityIdentifier("doseTime-\(index)")
@@ -84,6 +101,7 @@ struct ScheduleFields: View {
                 times.append(DoseTime(hour: times.isEmpty ? 8 : min(23, (times.last?.hour ?? 8) + 4), minute: 0))
                 #endif
             } label: { Label(L10n.string("Add time"), systemImage: "plus") }.disabled(times.count >= 8).accessibilityIdentifier("addDoseTime")
+            if !times.isEmpty && !frequencyEnabled { Text(L10n.format("%d per day", times.count)).font(.footnote).foregroundStyle(Palette.muted) }
             Toggle(L10n.string("Refill reminder"), isOn: $refillEnabled)
             if refillEnabled { DatePicker(L10n.string("Refill"), selection: $refill, displayedComponents: [.date, .hourAndMinute]) }
             if !times.isEmpty || refillEnabled { Toggle(L10n.string("Notify me"), isOn: $notify) }

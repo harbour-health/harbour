@@ -91,7 +91,23 @@ private enum LockKeychain {
         let context = LAContext(); _ = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil)
         return context.biometryType == .touchID ? "Touch ID" : "Face ID"
     }
-    init() { reload() }
+    init() {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--ui-test-unlocked") {
+            credential = LockCredential(mode: .off)
+            configured = true
+            locked = false
+            return
+        }
+        if ProcessInfo.processInfo.arguments.contains("--ui-test-biometric-lock") {
+            credential = LockCredential(mode: .biometrics)
+            configured = true
+            locked = true
+            return
+        }
+        #endif
+        reload()
+    }
     func reload() {
         do { credential = try LockKeychain.read(); configured = true; locked = enabled; error = nil }
         catch { configured = false; locked = true; self.error = error.localizedDescription }
@@ -238,7 +254,7 @@ struct LockScreen: View {
                 Spacer(); HarbourMark(size: 60).foregroundStyle(Palette.blue)
                 Text("Harbour is locked").font(.system(.largeTitle, design: .rounded, weight: .bold))
                 if !lock.configured { Button("Try again") { lock.reload() } }
-                else { Button { Task { await lock.unlockBiometrics() } } label: { Label(L10n.format("Unlock with %@", lock.biometricName), systemImage: "faceid").font(.title3.weight(.semibold)) }.buttonStyle(.borderedProminent).disabled(lock.working) }
+                else { Button { Task { await lock.unlockBiometrics() } } label: { Label(L10n.format("Unlock with %@", lock.biometricName), systemImage: "faceid").font(.title3.weight(.semibold)).foregroundStyle(Palette.canvas) }.buttonStyle(.borderedProminent).tint(Palette.blue).disabled(lock.working).accessibilityIdentifier("biometricUnlockButton") }
                 if lock.working { ProgressView() }
                 if let error = lock.error { Text(error).foregroundStyle(Palette.coral).multilineTextAlignment(.center) }
                 Spacer(); Spacer()
@@ -270,7 +286,7 @@ struct AppLockSettings: View {
     }
     private func option(_ title: String, symbol: String, selected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) { HStack(spacing: 16) { Image(systemName: symbol).font(.title2).frame(width: 30); Text(L10n.string(title)).font(.title3.weight(.medium)); Spacer(); if selected { Image(systemName: "checkmark") } }.foregroundStyle(Palette.ink).padding(.vertical, 12).contentShape(Rectangle()) }
-            .disabled(lock.working).listRowBackground(Palette.surface).accessibilityIdentifier("lock-option-" + (title == "PIN" ? "pin" : title == "Off" ? "off" : "biometrics")).accessibilityAddTraits(selected ? .isSelected : [])
+            .buttonStyle(.plain).disabled(lock.working).listRowBackground(Palette.surface).accessibilityIdentifier("lock-option-" + (title == "PIN" ? "pin" : title == "Off" ? "off" : "biometrics")).accessibilityAddTraits(selected ? .isSelected : [])
     }
     private func begin(_ change: LockRequest) {
         guard !(change == .off && !lock.enabled) else { return }

@@ -9,8 +9,9 @@ struct RecordsView: View {
     var body: some View {
         List {
             categoryRow("Symptoms", count: store.records.symptoms.count, symbol: "cross.case.fill", colour: Palette.coral, index: 0)
-            categoryRow("Medicines", count: store.records.medicines.count, symbol: "pills.fill", colour: Palette.blue, index: 1)
+            categoryRow("Medications", count: store.records.medicines.count, symbol: "pills.fill", colour: Palette.blue, index: 1)
             categoryRow("Readings", count: store.records.readings.count, symbol: "waveform.path.ecg", colour: Palette.coral, index: 2)
+            categoryRow("Appointments", count: store.records.appointments.count, symbol: "calendar", colour: Palette.blue, index: 3)
         }
         .contentMargins(.bottom, dockClearance, for: .scrollContent)
         .listStyle(.plain).scrollContentBackground(.hidden).background(Palette.canvas)
@@ -42,7 +43,7 @@ private struct RecordList: View {
     @Environment(\.floatingDockClearance) private var dockClearance
     @Binding var sheet: AppSheet?
     let category: Int
-    private var title: String { L10n.string(["Symptoms", "Medicines", "Readings"][category]) }
+    private var title: String { L10n.string(["Symptoms", "Medications", "Readings", "Appointments"][category]) }
     var body: some View {
         List {
             if category == 0 {
@@ -54,12 +55,20 @@ private struct RecordList: View {
                 }
             } else if category == 1 {
                 Section {
-                    if store.records.medicines.isEmpty { RecordEmptyState(kind: .medicines, title: "No medicines") }
+                    if store.records.medicines.isEmpty { RecordEmptyState(kind: .medicines, title: "No medications") }
                     ForEach(store.records.medicines) { medicine in
                         Button { sheet = .medicine(medicine) } label: {
                             HStack(spacing: 14) {
                                 FeatureIcon(symbol: "pills.fill", colour: Palette.blue)
-                                VStack(alignment: .leading, spacing: 5) { Text(L10n.medicineName(medicine)).foregroundStyle(Palette.ink).fontWeight(.medium); Text(medicine.ingredients.isEmpty ? L10n.string("Ingredients unconfirmed") : L10n.ingredientNames(medicine.ingredients)).font(.body).foregroundStyle(Palette.muted); if !medicine.instructions.isEmpty { Text(medicine.instructions).font(.body).foregroundStyle(Palette.muted) } }
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text(L10n.medicineName(medicine)).foregroundStyle(Palette.ink).fontWeight(.medium)
+                                    Text(medicine.ingredients.isEmpty ? L10n.string("Ingredients unconfirmed") : L10n.ingredientNames(medicine.ingredients)).font(.body).foregroundStyle(Palette.muted)
+                                    if !medicine.instructions.isEmpty { Text(medicine.instructions).font(.body).foregroundStyle(Palette.muted) }
+                                    if let schedule = store.care.schedules.first(where: { $0.medicineID == medicine.id }),
+                                       let frequency = schedule.frequency ?? (schedule.times.isEmpty ? nil : MedicationFrequency(count: schedule.times.count, period: .day)) {
+                                        Text(L10n.frequency(frequency)).font(.body).foregroundStyle(Palette.muted)
+                                    }
+                                }
                                 Spacer(minLength: 8)
                                 Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Palette.muted)
                             }.padding(.vertical, 12)
@@ -67,6 +76,16 @@ private struct RecordList: View {
                     }.onDelete { indexes in let ids = indexes.map { store.records.medicines[$0].id }; for id in ids { store.removeMedicine(id) } }
                 }
                 if !store.records.medicines.isEmpty { Section { Button { sheet = .interactions(store.records.medicines) } label: { Label("Check interactions", systemImage: "arrow.triangle.branch") } } }
+            } else if category == 3 {
+                Section {
+                    if store.records.appointments.isEmpty { Text("No appointments").foregroundStyle(Palette.muted).padding(.vertical, 24) }
+                    ForEach(store.records.appointments.sorted { $0.date < $1.date }) { appointment in
+                        Button { sheet = .appointment(appointment) } label: { AppointmentRow(appointment: appointment) }.buttonStyle(.plain)
+                    }.onDelete { indexes in
+                        let sorted = store.records.appointments.sorted { $0.date < $1.date }
+                        for index in indexes { store.removeAppointment(sorted[index].id) }
+                    }
+                }
             } else {
                 Section {
                     if store.records.readings.isEmpty { RecordEmptyState(kind: .readings, title: "No readings") }
@@ -78,7 +97,7 @@ private struct RecordList: View {
         .contentMargins(.bottom, dockClearance, for: .scrollContent)
         .listStyle(.plain).listSectionSpacing(24).scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle(title)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) { Button { switch category { case 0: sheet = .symptom(""); case 1: sheet = .medicine(nil); default: sheet = .reading(nil) } } label: { ToolbarGlyph(symbol: "plus") }.accessibilityLabel("Add record") }
+            ToolbarItem(placement: .topBarTrailing) { Button { switch category { case 0: sheet = .symptom(""); case 1: sheet = .medicine(nil); case 3: sheet = .appointment(Appointment()); default: sheet = .reading(nil) } } label: { ToolbarGlyph(symbol: "plus") }.accessibilityLabel("Add record") }
         }
     }
 }
@@ -165,9 +184,13 @@ struct SymptomDetail: View {
 struct MedicineEditor: View {
     let initial: Medicine?
     var suggestedTimes: [DoseTime] = []
+    var suggestedFrequency: MedicationFrequency? = nil
     @StateObject private var scanner = MedicineScanner()
     @EnvironmentObject private var alerts: CareNotifications
     @State private var times: [DoseTime] = []
+    @State private var frequencyEnabled = false
+    @State private var frequencyCount = 1
+    @State private var frequencyPeriod: MedicationFrequencyPeriod = .day
     @State private var notify = false
     @State private var refillEnabled = false
     @State private var refill = Date.now.addingTimeInterval(86400 * 30)
@@ -178,9 +201,16 @@ struct MedicineEditor: View {
     @State private var instructions = ""
     @State private var confirmed = false
     @FocusState private var editing: Bool
+    private var savedFrequency: MedicationFrequency? {
+        if frequencyEnabled { return MedicationFrequency(count: frequencyCount, period: frequencyPeriod) }
+        return times.isEmpty ? nil : MedicationFrequency(count: times.count, period: .day)
+    }
+    private var frequencyMatchesTimes: Bool {
+        !frequencyEnabled || (MedicationFrequency(count: frequencyCount, period: frequencyPeriod).valid && (times.isEmpty || (frequencyPeriod == .day && frequencyCount == times.count)))
+    }
     var body: some View {
         Form {
-            Section("Medicine label") {
+            Section("Medication label") {
                 MedicineScanButtons(scanner: scanner)
                 if scanner.busy { ProgressView("Reading label…") }
                 if let error = scanner.error { Text(error).foregroundStyle(.red) }
@@ -195,8 +225,6 @@ struct MedicineEditor: View {
                     LabeledContent("Active ingredients", value: chosen.ingredients.isEmpty ? L10n.string("Unconfirmed") : L10n.ingredientNames(chosen.ingredients))
                     if initial == nil { Button("Choose another medicine") { self.chosen = nil; confirmed = false } }
                 }
-                Section("Instructions from your label") { TextField("Dose or notes (optional)", text: $instructions, prompt: Text("Dose or notes (optional)").foregroundStyle(Palette.muted), axis: .vertical).lineLimit(2...4).focused($editing) }
-                ScheduleFields(times: $times, notify: $notify, refillEnabled: $refillEnabled, refill: $refill)
                 Section {
                     Button { confirmed.toggle() } label: {
                         HStack(spacing: 14) {
@@ -206,11 +234,13 @@ struct MedicineEditor: View {
                         }.padding(.vertical, 8).contentShape(Rectangle())
                     }.buttonStyle(.plain).accessibilityIdentifier("confirmMedicine").accessibilityValue(L10n.string(confirmed ? "Confirmed" : "Not confirmed")).accessibilityAddTraits(confirmed ? .isSelected : [])
                 } footer: { Text(L10n.string(chosen.ingredients.isEmpty ? "This medicine will be saved with unconfirmed ingredients. Its interactions cannot be assessed." : "Brand formulations can differ. Check the active ingredients on your package.")) }
+                Section("Instructions from your label") { TextField("Dose or notes (optional)", text: $instructions, prompt: Text("Dose or notes (optional)").foregroundStyle(Palette.muted), axis: .vertical).lineLimit(2...4).focused($editing) }
+                ScheduleFields(times: $times, frequencyEnabled: $frequencyEnabled, frequencyCount: $frequencyCount, frequencyPeriod: $frequencyPeriod, notify: $notify, refillEnabled: $refillEnabled, refill: $refill)
             } else {
                 Section {
-                    TextField("Medicine name", text: $query, prompt: Text("Medicine name").foregroundStyle(Palette.muted)).autocorrectionDisabled().focused($editing).accessibilityIdentifier("medicineSearch")
+                    TextField("Medication name", text: $query, prompt: Text("Medication name").foregroundStyle(Palette.muted)).autocorrectionDisabled().focused($editing).accessibilityIdentifier("medicineSearch")
                 }
-                Section("Medicines") {
+                Section("Medications") {
                     ForEach(Catalog.search(query)) { medicine in
                         Button { chosen = medicine } label: { VStack(alignment: .leading, spacing: 4) { Text(L10n.medicineName(medicine)).foregroundStyle(Palette.ink); Text(L10n.ingredientNames(medicine.ingredients)).font(.body).foregroundStyle(Palette.muted) } }.accessibilityIdentifier("catalog-" + medicine.id)
                     }
@@ -222,16 +252,22 @@ struct MedicineEditor: View {
         }
         .scrollContentBackground(.hidden).background(Palette.canvas)
         .drawerHeight(chosen == nil ? 600 : 690)
-        .navigationTitle(L10n.string(initial == nil ? "Add medicine" : "Medicine")).navigationBarTitleDisplayMode(.inline)
+        .navigationTitle(L10n.string(initial == nil ? "Add medicine" : "Medication")).navigationBarTitleDisplayMode(.inline)
         .onAppear {
             chosen = initial; instructions = initial?.instructions ?? ""; times = suggestedTimes
-            if let schedule = store.care.schedules.first(where: { $0.medicineID == initial?.id }) { if suggestedTimes.isEmpty { times = schedule.times }; notify = schedule.notify; refillEnabled = schedule.refill != nil; refill = schedule.refill ?? refill }
+            if let suggestedFrequency { frequencyEnabled = true; frequencyCount = suggestedFrequency.count; frequencyPeriod = suggestedFrequency.period }
+            if let schedule = store.care.schedules.first(where: { $0.medicineID == initial?.id }) {
+                if suggestedTimes.isEmpty { times = schedule.times }
+                if suggestedFrequency == nil, let frequency = schedule.frequency { frequencyEnabled = true; frequencyCount = frequency.count; frequencyPeriod = frequency.period }
+                notify = schedule.notify; refillEnabled = schedule.refill != nil; refill = schedule.refill ?? refill
+            }
         }
+        .onChange(of: frequencyPeriod) { frequencyCount = min(frequencyCount, frequencyPeriod == .day ? 24 : 31) }
         .onChange(of: scanner.text) { confirmed = false; let candidates = CareRules.labelCandidates(scanner.text); chosen = candidates.count == 1 ? candidates[0] : nil; instructions = CareRules.labelInstructions(scanner.text) }
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { editing = false } }
             ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
-            ToolbarItem(placement: .confirmationAction) { Button("Save") { if var chosen { chosen.instructions = instructions; Task { if notify { await alerts.requestAccess() }; if store.saveMedicine(chosen, schedule: MedicineSchedule(medicineID: chosen.id, times: times, notify: notify, refill: refillEnabled ? refill : nil)) { dismiss() } } } }.disabled(chosen == nil || !confirmed).accessibilityIdentifier("saveMedicine") }
+            ToolbarItem(placement: .confirmationAction) { Button("Save") { if var chosen { chosen.instructions = instructions; Task { if notify { await alerts.requestAccess() }; if store.saveMedicine(chosen, schedule: MedicineSchedule(medicineID: chosen.id, times: times, frequency: savedFrequency, notify: notify, refill: refillEnabled ? refill : nil)) { dismiss() } } } }.disabled(chosen == nil || !confirmed || !frequencyMatchesTimes).accessibilityIdentifier("saveMedicine") }
         }
     }
 }
@@ -287,8 +323,8 @@ struct InteractionView: View {
             if !report.duplicates.isEmpty { Label(L10n.format("Repeated ingredients: %@", L10n.ingredientNames(report.duplicates)), systemImage: "pills.fill").foregroundStyle(Palette.coral) }
             if !report.unresolved.isEmpty { VStack(alignment: .leading, spacing: 6) { Text("Unconfirmed ingredients").font(.headline); Text(report.unresolved.joined(separator: ", ")).foregroundStyle(Palette.muted) } }
             if !report.unassessed.isEmpty { VStack(alignment: .leading, spacing: 10) { Text("Not assessed").font(.headline); ForEach(report.unassessed.indices, id: \.self) { Text(report.unassessed[$0].map { L10n.string($0) }.joined(separator: " + ")).foregroundStyle(Palette.muted) } } }
-            if report.alerts.isEmpty && report.unassessed.isEmpty && report.duplicates.isEmpty && report.unresolved.isEmpty { Text("Add at least two medicines to compare.").foregroundStyle(Palette.muted) }
-            Text("Coverage: four source-listed ingredient pairs. An absent alert does not establish safety. Ask a pharmacist before changing medicines.").font(.footnote).foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true)
+            if report.alerts.isEmpty && report.unassessed.isEmpty && report.duplicates.isEmpty && report.unresolved.isEmpty { Text("Add at least two medications to compare.").foregroundStyle(Palette.muted) }
+            Text("Coverage: four source-listed ingredient pairs. An absent alert does not establish safety. Ask a pharmacist before changing medications.").font(.footnote).foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true)
         }.frame(maxWidth: .infinity, alignment: .leading)
     }
 }

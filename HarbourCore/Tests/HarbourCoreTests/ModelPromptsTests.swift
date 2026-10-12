@@ -79,7 +79,8 @@ final class ModelPromptsTests: XCTestCase {
     func testMissingMedicineNameNeedsClarificationDespiteAProvidedSavedList() throws {
         var records = Records()
         records.medicines = [try XCTUnwrap(Catalog.medicines.first { $0.id == "aspirin" })]
-        let savedNameJSON = String(decoding: try JSONEncoder().encode(records.medicines[0].name), as: UTF8.self)
+        let encoder = JSONEncoder(); encoder.outputFormatting = .withoutEscapingSlashes
+        let savedNameJSON = String(decoding: try encoder.encode(records.medicines[0].name), as: UTF8.self)
         let requests: [(Tool, String)] = [
             (.addMedicine, "Put the new capsule on my list."),
             (.removeMedicine, "Remove the capsule from my list."),
@@ -130,10 +131,14 @@ final class ModelPromptsTests: XCTestCase {
         XCTAssertTrue(raw.contains("documentation, not giving new advice"))
         XCTAssertTrue(raw.contains("empty array only when its category has no relevant source facts"))
         XCTAssertTrue(raw.contains("Field descriptions below are placeholders"))
+        XCTAssertTrue(raw.contains("complete dose, frequency and any clock times that apply specifically to that medicine"))
+        XCTAssertTrue(raw.contains("exactly the four top-level keys"))
         XCTAssertFalse(raw.contains("500 mg twice daily"))
         for language in [ModelLanguage.english, .french] {
             let localized = ModelPrompts.localized(raw, language: language, purpose: .visit)
             XCTAssertTrue(localized.contains(language == .english ? "copy quote first" : "recopie d’abord quote"))
+            XCTAssertTrue(localized.contains(language == .english ? "four-array JSON" : "JSON à quatre tableaux"))
+            XCTAssertTrue(localized.contains("appointments"))
         }
         let structured = #"{"highlights":[],"medicines":[{"quote":"Start aspirin 81 mg daily.","action":"start","name":"aspirin","instructions":"81 mg daily"}],"followUps":[]}"#
         XCTAssertEqual(try VisitReview.parse(structured, transcript: "Start aspirin 81 mg daily.", medicines: []).medicines.first?.medicine.id, "aspirin")

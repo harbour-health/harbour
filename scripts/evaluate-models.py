@@ -83,7 +83,7 @@ def main():
             "backend": "Linux CPU", "sampling": "production grammar sampler followed by greedy", "JSONStopping": "production JSONEnvelope",
             "efforts": args.efforts, "repeats": args.repeats, "repeatScope": "standard effort timingSubset only", "split": args.split,
             "tokenBudgets": {"routing": {"quick": 96, "standard": 160, "extended": 256}, "reply": {"quick": 256, "standard": 512, "extended": 768}, "title": {"en": 48, "fr-CA": 96}, "visit": 650},
-            "grammarPolicy": {"routing": "19-tool empty-argument grammar", "prose": "none", "title": "French only" if args.baseline_prompts else "both languages", "visit": "none" if args.baseline_prompts else "source-grounded quote/action alternatives and bounded count"},
+            "grammarPolicy": {"routing": "production available-tool empty-argument grammar", "prose": "none", "title": "French only" if args.baseline_prompts else "both languages", "visit": "none" if args.baseline_prompts else "source-grounded quote/action alternatives and bounded count; appointments category"},
             "ids": args.ids, "baselinePrompts": args.baseline_prompts, "contextChecks": args.context_checks, "grammarChecks": args.grammar_checks, "diagnosticsOnly": args.diagnostics_only},
         "commands": [], "promptSHA256": {}, "limits": "Production native CPU path; no physical iPhone/Metal or clinical validation."}
     metadata_file = output / "metadata.json"
@@ -112,6 +112,16 @@ def main():
                 tail = (output / f"{name}.stderr.log").read_text(errors="replace")[-5000:]
                 raise RuntimeError(f"Native evaluator failed for {name}, exit {return_code}:\n{tail}")
             rows = [json.loads(line) for line in (output / f"{name}.jsonl").read_text().splitlines() if line]
+            summary = json.loads((output / f"{name}.stdout.json").read_text())
+            tools = summary.get("availableTools")
+            if tools is None and args.baseline_prompts:
+                tools = json.loads((ROOT / "evaluation/baseline/ModelEval.json").read_text())["availableTools"]
+            if not isinstance(tools, list) or not tools or any(not isinstance(tool, str) for tool in tools) or len(set(tools)) != len(tools):
+                raise RuntimeError("The evaluator did not report its production tool catalog.")
+            if "availableTools" in metadata and metadata["availableTools"] != tools:
+                raise RuntimeError("The production tool catalog changed between model runs.")
+            metadata["availableTools"] = tools
+            metadata["settings"]["grammarPolicy"]["routing"] = f"{len(tools)}-tool empty-argument grammar"
             metadata.setdefault("resultSHA256", {})[name] = digest(output / f"{name}.jsonl")
             metadata.setdefault("rowCounts", {})[name] = {"total": len(rows), "quality": sum(row["kind"] in {"routing", "prose", "title", "visit"} for row in rows), "diagnostic": sum(row["kind"] not in {"routing", "prose", "title", "visit"} for row in rows)}
             metadata["promptSHA256"][name] = [{"caseID": row["caseID"], "effort": row["effort"], "repeatIndex": row["repeatIndex"],

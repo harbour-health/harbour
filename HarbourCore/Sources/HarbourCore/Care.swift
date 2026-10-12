@@ -19,14 +19,30 @@ public struct DoseTime: Codable, Equatable, Hashable, Sendable, Identifiable {
     public init(hour: Int, minute: Int) { self.hour = hour; self.minute = minute }
     public var valid: Bool { (0..<24).contains(hour) && (0..<60).contains(minute) }
 }
+public enum MedicationFrequencyPeriod: String, Codable, CaseIterable, Sendable {
+    case day, week, month
+}
+public struct MedicationFrequency: Codable, Equatable, Hashable, Sendable {
+    public var count: Int
+    public var period: MedicationFrequencyPeriod
+    public init(count: Int, period: MedicationFrequencyPeriod) { self.count = count; self.period = period }
+    public var valid: Bool {
+        switch period {
+        case .day: (1...24).contains(count)
+        case .week: (1...31).contains(count)
+        case .month: (1...31).contains(count)
+        }
+    }
+}
 public struct MedicineSchedule: Codable, Equatable, Sendable, Identifiable {
     public var medicineID: String
     public var times: [DoseTime]
+    public var frequency: MedicationFrequency?
     public var notify: Bool
     public var refill: Date?
     public var id: String { medicineID }
-    public init(medicineID: String, times: [DoseTime] = [], notify: Bool = false, refill: Date? = nil) {
-        self.medicineID = medicineID; self.times = times; self.notify = notify; self.refill = refill
+    public init(medicineID: String, times: [DoseTime] = [], frequency: MedicationFrequency? = nil, notify: Bool = false, refill: Date? = nil) {
+        self.medicineID = medicineID; self.times = times; self.frequency = frequency; self.notify = notify; self.refill = refill
     }
 }
 public enum DoseStatus: String, Codable, CaseIterable, Sendable { case taken = "Taken", skipped = "Skipped", later = "Remind later" }
@@ -76,7 +92,7 @@ public struct CareData: Codable, Equatable, Sendable {
 public enum CareError: LocalizedError {
     case invalid, sourceChanged, missingMedicine
     public var errorDescription: String? { switch self {
-    case .invalid: "Check the name, dates, and reminder times."
+    case .invalid: "Check the name, frequency, dates, and reminder times."
     case .sourceChanged: "The visit note has changed. Choose the follow-up again."
     case .missingMedicine: "Choose a saved medicine and a scheduled dose."
     } }
@@ -92,6 +108,8 @@ public enum CareRules {
     public static func validate(_ schedule: MedicineSchedule, medicines: [Medicine]) throws {
         guard medicines.contains(where: { $0.id == schedule.medicineID }) else { throw CareError.missingMedicine }
         guard schedule.times.count <= 8, schedule.times.allSatisfy(\.valid), Set(schedule.times).count == schedule.times.count,
+              schedule.frequency == nil || schedule.frequency!.valid,
+              schedule.times.isEmpty || schedule.frequency == nil || (schedule.frequency!.period == .day && schedule.frequency!.count == schedule.times.count),
               schedule.refill == nil || schedule.refill!.timeIntervalSince1970.isFinite else { throw CareError.invalid }
     }
     public static func doses(on day: Date, schedule: MedicineSchedule, calendar: Calendar = .current) -> [Date] {
@@ -156,6 +174,60 @@ public enum CareRules {
         }
         return Array(Set(times)).sorted { $0.hour * 60 + $0.minute < $1.hour * 60 + $1.minute }
     }
+    public static func frequency(in text: String) -> MedicationFrequency? {
+        let folded = InputLanguage.folded(text)
+        let periodPatterns: [(String, MedicationFrequencyPeriod, String)] = [
+            ("day|daily|jour|quotidien(?:ne)?", .day, "daily"),
+            ("week|weekly|semaine|hebdomadaire", .week, "weekly"),
+            ("month|monthly|mois|mensuel(?:le)?", .month, "monthly")
+        ]
+        var values = Set<MedicationFrequency>()
+        let numberWords: [(String, Int)] = [("once|one|un(?:e)?", 1), ("twice|two|deux", 2), ("three|trois", 3), ("four|quatre", 4), ("five|cinq", 5)]
+        for (periodPattern, period, adverb) in periodPatterns {
+            let unit = "(?:" + periodPattern + ")"
+            let number = "(?<![-−.,0-9])\\b([0-9]{1,2})(?![.,0-9])"
+            let numericPatterns = [
+                number + "\\s*(?:times?|x)\\s*(?:per|a|par|/)\\s*" + unit + "\\b",
+                number + "\\s*fois\\s*(?:par|/)\\s*" + unit + "\\b",
+                number + "\\s*(?:per|a|par|/)\\s*" + unit + "\\b",
+                number + "\\s*times?\\s*" + adverb + "\\b",
+                number + "\\s*x\\s*" + adverb + "\\b",
+                number + "\\s+" + adverb + "\\b"
+            ]
+            for pattern in numericPatterns {
+                guard let expression = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else { continue }
+                for match in expression.matches(in: folded, range: NSRange(folded.startIndex..., in: folded)) {
+                    guard let range = Range(match.range(at: 1), in: folded), let count = Int(folded[range]) else { continue }
+                    values.insert(MedicationFrequency(count: count, period: period))
+                }
+            }
+            for (wordPattern, count) in numberWords {
+                let pattern = "\\b(?:" + wordPattern + ")(?:\\s+times?|\\s+fois)?\\s+(?:per|a|par)\\s+" + unit + "\\b"
+                guard let expression = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else { continue }
+                if !expression.matches(in: folded, range: NSRange(folded.startIndex..., in: folded)).isEmpty {
+                    values.insert(MedicationFrequency(count: count, period: period))
+                }
+                let adverbPattern = "\\b(?:" + wordPattern + ")(?:\\s+times?|\\s+fois)?\\s+" + adverb + "\\b"
+                if let expression = try? NSRegularExpression(pattern: adverbPattern, options: [.caseInsensitive]),
+                   !expression.matches(in: folded, range: NSRange(folded.startIndex..., in: folded)).isEmpty {
+                    values.insert(MedicationFrequency(count: count, period: period))
+                }
+            }
+            let oncePattern = "\\b(?:once|one|une?)\\s+(?:every\\s+|per\\s+|a\\s+|par\\s+)?" + unit + "\\b"
+            if let expression = try? NSRegularExpression(pattern: oncePattern, options: [.caseInsensitive]),
+               !expression.matches(in: folded, range: NSRange(folded.startIndex..., in: folded)).isEmpty {
+                values.insert(MedicationFrequency(count: 1, period: period))
+            }
+        }
+        let mentionedPeriods = periodPatterns.compactMap { item -> MedicationFrequencyPeriod? in
+            let (pattern, period, _) = item
+            guard let expression = try? NSRegularExpression(pattern: "\\b(?:" + pattern + ")\\b", options: [.caseInsensitive]),
+                  !expression.matches(in: folded, range: NSRange(folded.startIndex..., in: folded)).isEmpty else { return nil }
+            return period
+        }
+        guard Set(mentionedPeriods).count <= 1, values.count == 1, let value = values.first, value.valid else { return nil }
+        return value
+    }
     public static func labelInstructions(_ text: String) -> String {
         text.components(separatedBy: .newlines).filter {
             InputLanguage.folded($0).range(of: "^(take|directions|dosage|apply|use|prendre|prenez|posologie|appliquer|appliquez|utiliser|utilisez|mode d'emploi)\\b", options: .regularExpression) != nil
@@ -178,8 +250,9 @@ public enum HealthTimeline {
         var entries = records.symptoms.map { TimelineEntry(id: "symptom-\($0.id)", title: $0.text, detail: $0.severity + " · " + $0.onset, date: $0.date, symbol: "cross.case") }
         entries += records.readings.map { TimelineEntry(id: "reading-" + $0.id, title: $0.kind.rawValue + " " + $0.value + " " + $0.kind.unit, detail: $0.source, date: $0.date, symbol: $0.kind.symbol) }
         entries += visits.map { TimelineEntry(id: "visit-\($0.id)", title: $0.title, detail: $0.transcript, date: $0.date, symbol: "waveform") }
-        entries += care.doses.map { log in TimelineEntry(id: "dose-" + log.id, title: (log.medicineName ?? records.medicines.first { $0.id == log.medicineID }?.name ?? "Medicine") + " · " + log.status.rawValue, detail: "Scheduled " + log.scheduled.formatted(), date: log.date, symbol: "pills") }
-        entries += care.medicineEvents.map { TimelineEntry(id: "medicine-\($0.id)", title: $0.text, detail: "Medicine list updated", date: $0.date, symbol: "pills") }
+        entries += records.appointments.map { TimelineEntry(id: "appointment-\($0.id)", title: $0.title, detail: [$0.location, $0.notes].filter { !$0.isEmpty }.joined(separator: " · "), date: $0.date, symbol: "calendar") }
+        entries += care.doses.map { log in TimelineEntry(id: "dose-" + log.id, title: (log.medicineName ?? records.medicines.first { $0.id == log.medicineID }?.name ?? "Medication") + " · " + log.status.rawValue, detail: "Scheduled " + log.scheduled.formatted(), date: log.date, symbol: "pills") }
+        entries += care.medicineEvents.map { TimelineEntry(id: "medicine-\($0.id)", title: $0.text, detail: "Medication list updated", date: $0.date, symbol: "pills") }
         entries += care.reminders.map { TimelineEntry(id: "reminder-\($0.id)", title: $0.title, detail: $0.completed ? "Completed" : "Due " + $0.due.formatted(), date: $0.due, symbol: "checklist") }
         let search = query.trimmingCharacters(in: .whitespacesAndNewlines)
         return entries.filter { search.isEmpty || ($0.title + " " + $0.detail).localizedCaseInsensitiveContains(search) }.sorted { $0.date > $1.date }
@@ -204,6 +277,8 @@ public struct CareBackup: Codable, Sendable {
               unique(care.questions.map(\.id)), care.questions.allSatisfy({ !$0.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && $0.text.count <= 1000 && finite($0.date) }),
               unique(care.medicineEvents.map(\.id)), care.medicineEvents.allSatisfy({ !$0.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && finite($0.date) }) else { throw CareError.invalid }
         for reminder in care.reminders { try CareRules.validate(reminder, visits: visits) }
+        guard unique(records.appointments.map(\.id)) else { throw CareError.invalid }
+        for appointment in records.appointments { try AppointmentRules.validate(appointment, visits: visits) }
         for schedule in care.schedules { try CareRules.validate(schedule, medicines: records.medicines) }
         for log in care.doses {
             try CareRules.validateHistory(log)
@@ -226,6 +301,10 @@ public struct CareBackup: Codable, Sendable {
         for reading in incoming.records.readings where !result.records.readings.contains(where: { $0.id == reading.id }) { result.records.readings.append(reading) }
         for symptom in incoming.records.symptoms where !result.records.symptoms.contains(where: { $0.id == symptom.id }) { result.records.symptoms.append(symptom) }
         for visit in incoming.visits where !result.visits.contains(where: { $0.id == visit.id }) { var sanitized = visit; sanitized.audioFilename = nil; result.visits.append(sanitized) }
+        for appointment in incoming.records.appointments where !result.records.appointments.contains(where: { $0.id == appointment.id }) {
+            try AppointmentRules.validate(appointment, visits: result.visits)
+            result.records.appointments.append(appointment)
+        }
         for reminder in incoming.care.reminders where !result.care.reminders.contains(where: { $0.id == reminder.id }) {
             try CareRules.validate(reminder, visits: result.visits)
             result.care.reminders.append(reminder)

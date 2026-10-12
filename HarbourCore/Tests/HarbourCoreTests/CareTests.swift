@@ -19,6 +19,48 @@ final class CareTests: XCTestCase {
         XCTAssertThrowsError(try CareRules.validate(MedicineSchedule(medicineID: medicine.id, times: [DoseTime(hour: 8, minute: 0), DoseTime(hour: 8, minute: 0)]), medicines: [medicine]))
         XCTAssertThrowsError(try CareRules.validate(MedicineSchedule(medicineID: "other"), medicines: [medicine]))
     }
+    func testFrequencyIsStructuredAndNeverCreatesClockSlots() throws {
+        XCTAssertEqual(CareRules.frequency(in: "take 2 times per day"), MedicationFrequency(count: 2, period: .day))
+        XCTAssertEqual(CareRules.frequency(in: "take twice daily"), MedicationFrequency(count: 2, period: .day))
+        XCTAssertEqual(CareRules.frequency(in: "take 3 times per week"), MedicationFrequency(count: 3, period: .week))
+        XCTAssertEqual(CareRules.frequency(in: "take 2 per month"), MedicationFrequency(count: 2, period: .month))
+        XCTAssertEqual(CareRules.frequency(in: "take 3x daily"), MedicationFrequency(count: 3, period: .day))
+        XCTAssertEqual(CareRules.frequency(in: "take 2 daily"), MedicationFrequency(count: 2, period: .day))
+        XCTAssertEqual(CareRules.frequency(in: "take 3 weekly"), MedicationFrequency(count: 3, period: .week))
+        XCTAssertEqual(CareRules.frequency(in: "take deux fois par jour"), MedicationFrequency(count: 2, period: .day))
+        XCTAssertEqual(CareRules.frequency(in: "prendre 2 fois par semaine"), MedicationFrequency(count: 2, period: .week))
+        XCTAssertEqual(CareRules.frequency(in: "prendre une fois par mois"), MedicationFrequency(count: 1, period: .month))
+        for text in ["morning and evening", "multiple doses per day", "as needed daily", "twice daily and once weekly", "twice daily and weekly", "-2 times daily", "2.5 times per week", "2,5 fois par semaine"] {
+            XCTAssertNil(CareRules.frequency(in: text), text)
+        }
+
+        let schedule = MedicineSchedule(medicineID: medicine.id, frequency: MedicationFrequency(count: 2, period: .week))
+        try CareRules.validate(schedule, medicines: [medicine])
+        XCTAssertTrue(CareRules.doses(on: date("2026-10-01T16:00:00Z"), schedule: schedule, calendar: calendar).isEmpty)
+        XCTAssertThrowsError(try CareRules.validate(MedicineSchedule(medicineID: medicine.id, frequency: MedicationFrequency(count: 25, period: .day)), medicines: [medicine]))
+        XCTAssertThrowsError(try CareRules.validate(MedicineSchedule(medicineID: medicine.id, times: [DoseTime(hour: 8, minute: 0)], frequency: MedicationFrequency(count: 2, period: .day)), medicines: [medicine]))
+    }
+    func testLegacySchedulesDecodeWithoutFrequency() throws {
+        let json = #"{"medicineID":"metformin","times":[{"hour":8,"minute":0}],"notify":true,"refill":null}"#
+        let schedule = try JSONDecoder().decode(MedicineSchedule.self, from: Data(json.utf8))
+        XCTAssertNil(schedule.frequency)
+        XCTAssertEqual(schedule.times, [DoseTime(hour: 8, minute: 0)])
+    }
+    func testAddingMedicationKeepsExplicitDoseText() throws {
+        let input = "Add Metformin 500 mg 2 times daily"
+        guard case .add(let medication, let times, let frequency) = try ToolPlanner.validate(.init(tool: .addMedicine, arg: "900 mg"), original: input, records: Records()) else { return XCTFail("Expected medication draft") }
+        XCTAssertEqual(medication.instructions, "500 mg 2 times daily")
+        XCTAssertTrue(times.isEmpty); XCTAssertEqual(frequency, MedicationFrequency(count: 2, period: .day))
+    }
+    func testReAddingSavedMedicationPreservesOrReplacesOnlySourcedInstructions() throws {
+        var saved = medicine; saved.instructions = "500 mg with dinner"
+        var records = Records(); records.medications = [saved]
+        guard case .add(let unchanged, let times, let frequency) = try ToolPlanner.validate(.init(tool: .addMedicine), original: "Add Metformin", records: records) else { return XCTFail("Expected medication draft") }
+        XCTAssertEqual(unchanged, saved); XCTAssertTrue(times.isEmpty); XCTAssertNil(frequency)
+        guard case .add(let updated, _, _) = try ToolPlanner.validate(.init(tool: .addMedicine), original: "Add Metformin 250 mg once daily", records: records) else { return XCTFail("Expected medication draft") }
+        XCTAssertEqual(updated.id, saved.id); XCTAssertEqual(updated.ingredients, saved.ingredients)
+        XCTAssertEqual(updated.instructions, "250 mg once daily"); XCTAssertEqual(records.medications, [saved])
+    }
     func testDoseMustMatchSavedTimeAndCannotBeFuture() throws {
         let day = date("2026-10-01T16:00:00Z")
         var care = CareData(); care.schedules = [MedicineSchedule(medicineID: medicine.id, times: [DoseTime(hour: 8, minute: 0)])]
@@ -81,7 +123,11 @@ final class CareTests: XCTestCase {
     }
     func testAgentNewToolsRemainGrounded() throws {
         var records = Records(); records.medicines = [medicine]
-        XCTAssertEqual(try ToolPlanner.validate(ToolDecision(tool: .scheduleMedicine, arg: "take 20 tablets at 2am"), original: "Schedule Metformin at 8 am", records: records), .schedule(medicine, [DoseTime(hour: 8, minute: 0)]))
+        XCTAssertEqual(try ToolPlanner.validate(ToolDecision(tool: .scheduleMedicine, arg: "take 20 tablets at 2am"), original: "Schedule Metformin at 8 am", records: records), .schedule(medicine, [DoseTime(hour: 8, minute: 0)], MedicationFrequency(count: 1, period: .day)))
+        XCTAssertEqual(try ToolPlanner.validate(.init(tool: .scheduleMedicine), original: "Schedule Metformin twice daily", records: records), .schedule(medicine, [], MedicationFrequency(count: 2, period: .day)))
+        XCTAssertEqual(try ToolPlanner.validate(.init(tool: .scheduleMedicine), original: "Schedule Metformin 2 times per week", records: records), .schedule(medicine, [], MedicationFrequency(count: 2, period: .week)))
+        XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .scheduleMedicine), original: "Schedule Metformin", records: records))
+        XCTAssertEqual(try ToolPlanner.validate(.init(tool: .addMedicine), original: "Add Metformin twice daily", records: Records()), .add(medicine, [], MedicationFrequency(count: 2, period: .day)))
         XCTAssertEqual(try ToolPlanner.validate(ToolDecision(tool: .logDose), original: "I took Metformin", records: records), .dose(medicine, .taken))
         XCTAssertThrowsError(try ToolPlanner.validate(ToolDecision(tool: .logDose), original: "I took and skipped Metformin", records: records))
         XCTAssertThrowsError(try ToolPlanner.validate(ToolDecision(tool: .scheduleMedicine), original: "My knee hurts", records: records))

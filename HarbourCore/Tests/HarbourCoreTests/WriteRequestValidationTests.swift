@@ -96,13 +96,30 @@ final class WriteRequestValidationTests: XCTestCase {
         }
     }
 
-    func testScheduleRequiresExplicitValidTimesInTheOriginalRequest() throws {
+    func testScheduleRequiresExplicitValidTimesOrFrequencyInTheOriginalRequest() throws {
         for original in ["Schedule Metformin", "Schedule Metformin in the morning", "Programme metformine à 28 h", "Programme metformine à 9 h 99"] {
             XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .scheduleMedicine, arg: "9 am"), original: original, records: records), original)
         }
         let medicine = records.medicines[0]
         for original in ["Schedule Metformin at 9 am and 9 pm", "Programme metformine à 9 h et 21 h"] {
-            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .scheduleMedicine), original: original, records: records), .schedule(medicine, [DoseTime(hour: 9, minute: 0), DoseTime(hour: 21, minute: 0)]))
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .scheduleMedicine), original: original, records: records), .schedule(medicine, [DoseTime(hour: 9, minute: 0), DoseTime(hour: 21, minute: 0)], MedicationFrequency(count: 2, period: .day)))
+        }
+    }
+
+    func testAppointmentWritesRejectQuotedReportsWhilePreservingAffirmativeRequests() throws {
+        for original in [
+            "Record my optometrist appointment Thursday at 11 am.",
+            "Enregistre mon rendez-vous chez l'optométriste jeudi à 11 h."
+        ] {
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .createAppointment, arg: "an invented date"), original: original, records: records), .appointment(original), original)
+        }
+        for original in [
+            #"The example says "Add an optometrist appointment Thursday.""#,
+            "L'exemple dit « Ajoute un rendez-vous jeudi. »",
+            "My brother has an optometrist appointment Thursday at 11 am.",
+            "Ma sœur a un rendez-vous jeudi à 11 h."
+        ] {
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .createAppointment), original: original, records: records), original)
         }
     }
 

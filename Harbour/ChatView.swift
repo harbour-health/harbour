@@ -34,7 +34,7 @@ struct ChatView: View {
                             Text("What’s on your mind?").font(.largeTitle.weight(.medium)).multilineTextAlignment(.center)
                         }.frame(maxWidth: .infinity).padding(.top, 12).padding(.bottom, 16)
                         VStack(alignment: .leading, spacing: 4) {
-                            starter("Check medicines", symbol: "pills", colour: Palette.blue, hint: "Interactions")
+                            starter("Check medications", symbol: "pills", colour: Palette.blue, hint: "Interactions")
                             starter("Record a symptom", symbol: "cross.case", colour: Palette.coral, hint: "Symptoms")
                             starter("Add a reading", symbol: "waveform.path.ecg", colour: Palette.coral, hint: "Readings")
                         }.frame(maxWidth: 400).frame(maxWidth: .infinity)
@@ -63,7 +63,7 @@ struct ChatView: View {
             ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) }
         }
         .sheet(isPresented: $modelSheet) { NavigationStack { ModelsView(standalone: true) }.floatingDrawer(height: 680) }
-        .sheet(isPresented: $toolSheet) { topicPicker.floatingDrawer(height: 355) }
+        .sheet(isPresented: $toolSheet) { topicPicker.floatingDrawer(height: 420) }
         .confirmationDialog("Delete all records and chat?", isPresented: $deleteConfirmation, titleVisibility: .visible) { Button("Delete all", role: .destructive) { store.clear() }; Button("Cancel", role: .cancel) {} }
         .confirmationDialog(L10n.format("Remove %@ from your list?", removal.map(L10n.medicineName) ?? L10n.string("medicine")), isPresented: Binding(get: { removal != nil }, set: { if !$0 { removal = nil } }), titleVisibility: .visible) { Button("Remove", role: .destructive) { if let removal { store.removeMedicine(removal.id); store.append(ChatMessage(text: L10n.format("Removed %@ from your list.", L10n.medicineName(removal)))) }; removal = nil } }
         .alert("Voice input", isPresented: Binding(get: { voice.error != nil }, set: { if !$0 { voice.error = nil } })) { Button("OK") { voice.error = nil } } message: { Text(voice.error ?? "") }
@@ -151,7 +151,7 @@ struct ChatView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 Text("Topic").font(.title2.weight(.semibold)).padding(.bottom, 12)
-                ForEach([("Symptoms", "cross.case.fill", Palette.coral), ("Medicines", "pills.fill", Palette.blue), ("Interactions", "arrow.triangle.branch", Palette.blue), ("Readings", "waveform.path.ecg", Palette.coral)], id: \.0) { item in
+                ForEach([("Symptoms", "cross.case.fill", Palette.coral), ("Medications", "pills.fill", Palette.blue), ("Interactions", "arrow.triangle.branch", Palette.blue), ("Readings", "waveform.path.ecg", Palette.coral), ("Appointments", "calendar", Palette.blue)], id: \.0) { item in
                     Button { hint = item.0; toolSheet = false; focused = true } label: { FeatureRow(title: item.0, subtitle: nil, symbol: item.1, colour: item.2) }.buttonStyle(.plain).padding(.vertical, 4)
                 }
             }.padding(24).frame(maxWidth: .infinity, alignment: .topLeading).measuredDrawerHeight(chrome: 24)
@@ -197,11 +197,15 @@ struct ChatView: View {
     private func execute(_ action: ValidatedAction) {
         switch action {
         case .reply(let text): store.append(ChatMessage(text: text))
+        case .appointment(let text): sheet = .appointment(AppointmentRules.draft(from: text))
+        case .appointments: store.append(ChatMessage(text: L10n.string(store.records.appointments.isEmpty ? "No appointments" : "Appointments"), appointments: store.records.appointments.sorted { $0.date < $1.date }))
         case .symptom(let text): sheet = .symptom(text); store.append(ChatMessage(text: L10n.string("Review the symptom details and emergency signs before saving.")))
-        case .add(let medicine): sheet = .medicine(medicine); store.append(ChatMessage(text: L10n.format("Confirm the exact product and instructions for %@.", L10n.medicineName(medicine))))
+        case .add(let medicine, let times, let frequency):
+            sheet = times.isEmpty && frequency == nil ? .medicine(medicine) : .medicineDraft(medicine, times, frequency)
+            store.append(ChatMessage(text: L10n.format("Confirm the exact product and instructions for %@.", L10n.medicineName(medicine))))
         case .remove(let medicine): removal = medicine
-        case .medicines: store.append(ChatMessage(text: L10n.string(store.records.medicines.isEmpty ? "No medicines recorded." : "Your medicines"), medicines: store.records.medicines))
-        case .interactions(let medicines): store.append(ChatMessage(text: L10n.string("Medicine check"), report: HealthRules.check(medicines)))
+        case .medicines: store.append(ChatMessage(text: L10n.string(store.records.medicines.isEmpty ? "No medications recorded." : "Your medications"), medicines: store.records.medicines))
+        case .interactions(let medicines): store.append(ChatMessage(text: L10n.string("Medication check"), report: HealthRules.check(medicines)))
         case .reading(let reading): sheet = .reading(reading); store.append(ChatMessage(text: L10n.format("Confirm %@: %@ %@.", L10n.string(reading.kind.rawValue), L10n.readingValue(reading), reading.kind.unit)))
         case .readings: store.append(ChatMessage(text: L10n.string(store.records.readings.isEmpty ? "No readings recorded." : "Recent readings"), readings: Array(store.records.readings.prefix(10))))
         case .importHealth: Task { await health.sync(into: store); store.append(ChatMessage(text: health.status)) }
@@ -210,7 +214,7 @@ struct ChatView: View {
         case .clear: deleteConfirmation = true
         case .reminder(let text): sheet = .reminder(CareReminder(title: text)); store.append(ChatMessage(text: L10n.string("Review the reminder and choose its date.")))
         case .reminders: store.append(ChatMessage(text: L10n.string(store.care.reminders.isEmpty ? "No reminders saved." : "Reminders"), reminders: store.care.reminders.sorted { $0.due < $1.due }))
-        case .schedule(let medicine, let times): sheet = .schedule(medicine, times); store.append(ChatMessage(text: L10n.string("Confirm the times and refill date from your prescription.")))
+        case .schedule(let medicine, let times, let frequency): sheet = .schedule(medicine, times, frequency); store.append(ChatMessage(text: L10n.string("Confirm the frequency, times, and refill date from your prescription.")))
         case .dose(let medicine, let status):
             guard let schedule = store.care.schedules.first(where: { $0.medicineID == medicine.id }), let date = CareRules.doses(on: .now, schedule: schedule).last(where: { $0 <= Date.now }) ?? CareRules.doses(on: .now, schedule: schedule).first else { store.append(ChatMessage(text: L10n.format("Save a schedule for %@ first.", L10n.medicineName(medicine)))); return }
             sheet = .dose(medicine, date, status); store.append(ChatMessage(text: L10n.format("Confirm the scheduled dose before saving %@.", L10n.string(status.rawValue))))
@@ -228,7 +232,7 @@ struct MessageView: View {
     let message: ChatMessage
     var speak: () -> Void
     private var rich: Bool { message.report != nil || message.readings?.isEmpty == false || message.medicines?.isEmpty == false }
-    private var careResult: Bool { message.reminders?.isEmpty == false || message.timeline?.isEmpty == false }
+    private var careResult: Bool { message.reminders?.isEmpty == false || message.timeline?.isEmpty == false || message.appointments?.isEmpty == false }
     var body: some View {
         if message.isUser {
             HStack { Spacer(minLength: 36); Text(message.text).padding(.horizontal, 18).padding(.vertical, 15).background(Palette.surface, in: RoundedRectangle(cornerRadius: 24)).textSelection(.enabled) }
@@ -238,6 +242,9 @@ struct MessageView: View {
                 if careResult {
                     VStack(alignment: .leading, spacing: 16) {
                         Text(message.text).font(.title3.weight(.semibold))
+                        if let appointments = message.appointments {
+                            ForEach(appointments) { appointment in AppointmentRow(appointment: appointment, showsDisclosure: false) }
+                        }
                         if let reminders = message.reminders {
                             ForEach(reminders) { reminder in
                                 HStack(alignment: .top, spacing: 12) {
@@ -298,6 +305,9 @@ extension ChatMessage {
         if let report = self.report { text += ". " + report.alerts.map { L10n.string($0.summary) }.joined(separator: ". "); if !report.unassessed.isEmpty || !report.unresolved.isEmpty { text += ". " + L10n.string("Some interactions could not be assessed.") }; if !report.duplicates.isEmpty { text += ". " + L10n.format("Duplicate ingredients: %@", L10n.ingredientNames(report.duplicates)) } }
         if let reminders = self.reminders {
             text += ". " + reminders.map { $0.title + ", " + L10n.date($0.due, time: true) + ($0.completed ? ", " + L10n.string("completed") : "") }.joined(separator: ". ")
+        }
+        if let appointments = self.appointments {
+            text += ". " + appointments.map { $0.title + ", " + L10n.date($0.date, time: $0.includesTime) + ($0.location.isEmpty ? "" : ", " + $0.location) }.joined(separator: ". ")
         }
         if let timeline = self.timeline {
             text += ". " + timeline.map { $0.title + ", " + L10n.date($0.date, time: true) + ($0.detail.isEmpty ? "" : ", " + $0.detail) }.joined(separator: ". ")

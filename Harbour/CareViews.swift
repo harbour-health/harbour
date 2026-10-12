@@ -12,14 +12,14 @@ enum LocalizedHealthContent {
             L10n.format("Concern: %@", concern?.text ?? notRecorded),
             L10n.format("Started: %@", concern?.onset.isEmpty == false ? concern!.onset : notRecorded),
             L10n.format("Severity: %@", concern.map { L10n.string($0.severity) } ?? notRecorded),
-            L10n.format("Medicines entered: %@", records.medicines.isEmpty ? L10n.string("None entered") : records.medicines.map { L10n.medicineName($0) }.joined(separator: ", ")),
+            L10n.format("Medications entered: %@", records.medicines.isEmpty ? L10n.string("None entered") : records.medicines.map { L10n.medicineName($0) }.joined(separator: ", ")),
             L10n.format("Recent readings: %@", readings)
         ]
         if let care {
             lines.append("\n" + L10n.string("Questions"))
             lines.append(care.questions.isEmpty ? L10n.string("No questions saved.") : care.questions.map { "• " + $0.text }.joined(separator: "\n"))
         } else {
-            lines.append(L10n.string("Questions: What should I watch for? Should a pharmacist review my medicines?"))
+            lines.append(L10n.string("Questions: What should I watch for? Should a pharmacist review my medications?"))
         }
         return lines.joined(separator: "\n")
     }
@@ -34,11 +34,11 @@ enum LocalizedHealthContent {
                 result.title = L10n.format("%@ %@ %@", L10n.string(reading.kind.rawValue), L10n.readingValue(reading), L10n.string(reading.kind.unit))
                 result.detail = ["Manual", "Apple Health"].contains(reading.source) ? L10n.string(reading.source) : reading.source
             } else if let dose = care.doses.first(where: { entry.id == "dose-" + $0.id }) {
-                let medicine = dose.medicineName.map { L10n.medicineName(Medicine(id: dose.medicineID, name: $0)) } ?? records.medicines.first { $0.id == dose.medicineID }.map { L10n.medicineName($0) } ?? L10n.string("Medicine")
+                let medicine = dose.medicineName.map { L10n.medicineName(Medicine(id: dose.medicineID, name: $0)) } ?? records.medicines.first { $0.id == dose.medicineID }.map { L10n.medicineName($0) } ?? L10n.string("Medication")
                 result.title = L10n.format("%@ · %@", medicine, L10n.string(dose.status.rawValue))
                 result.detail = L10n.format("Scheduled %@", dose.scheduled.formatted(.dateTime.locale(L10n.locale)))
             } else if care.medicineEvents.contains(where: { entry.id == "medicine-" + $0.id.uuidString }) {
-                result.detail = L10n.string("Medicine list updated")
+                result.detail = L10n.string("Medication list updated")
             } else if let reminder = care.reminders.first(where: { entry.id == "reminder-" + $0.id.uuidString }) {
                 result.detail = reminder.completed ? L10n.string("Completed") : L10n.format("Due %@", reminder.due.formatted(.dateTime.locale(L10n.locale)))
             }
@@ -57,7 +57,10 @@ struct AgendaView: View {
                 Text("Coming up").font(.title2.weight(.semibold)); Spacer()
                 Button { sheet = .reminder(CareReminder()) } label: { ToolbarGlyph(symbol: "plus") }.accessibilityLabel("Add reminder")
             }
-            if reminders.isEmpty && store.care.schedules.isEmpty { Text("Nothing scheduled").font(.body).foregroundStyle(Palette.muted) }
+            if reminders.isEmpty && store.care.schedules.isEmpty && store.records.appointments.isEmpty { Text("Nothing scheduled").font(.body).foregroundStyle(Palette.muted) }
+            ForEach(store.records.appointments.filter { $0.date >= Calendar.current.startOfDay(for: .now) }.sorted { $0.date < $1.date }.prefix(5)) { appointment in
+                Button { sheet = .appointment(appointment) } label: { AppointmentRow(appointment: appointment) }.buttonStyle(.plain)
+            }
             ForEach(reminders.filter { !$0.completed }) { reminder in
                 Button { sheet = .reminder(reminder) } label: {
                     HStack(spacing: 14) {
@@ -69,6 +72,15 @@ struct AgendaView: View {
             }
             ForEach(store.care.schedules) { schedule in
                 if let medicine = store.records.medicines.first(where: { $0.id == schedule.medicineID }) {
+                    if schedule.times.isEmpty, let frequency = schedule.frequency {
+                        Button { sheet = .schedule(medicine, [], frequency) } label: {
+                            HStack(spacing: 14) {
+                                Image(systemName: "pills.fill").font(.title2).foregroundStyle(Palette.blue)
+                                VStack(alignment: .leading, spacing: 5) { Text(L10n.medicineName(medicine)).font(.title3.weight(.medium)); Text(L10n.frequency(frequency)).font(.subheadline).foregroundStyle(Palette.muted) }
+                                Spacer(); Image(systemName: "chevron.right").font(.caption).foregroundStyle(Palette.muted)
+                            }.padding(.vertical, 8).contentShape(Rectangle())
+                        }.buttonStyle(.plain).accessibilityIdentifier("frequency-" + medicine.id)
+                    }
                     ForEach(CareRules.doses(on: .now, schedule: schedule), id: \.self) { date in
                         let log = store.care.doses.first { $0.id == DoseLog.key(medicine.id, date) }
                         Button { sheet = .dose(medicine, date, nil) } label: {

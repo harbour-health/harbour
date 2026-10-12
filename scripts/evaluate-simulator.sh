@@ -14,7 +14,7 @@ for model in small balanced qwen35; do
     if [[ "$model" == balanced ]]; then args+=(--evaluate-balanced); fi
     if [[ "$model" == qwen35 ]]; then args+=(--evaluate-qwen35); fi
     xcrun simctl launch --terminate-running-process "$device" "$bundle" "${args[@]}"
-    echo "Evaluating $model: current fictional routing fixtures at each of three effort settings."
+    echo "Evaluating $model: routing and transcript cases at each of three effort settings."
     previous_count=-1
     finished=no
     for ((attempt=0; attempt<900; attempt++)); do

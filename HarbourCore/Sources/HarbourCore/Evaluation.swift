@@ -11,9 +11,54 @@ public struct RoutingCase: Sendable {
     public var tool: Tool
     public init(_ input: String, _ tool: Tool) { self.input = input; self.tool = tool }
 }
+public struct VisitSummaryEvaluationCase: Sendable {
+    public var name: String
+    public var transcript: String
+    public var expectedJSON: String
+    public var expectedMedicineID: String?
+    public var expectedInstructions: String
+    public var expectedFrequency: MedicationFrequency?
+    public var expectedTimes: [DoseTime]
+    public var expectedAppointments: [String]
+    public init(name: String, transcript: String, expectedJSON: String, expectedMedicineID: String? = nil, expectedInstructions: String = "", expectedFrequency: MedicationFrequency? = nil, expectedTimes: [DoseTime] = [], expectedAppointments: [String] = []) {
+        self.name = name; self.transcript = transcript; self.expectedJSON = expectedJSON; self.expectedMedicineID = expectedMedicineID
+        self.expectedInstructions = expectedInstructions; self.expectedFrequency = expectedFrequency; self.expectedTimes = expectedTimes
+        self.expectedAppointments = expectedAppointments
+    }
+    public func matches(_ output: String) -> Bool {
+        guard let summary = try? VisitReview.parse(output, transcript: transcript, medicines: Evaluation.records.medicines),
+              summary.medicines.count == (expectedMedicineID == nil ? 0 : 1),
+              Set((summary.appointments ?? []).map(\.quote)) == Set(expectedAppointments),
+              let start = output.firstIndex(of: "{"), let end = output.lastIndex(of: "}"), start <= end,
+              let raw = try? JSONSerialization.jsonObject(with: Data(output[start...end].utf8)) as? [String: Any],
+              let rawMedications = raw["medicines"] as? [[String: Any]],
+              rawMedications.count == summary.medicines.count else { return false }
+        // Score actual model recall, including hallucinations the validator rejects.
+        let rawAppointments = raw["appointments"] as? [[String: String]] ?? []
+        guard Set(rawAppointments.compactMap { $0["quote"] }.map(VisitReview.normalise)) == Set(expectedAppointments) else { return false }
+        guard let id = expectedMedicineID else { return true }
+        guard let medication = summary.medicines.first else { return false }
+        return medication.action == .start && medication.medicine.id == id && medication.medicine.instructions == expectedInstructions && medication.frequency == expectedFrequency && medication.times == expectedTimes
+    }
+}
 public enum Evaluation {
     public static var records: Records { var r = Records(); r.medicines = Catalog.medicines.filter { $0.id == "metformin" }; return r }
+    public static let visitSummaryCases: [VisitSummaryEvaluationCase] = [
+        .init(name: "Appointment from recording", transcript: "Your dentist appointment is Tuesday at 2 pm at the clinic.", expectedJSON: #"{"highlights":[],"medicines":[],"followUps":[],"appointments":[{"quote":"Your dentist appointment is Tuesday at 2 pm at the clinic."}]}"#, expectedAppointments: ["Your dentist appointment is Tuesday at 2 pm at the clinic."]),
+        .init(name: "French appointment", transcript: "Votre rendez-vous est mardi à 14 h à la clinique.", expectedJSON: #"{"highlights":[],"medicines":[],"followUps":[],"appointments":[{"quote":"Votre rendez-vous est mardi à 14 h à la clinique."}]}"#, expectedAppointments: ["Votre rendez-vous est mardi à 14 h à la clinique."]),
+        .init(name: "Negated appointment", transcript: "Do not book an appointment tomorrow.", expectedJSON: #"{"highlights":[],"medicines":[],"followUps":[],"appointments":[]}"#),
+        .init(name: "Negated medication", transcript: "Do not start metformin 500 mg twice daily.", expectedJSON: #"{"highlights":[],"medicines":[],"followUps":[],"appointments":[]}"#),
+        .init(name: "Numeric daily frequency", transcript: "Start metformin 500 mg 2 times daily.", expectedJSON: #"{"highlights":[],"medicines":[{"action":"start","name":"metformin","instructions":"500 mg 2 times daily","quote":"Start metformin 500 mg 2 times daily."}],"followUps":[],"appointments":[]}"#, expectedMedicineID: "metformin", expectedInstructions: "500 mg 2 times daily", expectedFrequency: MedicationFrequency(count: 2, period: .day)),
+        .init(name: "Monthly frequency", transcript: "Start metformin 500 mg once monthly.", expectedJSON: #"{"highlights":[],"medicines":[{"action":"start","name":"metformin","instructions":"500 mg once monthly","quote":"Start metformin 500 mg once monthly."}],"followUps":[],"appointments":[]}"#, expectedMedicineID: "metformin", expectedInstructions: "500 mg once monthly", expectedFrequency: MedicationFrequency(count: 1, period: .month)),
+        .init(name: "Two doses per day", transcript: "Start metformin 500 mg twice daily.", expectedJSON: #"{"highlights":[],"medicines":[{"action":"start","name":"metformin","instructions":"500 mg twice daily","quote":"Start metformin 500 mg twice daily."}],"followUps":[]}"#, expectedMedicineID: "metformin", expectedInstructions: "500 mg twice daily", expectedFrequency: MedicationFrequency(count: 2, period: .day)),
+        .init(name: "Two doses per week", transcript: "Start metformin 500 mg 2 times per week.", expectedJSON: #"{"highlights":[],"medicines":[{"action":"start","name":"metformin","instructions":"500 mg 2 times per week","quote":"Start metformin 500 mg 2 times per week."}],"followUps":[]}"#, expectedMedicineID: "metformin", expectedInstructions: "500 mg 2 times per week", expectedFrequency: MedicationFrequency(count: 2, period: .week)),
+        .init(name: "Explicit daily clocks", transcript: "Start metformin 500 mg at 8 am and 8 pm.", expectedJSON: #"{"highlights":[],"medicines":[{"action":"start","name":"metformin","instructions":"500 mg at 8 am and 8 pm","quote":"Start metformin 500 mg at 8 am and 8 pm."}],"followUps":[]}"#, expectedMedicineID: "metformin", expectedInstructions: "500 mg at 8 am and 8 pm", expectedFrequency: MedicationFrequency(count: 2, period: .day), expectedTimes: [DoseTime(hour: 8, minute: 0), DoseTime(hour: 20, minute: 0)])
+    ]
     public static let routingCases: [RoutingCase] = [
+        .init("Add my dentist appointment next Tuesday at 2 pm", .createAppointment),
+        .init("Show my appointments", .listAppointments),
+        .init("Ajoute mon rendez-vous mardi à 14 h", .createAppointment),
+        .init("Do not add an appointment tomorrow", .reply),
         .init("Hello, how are you?", .reply),
         .init("Why is the sky blue?", .reply),
         .init("What does blood pressure measure?", .reply),
@@ -21,7 +66,8 @@ public enum Evaluation {
         .init("Can I take Advil and warfarin together?", .interactions),
         .init("Please record that my knee has been sore since Tuesday", .captureSymptom),
         .init("Please save my heart rate of 72", .logReading),
-        .init("Add metformin to my medicines", .addMedicine),
+        .init("Add metformin to my medications", .addMedicine),
+        .init("Remove metformin from my medications", .removeMedicine),
         .init("Show my readings", .listReadings),
         .init("Make an appointment note", .appointmentNote),
         .init("My temperature is 36.8", .logReading),
@@ -29,10 +75,13 @@ public enum Evaluation {
         .init("Export my records", .exportData),
         .init("Import readings from Apple Health", .importReadings),
         .init("Clear all records", .clearData),
-        .init("Show my medicines", .listMedicines),
+        .init("Show my medications", .listMedicines),
         .init("Remind me to book blood work", .createReminder),
         .init("Show my reminders", .listReminders),
         .init("Schedule Metformin at 8 am and 8 pm", .scheduleMedicine),
+        .init("Schedule Metformin twice daily", .scheduleMedicine),
+        .init("Schedule Metformin 2 times per week", .scheduleMedicine),
+        .init("Add Metformin twice daily", .addMedicine),
         .init("I took Metformin", .logDose),
         .init("Search my history for blood work", .searchTimeline),
         .init("Scan a medicine label", .scanMedicine),
@@ -68,6 +117,7 @@ public enum Evaluation {
             CheckResult("Invented medicine rejected", (try? ToolPlanner.validate(.init(tool: .addMedicine, arg: "warfarin"), original: "Add my medicine", records: Records())) == nil),
             CheckResult("Generated replies are displayed", (try? ToolPlanner.validate(.init(tool: .reply, arg: "Hello! How are you?"), original: "Hello", records: Records())) == .reply("Hello! How are you?"))
         ]
+        checks += visitSummaryCases.map { CheckResult("Transcript fixture: " + $0.name, $0.matches($0.expectedJSON)) }
         return checks
     }
 }

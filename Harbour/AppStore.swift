@@ -15,6 +15,7 @@ struct ChatMessage: Codable, Identifiable {
     var report: InteractionReport?
     var readings: [Reading]?
     var medicines: [Medicine]?
+    var appointments: [Appointment]?
     var reminders: [CareReminder]?
     var timeline: [ChatTimelineEntry]?
     var date = Date()
@@ -84,7 +85,7 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
     @discardableResult func saveMedicine(_ medicine: Medicine, schedule: MedicineSchedule?) -> Bool {
         let name = medicine.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         guard !medicine.id.isEmpty, !name.isEmpty, medicine.name.count <= 500 else { error = L10n.string("Enter a medicine name of up to 500 characters."); return false }
-        guard !records.medicines.contains(where: { $0.id != medicine.id && $0.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == name }) else { error = L10n.string("This medicine is already saved. Open it in Medicines to make changes."); return false }
+        guard !records.medicines.contains(where: { $0.id != medicine.id && $0.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == name }) else { error = L10n.string("This medicine is already saved. Open it in Medications to make changes."); return false }
         do { if let schedule { try CareRules.validate(schedule, medicines: [medicine]) } }
         catch { self.error = L10n.string(error.localizedDescription); return false }
         return update { value in
@@ -94,7 +95,7 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
             else { value.records.medicines.append(medicine) }
             care.medicineEvents.insert(MedicineEvent(text: L10n.format(existing == nil ? "Added %@" : "Updated %@", L10n.medicineName(medicine))), at: 0)
             care.schedules.removeAll { $0.medicineID == medicine.id }
-            if let schedule, !schedule.times.isEmpty || schedule.refill != nil { care.schedules.append(schedule) }
+            if let schedule, !schedule.times.isEmpty || schedule.frequency != nil || schedule.refill != nil { care.schedules.append(schedule) }
             value.care = care
         }
     }
@@ -124,6 +125,16 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
         return update { if $0.care == nil { $0.care = CareData() }; $0.care!.questions.removeAll { $0.id == question.id }; $0.care!.questions.append(question) }
     }
     func removeQuestion(_ id: UUID) { update { $0.care?.questions.removeAll { $0.id == id } } }
+    @discardableResult func saveAppointment(_ appointment: Appointment) -> Bool {
+        do { try AppointmentRules.validate(appointment, visits: visits) }
+        catch { self.error = L10n.string(error.localizedDescription); return false }
+        return update { value in
+            value.records.appointments.removeAll { $0.id == appointment.id }
+            value.records.appointments.append(appointment)
+            value.records.appointments.sort { $0.date < $1.date }
+        }
+    }
+    func removeAppointment(_ id: UUID) { update { $0.records.appointments.removeAll { $0.id == id } } }
     func add(_ reading: Reading) { update { if !$0.records.readings.contains(where: { $0.id == reading.id }) { $0.records.readings.append(reading); $0.records.readings.sort { $0.date > $1.date } } } }
     func importReadings(_ readings: [Reading]) { update { value in
         let existing = Set(value.records.readings.map(\.id))
@@ -156,6 +167,11 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
             if let index = visits.firstIndex(where: { $0.id == visit.id }) { visits[index] = visit }
             else { visits.insert(visit, at: 0) }
             value.visits = visits
+            for index in value.records.appointments.indices where value.records.appointments[index].visitID == visit.id {
+                if (try? AppointmentRules.validate(value.records.appointments[index], visits: visits)) == nil {
+                    value.records.appointments[index].visitID = nil; value.records.appointments[index].quote = nil
+                }
+            }
             if value.care != nil {
                 for index in value.care!.reminders.indices where value.care!.reminders[index].visitID == visit.id {
                     if (try? CareRules.validate(value.care!.reminders[index], visits: visits)) == nil {
@@ -167,7 +183,7 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
     }
     #if DEBUG
     func prepareMedicineReviewScreenshot() {
-        let title = "Medicine drawer review"
+        let title = "Medication drawer review"
         for visit in visits where visit.title == title { deleteVisit(visit) }
         let transcript = "Start metformin 500 mg twice daily."
         let output = #"{"highlights":[],"medicines":[{"action":"start","name":"metformin","instructions":"500 mg twice daily","quote":"Start metformin 500 mg twice daily."}],"followUps":[]}"#
@@ -177,7 +193,13 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
     }
     #endif
     func deleteVisit(_ visit: DoctorVisit) {
-        if update({ $0.visits?.removeAll { $0.id == visit.id }; if $0.care != nil { for i in $0.care!.reminders.indices where $0.care!.reminders[i].visitID == visit.id { $0.care!.reminders[i].visitID = nil; $0.care!.reminders[i].quote = nil } } }), let audio = audioURL(for: visit) {
+        if update({ value in
+            value.visits?.removeAll { $0.id == visit.id }
+            for i in value.records.appointments.indices where value.records.appointments[i].visitID == visit.id {
+                value.records.appointments[i].visitID = nil; value.records.appointments[i].quote = nil
+            }
+            if value.care != nil { for i in value.care!.reminders.indices where value.care!.reminders[i].visitID == visit.id { value.care!.reminders[i].visitID = nil; value.care!.reminders[i].quote = nil } }
+        }), let audio = audioURL(for: visit) {
             do { if FileManager.default.fileExists(atPath: audio.path) { try FileManager.default.removeItem(at: audio) } }
             catch { self.error = L10n.format("The visit was removed, but its audio couldn’t be deleted. %@", L10n.string(error.localizedDescription)) }
         }
@@ -203,6 +225,11 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
                     case .stop: event = L10n.format("Stopped %@", L10n.medicineName(change.medicine))
                     }
                     value.care!.medicineEvents.insert(MedicineEvent(text: event), at: 0)
+                    if change.action == .stop { value.care!.schedules.removeAll { $0.medicineID == change.medicine.id } }
+                    else if change.frequency != nil || !change.times.isEmpty {
+                        value.care!.schedules.removeAll { $0.medicineID == change.medicine.id }
+                        value.care!.schedules.append(MedicineSchedule(medicineID: change.medicine.id, times: change.times, frequency: change.frequency))
+                    }
                 }
                 value.care!.schedules.removeAll { schedule in !medicines.contains { $0.id == schedule.medicineID } }
                 value.records.medicines = medicines

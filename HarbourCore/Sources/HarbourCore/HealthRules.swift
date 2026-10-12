@@ -16,9 +16,9 @@ public enum HealthRules {
     public static let emergencySource = "https://www.ontario.ca/page/emergency-rooms"
     public static let helpSource = "https://www.ontario.ca/page/your-health"
     public static let pairs: [InteractionAlert] = [
-        InteractionAlert(pair: ["ibuprofen", "warfarin"], summary: "Ibuprofen is listed among medicines that may not mix well with warfarin. Ask a pharmacist or prescriber to review the exact products and your situation.", source: "https://www.nhs.uk/medicines/warfarin/"),
-        InteractionAlert(pair: ["aspirin", "warfarin"], summary: "Aspirin is listed among medicines that may not mix well with warfarin. Ask a pharmacist or prescriber to review the exact products and your situation.", source: "https://www.nhs.uk/medicines/warfarin/"),
-        InteractionAlert(pair: ["naproxen", "warfarin"], summary: "Warfarin is listed among medicines that may not mix well with naproxen. Ask a pharmacist or prescriber to review the exact products and your situation.", source: "https://www.nhs.uk/medicines/naproxen/"),
+        InteractionAlert(pair: ["ibuprofen", "warfarin"], summary: "Ibuprofen is listed among medications that may not mix well with warfarin. Ask a pharmacist or prescriber to review the exact products and your situation.", source: "https://www.nhs.uk/medicines/warfarin/"),
+        InteractionAlert(pair: ["aspirin", "warfarin"], summary: "Aspirin is listed among medications that may not mix well with warfarin. Ask a pharmacist or prescriber to review the exact products and your situation.", source: "https://www.nhs.uk/medicines/warfarin/"),
+        InteractionAlert(pair: ["naproxen", "warfarin"], summary: "Warfarin is listed among medications that may not mix well with naproxen. Ask a pharmacist or prescriber to review the exact products and your situation.", source: "https://www.nhs.uk/medicines/naproxen/"),
         InteractionAlert(pair: ["ibuprofen", "naproxen"], summary: "Check with a pharmacist before taking ibuprofen with another NSAID such as naproxen.", source: "https://www.nhs.uk/medicines/ibuprofen-for-adults/")
     ]
     public static func check(_ medicines: [Medicine]) -> InteractionReport {

@@ -19,6 +19,8 @@ enum WriteRequestValidation {
             action = "clear|delete|erase|reset|wipe|effac[a-z]*|supprim[a-z]*|vid[a-z]*|reinitialis[a-z]*"
         case .createReminder:
             action = "remind|reminder|create|set|add|save|rappel[a-z]*|cre[eazr]*|ajout[a-z]*|enregistr[a-z]*|programm[a-z]*"
+        case .createAppointment:
+            action = "create|add|save|record|book|schedule|set|make|cre[eazr]*|ajout[a-z]*|enregistr[a-z]*|reserv[a-z]*|planifi[a-z]*|programm[a-z]*|prend[a-z]*"
         case .scheduleMedicine:
             action = "schedule|set|plan|program|programm[a-z]*|planifi[a-z]*|horaire"
         case .logDose:

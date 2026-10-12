@@ -23,12 +23,15 @@ private struct EvalCase: Decodable {
     var turns: [ConversationTurn] { (history ?? []).map { .init(isUser: $0.isUser, text: $0.text) } }
 }
 private struct EvalSuite: Decodable { let id: String; let version: Int; let cases: [EvalCase] }
+private struct FrequencySummary: Codable { let count: Int; let period: String }
 private struct MedicineProposal: Codable {
     let action: String
     let medicineID: String
     let name: String
     let instructions: String
     let quote: String
+    var frequency: FrequencySummary?
+    var times: [String]?
 }
 private struct ActionSummary: Codable {
     var type: String
@@ -39,11 +42,13 @@ private struct ActionSummary: Codable {
     var value: String?
     var unit: String?
     var times: [String]?
+    var frequency: FrequencySummary?
     var status: String?
     var text: String?
     var medicineIDs: [String]?
     var highlightQuotes: [String]?
     var followUpQuotes: [String]?
+    var appointmentQuotes: [String]?
     var medicines: [MedicineProposal]?
 }
 private struct EvalResult: Codable {
@@ -132,10 +137,14 @@ private struct Options {
 }
 
 private func actionSummary(_ action: ValidatedAction) -> ActionSummary {
+    func frequency(_ value: MedicationFrequency?) -> FrequencySummary? { value.map { .init(count: $0.count, period: $0.period.rawValue) } }
+    func times(_ values: [DoseTime]) -> [String] { values.map { String(format: "%02d:%02d", $0.hour, $0.minute) } }
     switch action {
+    case .appointment(let text): return .init(type: "create_appointment", text: text)
+    case .appointments: return .init(type: "list_appointments")
     case .reply(let text): return .init(type: "reply", text: text)
     case .symptom(let text): return .init(type: "capture_symptom", text: text)
-    case .add(let medicine): return .init(type: "add_medication", medicineID: medicine.id, name: medicine.name, instructions: medicine.instructions)
+    case .add(let medicine, let values, let schedule): return .init(type: "add_medication", medicineID: medicine.id, name: medicine.name, instructions: medicine.instructions, times: times(values), frequency: frequency(schedule))
     case .remove(let medicine): return .init(type: "remove_medication", medicineID: medicine.id, name: medicine.name)
     case .medicines: return .init(type: "list_medications")
     case .interactions(let medicines): return .init(type: "check_interactions", medicineIDs: medicines.map(\.id))
@@ -147,7 +156,7 @@ private func actionSummary(_ action: ValidatedAction) -> ActionSummary {
     case .clear: return .init(type: "clear_data")
     case .reminder(let text): return .init(type: "create_reminder", text: text)
     case .reminders: return .init(type: "list_reminders")
-    case .schedule(let medicine, let times): return .init(type: "schedule_medication", medicineID: medicine.id, name: medicine.name, instructions: medicine.instructions, times: times.map { String(format: "%02d:%02d", $0.hour, $0.minute) })
+    case .schedule(let medicine, let values, let schedule): return .init(type: "schedule_medication", medicineID: medicine.id, name: medicine.name, instructions: medicine.instructions, times: times(values), frequency: frequency(schedule))
     case .dose(let medicine, let status): return .init(type: "log_dose", medicineID: medicine.id, name: medicine.name, status: status.rawValue)
     case .timeline(let text): return .init(type: "search_timeline", text: text)
     case .scan: return .init(type: "scan_medication")
@@ -160,7 +169,7 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
 @main private struct ModelEvaluator {
     static func main() async throws {
         let options = try Options.parse()
-        let model = options.model!, output = options.output!, runtime = LocalModel()
+        let model = options.model!, output = options.output!, runtime = LocalModel(useGPU: false)
         let format: ModelPromptFormat = options.modelID == "qwen35" ? .qwen35 : .qwen25
         let decoder = JSONDecoder(); decoder.dateDecodingStrategy = .iso8601
         let data = try Data(contentsOf: options.suite!)
@@ -212,7 +221,7 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                             if let action {
                                 result.finalTool = decision.tool.rawValue; result.output = raw; result.actionSummary = actionSummary(action)
                             } else {
-                                replyPrompt = ModelPrompts.localized(ToolPlanner.conversationPrompt(fixture.input, records: records, history: fixture.turns), language: fixture.language, purpose: .prose)
+                                replyPrompt = ModelPrompts.localized(ToolPlanner.conversationPrompt(fixture.input, records: records, history: fixture.turns, language: fixture.language), language: fixture.language, purpose: .prose)
                                 result.replyBudget = replyBudget
                                 let replyStart = Date()
                                 result.output = try await runtime.generate(file: model, prompt: replyPrompt!, maxTokens: replyBudget, stopAtJSON: false, promptFormat: format)
@@ -221,7 +230,7 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                             }
                             result.validationSucceeded = true
                         case "prose":
-                            prompt = ModelPrompts.localized(ToolPlanner.conversationPrompt(fixture.input, records: records, history: fixture.turns), language: fixture.language, purpose: .prose)
+                            prompt = ModelPrompts.localized(ToolPlanner.conversationPrompt(fixture.input, records: records, history: fixture.turns, language: fixture.language), language: fixture.language, purpose: .prose)
                             result.budget = replyBudget
                             result.output = try await runtime.generate(file: model, prompt: prompt, maxTokens: replyBudget, stopAtJSON: false, promptFormat: format)
                             result.finalTool = Tool.reply.rawValue
@@ -239,7 +248,7 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                             result.responseGrammar = options.baseline ? nil : VisitReview.outputGrammar(transcript: fixture.input)
                             result.output = try await runtime.generate(file: model, prompt: prompt, maxTokens: 650, grammar: result.responseGrammar, promptFormat: format)
                             let summary = try VisitReview.parse(result.output, transcript: fixture.input, medicines: records.medicines)
-                            result.actionSummary = .init(type: "visit", highlightQuotes: summary.highlights.map(\.quote), followUpQuotes: summary.followUps.map(\.quote), medicines: summary.medicines.map { .init(action: $0.action.rawValue, medicineID: $0.medicine.id, name: $0.medicine.name, instructions: $0.medicine.instructions, quote: $0.quote) })
+                            result.actionSummary = .init(type: "visit", highlightQuotes: summary.highlights.map(\.quote), followUpQuotes: summary.followUps.map(\.quote), appointmentQuotes: (summary.appointments ?? []).map(\.quote), medicines: summary.medicines.map { .init(action: $0.action.rawValue, medicineID: $0.medicine.id, name: $0.medicine.name, instructions: $0.medicine.instructions, quote: $0.quote, frequency: $0.frequency.map { .init(count: $0.count, period: $0.period.rawValue) }, times: $0.times.map { String(format: "%02d:%02d", $0.hour, $0.minute) }) })
                             result.validationSucceeded = true
                         default: break
                         }
@@ -321,22 +330,30 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
             let unknownAction = options.baseline
                 ? #"{"highlights":[],"medicines":[{"action":"prescribe","name":"metformin","instructions":"500 mg daily","quote":"Start metformin 500 mg daily."}],"followUps":[]}"#
                 : #"{"highlights":[],"medicines":[{"quote":"Start metformin 500 mg daily.","action":"prescribe","name":"metformin","instructions":"500 mg daily"}],"followUps":[]}"#
+            func visitLiteral(_ value: String) -> String {
+                options.baseline ? value : String(value.dropLast()) + ",\"appointments\":[]}"
+            }
             var tests: [(String, String, String, Bool)] = [
-                ("visit.empty", VisitReview.outputGrammar(), #"{"highlights":[],"medicines":[],"followUps":[]}"#, true),
-                ("visit.source-objects", VisitReview.outputGrammar(), visitObjects, true),
-                ("visit.bare-highlights", VisitReview.outputGrammar(), #"{"highlights":["Source fact."],"medicines":[],"followUps":[]}"#, false),
-                ("visit.unknown-action", VisitReview.outputGrammar(), unknownAction, false),
-                ("visit.extra-key", VisitReview.outputGrammar(), #"{"highlights":[],"medicines":[],"followUps":[],"extra":true}"#, false),
+                ("visit.empty", VisitReview.outputGrammar(), visitLiteral(#"{"highlights":[],"medicines":[],"followUps":[]}"#), true),
+                ("visit.source-objects", VisitReview.outputGrammar(), visitLiteral(visitObjects), true),
+                ("visit.bare-highlights", VisitReview.outputGrammar(), visitLiteral(#"{"highlights":["Source fact."],"medicines":[],"followUps":[]}"#), false),
+                ("visit.unknown-action", VisitReview.outputGrammar(), visitLiteral(unknownAction), false),
+                ("visit.extra-key", VisitReview.outputGrammar(), visitLiteral(#"{"highlights":[],"medicines":[],"followUps":[],"extra":true}"#), false),
                 ("title.valid", TitleOutputGrammar.make(), #"{"title":"A short neutral title"}"#, true),
                 ("title.empty", TitleOutputGrammar.make(), #"{"title":""}"#, false),
                 ("title.extra-key", TitleOutputGrammar.make(), #"{"title":"A short title","extra":true}"#, false)
             ]
             if !options.baseline {
+                tests += [
+                    ("visit.appointment-objects", VisitReview.outputGrammar(), #"{"highlights":[],"medicines":[],"followUps":[],"appointments":[{"quote":"Votre rendez-vous est mardi à 14 h."}]}"#, true),
+                    ("visit.bare-appointments", VisitReview.outputGrammar(), #"{"highlights":[],"medicines":[],"followUps":[],"appointments":["Your appointment is Tuesday."]}"#, false),
+                    ("visit.missing-appointments", VisitReview.outputGrammar(), #"{"highlights":[],"medicines":[],"followUps":[]}"#, false)
+                ]
                 func encoded(_ value: String) -> String { String(decoding: try! JSONEncoder().encode(value), as: UTF8.self) }
                 func medicine(_ quote: String, _ action: String, _ name: String, _ instructions: String) -> String {
                     "{\"quote\":" + encoded(quote) + ",\"action\":" + encoded(action) + ",\"name\":" + encoded(name) + ",\"instructions\":" + encoded(instructions) + "}"
                 }
-                func summary(_ changes: [String]) -> String { "{\"highlights\":[],\"medicines\":[" + changes.joined(separator: ",") + "],\"followUps\":[]}" }
+                func summary(_ changes: [String]) -> String { "{\"highlights\":[],\"medicines\":[" + changes.joined(separator: ",") + "],\"followUps\":[],\"appointments\":[]}" }
                 let start = "Start metformin 500 mg daily.", stop = "Stop warfarin today.", frenchStop = "Arrêtez la warfarine aujourd'hui."
                 let continuation = "Continue loratadine 10 mg daily.", unchanged = "Continue loratadine without changes."
                 let sourceTests: [(String, String, String, Bool)] = [
@@ -383,7 +400,7 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                 result.seconds = Date().timeIntervalSince(started); rows += 1; try emit(result)
             }
         }
-        let summary: [String: Any] = ["suite": suite.id, "suiteVersion": suite.version, "model": options.modelID, "rows": rows, "complete": true, "baselinePrompts": options.baseline, "contextChecks": options.contextChecks, "diagnosticsOnly": options.diagnosticsOnly]
+        let summary: [String: Any] = ["suite": suite.id, "suiteVersion": suite.version, "model": options.modelID, "rows": rows, "complete": true, "baselinePrompts": options.baseline, "contextChecks": options.contextChecks, "diagnosticsOnly": options.diagnosticsOnly, "availableTools": ToolPlanner.availableTools.map(\.rawValue)]
         FileHandle.standardOutput.write(try JSONSerialization.data(withJSONObject: summary, options: [.sortedKeys])); FileHandle.standardOutput.write(Data([10]))
     }
 }

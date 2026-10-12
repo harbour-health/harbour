@@ -1,0 +1,180 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      run_model_evals:
+        description: Run real Small and Balanced model routing and transcript evals
+        required: false
+        type: boolean
+        default: false
+      eval_scope:
+        description: Accuracy cases to run (routing is unchanged by transcript prompt edits)
+        required: false
+        type: choice
+        options:
+          - all
+          - transcripts
+        default: all
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event_name == 'workflow_dispatch' && github.run_id || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deterministic-tests:
+    if: github.event_name != 'workflow_dispatch' || !inputs.run_model_evals
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: xcodebuild -version
+
+      - name: Test Core rules and evaluation cases
+        run: swift test --package-path HarbourCore
+
+      - name: Audit localization
+        run: python3 scripts/audit-localization.py
+
+      - name: Cache simulator runtime framework
+        id: runtime-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: HarbourRuntime/Vendor/llama.xcframework
+          key: ${{ runner.os }}-llama-b10549-${{ hashFiles('scripts/prepare-runtime.sh', 'HarbourRuntime/Package.swift') }}
+
+      - name: Prepare simulator runtime framework
+        if: steps.runtime-cache.outputs.cache-hit != 'true'
+        run: |
+          brew install cmake
+          bash scripts/prepare-runtime.sh
+
+      - name: Save prepared runtime framework
+        if: steps.runtime-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: HarbourRuntime/Vendor/llama.xcframework
+          key: ${{ runner.os }}-llama-b10549-${{ hashFiles('scripts/prepare-runtime.sh', 'HarbourRuntime/Package.swift') }}
+
+      - name: Test deterministic runtime parsing
+        run: swift test --package-path HarbourRuntime
+
+      - name: Run native iOS smoke and visual regression tests
+        run: |
+          mkdir -p build
+          device_id="$(xcrun simctl list devices available --json | python3 -c 'import json,sys; devices=json.load(sys.stdin)["devices"]; print(next(d["udid"] for runtime, entries in devices.items() if "iOS" in runtime for d in entries if d["name"].startswith("iPhone")))')"
+          xcodebuild test \
+            -project Harbour.xcodeproj \
+            -scheme Harbour \
+            -destination "platform=iOS Simulator,id=$device_id" \
+            -derivedDataPath build/DerivedData \
+            -resultBundlePath build/Harbour-CI.xcresult \
+            -parallel-testing-enabled NO \
+            -only-testing:HarbourTests \
+            -skip-testing:HarbourTests/HarbourCareServiceTests/testNativeVoiceActuallyCompletesShortUtterance \
+            -only-testing:HarbourUITests/AppearanceAndLockVisualTests \
+            -only-testing:HarbourUITests/HarbourAppointmentUITests \
+            -only-testing:HarbourUITests/HarbourMedicationDraftUITests \
+            -only-testing:HarbourUITests/HarbourUITests/testMedicineConfirmationAndExport \
+            -only-testing:HarbourUITests/HarbourUITests/testRecordsAndPersistence \
+            -only-testing:HarbourUITests/HarbourUITests/testChatHintPreservesDraftAndModelSelector \
+            -only-testing:HarbourUITests/HarbourAppearanceTests/testScreensAndAppearancePersistence \
+            -only-testing:HarbourUITests/HarbourNavigationTests/testDashboardNavigationAndSystemAppearance \
+            -only-testing:HarbourUITests/HarbourVisitTests/testMedicineReviewDrawerScreens \
+            -only-testing:HarbourUITests/HarbourStreamlineTests/testMainActionsDraftRetentionAndVisitCreation
+
+      - name: Export simulator screenshots
+        if: always()
+        run: |
+          if [ -d build/Harbour-CI.xcresult ]; then
+            xcrun xcresulttool export attachments --path build/Harbour-CI.xcresult --output-path build/screenshots
+          fi
+
+      - name: Upload simulator screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: harbour-ci-screenshots
+          path: build/screenshots
+          if-no-files-found: ignore
+
+      - name: Upload simulator test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: harbour-ci-results
+          path: build/Harbour-CI.xcresult
+          if-no-files-found: ignore
+
+  model-accuracy:
+    if: github.event_name == 'workflow_dispatch' && inputs.run_model_evals
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache runtime framework
+        id: runtime-cache
+        uses: actions/cache@v4
+        with:
+          path: HarbourRuntime/Vendor/llama.xcframework
+          key: ${{ runner.os }}-llama-b10549-${{ hashFiles('scripts/prepare-runtime.sh', 'HarbourRuntime/Package.swift') }}
+      - name: Prepare runtime framework
+        if: steps.runtime-cache.outputs.cache-hit != 'true'
+        run: |
+          brew install cmake
+          bash scripts/prepare-runtime.sh
+      - name: Restore verified model weights
+        id: model-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: build/models
+          key: qwen-small-balanced-74a4da8c-6a1a2eb6
+      - name: Download and verify model weights
+        id: model-download
+        run: |
+          set -euo pipefail
+          mkdir -p build/models
+          if [ '${{ steps.model-cache.outputs.cache-hit }}' != 'true' ]; then
+            curl --fail --location --connect-timeout 30 --max-time 600 --retry 2 'https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/9217f5db79a29953eb74d5343926648285ec7e67/qwen2.5-0.5b-instruct-q4_k_m.gguf' -o build/models/small.gguf
+            curl --fail --location --connect-timeout 30 --max-time 600 --retry 2 'https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/91cad51170dc346986eccefdc2dd33a9da36ead9/qwen2.5-1.5b-instruct-q4_k_m.gguf' -o build/models/balanced.gguf
+          fi
+          echo '74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db  build/models/small.gguf' | shasum -a 256 -c -
+          echo '6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e  build/models/balanced.gguf' | shasum -a 256 -c -
+      - name: Save verified model weights
+        if: steps.model-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: build/models
+          key: qwen-small-balanced-74a4da8c-6a1a2eb6
+      - name: Build release model probe
+        id: probe-build
+        run: swift build --package-path HarbourRuntime --configuration release --product model-probe
+      - name: Measure Small model accuracy
+        env:
+          EVAL_SCOPE: ${{ inputs.eval_scope }}
+        run: |
+          set -euo pipefail
+          if [ "$EVAL_SCOPE" = transcripts ]; then set -- --transcripts-only; else set --; fi
+          swift run --package-path HarbourRuntime --configuration release --skip-build model-probe "$PWD/build/models/small.gguf" --cpu "$@" 2>&1 | tee build/model-small.log
+      - name: Measure Balanced model accuracy
+        if: always() && !cancelled() && steps.model-download.outcome == 'success' && steps.probe-build.outcome == 'success'
+        env:
+          EVAL_SCOPE: ${{ inputs.eval_scope }}
+        run: |
+          set -euo pipefail
+          if [ "$EVAL_SCOPE" = transcripts ]; then set -- --transcripts-only; else set --; fi
+          swift run --package-path HarbourRuntime --configuration release --skip-build model-probe "$PWD/build/models/balanced.gguf" --cpu "$@" 2>&1 | tee build/model-balanced.log
+      - name: Upload model accuracy results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: harbour-model-accuracy
+          path: build/model-*.log
+          if-no-files-found: ignore

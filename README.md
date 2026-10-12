@@ -49,7 +49,7 @@ English and Canadian French follow the iOS app language setting. French includes
 
 - **Today:** recent readings, upcoming reminders and doses, refill dates, and searchable health history.
 - **Chat:** typed or spoken messages; optional topic hints; model and effort controls beside the microphone; model-written replies with recent conversation context, model-selected tool calls, and locally generated conversation titles.
-- **Records:** a large category browser leading to dedicated symptom, medicine, and reading lists, with native entry sheets and swipe deletion.
+- **Records:** dedicated symptom, medication, reading, and appointment lists, with shared entry sheets and swipe deletion. Medication schedules support explicit clock times or a count per day, week, or month.
 - **Visits:** a large recorder with pause/resume, saved audio, direct note entry, editable transcripts, source-quoted notes and follow-up, confirmed medicine changes, and appointment preparation with saved questions.
 - **Settings:** appearance, optional Face ID or app PIN lock, model downloads, voice choice and preview, Apple Health import, record import/export, reset, and evaluation.
 
@@ -68,7 +68,9 @@ xcodebuild -project Harbour.xcodeproj -scheme Harbour \
 
 `testLocalModelChat` downloads Qwen Small if missing; budget network access and roughly 500 MB of free space. Other UI tests exercise manual entry, persisted records, draft preservation, and model controls. See [chat agent](docs/chat-agent.md) for conversation/tool handling and [evaluation](docs/evaluation.md) for measured model results and limits.
 
-The frozen [model quality fixture v1](evaluation/harbour-model-quality-v1.json) contains 121 synthetic cases (59 development, 62 held out; 60 English, 61 Canadian French), covering all 19 tools, grounded replies, titles, visit quotes, and the known scheduling, negated deletion, and sky explanation regressions. SHA-256: `7a013eae0da56e0d829513ebd4c33a54eccd45c4ce6e8da4ffa81857d42fb5d9`. Standard effort across Small, Balanced, and Qwen3.5 yields 363 cases; Quick/Extended on 19 representative cases adds 114 runs, and repeats for eight timing cases add 48 runs. [The scorer](evaluation/score.py) separates production validation, semantic facts, source fidelity, pending qualitative reviews, and latency. Repeated deterministic outputs count toward timing only. Run its checks with `python3 -m unittest discover -s evaluation -p 'test_*.py'`.
+The frozen [model quality fixture v1](evaluation/harbour-model-quality-v1.json) contains 121 synthetic cases (59 development, 62 held out; 60 English, 61 Canadian French), covering the original 19 tool intents, grounded replies, titles, visit quotes, and the known scheduling, negated deletion, and sky explanation regressions. SHA-256: `7a013eae0da56e0d829513ebd4c33a54eccd45c4ce6e8da4ffa81857d42fb5d9`. Standard effort across Small, Balanced, and Qwen3.5 yields 363 cases; Quick/Extended on 19 representative cases adds 114 runs, and repeats for eight timing cases add 48 runs. [The scorer](evaluation/score.py) separates production validation, semantic facts, source fidelity, pending qualitative reviews, and latency. Repeated deterministic outputs count toward timing only. Run its checks with `python3 -m unittest discover -s evaluation -p 'test_*.py'`.
+
+The merged catalog exposes 21 routing alternatives, adding `create_appointment` and `list_appointments`. V1 keeps its frozen original 19-intent coverage and accepts the added source-quoted appointment field without measuring appointment recall. Supplemental main routing and nine transcript cases run separately on all three models for the new appointment and frequency behavior. The baseline exposes 19 tools while the merged pipeline exposes 21, so paired results include catalog, prompt, and validation changes; they do not isolate model intelligence. See [the evaluation method](evaluation/README.md) for schema compatibility and coverage limits.
 
 The comparison gate requires complete reviews for every model and safe accepted actions on all guarded cases. Qwen3.5 must pass its critical grounding, extraction, scheduling, and qualitative checks, reach at least 95% raw routing intent accuracy, and have no matched English routing loss against Balanced. Paired French or grounding regressions block the gate for any model. Ordinary Small and Balanced quality misses are reported without requiring those models to pass every case.
 
@@ -77,6 +79,8 @@ Release scoring also requires `--run-manifest` from [the evidence collector](scr
 A reviewer may explicitly adjudicate a lexical false positive such as a faithful French synonym missing from a required-word pattern, with the frozen criterion and source evidence recorded. Automatic failures remain visible alongside adjudicated results. Tool intent, accepted unsafe actions, source quotes, validation limits, and unsupported numeric facts cannot be overridden, and fixture expectations remain frozen.
 
 The Xcode project is checked in. If adding source files, regenerate with `python3 scripts/generate-project.py`; this resets generated project settings, so change the generator for persistent configuration changes.
+
+GitHub CI runs deterministic evals, localization checks, hosted tests, and simulator smoke tests on every push and PR. Manual workflow dispatch can also run real Small/Balanced model evals. See [appointments](docs/appointments.md) and [evaluation](docs/evaluation.md) for the new workflows and coverage limits.
 
 ## Documentation
 

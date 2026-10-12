@@ -46,19 +46,38 @@ public struct Symptom: Codable, Identifiable, Equatable, Sendable {
 
 public struct Records: Codable, Equatable, Sendable {
     public var schemaVersion = 1
-    public var medicines: [Medicine] = []
+    public var medications: [Medicine] = []
+    public var medicines: [Medicine] { get { medications } set { medications = newValue } }
+    public var appointments: [Appointment] = []
     public var readings: [Reading] = []
     public var symptoms: [Symptom] = []
     public init() {}
+    private enum CodingKeys: String, CodingKey { case schemaVersion, medications, medicines, appointments, readings, symptoms }
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        schemaVersion = try values.decode(Int.self, forKey: .schemaVersion)
+        medications = try values.decodeIfPresent([Medicine].self, forKey: .medications) ?? values.decodeIfPresent([Medicine].self, forKey: .medicines) ?? []
+        appointments = try values.decodeIfPresent([Appointment].self, forKey: .appointments) ?? []
+        readings = try values.decode([Reading].self, forKey: .readings)
+        symptoms = try values.decode([Symptom].self, forKey: .symptoms)
+    }
+    public func encode(to encoder: Encoder) throws {
+        var values = encoder.container(keyedBy: CodingKeys.self)
+        try values.encode(schemaVersion, forKey: .schemaVersion)
+        try values.encode(medications, forKey: .medications)
+        try values.encode(appointments, forKey: .appointments)
+        try values.encode(readings, forKey: .readings)
+        try values.encode(symptoms, forKey: .symptoms)
+    }
     public var appointmentNote: String {
         let concern = symptoms.sorted { $0.date > $1.date }.first
         return """
         Concern: \(concern?.text ?? "Not recorded")
         Started: \(concern?.onset.isEmpty == false ? concern!.onset : "Not recorded")
         Severity: \(concern?.severity ?? "Not recorded")
-        Medicines entered: \(medicines.isEmpty ? "None entered" : medicines.map(\.name).joined(separator: ", "))
+        Medications entered: \(medicines.isEmpty ? "None entered" : medicines.map(\.name).joined(separator: ", "))
         Recent readings: \(readings.sorted { $0.date > $1.date }.prefix(5).map { "\($0.kind.rawValue): \($0.value) \($0.kind.unit)" }.joined(separator: "; "))
-        Questions: What should I watch for? Should a pharmacist review my medicines?
+        Questions: What should I watch for? Should a pharmacist review my medications?
         """
     }
 }

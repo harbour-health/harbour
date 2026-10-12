@@ -39,7 +39,7 @@ final class FrenchInputTests: XCTestCase {
 
     func testFrenchSourceTextWinsOverGeneratedMedicineAndSymptomArguments() throws {
         let added = try ToolPlanner.validate(.init(tool: .addMedicine, arg: "warfarine"), original: "Ajoute metformine", records: Records())
-        XCTAssertEqual(added, .add(metformin))
+        XCTAssertEqual(added, .add(metformin, [], nil))
         XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .addMedicine, arg: "metformine"), original: "Ajoute un médicament inconnu", records: Records()))
         XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .addMedicine), original: "Ajoute metformine et warfarine", records: Records()))
         let source = "J'ai mal au genou depuis mardi"
@@ -84,7 +84,7 @@ final class FrenchInputTests: XCTestCase {
         XCTAssertEqual(CareRules.times(in: "8h, 20:30, 8 am, 8:30 pm"), expected)
         for text in ["le matin et le soir", "28 h", "8 h 99", "20:99", "8h3"] { XCTAssertTrue(CareRules.times(in: text).isEmpty, text) }
         var records = Records(); records.medicines = [metformin]
-        XCTAssertEqual(try ToolPlanner.validate(.init(tool: .scheduleMedicine, arg: "2 am"), original: "Programme metformine à 8 h et 20 h 30", records: records), .schedule(metformin, expected))
+        XCTAssertEqual(try ToolPlanner.validate(.init(tool: .scheduleMedicine, arg: "2 am"), original: "Programme metformine à 8 h et 20 h 30", records: records), .schedule(metformin, expected, MedicationFrequency(count: 2, period: .day)))
         let label = "METFORMINE\n500 mg\nPrendre avec de la nourriture\nPosologie : voir l'ordonnance"
         XCTAssertEqual(CareRules.labelCandidates(label), [metformin])
         XCTAssertEqual(CareRules.labelInstructions(label), "Prendre avec de la nourriture\nPosologie : voir l'ordonnance")

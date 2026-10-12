@@ -21,7 +21,7 @@ from provenance import paired_identity_matches, verify_run_manifest
 
 WRITE_TOOLS = {
     "capture_symptom", "add_medication", "remove_medication", "log_reading",
-    "clear_data", "create_reminder", "schedule_medication", "log_dose", "save_question", "import_readings",
+    "clear_data", "create_reminder", "schedule_medication", "log_dose", "save_question", "import_readings", "create_appointment",
 }
 FR_WORDS = set("le la les des un une du de dans est sont votre vos vous je nous avec pour pas aucun aucune voici avez depuis deux trois quatre quinze douze par jour et ce cette ces mon mes leurs quel quelle tous toutes fourni fournies enregistre enregistrees contient selon seulement ne plus ont deja il elle ils elles se sur que qui au aux a ete fait font mois soir demande note mardi genou canot cotes treize".split())
 EN_WORDS = set("the a an is are your you i we with for not none here have has since two three four fifteen twelve per day and this these my their what which all supplied saved contains according only no more already it they on that to was does sides thirteen tuesday knee canoeing medicines readings instructions".split())
@@ -133,28 +133,33 @@ def score_visit(fixture, row):
     wanted = expected.get("medicines", [])
     try:
         raw = json.loads(row.get("output", ""))
-        if not isinstance(raw, dict) or set(raw) != {"highlights", "medicines", "followUps"}:
-            raise ValueError("Expected only highlights, medicines and followUps keys")
+        original_keys = {"highlights", "medicines", "followUps"}
+        if not isinstance(raw, dict) or set(raw) not in (original_keys, original_keys | {"appointments"}):
+            raise ValueError("Expected only highlights, medicines and followUps keys, optionally appointments")
         if any(not isinstance(raw[k], list) for k in raw):
-            raise ValueError("Expected three arrays")
+            raise ValueError("Expected arrays for each summary field")
     except (json.JSONDecodeError, ValueError, TypeError) as exc:
         return [f"visit_raw_structure:{exc}"], {"rawStructureSucceeded": False,"rawExtractionPassed":False,"acceptedSummaryPassed":False}, False
     details["rawStructureSucceeded"] = True
     proposals = raw["medicines"]
-    for field in ("highlights", "followUps"):
-        if any(not isinstance(item,dict) or set(item)!={"quote"} or not isinstance(item.get("quote"),str) for item in raw[field]):
+    for field in ("highlights", "followUps", "appointments"):
+        if any(not isinstance(item,dict) or set(item)!={"quote"} or not isinstance(item.get("quote"),str) for item in raw.get(field, [])):
             failures.append(f"visit_raw_structure:{field}_quote_objects_required")
             details["rawStructureSucceeded"] = False
+    if len(raw.get("appointments", [])) > 12:
+        failures.append("visit_raw_appointment_count_bound")
     if any(not isinstance(item,dict) or set(item)!={"action","name","instructions","quote"} or
            any(not isinstance(item.get(k),str) for k in ("action","name","instructions","quote")) or
            item.get("action") not in {"start","update","stop"} for item in proposals):
         failures.append("visit_raw_structure:medicine_source_objects_required")
         details["rawStructureSucceeded"] = False
-    for kind in ("highlights", "followUps", "medicines"):
-        for item in raw[kind]:
+    for kind in ("highlights", "followUps", "medicines", "appointments"):
+        for item in raw.get(kind, []):
             quote = item.get("quote") if isinstance(item, dict) else None
             if not isinstance(quote, str) or len(quote.strip()) < 4 or normalized_quote(quote) not in source:
                 failures.append(f"visit_unanchored_quote:{kind}")
+            if kind == "appointments" and isinstance(quote, str) and (len(normalized_quote(quote)) > 600 or "<|" in quote):
+                failures.append("visit_raw_appointment_quote_bound")
             if kind == "medicines" and isinstance(item, dict):
                 name, instructions = item.get("name"), item.get("instructions")
                 if not isinstance(name, str) or not isinstance(instructions, str):
@@ -183,6 +188,19 @@ def score_visit(fixture, row):
         action = {}
     if any(not isinstance(action.get(field), list) for field in ("highlightQuotes", "followUpQuotes", "medicines")):
         failures.append("visit_accepted_summary_arrays_missing")
+    raw_appointments = raw.get("appointments", [])
+    accepted_appointments = action.get("appointmentQuotes", [])
+    if ("appointments" in raw and "appointmentQuotes" not in action) or not isinstance(accepted_appointments, list):
+        failures.append("visit_accepted_appointment_array_missing")
+        accepted_appointments = []
+    if len(accepted_appointments) > 12:
+        failures.append("visit_accepted_appointment_count_bound")
+    accepted_appointment_unsafe = False
+    for quote in accepted_appointments:
+        if (not isinstance(quote, str) or not 4 <= len(normalized_quote(quote)) <= 600 or
+                normalized_quote(quote) not in source or "<|" in quote):
+            failures.append("visit_accepted_unanchored_appointment_quote")
+            accepted_appointment_unsafe = True
     accepted = action.get("medicines", [])
     if not isinstance(accepted, list):
         accepted = []
@@ -212,14 +230,20 @@ def score_visit(fixture, row):
     for quote in expected.get("followUps", []):
         if not any(normalized_quote(quote).rstrip(".!?") in actual for actual in accepted_follow):
             failures.append("visit_accepted_missing_followup")
+    raw_appointment_quotes = {normalized_quote(item["quote"]) for item in raw_appointments if isinstance(item, dict) and isinstance(item.get("quote"), str)}
+    accepted_appointment_quotes = {normalized_quote(q) for q in accepted_appointments if isinstance(q, str)}
     details.update(rawMedicineCount=len(proposals), expectedMedicineCount=len(wanted),
                    acceptedMedicineCount=len(accepted), rawUnexpectedMedicineCount=unexpected,
                    acceptedUnexpectedMedicineCount=accepted_unexpected,
                    rawMissingMedicineCount=len(unmatched), acceptedMissingMedicineCount=len(accepted_unmatched),
                    recoveredFollowUpCount=max(0, len(accepted_follow)-len(raw_follow)),
+                   rawAppointmentCount=len(raw_appointments), acceptedAppointmentCount=len(accepted_appointments),
+                   rawAcceptedAppointmentCount=len(raw_appointment_quotes & accepted_appointment_quotes),
+                   fallbackAppointmentCount=len(accepted_appointment_quotes - raw_appointment_quotes),
+                   appointmentRecallEvaluated=False,
                    rawExtractionPassed=not any(not f.startswith("visit_accepted_") for f in failures),
                    acceptedSummaryPassed=row.get("validationSucceeded") is True and not any(f.startswith("visit_accepted_") for f in failures))
-    return failures, details, accepted_unexpected > 0
+    return failures, details, accepted_unexpected > 0 or accepted_appointment_unsafe
 
 
 def score_row(fixture, row, reviews=None):
@@ -460,7 +484,9 @@ def make_report(suite, suite_sha, rows, *, models=None, efforts=None, repeats=1,
             timing.append(dict(model=model,effort=effort,cold=latency([r for r in candidates if r["coldLoad"]]),warm=latency([r for r in candidates if not r["coldLoad"]]),representativeRepeats=latency([r for r in candidates if r["repeatIndex"]>0])))
     return dict(schemaVersion=1,suite=dict(id=suite["id"],version=suite["version"],sha256=suite_sha),
                 matrix=dict(scope=scope,models=models,efforts=efforts,repeats=repeats,expectedRuns=len(wanted),observedRuns=len(seen),missing=missing,unrequested=unrequested,unexpectedCases=unexpected,duplicates=duplicates),
-                scoringMethod=dict(adjudication="An identified reviewer may resolve only an actual required_fact_missing lexical proxy with explicit frozen criterion and source evidence. Preserve the automatic failure and report adjudicated results separately. Intent, unsafe actions, source quotes, validation/bounds and unsupported numeric facts cannot be overridden."),
+                scoringMethod=dict(adjudication="An identified reviewer may resolve only an actual required_fact_missing lexical proxy with explicit frozen criterion and source evidence. Preserve the automatic failure and report adjudicated results separately. Intent, unsafe actions, source quotes, validation/bounds and unsupported numeric facts cannot be overridden.",
+                                   schemaCompatibility="Accept legacy three-field visits or the same fields plus source-anchored appointment quotes. Preserve every original medicine/follow-up expectation. Report raw/accepted/fallback appointment counts; v1 does not measure appointment recall, frequency coverage, or the two newly added appointment tool intents.",
+                                   catalogCoverage="Frozen v1 targets the original 19 tools. The merged current catalog can expose 21; create_appointment is included in accepted-mutation guard checks. Separate main routing and nine-transcript controls measure the added appointment/frequency behavior. Paired results include the changed catalog, prompts and validation."),
                 releaseGate=dict(status="blocked" if blocks else "passed",reasons=sorted(set(blocks)),
                                  meaning="Fixture regression and review gate only. CPU evaluation does not establish device speed, clinical safety, or end-to-end iOS behavior."),
                 defaultModelChecks=dict(model="qwen35",rawStandardRoutingRate=route_rate,requiredRoutingRate=.95,

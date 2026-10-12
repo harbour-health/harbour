@@ -88,6 +88,22 @@ import HarbourCore
 }
 
 @MainActor final class HarbourCareServiceTests: XCTestCase {
+    func testAppointmentPersistsExportsAndDetachesEditedSource() throws {
+        let store = temporaryStore(), target = temporaryStore()
+        defer { try? FileManager.default.removeItem(at: store.file.deletingLastPathComponent()); try? FileManager.default.removeItem(at: target.file.deletingLastPathComponent()) }
+        let quote = "Follow-up appointment Friday at 3 pm."
+        var visit = DoctorVisit(transcript: quote)
+        visit.summary = try VisitReview.parse(#"{"highlights":[],"medicines":[],"followUps":[]}"#, transcript: quote, medicines: [])
+        XCTAssertTrue(store.saveVisit(visit))
+        let draft = AppointmentRules.draft(from: quote, visitID: visit.id)
+        XCTAssertTrue(store.saveAppointment(draft))
+        XCTAssertEqual(AppStore(folder: store.file.deletingLastPathComponent()).records.appointments, [draft])
+        store.export(); target.importFile(try XCTUnwrap(store.shareFile?.url))
+        XCTAssertNil(target.error); XCTAssertEqual(target.records.appointments, [draft])
+        visit.transcript = "Cancelled."; visit.summary = nil; XCTAssertTrue(store.saveVisit(visit))
+        XCTAssertNil(store.records.appointments[0].visitID)
+        XCTAssertFalse(store.saveAppointment(draft))
+    }
     private func temporaryStore() -> AppStore { AppStore(folder: FileManager.default.temporaryDirectory.appendingPathComponent("care-test-" + UUID().uuidString)) }
     func testLegacyArchiveAndNewCareSurviveRelaunch() throws {
         let store = temporaryStore()
@@ -114,6 +130,33 @@ import HarbourCore
         XCTAssertFalse(store.records.medicines.contains { $0.id == "bad" })
         store.removeMedicine(medicine.id); XCTAssertTrue(store.care.schedules.isEmpty)
         try FileManager.default.removeItem(at: store.file.deletingLastPathComponent())
+    }
+    func testApplyingVisitFrequencyAndExplicitTimesUpdatesSchedule() throws {
+        let store = temporaryStore(), medicine = Catalog.medicines.first { $0.id == "metformin" }!
+        defer { try? FileManager.default.removeItem(at: store.file.deletingLastPathComponent()) }
+
+        let weeklyQuote = "Start metformin 500 mg 2 times per week."
+        let weeklyJSON = #"{"highlights":[],"medicines":[{"action":"start","name":"metformin","instructions":"500 mg 2 times per week","quote":"Start metformin 500 mg 2 times per week."}],"followUps":[]}"#
+        var weeklyVisit = DoctorVisit(transcript: weeklyQuote)
+        weeklyVisit.summary = try VisitReview.parse(weeklyJSON, transcript: weeklyQuote, medicines: [])
+        weeklyVisit.medicineBaseline = []
+        XCTAssertTrue(store.saveVisit(weeklyVisit))
+        let weeklyChange = try XCTUnwrap(weeklyVisit.summary?.medicines.first)
+        XCTAssertTrue(store.applyVisitChanges(id: weeklyVisit.id, selected: [weeklyChange.id]))
+        XCTAssertEqual(store.care.schedules.first?.frequency, MedicationFrequency(count: 2, period: .week))
+        XCTAssertTrue(store.care.schedules.first?.times.isEmpty == true)
+
+        let timedQuote = "Update metformin to 500 mg at 8 am and 8 pm."
+        let timedJSON = #"{"highlights":[],"medicines":[{"action":"update","name":"metformin","instructions":"500 mg at 8 am and 8 pm","quote":"Update metformin to 500 mg at 8 am and 8 pm."}],"followUps":[]}"#
+        var timedVisit = DoctorVisit(transcript: timedQuote)
+        timedVisit.summary = try VisitReview.parse(timedJSON, transcript: timedQuote, medicines: store.records.medicines)
+        timedVisit.medicineBaseline = store.records.medicines
+        XCTAssertTrue(store.saveVisit(timedVisit))
+        let timedChange = try XCTUnwrap(timedVisit.summary?.medicines.first)
+        XCTAssertTrue(store.applyVisitChanges(id: timedVisit.id, selected: [timedChange.id]))
+        XCTAssertEqual(store.care.schedules.first?.frequency, MedicationFrequency(count: 2, period: .day))
+        XCTAssertEqual(store.care.schedules.first?.times, [DoseTime(hour: 8, minute: 0), DoseTime(hour: 20, minute: 0)])
+        XCTAssertTrue(store.records.medicines.contains { $0.id == medicine.id })
     }
     func testCorruptArchiveRemainsUntouched() throws {
         let store = temporaryStore(); let corrupt = Data("not json".utf8); try corrupt.write(to: store.file)
@@ -340,7 +383,7 @@ import HarbourCore
         for source in [symptom.text, symptom.onset, records.medicines[0].name, care.questions[0].text] { XCTAssertTrue(note.contains(source), source) }
         if L10n.isFrench {
             XCTAssertTrue(note.hasPrefix("Préoccupation")); XCTAssertTrue(note.contains("Intensité")); XCTAssertTrue(note.contains("Légère")); XCTAssertTrue(note.contains("36,8"))
-            XCTAssertFalse(note.contains("Medicines entered:")); XCTAssertFalse(note.contains("Recent readings:"))
+            XCTAssertFalse(note.contains("Medications entered:")); XCTAssertFalse(note.contains("Recent readings:"))
         } else { XCTAssertTrue(note.hasPrefix("Concern:")); XCTAssertTrue(note.contains("36.8")) }
         let visit = DoctorVisit(title: "My consultation / ma consultation", transcript: "Keep my English and French transcript.")
         let timeline = LocalizedHealthContent.timelineEntries(records: records, care: care, visits: [visit])
