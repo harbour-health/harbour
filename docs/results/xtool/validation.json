@@ -1,0 +1,118 @@
+{
+  "date": "2026-10-12",
+  "source_base_commit": "d37cb1e2aec2fef98c337d69fa309dd201fd0597",
+  "scope": "Attempted arm64 iOS build of current Harbour source without Apple account provisioning. No account login, signing, device installation or upload occurred.",
+  "local_windows_checks": {
+    "docker_client": "27.5.1 windows/amd64",
+    "docker_contexts_checked": [
+      "desktop-linux",
+      "default"
+    ],
+    "docker_daemon": "unavailable; both engine named pipes missing",
+    "wsl_distribution": "Ubuntu WSL2, stopped",
+    "wsl_start": "failed: HCS_E_HYPERV_NOT_INSTALLED; Virtual Machine Platform/BIOS virtualization unavailable",
+    "os_changes": "none; no installation, feature enablement or reboot"
+  },
+  "cross_compile_environment": {
+    "execution_host": "connected Linux host",
+    "host_os": "Ubuntu 24.04.4 LTS x86_64",
+    "container_image": "ghcr.io/xtool-org/xtool:1.21.0",
+    "container_digest": "sha256:032d20a18c8015e49fa99fddfc4ba236795731fd8543d69971ff76d388e8430f",
+    "swift_version": "Swift version 6.4 (swift-6.4-RELEASE)",
+    "swift_host_target": "x86_64-unknown-linux-gnu",
+    "network_during_checks": "disabled",
+    "installation_scope": "AppImage extracted into isolated temporary task cache; no global tool/SDK install",
+    "container_xtool_version_note": "Image binary reports unversioned; verified release AppImage was used for actual build attempts."
+  },
+  "xtool": {
+    "version": "1.21.0",
+    "asset": "xtool-x86_64.AppImage",
+    "url": "https://github.com/xtool-org/xtool/releases/download/1.21.0/xtool-x86_64.AppImage",
+    "bytes": 55753208,
+    "sha256": "e2277e59bb2fda9b487cbc77ad080ea2b0370bb740ac0f02cc42fa28a272d3a5",
+    "verified_against": "Official GitHub release asset digest",
+    "official_source_commit_reviewed": "d802c719e43fb2d66a7c7879f7dff75bfdd96a27"
+  },
+  "sdk": {
+    "xtool_sdk_status": "Not installed",
+    "swift_sdk_list": "No Swift SDKs are currently installed.",
+    "existing_sdk_search": "No Xcode.xip, Darwin .xtoolsdk or Darwin .artifactbundle in local Downloads/.swiftpm or connected Linux Downloads/.swiftpm/.config/swiftpm/task caches.",
+    "required_input": "Official Xcode 27 .xip/.app or matching prebuilt darwin.xtoolsdk",
+    "install_command": "xtool sdk install /path/to/Xcode_27.xip",
+    "download_source": "https://developer.apple.com/download/all/?q=Xcode",
+    "download_prerequisites": "Apple Account authentication and Xcode license acceptance required by official xtool installation documentation; no credentials requested or used in this run.",
+    "download_attempt": "Official Apple download page opened in the available in-app browser and redirected to Sign In to Apple Developer. No authenticated session was available; awaiting user sign-in.",
+    "official_public_artifact_check": "xtool 1.21.0 releases, darwin-tools-linux-llvm v1.1.0 and OpenAppleMacros v1.3.0 supply tools rather than Apple platform SDKs. SDKBuilder extracts a supplied Xcode archive; no maintained public Apple SDK artifact route was found.",
+    "official_installation_guide": "https://github.com/xtool-org/xtool/blob/1.21.0/Documentation/xtool.docc/Installation-Linux.md"
+  },
+  "manifest_validation": {
+    "environment": {
+      "HARBOUR_DEVICE_RUNTIME": "1"
+    },
+    "root_command": "swift package dump-package",
+    "root_result": "passed; Harbour library product targets Harbour app sources with HarbourCore/HarbourRuntime product dependencies",
+    "runtime_command": "swift package --package-path HarbourRuntime dump-package",
+    "runtime_result": "passed; binary target llama selects Vendor/llama-device.xcframework"
+  },
+  "build_attempt": {
+    "command": "xtool dev build --configuration release --triple arm64-apple-ios18.0",
+    "result": "blocked before package planning or iOS compilation by missing Darwin SDK",
+    "stdin": "EOF pipe via docker run -i",
+    "output": "Now generating the Darwin SDK.\n\nError: Could not read file or directory at path ''.\n  See 'xtool help sdk' for usage.\n",
+    "initial_attempt": "With Docker noninteractive /dev/null stdin, upstream SwiftNIO terminated with epoll_ctl Operation not permitted. EOF pipe avoided that crash and reached the SDK diagnostic.",
+    "compiled_native_sources": false,
+    "produced_app_bundle": false
+  },
+  "wrapper_preflight": {
+    "exit_code": 2,
+    "stdout": "",
+    "stderr": "Apple SDK is missing. Run: xtool sdk install /path/to/Xcode_27.xip\n",
+    "command": "python3 scripts/xtool-build.py --xtool <verified xtool executable>",
+    "execution": "Connected host Python3 with isolated verified xtool executable"
+  },
+  "limits": "SwiftPM manifest validation does not typecheck UIKit/SwiftUI app code. No simulator, physical-device, signing, provisioning or TestFlight checks occurred.",
+  "source_sha256": {
+    "Package.swift": "f4d74f00af529fdf9c323b0529d4e9629099259f1fedd11ed2e0ed70d354e531",
+    "xtool.yml": "4de8d39c2e87b90f7888428c1f2b822c47e98630f7975e1edf433d36d6708b7f",
+    "HarbourRuntime/Package.swift": "0a78676001c1c03660c88cf9d07f9a3b61649ce25b01d22b75d79946f86d41dd",
+    "scripts/xtool-build.py": "182deb4ff01dc26efe1554527da67f70fcb60107ad2277313cfcbbca80f6cf32",
+    "scripts/prepare-device-runtime.py": "090e709a9c9006ad9787cdbe83757f82c229089f65074c0c8c481e080e2854c1"
+  },
+  "source_scope_note": "SHA-256 records identify the source snapshot copied for these attempts. The runtime preparation helper changed afterward; it was not executed in the SDK-blocked build attempt, and its separate verification is reported by the runtime preparation checks.",
+  "workspace_preparation": {
+    "prepare_only_exit_code": 0,
+    "helper_sha256": "23f8d1d9a1d188fb96bf7cae5e5a0bbd1ef9a84ed917a8123afa75aadad65bd0",
+    "runtime": "llama.cpp b10549 iOS arm64 device slice",
+    "runtime_location": "HarbourRuntime/Vendor/llama-device.xcframework",
+    "full_xcode_runtime_modified": false,
+    "plist_bundle_id": "com.matteopolak.harbour",
+    "plist_version": "0.1",
+    "plist_build": "1",
+    "minimum_os": "18.0",
+    "device_family": [
+      1,
+      2
+    ],
+    "localizations": [
+      "en",
+      "fr-CA"
+    ],
+    "permission_description_count": 6,
+    "configuration_only": true,
+    "bundle_validation_executed": false,
+    "focused_validation": {
+      "command": "python -B scripts/xtool-build.py --prepare-only --runtime-archive <existing verified release ZIP>",
+      "result": "passed on Windows",
+      "device_runtime_file_count": 19,
+      "assertions": [
+        "Pinned release archive size and SHA-256",
+        "Device runtime ownership manifest and all file hashes",
+        "Arm64 Mach-O binary and required llama API headers",
+        "Module-map system-framework and C++ links",
+        "Runtime C617.1 required-reason privacy declaration",
+        "Generated app metadata and all six permission descriptions"
+      ],
+      "diff_check": "passed"
+    }
+  }
+}

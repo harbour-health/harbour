@@ -12,6 +12,12 @@ The Core suite passed 87/87 tests and the portable runtime suite passed 16/16 te
 
 Qwen3.5 is selected for fresh or unrecognized preferences. Saved Small, Balanced, and Automatic selections are retained; Automatic uses the new model only under the existing memory, power, and thermal criteria. These results justify that the integration loads and runs with the pinned runtime; they do not establish clinical answer accuracy or resolve the observed French failures.
 
+## xtool build validation — October 12, 2026
+
+The added [xtool workflow](xtool.md) passed `--prepare-only` on Windows, preparing the verified iPhone-only llama runtime and app metadata while retaining version `0.1`/build `1`, iOS 18 minimum, device families, both localizations, and all six permission descriptions. The full Xcode runtime was not modified. In an isolated Swift 6.4 environment on the connected Linux host, root and runtime `swift package dump-package` checks passed with `HARBOUR_DEVICE_RUNTIME=1`, confirming the Harbour library dependencies and `llama` device binary target. See the [commands, provenance, and validation scope](results/xtool/validation.json). These checks do not typecheck the native app or establish a successful build.
+
+Local WSL startup failed with `HCS_E_HYPERV_NOT_INSTALLED`; the local Docker daemon was unavailable. On the connected Linux host, verified xtool 1.21.0 reported `Not installed` for its Darwin SDK. The direct arm64 build stopped before planning or compilation, and the wrapper exited with its missing-SDK diagnostic. Apple's Xcode download opened Apple Account sign-in, leaving native compilation blocked pending an authenticated Xcode 27 download or an accessible prepared Darwin SDK. No app bundle was produced or validated; no physical-device installation, Metal inference, or native XCTest/XCUITest execution was completed through xtool. The existing Xcode/TestFlight workflow and earlier model-inference measurements remain separate.
+
 ## What it is
 
 Reproducible native checks for the fixed health harness, validated tool calls, saved records, SwiftUI flows, and real on-device-runtime inference. This is an engineering feasibility suite; it does not establish clinical benefit or complete symptom/interaction coverage.
@@ -39,7 +45,7 @@ xcodebuild -project Harbour.xcodeproj -scheme Harbour \
 bash scripts/evaluate-simulator.sh SIMULATOR_UUID
 ```
 
-The simulator evaluation script requires an installed current Harbour app. It prints progress after each fixture. Reports are written atomically after each case, with `complete` marking a finished run; interrupted reports are retained as partial evidence. It runs Small and Balanced across Quick/Standard/Extended (138 total routing cases), downloads missing weights, and copies fictional-case reports into `docs/results/care-tools/` by default. Pass a second output-directory argument to preserve an experiment separately. The command can take several minutes. `--evaluate-model`, `--evaluate-all-efforts`, and `--evaluate-balanced` are developer-only launch flags. These evaluations do not modify health records or send prompts externally.
+The simulator evaluation script requires an installed current Harbour app. It prints progress after each fixture. Reports are written atomically after each case, with `complete` marking a finished run; interrupted reports are retained as partial evidence. It runs Small, Balanced, and Qwen3.5 2B across Quick/Standard/Extended, downloads missing weights, and copies fictional-case reports into `docs/results/care-tools/` by default. Pass a second output-directory argument to preserve an experiment separately. The command can take several minutes. `--evaluate-model`, `--evaluate-all-efforts`, `--evaluate-balanced`, and `--evaluate-qwen35` are developer-only launch flags. These evaluations do not modify health records or send prompts externally.
 
 ## Observed results
 

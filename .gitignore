@@ -8,3 +8,5 @@ xcuserdata/
 *.partial
 *.xcresult
 Vendor/
+/xtool/
+__pycache__/

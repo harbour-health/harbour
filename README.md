@@ -30,14 +30,16 @@ See [every screen below](#all-screens) and [capture details](docs/screenshots.md
 
 ## Run
 
-Requires a Mac, Xcode with an iOS SDK, and CMake for the simulator inference library. Minimum app target: iOS 18.0.
+The Xcode workflow requires a Mac, Xcode with an iOS SDK, and CMake for the simulator inference library. Minimum app target: iOS 18.0.
 
 ```sh
 bash scripts/prepare-runtime.sh
 open Harbour.xcodeproj
 ```
 
-Select the shared `Harbour` scheme and an iPhone simulator, then Run. The prepared runtime is already present in this working copy. On a real phone, choose your signing team in **Signing & Capabilities**, enable HealthKit for the bundle ID, and Run. No signing credentials are stored here.
+Select the shared `Harbour` scheme and an iPhone simulator, then Run. On a real phone, choose your signing team in **Signing & Capabilities**, enable HealthKit for the bundle ID, and Run. No signing credentials are stored here.
+
+For an additional arm64 iPhone build route on Linux or Windows through WSL, see [xtool setup and validation](docs/xtool.md). `python3 scripts/xtool-build.py --prepare-only` prepares the runtime and app metadata; with xtool and its Apple SDK installed, `python3 scripts/xtool-build.py` builds `xtool/Harbour.app`. The wrapper does not request device installation or an upload. Current SDK and host limitations are recorded in [evaluation](docs/evaluation.md).
 
 New installs use **Qwen3.5 2B** by default. It downloads when the first chat message is sent, or from **Settings → Models**; the download is about 1.28 GB. Qwen Small (491 MB) and Balanced (1.12 GB) remain available, and existing model selections are preserved. Automatic chooses Qwen3.5 2B on eligible physical devices and Small otherwise. Progress and cancellation are available. Verified models work without a network connection. Voice requires an available on-device recognizer for the app’s language; it never silently switches to server transcription.
 
