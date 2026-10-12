@@ -119,18 +119,41 @@ jobs:
         run: |
           brew install cmake
           bash scripts/prepare-runtime.sh
-      - name: Run real model evaluations
+      - name: Restore verified model weights
+        id: model-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: build/models
+          key: qwen-small-balanced-74a4da8c-6a1a2eb6
+      - name: Download and verify model weights
+        id: model-download
         run: |
           set -euo pipefail
           mkdir -p build/models
-          curl --fail --location --retry 2 'https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/9217f5db79a29953eb74d5343926648285ec7e67/qwen2.5-0.5b-instruct-q4_k_m.gguf' -o build/models/small.gguf
-          curl --fail --location --retry 2 'https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/91cad51170dc346986eccefdc2dd33a9da36ead9/qwen2.5-1.5b-instruct-q4_k_m.gguf' -o build/models/balanced.gguf
+          if [ '${{ steps.model-cache.outputs.cache-hit }}' != 'true' ]; then
+            curl --fail --location --connect-timeout 30 --max-time 600 --retry 2 'https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/9217f5db79a29953eb74d5343926648285ec7e67/qwen2.5-0.5b-instruct-q4_k_m.gguf' -o build/models/small.gguf
+            curl --fail --location --connect-timeout 30 --max-time 600 --retry 2 'https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/91cad51170dc346986eccefdc2dd33a9da36ead9/qwen2.5-1.5b-instruct-q4_k_m.gguf' -o build/models/balanced.gguf
+          fi
           echo '74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db  build/models/small.gguf' | shasum -a 256 -c -
           echo '6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e  build/models/balanced.gguf' | shasum -a 256 -c -
-          status=0
-          swift run --package-path HarbourRuntime model-probe "$PWD/build/models/small.gguf" 2>&1 | tee build/model-small.log || status=1
-          swift run --package-path HarbourRuntime model-probe "$PWD/build/models/balanced.gguf" 2>&1 | tee build/model-balanced.log || status=1
-          exit "$status"
+      - name: Save verified model weights
+        if: steps.model-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: build/models
+          key: qwen-small-balanced-74a4da8c-6a1a2eb6
+      - name: Build release model probe
+        id: probe-build
+        run: swift build --package-path HarbourRuntime --configuration release --product model-probe
+      - name: Measure Small model accuracy
+        run: |
+          set -euo pipefail
+          swift run --package-path HarbourRuntime --configuration release --skip-build model-probe "$PWD/build/models/small.gguf" 2>&1 | tee build/model-small.log
+      - name: Measure Balanced model accuracy
+        if: always() && !cancelled() && steps.model-download.outcome == 'success' && steps.probe-build.outcome == 'success'
+        run: |
+          set -euo pipefail
+          swift run --package-path HarbourRuntime --configuration release --skip-build model-probe "$PWD/build/models/balanced.gguf" 2>&1 | tee build/model-balanced.log
       - name: Upload model accuracy results
         if: always()
         uses: actions/upload-artifact@v4
