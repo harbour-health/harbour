@@ -22,7 +22,18 @@ enum VisitSourceGrounding {
     private static func instructionRanges(_ foldedSource: String) -> [Range<String.Index>] {
         let allVerbs = MedicineChangeAction.allCases.map { verbs($0).english + "|" + verbs($0).french }.joined(separator: "|")
         guard let expression = try? NSRegularExpression(pattern: "\\b(?:" + allVerbs + ")\\b") else { return [] }
-        return expression.matches(in: foldedSource, range: NSRange(foldedSource.startIndex..., in: foldedSource)).compactMap { Range($0.range, in: foldedSource) }
+        let matches = expression.matches(in: foldedSource, range: NSRange(foldedSource.startIndex..., in: foldedSource)).compactMap { Range($0.range, in: foldedSource) }
+        var instructions: [Range<String.Index>] = []
+        for range in matches {
+            // An infinitive in "cessez de prendre" or "begin to take" belongs
+            // to the outer instruction, rather than a separate dose update.
+            if ["prendre", "take"].contains(String(foldedSource[range])), let outer = instructions.last {
+                let link = foldedSource[outer.upperBound..<range.lowerBound].trimmingCharacters(in: .whitespaces)
+                if ["de", "a", "to"].contains(link) { continue }
+            }
+            instructions.append(range)
+        }
+        return instructions
     }
 
     private static func entryCapacity(_ sentence: String) -> Int {
@@ -76,22 +87,26 @@ enum VisitSourceGrounding {
 
         let selectedVerbs = verbs(action)
         let verbs = selectedVerbs.english, frenchVerbs = selectedVerbs.french
-        let prefixes = "(?:(?:la|le|de|du|votre|dose de|traitement par|traitement avec)\\s+|l')*"
+        let prefixes = "(?:(?:la|le|de|du|a|prendre|votre|dose de|traitement par|traitement avec)\\s+|l')*"
         let sourceName = name.map { NSRegularExpression.escapedPattern(for: InputLanguage.folded($0)) + "\\b" } ?? "[\\p{L}\\p{M}]"
         let frenchInstruction = "\\b(?:" + frenchVerbs + ")\\s+" + prefixes + sourceName
-        let englishPrefixes = "(?:(?:the|your|my|our|dose of|dosage of|treatment with|treatment of|use of|taking|using|from|to)\\s+)*"
+        let englishPrefixes = "(?:(?:the|your|my|our|dose of|dosage of|treatment with|treatment of|use of|take|taking|using|from|to)\\s+)*"
         let englishInstruction = "\\b(?:" + verbs + ")\\s+" + englishPrefixes + sourceName
         let english = foldedQuote.range(of: englishInstruction, options: .regularExpression) != nil
         let french = foldedQuote.range(of: frenchInstruction, options: .regularExpression) != nil
+        let selected = Set((verbs + "|" + frenchVerbs).split(separator: "|").map(String.init))
+        // Bind to complete source context so a quote shortened to the inner
+        // infinitive cannot discard the outer stop/start instruction.
+        let occurrences = instructionRanges(foldedContext)
+        guard instructionRanges(foldedQuote).contains(where: { selected.contains(String(foldedQuote[$0])) }),
+              occurrences.contains(where: { selected.contains(String(foldedContext[$0])) }) else { return false }
         var conjoined = false
         if let name {
-            let selected = Set((verbs + "|" + frenchVerbs).split(separator: "|").map(String.init))
-            let occurrences = instructionRanges(foldedQuote)
             let escapedName = NSRegularExpression.escapedPattern(for: InputLanguage.folded(name)) + "\\b"
-            let targetPrefixes = "(?:(?:the|your|my|our|dose of|dosage of|treatment with|treatment of|use of|taking|using|from|to|la|le|de|du|votre|dose de|traitement par|traitement avec)\\s+|l')*"
-            for (index, range) in occurrences.enumerated() where selected.contains(String(foldedQuote[range])) {
-                let end = index + 1 < occurrences.count ? occurrences[index + 1].lowerBound : foldedQuote.endIndex
-                let clause = String(foldedQuote[range.upperBound..<end])
+            let targetPrefixes = "(?:(?:the|your|my|our|dose of|dosage of|treatment with|treatment of|use of|take|taking|using|from|to|la|le|de|du|a|prendre|votre|dose de|traitement par|traitement avec)\\s+|l')*"
+            for (index, range) in occurrences.enumerated() where selected.contains(String(foldedContext[range])) {
+                let end = index + 1 < occurrences.count ? occurrences[index + 1].lowerBound : foldedContext.endIndex
+                let clause = String(foldedContext[range.upperBound..<end])
                 let listTarget = "(?:^\\s*|,\\s*(?:(?:and|et)\\s+)?|\\b(?:and|et|as well as|ainsi que)\\s+)" + targetPrefixes + escapedName
                 if clause.range(of: listTarget, options: .regularExpression) != nil,
                    instructions.map({ $0.isEmpty || clause.contains(InputLanguage.folded($0)) }) ?? true { conjoined = true; break }

@@ -142,4 +142,74 @@ final class VisitSourceGroundingTests: XCTestCase {
             XCTAssertTrue(VisitReview.outputGrammar(transcript: source).contains(#"medicines ::= "[" ws (medicine (ws "," ws medicine){0,1})? ws "]""#), source)
         }
     }
+
+    func testStopTakingChainsKeepTheOuterStopActionInBothLanguages() throws {
+        let medicine = try XCTUnwrap(Catalog.medicines.first { $0.id == "aspirin" })
+        let cases = [
+            ("Stop taking aspirin.", "aspirin"),
+            ("Cessez de prendre l'aspirine.", "aspirine"),
+            ("Arrêtez de prendre aspirine.", "aspirine")
+        ]
+        for (source, name) in cases {
+            XCTAssertEqual(VisitSourceGrounding.candidates(source).first?.actions, [.stop], source)
+            XCTAssertEqual(VisitSourceGrounding.candidates(source).first?.maximumEntries, 1, source)
+            let output: [String: Any] = ["highlights": [], "followUps": [], "medicines": [["quote": source, "action": "stop", "name": name, "instructions": ""]]]
+            let json = String(decoding: try JSONSerialization.data(withJSONObject: output), as: UTF8.self)
+            let summary = try VisitReview.parse(json, transcript: source, medicines: [medicine])
+            XCTAssertEqual(summary.medicines.first?.action, .stop, source)
+            var visit = DoctorVisit(transcript: source)
+            visit.summary = summary
+            visit.medicineBaseline = [medicine]
+            XCTAssertTrue(try VisitReview.applying(Set(summary.medicines.map(\.id)), from: visit, to: [medicine]).isEmpty, source)
+            let wrong: [String: Any] = ["highlights": [], "followUps": [], "medicines": [["quote": source, "action": "update", "name": name, "instructions": name]]]
+            let wrongJSON = String(decoding: try JSONSerialization.data(withJSONObject: wrong), as: UTF8.self)
+            XCTAssertTrue(try VisitReview.parse(wrongJSON, transcript: source, medicines: [medicine]).medicines.isEmpty, source)
+        }
+    }
+
+    func testStartTakingChainsDoNotBecomeInnerDoseUpdates() throws {
+        let medicine = try XCTUnwrap(Catalog.medicines.first { $0.id == "aspirin" })
+        let cases = [
+            ("Begin taking aspirin 81 mg daily.", "aspirin", "81 mg daily"),
+            ("Begin to take aspirin 81 mg daily.", "aspirin", "81 mg daily"),
+            ("Commencez à prendre l'aspirine 81 mg par jour.", "aspirine", "81 mg par jour")
+        ]
+        for (source, name, instructions) in cases {
+            XCTAssertEqual(VisitSourceGrounding.candidates(source).first?.actions, [.start], source)
+            XCTAssertEqual(VisitSourceGrounding.candidates(source).first?.maximumEntries, 1, source)
+            for action in [MedicineChangeAction.start, .update] {
+                let output: [String: Any] = ["highlights": [], "followUps": [], "medicines": [["quote": source, "action": action.rawValue, "name": name, "instructions": instructions]]]
+                let json = String(decoding: try JSONSerialization.data(withJSONObject: output), as: UTF8.self)
+                let summary = try VisitReview.parse(json, transcript: source, medicines: [medicine])
+                XCTAssertEqual(summary.medicines.map(\.action), action == .start ? [.start] : [], source)
+            }
+        }
+        let source = "Cessez de prendre l'aspirine."
+        let shortened: [String: Any] = ["highlights": [], "followUps": [], "medicines": [["quote": "prendre l'aspirine.", "action": "update", "name": "aspirine", "instructions": "aspirine"]]]
+        let json = String(decoding: try JSONSerialization.data(withJSONObject: shortened), as: UTF8.self)
+        XCTAssertTrue(try VisitReview.parse(json, transcript: source, medicines: [medicine]).medicines.isEmpty)
+    }
+
+    func testTakingChainsPreserveIndependentActionsAndTheirDoseClauses() throws {
+        let aspirin = try XCTUnwrap(Catalog.medicines.first { $0.id == "aspirin" })
+        let ibuprofen = try XCTUnwrap(Catalog.medicines.first { $0.id == "ibuprofen" })
+        let cases = [
+            ("Stop taking aspirin and increase ibuprofen to 200 mg daily.", ["aspirin", "ibuprofen"], "200 mg daily"),
+            ("Cessez de prendre aspirine et augmentez ibuprofène à 200 mg par jour.", ["aspirine", "ibuprofène"], "200 mg par jour")
+        ]
+        for (source, names, instructions) in cases {
+            let changes = [
+                ["quote": source, "action": "stop", "name": names[0], "instructions": ""],
+                ["quote": source, "action": "update", "name": names[1], "instructions": instructions]
+            ]
+            let json = String(decoding: try JSONSerialization.data(withJSONObject: ["highlights": [], "followUps": [], "medicines": changes]), as: UTF8.self)
+            let summary = try VisitReview.parse(json, transcript: source, medicines: [aspirin, ibuprofen])
+            XCTAssertEqual(summary.medicines.map(\.action), [.stop, .update], source)
+            XCTAssertEqual(summary.medicines.last?.medicine.instructions, instructions, source)
+            XCTAssertEqual(VisitSourceGrounding.candidates(source).first?.maximumEntries, 2, source)
+            XCTAssertEqual(Set(VisitSourceGrounding.candidates(source).first?.actions ?? []), Set([.stop, .update]), source)
+            XCTAssertFalse(VisitSourceGrounding.permits(.update, quote: source, context: source, name: names[0], instructions: instructions), source)
+            XCTAssertFalse(VisitSourceGrounding.permits(.stop, quote: source, context: source, name: names[1]), source)
+        }
+    }
 }
