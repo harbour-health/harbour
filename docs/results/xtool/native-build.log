@@ -1,0 +1,66 @@
+Updated privacy manifests in 1 runtime slices.
+Pinned iPhone runtime already prepared: /tmp/harbour-xtool-validation.D7Kusi/workspace/HarbourRuntime/Vendor/llama-device.xcframework
+Building for production...
+[Constructing description]
+[Planning deferred tasks]
+[Starting]
+[1 / 18]
+[2 / 18] HarbourRuntime
+[5 / 20] HarbourRuntime
+[8 / 20] Harbour
+/toolcache/workspace/Harbour/AppLock.swift:50:16: warning: static property 'query' is not concurrency-safe because non-'Sendable' type '[String : Any]' may have shared mutable state; this is an error in the Swift 6 language mode [#MutableGlobalVariable]
+ 48 | }
+ 49 | private enum LockKeychain {
+ 50 |     static let query: [String: Any] = [kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: "com.matteopolak.harbour.app-lock", kSecAttrAccount as String: "configuration"]
+    |                |- warning: static property 'query' is not concurrency-safe because non-'Sendable' type '[String : Any]' may have shared mutable state; this is an error in the Swift 6 language mode [#MutableGlobalVariable]
+    |                |- note: add '@MainActor' to make static property 'query' part of global actor 'MainActor'
+    |                `- note: disable concurrency-safety checks if accesses are protected by an external synchronization mechanism
+ 51 |     static func read() throws -> LockCredential? {
+ 52 |         var request = query; request[kSecReturnData as String] = true; request[kSecMatchLimit as String] = kSecMatchLimitOne
+
+/toolcache/workspace/Harbour/Dashboard.swift:45:81: warning: main actor-isolated property 'tag' can not be referenced from a nonisolated context
+ 43 |         var selection: Binding<Int>
+ 44 |         init(selection: Binding<Int>) { self.selection = selection }
+ 45 |         @objc func select(_ sender: UIButton) { selection.wrappedValue = sender.tag }
+    |                    |                                                            `- warning: main actor-isolated property 'tag' can not be referenced from a nonisolated context
+    |                    `- note: add '@MainActor' to make instance method 'select' part of global actor 'MainActor'
+ 46 |     }
+ 47 | }
+
+/toolcache/config/swiftpm/swift-sdks/darwin.artifactbundle/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/UIKit.framework/Headers/UIView.h:161:64: note: property declared here
+/toolcache/workspace/Harbour/DeviceServices.swift:107:30: warning: cannot access property 'observers' with a non-Sendable type '[any NSObjectProtocol]' from nonisolated deinit; this is an error in the Swift 6 language mode
+105 |         })
+106 |     }
+107 |     deinit { for observer in observers { NotificationCenter.default.removeObserver(observer) } }
+    |                              `- warning: cannot access property 'observers' with a non-Sendable type '[any NSObjectProtocol]' from nonisolated deinit; this is an error in the Swift 6 language mode
+108 |     private func interrupt(_ message: String) {
+109 |         guard audioSessionOwned || received != nil || spoken != nil else { return }
+
+/toolcache/config/swiftpm/swift-sdks/darwin.artifactbundle/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include/objc/NSObject.h:15:11: note: protocol 'NSObjectProtocol' does not conform to the 'Sendable' protocol
+/toolcache/workspace/Harbour/DeviceServices.swift:1:1: warning: add '@preconcurrency' to suppress 'Sendable'-related warnings from module 'ObjectiveC' [#AddPreconcurrencyImport]
+  1 | import Foundation
+    | `- warning: add '@preconcurrency' to suppress 'Sendable'-related warnings from module 'ObjectiveC'[10 / 21] Harbour
+ [#AddPreconcurrencyImport]
+  2 | import HealthKit
+  3 | import Speech
+    :
+105 |         })
+106 |     }
+107 |     deinit { for observer in observers { NotificationCenter.default.removeObserver(observer) } }
+    |     `- note: add 'isolated' to run isolated to 'MainActor', which may be later than 'nonisolated deinit'
+108 |     private func interrupt(_ message: String) {
+109 |         guard audioSessionOwned || received != nil || spoken != nil else { return }
+
+[#AddPreconcurrencyImport]: <https://docs.swift.org/compiler/documentation/diagnostics/add-preconcurrency-import>
+[#MutableGlobalVariable]: <https://docs.swift.org/compiler/documentation/diagnostics/mutable-global-variable>
+[17 / 21] Harbour-App-product
+[18 / 21] Harbour-App-product
+[19 / 21] Harbour-App-product
+[20 / 21] Harbour-App-product
+Build complete! (39.03 secs)
+Planning...
+Applying entitlements...
+Wrote to /toolcache/workspace/xtool/Harbour.app
+Prepared app metadata: build/xtool/Info.plist
+Validated arm64 app, llama framework, privacy manifests, and main-bundle localizations.
+Built xtool/Harbour.app. No Apple account provisioning, installation, or upload was requested.

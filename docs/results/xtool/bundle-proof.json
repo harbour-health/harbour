@@ -1,0 +1,453 @@
+{
+  "source_base_commit": "26fb5ceae5b9ae1bd437937b1447921c57c2e730",
+  "source_changes": [
+    "Package.swift: enable SwiftUI/PhotosUI cross-import overlays"
+  ],
+  "package_sha256": "5aaa1b6e057d37b63892d0d2cec9864e739aa931ad51bfeae08b7825aacc08e3",
+  "app": {
+    "sha256": "1fb21d451f056339d509e5b3ffecaf6693aa132f00566c1cf7c4587abee1f554",
+    "bytes": 6696800,
+    "architecture": "arm64",
+    "cpu_subtype": 0,
+    "file_type": 2,
+    "dependencies": [
+      {
+        "name": "@rpath/llama.framework/llama",
+        "weak": false
+      },
+      {
+        "name": "/System/Library/Frameworks/Foundation.framework/Foundation",
+        "weak": false
+      },
+      {
+        "name": "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/libobjc.A.dylib",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/libSystem.B.dylib",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/swift/libswiftAVFoundation.dylib",
+        "weak": true
+      },
+      {
+        "name": "/System/Library/Frameworks/AVFAudio.framework/AVFAudio",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/swift/libswiftCore.dylib",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/swift/libswift_Concurrency.dylib",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/swift/libswift_Builtin_float.dylib",
+        "weak": true
+      },
+      {
+        "name": "/usr/lib/swift/libswiftObjectiveC.dylib",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/swift/libswiftCoreFoundation.dylib",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/swift/libswiftDispatch.dylib",
+        "weak": false
+      },
+      {
+        "name": "/System/Library/Frameworks/Combine.framework/Combine",
+        "weak": false
+      },
+      {
+        "name": "/System/Library/Frameworks/Security.framework/Security",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/swift/libswiftXPC.dylib",
+        "weak": true
+      },
+      {
+        "name": "/System/Library/Frameworks/CoreMedia.framework/CoreMedia",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/swift/libswiftsimd.dylib",
+        "weak": true
+      },
+      {
+        "name": "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/swift/libswiftMetal.dylib",
+        "weak": true
+      },
+      {
+        "name": "/usr/lib/swift/libswiftCoreAudio.dylib",
+        "weak": true
+      },
+      {
+        "name": "/usr/lib/swift/libswiftCoreImage.dylib",
+        "weak": true
+      },
+      {
+        "name": "/usr/lib/swift/libswiftUniformTypeIdentifiers.dylib",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/swift/libswiftCoreMIDI.dylib",
+        "weak": true
+      },
+      {
+        "name": "/usr/lib/swift/libswiftQuartzCore.dylib",
+        "weak": true
+      },
+      {
+        "name": "/usr/lib/swift/libswiftos.dylib",
+        "weak": false
+      },
+      {
+        "name": "/System/Library/Frameworks/SwiftUI.framework/SwiftUI",
+        "weak": false
+      },
+      {
+        "name": "/System/Library/Frameworks/CoreTransferable.framework/CoreTransferable",
+        "weak": false
+      },
+      {
+        "name": "/System/Library/Frameworks/UIKit.framework/UIKit",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/swift/libswiftCoreLocation.dylib",
+        "weak": true
+      },
+      {
+        "name": "/System/Library/Frameworks/Symbols.framework/Symbols",
+        "weak": false
+      },
+      {
+        "name": "/System/Library/Frameworks/UserNotifications.framework/UserNotifications",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/swift/libswiftSpatial.dylib",
+        "weak": true
+      },
+      {
+        "name": "/usr/lib/swift/libswiftOSLog.dylib",
+        "weak": true
+      },
+      {
+        "name": "/System/Library/Frameworks/Speech.framework/Speech",
+        "weak": false
+      },
+      {
+        "name": "/System/Library/Frameworks/CryptoKit.framework/CryptoKit",
+        "weak": false
+      },
+      {
+        "name": "/System/Library/Frameworks/LocalAuthentication.framework/LocalAuthentication",
+        "weak": false
+      },
+      {
+        "name": "/System/Library/Frameworks/Vision.framework/Vision",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/swift/libswiftCompression.dylib",
+        "weak": true
+      },
+      {
+        "name": "/usr/lib/swift/libswiftAccelerate.dylib",
+        "weak": true
+      },
+      {
+        "name": "/System/Library/Frameworks/_PhotosUI_SwiftUI.framework/_PhotosUI_SwiftUI",
+        "weak": false
+      },
+      {
+        "name": "/System/Library/Frameworks/PhotosUI.framework/PhotosUI",
+        "weak": false
+      },
+      {
+        "name": "/System/Library/Frameworks/HealthKit.framework/HealthKit",
+        "weak": false
+      },
+      {
+        "name": "/System/Library/Frameworks/Charts.framework/Charts",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/swift/libswiftCoreMedia.dylib",
+        "weak": false
+      }
+    ],
+    "rpaths": [
+      "/usr/lib/swift",
+      "@loader_path",
+      "/usr/lib/swift-6.2/iphoneos",
+      "@executable_path/Frameworks"
+    ],
+    "has_main_entry": true,
+    "build_version": {
+      "platform": 2,
+      "minimum_os": "18.0.0",
+      "sdk": "18.0.0"
+    },
+    "signature": {
+      "code_directories": [
+        {
+          "identifier": "com.matteopolak.harbour",
+          "flags": 2,
+          "adhoc": true,
+          "team_id": null
+        },
+        {
+          "identifier": "com.matteopolak.harbour",
+          "flags": 2,
+          "adhoc": true,
+          "team_id": null
+        }
+      ],
+      "cms_payload_present": false,
+      "entitlements": {
+        "com.apple.developer.healthkit": true
+      }
+    }
+  },
+  "runtime": {
+    "sha256": "3e34481ae19c03b8a9dbaabd7d0ef4964acabe0eaf90f24b0eb2dbefdaa257ce",
+    "bytes": 6643568,
+    "architecture": "arm64",
+    "cpu_subtype": 0,
+    "file_type": 6,
+    "dependencies": [
+      {
+        "name": "/System/Library/Frameworks/Foundation.framework/Foundation",
+        "weak": false
+      },
+      {
+        "name": "/System/Library/Frameworks/Metal.framework/Metal",
+        "weak": false
+      },
+      {
+        "name": "/System/Library/Frameworks/Accelerate.framework/Accelerate",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/libc++.1.dylib",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/libSystem.B.dylib",
+        "weak": false
+      },
+      {
+        "name": "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation",
+        "weak": false
+      },
+      {
+        "name": "/usr/lib/libobjc.A.dylib",
+        "weak": false
+      }
+    ],
+    "rpaths": [],
+    "has_main_entry": false,
+    "install_name": "@rpath/llama.framework/llama",
+    "build_version": {
+      "platform": 2,
+      "minimum_os": "16.4.0",
+      "sdk": "16.4.0"
+    },
+    "signature": {
+      "code_directories": [
+        {
+          "identifier": "org.ggml.llama",
+          "flags": 2,
+          "adhoc": true,
+          "team_id": null
+        },
+        {
+          "identifier": "org.ggml.llama",
+          "flags": 2,
+          "adhoc": true,
+          "team_id": null
+        }
+      ],
+      "cms_payload_present": false,
+      "entitlements": {}
+    }
+  },
+  "info_plist": {
+    "CFBundleDevelopmentRegion": "en",
+    "CFBundleDisplayName": "Harbour",
+    "CFBundleExecutable": "Harbour",
+    "CFBundleIconFile": "AppIcon",
+    "CFBundleIdentifier": "com.matteopolak.harbour",
+    "CFBundleInfoDictionaryVersion": "6.0",
+    "CFBundleLocalizations": [
+      "en",
+      "fr-CA"
+    ],
+    "CFBundleName": "Harbour",
+    "CFBundlePackageType": "APPL",
+    "CFBundleShortVersionString": "0.1",
+    "CFBundleSupportedPlatforms": [
+      "iPhoneOS"
+    ],
+    "CFBundleVersion": "1",
+    "ITSAppUsesNonExemptEncryption": false,
+    "LSRequiresIPhoneOS": true,
+    "MinimumOSVersion": "18.0",
+    "NSCameraUsageDescription": "Read the medicine label you choose to photograph. You review the details before saving.",
+    "NSFaceIDUsageDescription": "Use Face ID to unlock your Harbour health records.",
+    "NSHealthShareUsageDescription": "Import heart rate, blood pressure, and temperature readings that you choose to share.",
+    "NSHealthUpdateUsageDescription": "Harbour uses Apple Health to import readings. It does not add or change Apple Health records.",
+    "NSMicrophoneUsageDescription": "Record voice messages or your doctor visits on this device. You choose when recording starts and stops.",
+    "NSSpeechRecognitionUsageDescription": "Transcribe voice messages and doctor visits on this device into editable text.",
+    "UIApplicationSceneManifest": {
+      "UIApplicationSupportsMultipleScenes": true,
+      "UISceneConfigurations": {}
+    },
+    "UIDeviceFamily": [
+      1,
+      2
+    ],
+    "UILaunchScreen": {},
+    "UIRequiredDeviceCapabilities": [
+      "arm64"
+    ],
+    "UISupportedInterfaceOrientations": [
+      "UIInterfaceOrientationPortrait",
+      "UIInterfaceOrientationLandscapeLeft",
+      "UIInterfaceOrientationLandscapeRight"
+    ],
+    "UISupportedInterfaceOrientations~ipad": [
+      "UIInterfaceOrientationPortrait",
+      "UIInterfaceOrientationPortraitUpsideDown",
+      "UIInterfaceOrientationLandscapeLeft",
+      "UIInterfaceOrientationLandscapeRight"
+    ]
+  },
+  "source_entitlements": {
+    "com.apple.developer.healthkit": true
+  },
+  "files": {
+    "AppIcon.png": {
+      "bytes": 40639,
+      "sha256": "93bdb702169abb3291002b8b936192b30aa80a76e40ac2c30a9864fed9e0f247"
+    },
+    "Frameworks/llama.framework/Headers/ggml-alloc.h": {
+      "bytes": 3753,
+      "sha256": "94e4cd069b9313b2ceb35dacec901981e0bb478d8bb31035b7126be091998c23"
+    },
+    "Frameworks/llama.framework/Headers/ggml-backend.h": {
+      "bytes": 25374,
+      "sha256": "46d84cb998105f871240864fd0f55446939a2fe86c5c281afa63a010fb1f65a2"
+    },
+    "Frameworks/llama.framework/Headers/ggml-blas.h": {
+      "bytes": 586,
+      "sha256": "e76cb8594dc9866d99e7d63191b9fff6ab8b50244b4a28ce3af0f962964a6b5b"
+    },
+    "Frameworks/llama.framework/Headers/ggml-cpu.h": {
+      "bytes": 7753,
+      "sha256": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e"
+    },
+    "Frameworks/llama.framework/Headers/ggml-metal.h": {
+      "bytes": 2141,
+      "sha256": "322f36cd30f3e9e7aad7b5b9bc63078012fd0b7706ac4e24f5721b604f3d8980"
+    },
+    "Frameworks/llama.framework/Headers/ggml-opt.h": {
+      "bytes": 14040,
+      "sha256": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2"
+    },
+    "Frameworks/llama.framework/Headers/ggml.h": {
+      "bytes": 112592,
+      "sha256": "6fe9b62d3ea48c2de82cce6e9e06d3ae4f0de34f4b5831399c49c099badefb09"
+    },
+    "Frameworks/llama.framework/Headers/gguf.h": {
+      "bytes": 11355,
+      "sha256": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4"
+    },
+    "Frameworks/llama.framework/Headers/llama.h": {
+      "bytes": 84256,
+      "sha256": "1fbcba4003cfc089fa9681973acb3d9e24e465f32c3506ceb0ec7fa29952bdae"
+    },
+    "Frameworks/llama.framework/Headers/mtmd-helper.h": {
+      "bytes": 12418,
+      "sha256": "69d9f831f299fbc772dc439b51884b168d3654028f16371dfaa2e7041d0b4d79"
+    },
+    "Frameworks/llama.framework/Headers/mtmd.h": {
+      "bytes": 21493,
+      "sha256": "07133fe5dafbcd9a4a705b5d9386fe80f600d06cbea2819d82f70cf7cf4246db"
+    },
+    "Frameworks/llama.framework/Info.plist": {
+      "bytes": 1081,
+      "sha256": "d0100019d260cc910a6032801ec3b4c9e402c6a49d8fdf48c82a5c12004b1740"
+    },
+    "Frameworks/llama.framework/Modules/module.modulemap": {
+      "bytes": 171,
+      "sha256": "b5651903a342dc59fb4fe16ff9cc82ba4d08fdb142458aeacf516e7c31c15f15"
+    },
+    "Frameworks/llama.framework/PrivacyInfo.xcprivacy": {
+      "bytes": 599,
+      "sha256": "37f23fa7aabe84ee3c9a1f162c2c036612e5142aa6e3ce1dfc711161572d3131"
+    },
+    "Frameworks/llama.framework/_CodeSignature/CodeResources": {
+      "bytes": 5640,
+      "sha256": "26e01fae9a613bb849763ec07e046d7458ab5a315024cfdcfdbb45f3134f3e20"
+    },
+    "Frameworks/llama.framework/llama": {
+      "bytes": 6643568,
+      "sha256": "3e34481ae19c03b8a9dbaabd7d0ef4964acabe0eaf90f24b0eb2dbefdaa257ce"
+    },
+    "Harbour": {
+      "bytes": 6696800,
+      "sha256": "1fb21d451f056339d509e5b3ffecaf6693aa132f00566c1cf7c4587abee1f554"
+    },
+    "Info.plist": {
+      "bytes": 2845,
+      "sha256": "e666503822aef79d4060543a703f50de68f680d64f597d0e6f169c389994f1f2"
+    },
+    "PrivacyInfo.xcprivacy": {
+      "bytes": 601,
+      "sha256": "f23db1f2087ab71c324af8ad9b2b9e1088ccaa488395e94a685e50294dd3984f"
+    },
+    "_CodeSignature/CodeResources": {
+      "bytes": 9640,
+      "sha256": "5a6e2f91795b71677f20199ba01f2c361f1bff23cc483e8c178d651e63e5a518"
+    },
+    "en.lproj/InfoPlist.strings": {
+      "bytes": 760,
+      "sha256": "c7511c3c54de91e6b2e852caf62b2c212c636f06647547261f04ee026965e42e"
+    },
+    "en.lproj/Localizable.strings": {
+      "bytes": 34436,
+      "sha256": "65ffe094bd9d158c5ea6ef15be26f9f21a9259f41caa55a348493e1dc0246c68"
+    },
+    "fr-CA.lproj/InfoPlist.strings": {
+      "bytes": 950,
+      "sha256": "8702e4d999a2349845506fcc0a4d18e65bbf98c49bed80dc3e4ab72fad445e45"
+    },
+    "fr-CA.lproj/Localizable.strings": {
+      "bytes": 39282,
+      "sha256": "d4d8330b722322377c82f6aed81f1112bc5e38710794566d976fc215dbc4e3bc"
+    }
+  },
+  "embedded_mobileprovision": false,
+  "zip": {
+    "filename": "Harbour.app.zip",
+    "bytes": 4206782,
+    "sha256": "5c86a7586b27f20dbdb531c8e61c272c68aca4d9d629533c8db7b01e985aaee4"
+  }
+}

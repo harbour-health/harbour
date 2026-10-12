@@ -34,16 +34,27 @@ The wrapper defaults to Release and invokes `xtool dev build` with an arm64 iOS 
 
 The English/French `.lproj` directories and app privacy manifest are copied to the app root because Harbour's localization helper uses `Bundle.main`. The icon comes from the existing PNG. The runtime helper creates the separate `HarbourRuntime/Vendor/llama-device.xcframework`, with a verified ownership manifest and the required runtime privacy declaration. The build wrapper selects this artifact with `HARBOUR_DEVICE_RUNTIME=1`; the regular Mac/simulator runtime remains the default for the Xcode workflow.
 
+The Harbour SwiftPM target explicitly passes `-Xfrontend -enable-cross-import-overlays`. The SwiftBuild backend omitted this SDK toolset flag in the first native build, leaving the SwiftUI/PhotosUI overlay types `PhotosPicker` and `PhotosPickerItem` unresolved. This setting supplies the overlay support for the additional build route; the checked-in Xcode project is unchanged.
+
 The binary target is named `llama` to match the actual framework: xtool's [packer](https://github.com/xtool-org/xtool/blob/1.21.0/Sources/PackLib/Packer.swift) discovers dynamic frameworks using the binary-target name and embeds them under `Frameworks`. The wrapper rejects a bundle missing `Frameworks/llama.framework/llama` or its privacy manifest.
 
 ## Validation and device use
 
-The October 12, 2026 [validation report](results/xtool/validation.json) records the completed preparation and manifest checks:
+The October 12, 2026 [validation report](results/xtool/validation.json) records successful preparation, manifest checks, and the Release arm64 iOS build:
 
 - `--prepare-only` passed on Windows. The helper prepared the verified iPhone runtime and app plist, retaining bundle ID, version/build, iOS minimum, device families, both localizations, and all six permission descriptions. The full Xcode runtime was not modified.
 - Root and runtime `swift package dump-package` checks passed in an isolated Swift 6.4 environment on the connected Linux host with `HARBOUR_DEVICE_RUNTIME=1`. They confirmed the Harbour library dependencies and the `llama` device binary target. These commands validate manifests, not UIKit/SwiftUI source types.
+- The final native Release build passed with wrapper exit code 0 in 53.48 seconds, including 39.03 seconds reported by Swift build. `xtool/Harbour.app` passed validation for its arm64 executable and llama framework, metadata, both privacy manifests, and English/French main-bundle resources.
 
-Local WSL could not start (`HCS_E_HYPERV_NOT_INSTALLED`), and the local Docker daemon was unavailable. On the connected Linux host, verified xtool 1.21.0 reported `Not installed` for its Darwin SDK. The direct arm64 build stopped before planning or compilation, and the wrapper exited with its missing-SDK diagnostic. The attempted Apple Xcode download opened Apple Account sign-in; no authenticated Xcode 27 archive or prepared Darwin SDK was available. Native compilation remains blocked until that SDK input is supplied. No app bundle was produced, so the final bundle checks did not run. See [evaluation](evaluation.md) for the separate Windows model-inference results.
+The [build log](results/xtool/native-build.log) retains four nonfatal concurrency warnings. Independent [binary and resource inspection](results/xtool/bundle-proof.json) confirms the app entry point, llama load path, framework search path, and HealthKit entitlement. Compilation used iPhoneOS 27.0; the linker records SDK 18.0 in the app's Mach-O metadata. The app still requires iOS 18. These are separate from device execution and distribution validation.
+
+Local WSL could not start (`HCS_E_HYPERV_NOT_INSTALLED`), and the local Docker daemon was unavailable. Initially, verified xtool 1.21.0 on the connected Linux host reported `Not installed` for its Darwin SDK. The first direct arm64 build stopped before planning or compilation, and the wrapper exited with its missing-SDK diagnostic.
+
+The user subsequently completed Apple Account authentication. Stable Xcode 27 downloaded from Apple and was transferred to the isolated Linux task cache; its observed size and SHA-256 matched across the transfer. The checksum is a local integrity fingerprint, not an Apple-published checksum. SDK extraction/installation completed successfully, supplying the iPhoneOS, iPhoneSimulator, and MacOSX 27.0 SDKs.
+
+The first native build compiled HarbourCore and HarbourRuntime but failed on the app's unresolved PhotosUI overlay types. Adding the explicit cross-import overlay flag to the Harbour target resolved that failure, and the rerun compiled and packaged the complete app.
+
+The build applied only a local ad-hoc entitlement signature. No Apple account provisioning or development/distribution signing, physical-device installation, or upload was performed. Native XCTest/XCUITest execution, on-device Metal inference, and actual iPhone memory/latency measurements remain unperformed. See [evaluation](evaluation.md) for the separate Windows model-inference results.
 
 Installing on a physical device additionally requires developer signing/provisioning, a trusted device connection, and Developer Mode. Preserve `com.apple.developer.healthkit` and the usage descriptions when signing; Face ID uses the retained `NSFaceIDUsageDescription`. HealthKit capability availability is described by [Apple's membership table](https://developer.apple.com/help/account/reference/supported-capabilities-ios).
 

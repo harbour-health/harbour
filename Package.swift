@@ -18,7 +18,8 @@ let package = Package(
             path: "Harbour",
             // xtool.yml copies these resources to Bundle.main, preserving the existing lookup code.
             exclude: ["Assets.xcassets", "en.lproj", "fr-CA.lproj", "Info.plist", "Harbour.entitlements", "PrivacyInfo.xcprivacy"],
-            swiftSettings: [.unsafeFlags(["-strict-concurrency=complete"])]
+            // SwiftBuild currently omits the SDK toolset's overlay flag; PhotosUI needs it with SwiftUI.
+            swiftSettings: [.unsafeFlags(["-strict-concurrency=complete", "-Xfrontend", "-enable-cross-import-overlays"])]
         )
     ]
 )
