@@ -52,6 +52,15 @@ final class CareTests: XCTestCase {
         XCTAssertEqual(medication.instructions, "500 mg 2 times daily")
         XCTAssertTrue(times.isEmpty); XCTAssertEqual(frequency, MedicationFrequency(count: 2, period: .day))
     }
+    func testReAddingSavedMedicationPreservesOrReplacesOnlySourcedInstructions() throws {
+        var saved = medicine; saved.instructions = "500 mg with dinner"
+        var records = Records(); records.medications = [saved]
+        guard case .add(let unchanged, let times, let frequency) = try ToolPlanner.validate(.init(tool: .addMedicine), original: "Add Metformin", records: records) else { return XCTFail("Expected medication draft") }
+        XCTAssertEqual(unchanged, saved); XCTAssertTrue(times.isEmpty); XCTAssertNil(frequency)
+        guard case .add(let updated, _, _) = try ToolPlanner.validate(.init(tool: .addMedicine), original: "Add Metformin 250 mg once daily", records: records) else { return XCTFail("Expected medication draft") }
+        XCTAssertEqual(updated.id, saved.id); XCTAssertEqual(updated.ingredients, saved.ingredients)
+        XCTAssertEqual(updated.instructions, "250 mg once daily"); XCTAssertEqual(records.medications, [saved])
+    }
     func testDoseMustMatchSavedTimeAndCannotBeFuture() throws {
         let day = date("2026-10-01T16:00:00Z")
         var care = CareData(); care.schedules = [MedicineSchedule(medicineID: medicine.id, times: [DoseTime(hour: 8, minute: 0)])]

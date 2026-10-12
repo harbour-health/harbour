@@ -24,9 +24,15 @@ jobs:
       - name: Select Xcode
         run: xcodebuild -version
 
+      - name: Test Core rules and evaluation cases
+        run: swift test --package-path HarbourCore
+
+      - name: Audit localization
+        run: python3 scripts/audit-localization.py
+
       - name: Cache simulator runtime framework
         id: runtime-cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: HarbourRuntime/Vendor/llama.xcframework
           key: ${{ runner.os }}-llama-b10549-${{ hashFiles('scripts/prepare-runtime.sh', 'HarbourRuntime/Package.swift') }}
@@ -37,11 +43,12 @@ jobs:
           brew install cmake
           bash scripts/prepare-runtime.sh
 
-      - name: Test Core rules and evaluation cases
-        run: swift test --package-path HarbourCore
-
-      - name: Audit localization
-        run: python3 scripts/audit-localization.py
+      - name: Save prepared runtime framework
+        if: steps.runtime-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: HarbourRuntime/Vendor/llama.xcframework
+          key: ${{ runner.os }}-llama-b10549-${{ hashFiles('scripts/prepare-runtime.sh', 'HarbourRuntime/Package.swift') }}
 
       - name: Test deterministic runtime parsing
         run: swift test --package-path HarbourRuntime
