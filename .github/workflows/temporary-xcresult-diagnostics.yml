@@ -25,7 +25,6 @@ jobs:
           swift --version > build/ci-sampling/swift.txt
           sysctl hw.ncpu hw.memsize > build/ci-sampling/hardware.txt
           git rev-parse HEAD > build/ci-sampling/checkout.txt
-          git diff c1f16517117f71ad48443be1188ae4fa365646ed HEAD -- HarbourRuntime/Sources/HarbourRuntime/LocalModel.swift > build/ci-sampling/no-repack-source-diff.patch
           git diff 3b00e41bcaec79b87bd7179bdbbd5041821877f6 HEAD -- HarbourRuntime/Sources/HarbourRuntime/LocalModel.swift Harbour/ModelManager.swift > build/ci-sampling/phase-source-diff.patch
           git diff 3b00e41bcaec79b87bd7179bdbbd5041821877f6 HEAD -- HarbourUITests/HarbourUITests.swift > build/ci-sampling/test-presentation-source-diff.patch
           echo 3b00e41bcaec79b87bd7179bdbbd5041821877f6 > build/ci-sampling/base-source.txt
