@@ -1439,7 +1439,7 @@ import XCTest
         XCTAssertTrue(first.exists); XCTAssertTrue(second.exists)
         XCTAssertFalse(app.descendants(matching: .any)["doseTime-2"].firstMatch.exists)
         func displayedTime(_ element: XCUIElement) -> String {
-            ([element.label, element.value as? String ?? ""] + element.staticTexts.allElementsBoundByIndex.map(\.label) + element.buttons.allElementsBoundByIndex.map(\.label)).joined(separator: " ")
+            ([element.label, element.value as? String ?? ""] + element.staticTexts.allElementsBoundByIndex.map(\.label) + element.buttons.allElementsBoundByIndex.flatMap { [$0.label, $0.value as? String ?? ""] }).joined(separator: " ")
         }
         let morning = displayedTime(first), evening = displayedTime(second)
         XCTAssertNotNil(morning.range(of: "(?i)\\b0?8\\s*[:h]\\s*00\\b", options: .regularExpression), morning)

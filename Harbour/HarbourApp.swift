@@ -92,6 +92,7 @@ struct RootView: View {
                 }
             }
             .background(Palette.canvas)
+            .onAppear { recordRouteDiagnostic("drawer.appeared", ["sheetKind": item.id]) }
             .floatingDrawer(height: item.drawerHeight)
             .sheet(item: $store.shareFile) { ShareView(url: $0.url) }
         }

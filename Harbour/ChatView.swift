@@ -67,7 +67,7 @@ struct ChatView: View {
         .confirmationDialog("Delete all records and chat?", isPresented: $deleteConfirmation, titleVisibility: .visible) { Button("Delete all", role: .destructive) { store.clear() }; Button("Cancel", role: .cancel) {} }
         .confirmationDialog(L10n.format("Remove %@ from your list?", removal.map(L10n.medicineName) ?? L10n.string("medicine")), isPresented: Binding(get: { removal != nil }, set: { if !$0 { removal = nil } }), titleVisibility: .visible) { Button("Remove", role: .destructive) { if let removal { store.removeMedicine(removal.id); store.append(ChatMessage(text: L10n.format("Removed %@ from your list.", L10n.medicineName(removal)))) }; removal = nil } }
         .alert("Voice input", isPresented: Binding(get: { voice.error != nil }, set: { if !$0 { voice.error = nil } })) { Button("OK") { voice.error = nil } } message: { Text(voice.error ?? "") }
-        .onChange(of: sheet?.id) { voice.stop() }
+        .onChange(of: sheet?.id) { recordRouteDiagnostic("chat.sheet_changed", ["sheetKind": sheet?.id ?? "none"]); voice.stop() }
         .onChange(of: modelSheet) { if modelSheet { voice.stop() } }
         .onChange(of: toolSheet) { if toolSheet { voice.stop() } }
         .onChange(of: scenePhase) { if scenePhase == .background || (scenePhase == .inactive && (voice.listening || voice.finishing || voice.speaking)) { cancel() } }
@@ -183,15 +183,28 @@ struct ChatView: View {
         let chosenHint = hint
         let history = store.messages.dropLast().map { ConversationTurn(isUser: $0.isUser, text: $0.spokenText) }
         task = Task {
-            defer { if operationID == currentID { busy = false; task = nil; speakReply() } }
+            recordRouteDiagnostic("chat.task_begin", ["firstMessage": firstMessage])
+            defer {
+                if operationID == currentID { busy = false; task = nil; speakReply() }
+                recordRouteDiagnostic("chat.task_finish", ["operationMatches": operationID == currentID, "busy": busy, "cancelled": Task.isCancelled, "sheetKind": sheet?.id ?? "none"])
+            }
             do {
                 let decision = try await models.chatDecision(input, hint: chosenHint, records: store.records, history: history)
+                recordRouteDiagnostic("chat.decision_returned", ["tool": decision.tool.rawValue])
                 try Task.checkCancellation()
                 let action = try ToolPlanner.validate(decision, original: input, records: store.records)
+                var metadata: [String: Any] = ["tool": decision.tool.rawValue, "actionKind": "other"]
+                switch action {
+                case .schedule(_, let times, let frequency): metadata["actionKind"] = "schedule"; metadata["timesCount"] = times.count; metadata["frequencyPresent"] = frequency != nil
+                case .add(_, let times, let frequency): metadata["actionKind"] = "add"; metadata["timesCount"] = times.count; metadata["frequencyPresent"] = frequency != nil
+                default: break
+                }
+                recordRouteDiagnostic("chat.action_validated", metadata)
                 execute(action)
+                recordRouteDiagnostic("chat.action_executed", ["tool": decision.tool.rawValue, "sheetKind": sheet?.id ?? "none", "busy": busy])
                 if firstMessage, let title = try? await models.title(for: input), !Task.isCancelled, operationID == currentID { store.nameChat(title, firstMessage: message.id) }
-            } catch is CancellationError { }
-            catch { if !Task.isCancelled { store.append(ChatMessage(text: L10n.string(error.localizedDescription))); if firstMessage, let title = try? await models.title(for: input), !Task.isCancelled, operationID == currentID { store.nameChat(title, firstMessage: message.id) } } }
+            } catch is CancellationError { recordRouteDiagnostic("chat.cancelled") }
+            catch { recordRouteDiagnostic("chat.error", ["errorType": String(describing: type(of: error)), "cancelled": Task.isCancelled]); if !Task.isCancelled { store.append(ChatMessage(text: L10n.string(error.localizedDescription))); if firstMessage, let title = try? await models.title(for: input), !Task.isCancelled, operationID == currentID { store.nameChat(title, firstMessage: message.id) } } }
         }
     }
     private func execute(_ action: ValidatedAction) {

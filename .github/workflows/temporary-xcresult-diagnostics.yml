@@ -1,4 +1,4 @@
-name: Temporary current-source English French no-repack diagnostic
+name: Temporary current-source route outcome diagnostic
 
 # Current3b source; Simulator no-repack; bounded presentation scroll; unchanged semantic assertions and180s wait.
 on:
@@ -25,10 +25,10 @@ jobs:
           swift --version > build/ci-sampling/swift.txt
           sysctl hw.ncpu hw.memsize > build/ci-sampling/hardware.txt
           git rev-parse HEAD > build/ci-sampling/checkout.txt
-          git diff 3b00e41bcaec79b87bd7179bdbbd5041821877f6 HEAD -- HarbourRuntime/Sources/HarbourRuntime/LocalModel.swift Harbour/ModelManager.swift > build/ci-sampling/phase-source-diff.patch
+          git diff 3b00e41bcaec79b87bd7179bdbbd5041821877f6 HEAD -- HarbourRuntime/Sources/HarbourRuntime/LocalModel.swift Harbour/ModelManager.swift Harbour/ChatView.swift Harbour/HarbourApp.swift > build/ci-sampling/phase-source-diff.patch
           git diff 3b00e41bcaec79b87bd7179bdbbd5041821877f6 HEAD -- HarbourUITests/HarbourUITests.swift > build/ci-sampling/test-presentation-source-diff.patch
           echo 3b00e41bcaec79b87bd7179bdbbd5041821877f6 > build/ci-sampling/base-source.txt
-          shasum -a 256 HarbourUITests/HarbourUITests.swift Harbour/ModelManager.swift HarbourRuntime/Sources/HarbourRuntime/LocalModel.swift scripts/prepare-runtime.sh scripts/runtime-privacy.py > build/ci-sampling/source-sha256.txt
+          shasum -a 256 Harbour/ChatView.swift Harbour/HarbourApp.swift HarbourUITests/HarbourUITests.swift Harbour/ModelManager.swift HarbourRuntime/Sources/HarbourRuntime/LocalModel.swift scripts/prepare-runtime.sh scripts/runtime-privacy.py > build/ci-sampling/source-sha256.txt
           echo "XCODE_BUILD=$(xcodebuild -version | tail -n 1 | tr ' ' '-')" >> "$GITHUB_ENV"
           xcrun simctl list devices available --json > build/ci-sampling/simulators.json
       - name: Restore pinned native runtime
@@ -175,6 +175,12 @@ jobs:
           (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
           print('Unchanged test exit', manifest['testExitCode'], 'after', round(manifest['elapsedSeconds'],1), 'seconds', flush=True)
           PY
+      - name: Collect content-free route and presentation metadata
+        if: always()
+        run: |
+          app_data=$(xcrun simctl get_app_container "$SIMULATOR_ID" com.matteopolak.harbour data) || exit 0
+          route_log="$app_data/Library/Application Support/harbour-route-diagnostics.jsonl"
+          if [ -f "$route_log" ]; then cp "$route_log" build/ci-sampling/route-state-events.jsonl; fi
       - name: Export app stderr from result bundle
         if: always()
         run: |
@@ -202,7 +208,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: temporary-current3b-enfr-no-repack-diagnostic
+          name: temporary-current3b-enfr-route-diagnostic
           path: |
             build/ci-sampling/*.txt
             build/ci-sampling/*.json
@@ -214,7 +220,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: temporary-current3b-enfr-original-xcresult
+          name: temporary-current3b-enfr-route-original-xcresult
           path: build/ci-sampling/Sampling.xcresult
           retention-days: 14
       - name: Create separate content-free status summary
@@ -234,9 +240,10 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: temporary-current3b-enfr-phase-status
+          name: temporary-current3b-enfr-route-phase-status
           path: |
             build/ci-sampling/inference-phase-events-*.jsonl
+            build/ci-sampling/route-state-events.jsonl
             build/ci-sampling/test-status-content-free.json
             build/ci-sampling/manifest.json
             build/ci-sampling/runtime-cache-identity.json

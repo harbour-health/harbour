@@ -3,6 +3,26 @@ import CryptoKit
 import HarbourRuntime
 import HarbourCore
 
+private let routeDiagnosticLock = NSLock()
+func recordRouteDiagnostic(_ phase: String, _ fields: [String: Any] = [:]) {
+    guard ProcessInfo.processInfo.environment["HARBOUR_INFERENCE_DIAGNOSTICS"] == "1" else { return }
+    var event = fields
+    event["phase"] = phase; event["unixSeconds"] = Date().timeIntervalSince1970
+    event["pid"] = ProcessInfo.processInfo.processIdentifier; event["isMainThread"] = Thread.isMainThread
+    guard var line = try? JSONSerialization.data(withJSONObject: event, options: .sortedKeys),
+          let directory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else { return }
+    line.append(10)
+    routeDiagnosticLock.lock(); defer { routeDiagnosticLock.unlock() }
+    let file = directory.appendingPathComponent("harbour-route-diagnostics.jsonl")
+    if !FileManager.default.fileExists(atPath: file.path) {
+        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        _ = FileManager.default.createFile(atPath: file.path, contents: nil)
+    }
+    guard let handle = try? FileHandle(forWritingTo: file) else { return }
+    defer { try? handle.close() }
+    _ = try? handle.seekToEnd(); try? handle.write(contentsOf: line)
+}
+
 enum ModelChoice: String, CaseIterable, Identifiable, Codable {
     case automatic, small, balanced, qwen35
     static let defaultModel: ModelChoice = .qwen35
@@ -175,8 +195,21 @@ private final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchec
     }
     func chatDecision(_ input: String, hint: String? = nil, records: Records, history: [ConversationTurn] = []) async throws -> ToolDecision {
         let output = try await generate(ToolPlanner.prompt(input, hint: hint, records: records, history: history), allowedTools: ToolPlanner.availableTools.map(\.rawValue), purpose: .routing)
-        let decision = try ToolPlanner.parse(output)
-        if decision.tool != .reply, (try? ToolPlanner.validate(decision, original: input, records: records)) != nil { return decision }
+        recordRouteDiagnostic("decision.model_returned")
+        let decision: ToolDecision
+        do {
+            decision = try ToolPlanner.parse(output)
+            recordRouteDiagnostic("decision.parsed", ["tool": decision.tool.rawValue])
+        } catch {
+            recordRouteDiagnostic("decision.parse_failed", ["errorType": String(describing: type(of: error))])
+            throw error
+        }
+        if decision.tool != .reply {
+            let validated = try? ToolPlanner.validate(decision, original: input, records: records)
+            recordRouteDiagnostic("decision.validation", ["tool": decision.tool.rawValue, "valid": validated != nil])
+            if validated != nil { return decision }
+        }
+        recordRouteDiagnostic("decision.fallback", ["tool": decision.tool.rawValue])
         // A tool with missing source facts cannot run. Let the model answer or clarify normally.
         try Task.checkCancellation()
         let answer = try await generate(ToolPlanner.conversationPrompt(input, records: records, history: history, language: language), maxTokens: effort.chatTokens, stopAtJSON: false)
