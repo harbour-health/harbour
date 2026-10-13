@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "recordedUTC": "2026-10-13T23:19:48.152845+00:00",
+  "passed": true,
+  "archiveSHA256": "f333c074f74dbcf49a4d462c91a745d921f281d68911cd0c8d15cd9401c31725",
+  "manifestSHA256": "f2bede6d86fe3954a4a87e3e33970348f9ed066ad66ba98f68a6b6820069cd53",
+  "evidenceFiles": 234,
+  "membersIncludingManifest": 235,
+  "allSelectedBytesEqualLocalOriginals": true,
+  "priorArchives01Through31Unchanged": true,
+  "completeDEVRows": 291,
+  "requiredReviews": 128,
+  "semanticCounts": {
+    "qwen35": 82,
+    "small": 64,
+    "balanced": 76
+  },
+  "originalManualCounts": {
+    "pass": 109,
+    "fail": 19
+  },
+  "effectiveManualCounts": {
+    "pass": 108,
+    "fail": 20
+  },
+  "allAutomaticSemanticOutputTimingFieldsUnchanged": true,
+  "protectedDEVCondition": "PASS",
+  "rawRoutingRegressions": 6,
+  "overallRegressions": 3,
+  "scope": "Completed source15 DEV evidence integrity with separately labelled consistency correction; default promotion blocked, supplemental and heldout not included. No final release/Ready claim.",
+  "auditorSHA256": "eae874d40e4cc159cde94607ae61cd618e092c6f82a793fa6ddb4ab61f7e8a44"
+}
