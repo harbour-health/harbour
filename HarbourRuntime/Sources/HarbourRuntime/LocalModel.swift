@@ -39,6 +39,10 @@ public actor LocalModel {
         unload()
         if !backendStarted { llama_backend_init(); backendStarted = true }
         var mp = llama_model_default_params()
+        #if targetEnvironment(simulator)
+        // Use ordinary CPU weight buffers for Simulator inference.
+        mp.use_extra_bufts = false
+        #endif
         #if targetEnvironment(simulator) || os(Linux)
         mp.n_gpu_layers = 0
         #else
