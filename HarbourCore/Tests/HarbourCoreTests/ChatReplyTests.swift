@@ -193,9 +193,22 @@ final class ChatReplyTests: XCTestCase {
         }
     }
 
-    func testConversationalReplyIsAvailableForEveryTopic() throws {
-        for original in ["Hello", "My knee is sore", "Add metformin", "Show my readings", "I took metformin", "Bonjour", "Affiche mes médicaments"] {
-            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .reply, arg: "Let's discuss that."), original: original, records: Records()), .reply("Let's discuss that."))
+    func testTopicReplyPathRetainsSourceSymptomDraftsAndAllToolAlternatives() throws {
+        // Keep every original topic input. Current first-person symptom reports
+        // now open source drafts; symptom questions still display ordinary replies.
+        let cases: [(String, ValidatedAction)] = [
+            ("Hello", .reply("Let's discuss that.")),
+            ("My knee is sore", .symptom("My knee is sore")),
+            ("Add metformin", .reply("Let's discuss that.")),
+            ("Show my readings", .reply("Let's discuss that.")),
+            ("I took metformin", .reply("Let's discuss that.")),
+            ("Bonjour", .reply("Let's discuss that.")),
+            ("Affiche mes médicaments", .reply("Let's discuss that.")),
+            ("My shoulder hurts?", .reply("Let's discuss that.")),
+            ("J’ai mal au bras ?", .reply("Let's discuss that."))
+        ]
+        for (original, expected) in cases {
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .reply, arg: "Let's discuss that."), original: original, records: Records()), expected, original)
             let prompt = ToolPlanner.prompt(original, records: Records())
             for tool in Tool.allCases { XCTAssertTrue(prompt.contains(tool.rawValue), "\(original): \(tool.rawValue)") }
         }
