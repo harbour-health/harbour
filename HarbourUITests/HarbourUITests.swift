@@ -123,7 +123,7 @@ import XCTest
         app.buttons["nav-chat"].tap()
         let selector = app.buttons["modelSelector"]
         XCTAssertTrue(selector.waitForExistence(timeout: 5))
-        XCTAssertTrue((selector.value as? String ?? "").hasPrefix("Automatic, "))
+        XCTAssertTrue((selector.value as? String ?? "").hasPrefix("Qwen Small, "))
         selector.tap()
         for title in ["Automatic", "Qwen Small", "Qwen Balanced", "Qwen3.5 2B"] {
             XCTAssertTrue(app.staticTexts[title].firstMatch.waitForExistence(timeout: 5), title)
@@ -261,8 +261,10 @@ import XCTest
     override func setUpWithError() throws { continueAfterFailure = false }
     private func appearance(_ app: XCUIApplication, _ choice: String) {
         app.buttons["nav-today"].tap(); app.buttons["Settings"].tap(); app.buttons["Appearance"].tap()
-        app.buttons["appearance-" + choice.lowercased()].tap()
-        XCTAssertTrue(app.buttons["appearance-" + choice.lowercased()].isSelected)
+        let option = app.buttons["appearance-" + choice.lowercased()]
+        option.tap()
+        let selected = expectation(for: NSPredicate(format: "selected == true"), evaluatedWith: option)
+        XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 5), .completed, app.debugDescription)
         app.navigationBars["Appearance"].buttons.firstMatch.tap(); app.buttons["Done"].tap()
     }
     private func capture(_ name: String) {
