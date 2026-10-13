@@ -1,0 +1,102 @@
+{
+  "formatVersion": 1,
+  "status": "passed",
+  "archiveSHA256": "b36dd12db0892e89f8d8c1f2672462d9212a71f016076b9beeca0a51a22c6529",
+  "bytes": 721498,
+  "evidenceFiles": 126,
+  "zipMembers": 127,
+  "crc": "passed",
+  "allMemberHashesAndLengths": "passed",
+  "findings": {
+    "sourceTestProof": {
+      "testedSnapshot": "02",
+      "sourceIdentitySHA256": "562e13947dd959edf951c13e79f016b2ac3caf38471bdb09332c6416a6cf4be8",
+      "sourceFiles": 54,
+      "tests": {
+        "HarbourCore": {
+          "tests": 178,
+          "failures": 0,
+          "logSHA256": "9d77fe09e636e714a2534194d6939bc2797119a80de4efb6ecdf4d2926663110"
+        },
+        "HarbourRuntime": {
+          "tests": 21,
+          "failures": 0,
+          "logSHA256": "c4e1251fb13f5bd78e316e734f14acb5dae0622d3ef65a0ec6a6087dbc1cde49"
+        }
+      },
+      "snapshot01": "preserved uncompiled draft; no test claims",
+      "nativeSwiftUICompilation": "not established by Linux test proof"
+    },
+    "focusedDevelopment": {
+      "rows": 81,
+      "reviews": 54,
+      "pendingAIReviews": 0,
+      "semanticPasses": {
+        "qwen35": 21,
+        "small": 18,
+        "balanced": 18
+      },
+      "acceptedMedicineCasesPerModel": 4,
+      "rawVisitPasses": {
+        "qwen35": 0,
+        "small": 1,
+        "balanced": 0
+      },
+      "qwenRawFollowUps": "empty in all four; fallbacks earn no raw recall credit",
+      "provenance": "verified",
+      "releaseGate": "blocked; partial/mismatched matrix and material failures"
+    },
+    "independentControls": {
+      "rows": 12,
+      "reviews": 12,
+      "pendingAIReviews": 0,
+      "semanticPasses": {
+        "qwen35": 3,
+        "small": 0,
+        "balanced": 2
+      },
+      "scope": "supplement; no release-gate replacement"
+    },
+    "samplingDiagnostic": {
+      "rows": 18,
+      "reviews": 18,
+      "pendingAIReviews": 0,
+      "semanticPasses": 5,
+      "englishPasses": 4,
+      "frenchPasses": 1,
+      "seedPasses": {
+        "1729": 3,
+        "2027": 1,
+        "4099": 1
+      },
+      "sealedPromptsAndActualCompilerInputs": "verified",
+      "investigationQualification": "failed18/18 requirement",
+      "scope": "isolated approximation; no production change"
+    },
+    "historicalCalibration": {
+      "affectedUniqueEnglishResponses": 4,
+      "frenchComparisonOnlyFailures": 0,
+      "originalReviewScoreRawFiles": "preserved and hash-verified",
+      "derivedScoreCounters": "independently recomputed",
+      "newProtectedRegressions": "Small EN sky Standard/Quick/Extended newly exposed vs calibrated baseline; retained",
+      "originalAutomaticChecksAndGates": "unchanged; no gate recomputation/pass claim"
+    }
+  },
+  "previousArchivesUnchanged": {
+    "01": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091",
+    "02": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a",
+    "03": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e",
+    "04": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9",
+    "05": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571",
+    "06": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da"
+  },
+  "originalArchiveSummaryAndEvidenceModified": false,
+  "heldoutEvidenceRead": false,
+  "releaseStatus": "blocked",
+  "limits": [
+    "Source02 proof binds exact Windows working-tree bytes, not an assumed Git LF or later commit materialization.",
+    "All qualitative decisions are AI review of synthetic cases, not human clinical validation.",
+    "Full final DEV/heldout/supplement/device matrices remain outside this archive.",
+    "Historical comparison calibration is explicit derived evidence; original decisions/counters remain preserved."
+  ]
+}
