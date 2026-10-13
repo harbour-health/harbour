@@ -1421,11 +1421,18 @@ import XCTest
         app.buttons[french ? "Envoyer le message" : "Send message"].tap()
     }
 
+    private func reveal(_ app: XCUIApplication, _ element: XCUIElement) {
+        for _ in 0..<6 { if element.isHittable { return }; app.swipeUp() }
+        XCTAssertTrue(element.isHittable, app.debugDescription)
+    }
+
     private func schedule(french: Bool) {
         let app = launch(french: french)
         send(french ? "Programme metformine à 8 h et 20 h 30" : "Schedule Metformin at 8 am and 8:30 pm", app: app, french: french)
         XCTAssertTrue(app.buttons["saveMedicine"].waitForExistence(timeout: 180), app.debugDescription)
-        XCTAssertTrue(app.buttons["addDoseTime"].exists)
+        let addTime = app.buttons["addDoseTime"]
+        reveal(app, addTime)
+        XCTAssertTrue(addTime.exists)
         XCTAssertFalse(app.buttons["saveMedicine"].isEnabled)
         let first = app.descendants(matching: .any)["doseTime-0"].firstMatch
         let second = app.descendants(matching: .any)["doseTime-1"].firstMatch

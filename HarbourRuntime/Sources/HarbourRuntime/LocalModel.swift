@@ -24,6 +24,7 @@ public actor LocalModel {
     private var path: String?
     private var backendStarted = false
     private let useGPU: Bool
+    private var diagnosticCallSequence = 0
     public init(useGPU: Bool = true) { self.useGPU = useGPU }
     deinit {
         if let context { llama_free(context) }
@@ -39,6 +40,9 @@ public actor LocalModel {
         unload()
         if !backendStarted { llama_backend_init(); backendStarted = true }
         var mp = llama_model_default_params()
+        #if targetEnvironment(simulator)
+        mp.use_extra_bufts = false
+        #endif
         #if targetEnvironment(simulator) || os(Linux)
         mp.n_gpu_layers = 0
         #else
@@ -66,62 +70,112 @@ public actor LocalModel {
         guard count > 0 else { throw ModelError.tokenize }
         return Int(count)
     }
-    public func generate(file: URL, prompt: String, maxTokens: Int = 160, grammar: String? = nil, stopAtJSON: Bool = true, promptFormat: ModelPromptFormat = .qwen25) throws -> String {
-        try Task.checkCancellation()
-        let prompt = try promptFormat.prepare(prompt)
-        if let grammar, grammar.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || grammar.contains("\0") {
-            throw ModelError.grammar
+    public func generate(file: URL, prompt: String, maxTokens: Int = 160, grammar: String? = nil, stopAtJSON: Bool = true, promptFormat: ModelPromptFormat = .qwen25, diagnosticPurpose: String? = nil) throws -> String {
+        let traceEnabled = ProcessInfo.processInfo.environment["HARBOUR_INFERENCE_DIAGNOSTICS"] == "1"
+        let callStarted = ProcessInfo.processInfo.systemUptime
+        let callID: Int?
+        if traceEnabled { diagnosticCallSequence += 1; callID = diagnosticCallSequence } else { callID = nil }
+        var currentPhase = "prepare"
+        var inputTokenCount: Int?
+        var generatedTokenCount = 0
+        func trace(_ phase: String, fields: [String: Any] = [:]) {
+            guard let callID else { return }
+            var event = fields
+            event["callID"] = callID; event["purpose"] = diagnosticPurpose ?? "unspecified"
+            event["phase"] = phase; event["elapsedSeconds"] = ProcessInfo.processInfo.systemUptime - callStarted
+            event["unixSeconds"] = Date().timeIntervalSince1970; event["isMainThread"] = Thread.isMainThread
+            event["generatedTokens"] = generatedTokenCount
+            if let inputTokenCount { event["inputTokens"] = inputTokenCount }
+            guard let encoded = try? JSONSerialization.data(withJSONObject: event, options: .sortedKeys) else { return }
+            var line = Data("[HARBOUR_INFERENCE] ".utf8); line.append(encoded); line.append(10)
+            FileHandle.standardError.write(line)
         }
-        try load(file)
-        guard let model, let context else { throw ModelError.load }
-        let vocab = llama_model_get_vocab(model)
-        var tokens = [llama_token](repeating: 0, count: prompt.utf8.count + 16)
-        let count = tokens.withUnsafeMutableBufferPointer { buffer in
-            llama_tokenize(vocab, prompt, Int32(prompt.utf8.count), buffer.baseAddress, Int32(buffer.count), false, true)
+        func finish(_ text: String, reason: String) -> String {
+            currentPhase = "complete"
+            trace("complete", fields: ["reason": reason])
+            return text
         }
-        guard count > 0 else { throw ModelError.tokenize }
-        guard Int(count) + maxTokens < 4096 else { throw ModelError.promptTooLong }
-        tokens = Array(tokens.prefix(Int(count)))
-        llama_memory_clear(llama_get_memory(context), true)
-        guard let sampler = llama_sampler_chain_init(llama_sampler_chain_default_params()) else { throw ModelError.sampler }
-        defer { llama_sampler_free(sampler) }
-        if let grammar {
-            guard let constrained = llama_sampler_init_grammar(vocab, grammar, "root") else { throw ModelError.grammar }
-            llama_sampler_chain_add(sampler, constrained)
-        }
-        guard let greedy = llama_sampler_init_greedy() else { throw ModelError.sampler }
-        llama_sampler_chain_add(sampler, greedy)
-        var batch = llama_batch_init(512, 0, 1)
-        defer { llama_batch_free(batch) }
-        func decode(_ items: [llama_token], start: Int) throws {
-            batch.n_tokens = Int32(items.count)
-            for i in items.indices {
-                batch.token[i] = items[i]; batch.pos[i] = Int32(start + i)
-                batch.n_seq_id[i] = 1; batch.seq_id[i]![0] = 0
-                batch.logits[i] = Int8(i == items.count - 1 ? 1 : 0)
-            }
-            guard llama_decode(context, batch) == 0 else { throw ModelError.decode }
-        }
-        for offset in stride(from: 0, to: tokens.count, by: 512) {
+        trace("begin", fields: ["maxTokens": maxTokens, "stopAtJSON": stopAtJSON, "grammarEnabled": grammar != nil])
+        do {
+
             try Task.checkCancellation()
-            try decode(Array(tokens[offset..<min(offset + 512, tokens.count)]), start: offset)
-        }
-        var bytes: [UInt8] = [], position = tokens.count
-        for _ in 0..<maxTokens {
-            try Task.checkCancellation()
-            let token = llama_sampler_sample(sampler, context, -1)
-            if llama_vocab_is_eog(vocab, token) { break }
-            var piece = [CChar](repeating: 0, count: 256)
-            var length = piece.withUnsafeMutableBufferPointer { llama_token_to_piece(vocab, token, $0.baseAddress, 256, 0, false) }
-            if length < 0 {
-                piece = [CChar](repeating: 0, count: Int(-length))
-                length = piece.withUnsafeMutableBufferPointer { llama_token_to_piece(vocab, token, $0.baseAddress, Int32($0.count), 0, false) }
+            let prompt = try promptFormat.prepare(prompt)
+            if let grammar, grammar.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || grammar.contains("\0") {
+                throw ModelError.grammar
             }
-            if length > 0 { bytes.append(contentsOf: piece.prefix(Int(length)).map { UInt8(bitPattern: $0) }) }
-            let current = String(decoding: bytes, as: UTF8.self)
-            if stopAtJSON, let complete = JSONEnvelope.completePrefix(in: current) { return complete }
-            try decode([token], start: position); position += 1
+            currentPhase = "load"; trace("load.begin")
+            try load(file)
+            trace("load.end")
+            guard let model, let context else { throw ModelError.load }
+            currentPhase = "tokenize"; trace("tokenize.begin")
+            let vocab = llama_model_get_vocab(model)
+            var tokens = [llama_token](repeating: 0, count: prompt.utf8.count + 16)
+            let count = tokens.withUnsafeMutableBufferPointer { buffer in
+                llama_tokenize(vocab, prompt, Int32(prompt.utf8.count), buffer.baseAddress, Int32(buffer.count), false, true)
+            }
+            guard count > 0 else { throw ModelError.tokenize }
+            inputTokenCount = Int(count); trace("tokenize.end")
+            guard Int(count) + maxTokens < 4096 else { throw ModelError.promptTooLong }
+            tokens = Array(tokens.prefix(Int(count)))
+            currentPhase = "sampler"; trace("sampler.begin")
+            llama_memory_clear(llama_get_memory(context), true)
+            guard let sampler = llama_sampler_chain_init(llama_sampler_chain_default_params()) else { throw ModelError.sampler }
+            defer { llama_sampler_free(sampler) }
+            if let grammar {
+                guard let constrained = llama_sampler_init_grammar(vocab, grammar, "root") else { throw ModelError.grammar }
+                llama_sampler_chain_add(sampler, constrained)
+            }
+            guard let greedy = llama_sampler_init_greedy() else { throw ModelError.sampler }
+            llama_sampler_chain_add(sampler, greedy)
+            trace("sampler.end")
+            var batch = llama_batch_init(512, 0, 1)
+            defer { llama_batch_free(batch) }
+            func decode(_ items: [llama_token], start: Int) throws {
+                batch.n_tokens = Int32(items.count)
+                for i in items.indices {
+                    batch.token[i] = items[i]; batch.pos[i] = Int32(start + i)
+                    batch.n_seq_id[i] = 1; batch.seq_id[i]![0] = 0
+                    batch.logits[i] = Int8(i == items.count - 1 ? 1 : 0)
+                }
+                guard llama_decode(context, batch) == 0 else { throw ModelError.decode }
+            }
+            currentPhase = "prefill"
+            let prefillStarted = ProcessInfo.processInfo.systemUptime
+            trace("prefill.begin")
+            for offset in stride(from: 0, to: tokens.count, by: 512) {
+                try Task.checkCancellation()
+                let batchStarted = ProcessInfo.processInfo.systemUptime
+                trace("prefill.batch.begin", fields: ["offset": offset, "batchTokens": min(512, tokens.count - offset)])
+                try decode(Array(tokens[offset..<min(offset + 512, tokens.count)]), start: offset)
+                trace("prefill.batch.end", fields: ["offset": offset, "batchSeconds": ProcessInfo.processInfo.systemUptime - batchStarted])
+            }
+            trace("prefill.end", fields: ["prefillSeconds": ProcessInfo.processInfo.systemUptime - prefillStarted])
+            currentPhase = "generation"; trace("generation.begin")
+            var completionReason = "token_budget"
+            var bytes: [UInt8] = [], position = tokens.count
+            for _ in 0..<maxTokens {
+                try Task.checkCancellation()
+                let token = llama_sampler_sample(sampler, context, -1)
+                if llama_vocab_is_eog(vocab, token) { completionReason = "eog"; break }
+                generatedTokenCount += 1
+                if generatedTokenCount == 1 { trace("generation.first_token") }
+                var piece = [CChar](repeating: 0, count: 256)
+                var length = piece.withUnsafeMutableBufferPointer { llama_token_to_piece(vocab, token, $0.baseAddress, 256, 0, false) }
+                if length < 0 {
+                    piece = [CChar](repeating: 0, count: Int(-length))
+                    length = piece.withUnsafeMutableBufferPointer { llama_token_to_piece(vocab, token, $0.baseAddress, Int32($0.count), 0, false) }
+                }
+                if length > 0 { bytes.append(contentsOf: piece.prefix(Int(length)).map { UInt8(bitPattern: $0) }) }
+                let current = String(decoding: bytes, as: UTF8.self)
+                if stopAtJSON, let complete = JSONEnvelope.completePrefix(in: current) { return finish(complete, reason: "complete_json") }
+                try decode([token], start: position); position += 1
+                if generatedTokenCount % 32 == 0 { trace("generation.progress") }
+            }
+            return finish(String(decoding: bytes, as: UTF8.self), reason: completionReason)
+        } catch {
+            trace(error is CancellationError ? "cancelled" : "error", fields: ["errorPhase": currentPhase, "errorType": String(describing: type(of: error))])
+            throw error
         }
-        return String(decoding: bytes, as: UTF8.self)
+
     }
 }

@@ -171,7 +171,7 @@ private final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchec
         let grammar = try allowedTools.map { try ToolOutputGrammar.make(allowedTools: $0) } ?? responseGrammar
         let chosen = resolved, url = try await ensure(chosen)
         status = L10n.string("Thinking")
-        return try await runtime.generate(file: url, prompt: ModelPrompts.localized(prompt, language: language, purpose: purpose), maxTokens: maxTokens ?? effort.tokens, grammar: grammar, stopAtJSON: stopAtJSON, promptFormat: chosen.promptFormat)
+        return try await runtime.generate(file: url, prompt: ModelPrompts.localized(prompt, language: language, purpose: purpose), maxTokens: maxTokens ?? effort.tokens, grammar: grammar, stopAtJSON: stopAtJSON, promptFormat: chosen.promptFormat, diagnosticPurpose: String(describing: purpose))
     }
     func chatDecision(_ input: String, hint: String? = nil, records: Records, history: [ConversationTurn] = []) async throws -> ToolDecision {
         let output = try await generate(ToolPlanner.prompt(input, hint: hint, records: records, history: history), allowedTools: ToolPlanner.availableTools.map(\.rawValue), purpose: .routing)

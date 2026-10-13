@@ -1,0 +1,247 @@
+name: Temporary current-source English French no-repack diagnostic
+
+# Current3b source; Simulator no-repack; bounded presentation scroll; unchanged semantic assertions and180s wait.
+on:
+  push:
+    branches: [codex/qwen35-ci-diagnostics]
+    paths: [.github/workflows/temporary-xcresult-diagnostics.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sample-unchanged-schedule:
+    runs-on: macos-26
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - name: Record diagnostic environment
+        run: |
+          mkdir -p build/ci-sampling
+          xcodebuild -version > build/ci-sampling/xcode.txt
+          swift --version > build/ci-sampling/swift.txt
+          sysctl hw.ncpu hw.memsize > build/ci-sampling/hardware.txt
+          git rev-parse HEAD > build/ci-sampling/checkout.txt
+          git diff c1f16517117f71ad48443be1188ae4fa365646ed HEAD -- HarbourRuntime/Sources/HarbourRuntime/LocalModel.swift > build/ci-sampling/no-repack-source-diff.patch
+          git diff 3b00e41bcaec79b87bd7179bdbbd5041821877f6 HEAD -- HarbourRuntime/Sources/HarbourRuntime/LocalModel.swift Harbour/ModelManager.swift > build/ci-sampling/phase-source-diff.patch
+          git diff 3b00e41bcaec79b87bd7179bdbbd5041821877f6 HEAD -- HarbourUITests/HarbourUITests.swift > build/ci-sampling/test-presentation-source-diff.patch
+          echo 3b00e41bcaec79b87bd7179bdbbd5041821877f6 > build/ci-sampling/base-source.txt
+          shasum -a 256 HarbourUITests/HarbourUITests.swift Harbour/ModelManager.swift HarbourRuntime/Sources/HarbourRuntime/LocalModel.swift scripts/prepare-runtime.sh scripts/runtime-privacy.py > build/ci-sampling/source-sha256.txt
+          echo "XCODE_BUILD=$(xcodebuild -version | tail -n 1 | tr ' ' '-')" >> "$GITHUB_ENV"
+          xcrun simctl list devices available --json > build/ci-sampling/simulators.json
+      - name: Restore pinned native runtime
+        id: runtime-cache
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: HarbourRuntime/Vendor/llama.xcframework
+          key: llama-b10549-${{ runner.os }}-${{ runner.arch }}-${{ env.XCODE_BUILD }}-${{ hashFiles('scripts/prepare-runtime.sh', 'scripts/runtime-privacy.py') }}
+      - name: Prepare pinned native runtime
+        run: bash scripts/prepare-runtime.sh
+      - name: Cache diagnostic branch runtime
+        if: steps.runtime-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: HarbourRuntime/Vendor/llama.xcframework
+          key: ${{ steps.runtime-cache.outputs.cache-primary-key }}
+      - name: Record runtime cache identity
+        env:
+          CACHE_PRIMARY_KEY: ${{ steps.runtime-cache.outputs.cache-primary-key }}
+          CACHE_MATCHED_KEY: ${{ steps.runtime-cache.outputs.cache-matched-key }}
+          CACHE_HIT: ${{ steps.runtime-cache.outputs.cache-hit }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib
+          framework=pathlib.Path('HarbourRuntime/Vendor/llama.xcframework')
+          identity={'primaryKey':os.environ['CACHE_PRIMARY_KEY'],'matchedKey':os.environ['CACHE_MATCHED_KEY'],'cacheHit':os.environ['CACHE_HIT'],
+              'frameworkFilesSHA256':{str(path.relative_to(framework)):hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(framework.rglob('*')) if path.is_file()}}
+          pathlib.Path('build/ci-sampling/runtime-cache-identity.json').write_text(json.dumps(identity,indent=2)+'\n',encoding='utf-8')
+          PY
+      - name: Boot simulator
+        run: |
+          simulator_id=$(python3 -c 'import json; d=json.load(open("build/ci-sampling/simulators.json")); print(next(x["udid"] for values in d["devices"].values() for x in values if x["isAvailable"] and x["name"].startswith("iPhone")))')
+          echo "SIMULATOR_ID=$simulator_id" >> "$GITHUB_ENV"
+          xcrun simctl boot "$simulator_id"
+          xcrun simctl bootstatus "$simulator_id" -b
+      - name: Enable opt-in phase markers only in diagnostic simulator
+        run: |
+          xcrun simctl spawn "$SIMULATOR_ID" launchctl setenv HARBOUR_INFERENCE_DIAGNOSTICS 1
+          xcrun simctl spawn "$SIMULATOR_ID" launchctl getenv HARBOUR_INFERENCE_DIAGNOSTICS > build/ci-sampling/phase-opt-in.txt
+      - name: Build unchanged app and UI test
+        run: |
+          set -o pipefail
+          xcodebuild -project Harbour.xcodeproj -scheme Harbour -destination "platform=iOS Simulator,id=$SIMULATOR_ID" -derivedDataPath build/ci-sampling/DerivedData build-for-testing | tee build/ci-sampling/build.log
+      - name: Install verified model
+        run: |
+          python3 scripts/cache-eval-models.py --directory build/ci-sampling/models --models qwen35 --verification-markers
+          xcrun simctl install "$SIMULATOR_ID" build/ci-sampling/DerivedData/Build/Products/Debug-iphonesimulator/Harbour.app
+          app_data=$(xcrun simctl get_app_container "$SIMULATOR_ID" com.matteopolak.harbour data)
+          mkdir -p "$app_data/Library/Application Support/Models"
+          cp build/ci-sampling/models/*.gguf build/ci-sampling/models/*.verified "$app_data/Library/Application Support/Models/"
+      - name: Run current English and French schedule assertions with live process samples
+        env:
+          HARBOUR_INFERENCE_DIAGNOSTICS: '1'
+        run: |
+          python3 - <<'PY'
+          import datetime, json, os, pathlib, re, subprocess, time
+          output = pathlib.Path('build/ci-sampling')
+          command = ['xcodebuild', '-project', 'Harbour.xcodeproj', '-scheme', 'Harbour',
+              '-destination', 'platform=iOS Simulator,id=' + os.environ['SIMULATOR_ID'],
+              '-derivedDataPath', str(output / 'DerivedData'), '-resultBundlePath', str(output / 'Sampling.xcresult'),
+              '-parallel-testing-enabled', 'NO', '-maximum-concurrent-test-simulator-destinations', '1',
+              'test-without-building', '-only-testing:HarbourUITests/HarbourQwen35EvaluationTests/testEnglishScheduleOpensReview',
+              '-only-testing:HarbourUITests/HarbourQwen35EvaluationTests/testFrenchScheduleOpensReview']
+          manifest = {'command': command, 'purpose': 'Current3b EN and FR schedule tests. Simulator-only no-repack flag, baseline one thread/batch512/micro512/context4096, opt-in content-free logger and bounded existing presentation scrolling. Exact two times, disabled Save, cancellation and180-second wait preserved. Diagnostic timing is not a benchmark.', 'samples': [], 'sendEvents': []}
+          first_seen = {}; sampled = set(); last_stat = 0; send_seen = None; sends_by_pid = {}; sample_processes = []
+          started = time.monotonic()
+          def utc(): return datetime.datetime.now(datetime.timezone.utc).isoformat()
+          sample_help = subprocess.run(['/usr/bin/sample', '-h'], text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+          (output / 'sample-help.txt').write_text(sample_help.stdout + sample_help.stderr, encoding='utf-8')
+          def observation(pids, elapsed, phase):
+              stat = subprocess.run(['ps', '-axo', 'pid,ppid,%cpu,rss,vsz,etime,state,comm'], text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+              app_lines = [line for line in stat.stdout.splitlines() if 'Harbour' in line]
+              total_rss = other_rss = 0; other_cpu = 0.0
+              for line in stat.stdout.splitlines()[1:]:
+                  fields = line.split()
+                  if len(fields) < 4: continue
+                  try: rss = int(fields[3]); cpu = float(fields[2])
+                  except ValueError: continue
+                  total_rss += rss
+                  if 'Harbour' not in line: other_rss += rss; other_cpu += cpu
+              memory = subprocess.run(['vm_stat'], text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+              return {'utc':utc(), 'elapsedSeconds':elapsed, 'phase':phase, 'appPIDs':pids, 'ps':app_lines,
+                  'otherProcessRSSKiBSum':other_rss, 'totalProcessRSSKiBSum':total_rss, 'otherProcessCPUSumPercent':other_cpu,
+                  'memoryMetricNote':'Process RSS sums include shared pages; unrelated process identities are omitted.', 'vmStat':memory.stdout}
+          with (output / 'test.log').open('w') as log, (output / 'process-observations.jsonl').open('w') as observations:
+              observations.write(json.dumps(observation([], 0, 'before-test')) + '\n'); observations.flush()
+              process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT)
+              print('Unchanged test launched at', utc(), flush=True)
+              while process.poll() is None:
+                  now = time.monotonic()
+                  result = subprocess.run(['pgrep', '-x', 'Harbour'], text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                  pids = [int(value) for value in result.stdout.split() if value.isdecimal()]
+                  log_text = (output / 'test.log').read_text(encoding='utf-8', errors='replace')
+                  send_matches = list(re.finditer(r'Tap "(?:Send message|Envoyer le message)" Button', log_text))
+                  if len(send_matches) > len(manifest['sendEvents']):
+                      send_seen = time.monotonic()
+                      case_matches = re.findall(r"Test Case '-\[HarbourUITests\.HarbourQwen35EvaluationTests (test\w+)\]' started", log_text)
+                      case_name = case_matches[-1] if case_matches else 'unknown'
+                      ordinal = len(manifest['sendEvents']) + 1
+                      manifest['sendEvents'].append({'ordinal':ordinal,'utc':utc(),'testCase':case_name,'appPIDs':pids})
+                      for pid in pids: sends_by_pid[pid] = (send_seen, ordinal)
+                      print('Schedule test', case_name, 'tapped Send at', utc(), flush=True)
+                  if now - last_stat >= 5:
+                      last_stat = now
+                      observations.write(json.dumps(observation(pids, now-started, 'after-send' if send_seen is not None else 'launch')) + '\n'); observations.flush()
+                  for pid in pids:
+                      if pid not in first_seen:
+                          first_seen[pid] = now
+                          print('Harbour PID', pid, 'first observed at', utc(), flush=True)
+                      if pid not in sends_by_pid: continue
+                      pid_send, send_ordinal = sends_by_pid[pid]
+                      age = now - pid_send
+                      for checkpoint in (15, 60, 105):
+                          key = (pid,send_ordinal,checkpoint)
+                          if age >= checkpoint and key not in sampled:
+                              sampled.add(key)
+                              path = output / f'sample-pid-{pid}-after-send-{checkpoint}s.txt'
+                              sample_command = ['/usr/bin/sample', str(pid), '2', '10', '-mayDie', '-file', str(path)]
+                              print('Collecting live sample', path.name, 'at', utc(), flush=True)
+                              sample_log = path.with_suffix('.command.txt').open('w')
+                              sample_process = subprocess.Popen(sample_command, stdout=sample_log, stderr=subprocess.STDOUT)
+                              info = {'utc':utc(),'pid':pid,'sendOrdinal':send_ordinal,'secondsAfterSend':age,'command':sample_command,'exitCode':None}
+                              manifest['samples'].append(info)
+                              sample_processes.append((sample_process, sample_log, info))
+                  for sample_process, sample_log, info in sample_processes:
+                      if sample_process.poll() is not None and info['exitCode'] is None:
+                          info['exitCode'] = sample_process.returncode; sample_log.close()
+                  (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
+                  time.sleep(2)
+              manifest['testExitCode'] = process.returncode
+              manifest['elapsedSeconds'] = time.monotonic() - started
+              manifest['finishedUTC'] = utc()
+              observations.write(json.dumps(observation([], manifest['elapsedSeconds'], 'after-test')) + '\n'); observations.flush()
+          # Symbolication never blocks the UI test or aborts evidence collection.
+          deadline = time.monotonic() + 180
+          for sample_process, sample_log, info in sample_processes:
+              if sample_process.poll() is None:
+                  try: sample_process.wait(timeout=max(1,deadline-time.monotonic()))
+                  except subprocess.TimeoutExpired:
+                      sample_process.terminate(); info['symbolicationTimedOut'] = True
+                      sample_process.wait(timeout=15)
+              info['exitCode'] = sample_process.returncode
+              if not sample_log.closed: sample_log.close()
+          (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
+          print('Unchanged test exit', manifest['testExitCode'], 'after', round(manifest['elapsedSeconds'],1), 'seconds', flush=True)
+          PY
+      - name: Export app stderr from result bundle
+        if: always()
+        run: |
+          if [ -d build/ci-sampling/Sampling.xcresult ]; then
+            xcrun xcresulttool get test-results summary --path build/ci-sampling/Sampling.xcresult > build/ci-sampling/test-summary.json
+            xcrun xcresulttool export diagnostics --path build/ci-sampling/Sampling.xcresult --output-path build/ci-sampling/exported-diagnostics
+            python3 - <<'PY'
+          import pathlib, shutil
+          root=pathlib.Path('build/ci-sampling')
+          for index,path in enumerate((root/'exported-diagnostics').rglob('StandardOutputAndStandardError-com.matteopolak.harbour.txt')):
+              shutil.copy2(path,root/f'harbour-console-{index}.txt')
+              import json
+              decoder=json.JSONDecoder()
+              with (root/f'inference-phase-events-{index}.jsonl').open('w',encoding='utf-8') as events, (root/f'inference-phase-parse-errors-{index}.txt').open('w',encoding='utf-8') as errors:
+                  for line_number,line in enumerate(path.read_text(encoding='utf-8',errors='replace').splitlines(),1):
+                      marker='[HARBOUR_INFERENCE] '
+                      if marker not in line: continue
+                      try:
+                          event,_=decoder.raw_decode(line.split(marker,1)[1]); events.write(json.dumps(event)+'\n')
+                      except ValueError:
+                          errors.write(f'Could not decode phase marker at console line {line_number}.\n')
+          PY
+          fi
+      - name: Upload compact live diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: temporary-current3b-enfr-no-repack-diagnostic
+          path: |
+            build/ci-sampling/*.txt
+            build/ci-sampling/*.json
+            build/ci-sampling/*.jsonl
+            build/ci-sampling/*.log
+            build/ci-sampling/*.patch
+          retention-days: 14
+      - name: Upload original fictional-fixture result bundle
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: temporary-current3b-enfr-original-xcresult
+          path: build/ci-sampling/Sampling.xcresult
+          retention-days: 14
+      - name: Create separate content-free status summary
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json,pathlib
+          root=pathlib.Path('build/ci-sampling')
+          source=root/'test-summary.json'
+          if source.exists():
+              summary=json.loads(source.read_text(encoding='utf-8'))
+              result={key:value for key,value in summary.items() if key in ['result','passedTests','failedTests','skippedTests','totalTestCount','startTime','finishTime']}
+              result['failureTests']=[item.get('testIdentifierString',item.get('testName','')) for item in summary.get('testFailures',[])]
+              (root/'test-status-content-free.json').write_text(json.dumps(result,indent=2)+'\n')
+          PY
+      - name: Upload separate content-free phase and status
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: temporary-current3b-enfr-phase-status
+          path: |
+            build/ci-sampling/inference-phase-events-*.jsonl
+            build/ci-sampling/test-status-content-free.json
+            build/ci-sampling/manifest.json
+            build/ci-sampling/runtime-cache-identity.json
+            build/ci-sampling/source-sha256.txt
+            build/ci-sampling/checkout.txt
+            build/ci-sampling/base-source.txt
+          retention-days: 14
