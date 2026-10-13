@@ -59,7 +59,18 @@ final class VisitSourceGroundingTests: XCTestCase {
             let medicine = try XCTUnwrap(summary.medicines.first, source)
             XCTAssertEqual(medicine.medicine.instructions, full, source)
             XCTAssertTrue(medicine.times.isEmpty, source)
+            XCTAssertNil(medicine.frequency, source)
+            XCTAssertTrue(try VisitReview.parse(proposal(quote: source, names: [name], instructions: [borrowed]), transcript: source, medicines: []).medicines.isEmpty, source)
+        }
+        for (source, name, full, borrowed) in [
+            ("Start aspirin 81 mg once daily and book blood work at 2 pm.", "aspirin", "81 mg once daily", "81 mg once daily and book blood work at 2 pm"),
+            ("Commencez aspirine 81 mg une fois par jour et planifiez une prise de sang à 14 h.", "aspirine", "81 mg une fois par jour", "81 mg une fois par jour et planifiez une prise de sang à 14 h")
+        ] {
+            let summary = try VisitReview.parse(proposal(quote: source, names: [name], instructions: [full]), transcript: source, medicines: [])
+            let medicine = try XCTUnwrap(summary.medicines.first, source)
+            XCTAssertEqual(medicine.medicine.instructions, full, source)
             XCTAssertEqual(medicine.frequency, MedicationFrequency(count: 1, period: .day), source)
+            XCTAssertTrue(medicine.times.isEmpty, source)
             XCTAssertTrue(try VisitReview.parse(proposal(quote: source, names: [name], instructions: [borrowed]), transcript: source, medicines: []).medicines.isEmpty, source)
         }
         for (source, name, full) in [
@@ -87,6 +98,32 @@ final class VisitSourceGroundingTests: XCTestCase {
         let ordinary = "Start metformin 500 mg at 8 am and 8 pm."
         let withEmptySavedName = try VisitReview.parse(proposal(quote: ordinary, names: ["metformin"], instructions: ["500 mg at 8 am and 8 pm"]), transcript: ordinary, medicines: [Medicine(id: "empty", name: "")])
         XCTAssertEqual(withEmptySavedName.medicines.first?.medicine.id, "metformin")
+        let savedAspirin = try XCTUnwrap(Catalog.medicines.first { $0.id == "aspirin" })
+        for (source, name, full, truncatedQuote, partials) in [
+            ("Continue aspirin 81 mg daily with food, as you have since last year.", "aspirin", "81 mg daily with food", "Continue aspirin 81 mg daily with food", ["81 mg daily", "daily with food"]),
+            ("Continuez aspirine 81 mg par jour avec nourriture depuis hier.", "aspirine", "81 mg par jour avec nourriture", "Continuez aspirine 81 mg par jour avec nourriture", ["81 mg par jour", "par jour avec nourriture"]),
+            ("The doctor told me to take aspirin 81 mg daily with food today.", "aspirin", "81 mg daily with food", "The doctor told me to take aspirin 81 mg daily with food", ["81 mg daily", "daily with food"])
+        ] {
+            let summary = try VisitReview.parse(proposal(quote: source, names: [name], instructions: [full], actions: ["update"]), transcript: source, medicines: [savedAspirin])
+            XCTAssertEqual(summary.medicines.first?.medicine.instructions, full, source)
+            for partial in partials {
+                XCTAssertTrue(try VisitReview.parse(proposal(quote: source, names: [name], instructions: [partial], actions: ["update"]), transcript: source, medicines: [savedAspirin]).medicines.isEmpty, partial)
+            }
+            XCTAssertTrue(try VisitReview.parse(proposal(quote: truncatedQuote, names: [name], instructions: [full], actions: ["update"]), transcript: source, medicines: [savedAspirin]).medicines.isEmpty, source)
+        }
+        for (source, action) in [
+            ("Start aspirin 81 mg daily today.", "start"),
+            ("Update aspirin 81 mg daily today.", "update"),
+            ("Continue aspirin 81 mg daily today.", "update"),
+            ("The doctor told me to take aspirin 81 mg daily tomorrow.", "update"),
+            ("The doctor told me to take aspirin 81 mg daily tonight.", "update"),
+            ("The doctor told me to take aspirin 81 mg daily on January 2.", "update"),
+            ("The doctor told me to take aspirin 81 mg daily for five days.", "update"),
+            ("The doctor told me to take aspirin 81 mg daily if needed.", "update"),
+            ("The doctor told me to take aspirin 81 mg daily at 8 am.", "update")
+        ] {
+            XCTAssertTrue(try VisitReview.parse(proposal(quote: source, names: ["aspirin"], instructions: ["81 mg daily"], actions: [action]), transcript: source, medicines: [savedAspirin]).medicines.isEmpty, source)
+        }
     }
 
     func testStoredMedicineDraftTamperingCannotDiscardDoseOrClockDirectionsAndStopsStayEmpty() throws {

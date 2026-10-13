@@ -279,10 +279,25 @@ enum VisitSourceGrounding {
             let sourceTail = directions(String(context[target.upperBound..<end]))
             let required = withoutConnector(sourceTail)
             guard !required.isEmpty else { continue }
+            var complete = required == proposed
+            if !complete, action == .update {
+                let verb = InputLanguage.folded(String(context[directive]))
+                if ["continue", "continuer", "continuez"].contains(verb),
+                   let retrospective = required.range(of: "(?:,\\s*as you have since last year|\\s+depuis (?:l['’]an dernier|hier))$", options: [.regularExpression, .caseInsensitive]) {
+                    // The closed tail documents when a continuing regimen began;
+                    // every clinical direction before it must still be copied.
+                    complete = required[..<retrospective.lowerBound].trimmingCharacters(in: .whitespaces) == proposed
+                } else if verb == "take",
+                          InputLanguage.folded(String(context[sentence.lowerBound..<directive.lowerBound])).trimmingCharacters(in: .whitespaces)
+                            .range(of: "^(?:the|my) (?:doctor|clinician) (?:told|asked|advised|instructed) me to$", options: .regularExpression) != nil,
+                          let current = required.range(of: "\\s+today$", options: [.regularExpression, .caseInsensitive]) {
+                    complete = required[..<current.lowerBound].trimmingCharacters(in: .whitespaces) == proposed
+                }
+            }
             // An unlisted second name plus quantified dose is not this medicine's directions.
             let uncertainOther = "\\b(?:and|et)\\s+[\\p{L}\\p{M}][\\p{L}\\p{M}\\p{N}_'-]*(?:\\s+[\\p{L}\\p{M}]+){0,3}\\s+[0-9]+(?:[.,][0-9]+)?\\s*(?:mg|mcg|μg|µg|g|ml|units?|unites?|ui)\\b"
             guard InputLanguage.folded(required).range(of: uncertainOther, options: .regularExpression) == nil,
-                  required == proposed, quote.contains(String(context[target]) + " " + sourceTail) else { continue }
+                  complete, quote.contains(String(context[target]) + " " + sourceTail) else { continue }
             return true
         }
         return false

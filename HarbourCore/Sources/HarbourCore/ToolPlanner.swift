@@ -120,7 +120,9 @@ public enum ToolPlanner {
         }
         // One question sentence only. Quoted negation, conditions or other
         // people's circumstances are question content, not outer commands.
-        let question = #"(?:why|what|how|when|where|which|should|could|can|would|do|does|did|is|are|was|were|may|might|will|pourquoi|comment|quand|quel|quelle|quels|quelles|puis-je|dois-je|devrais-je|pourrais-je|est-ce|faut-il|peut-on|ne\s+(?:dois-je|devrais-je|pourrais-je))\b"#
+        let negativeEnglish = #"(?:shouldn|couldn|wouldn|don|doesn|didn|isn|aren|wasn|weren|haven|hasn|hadn|won|can|mustn|mightn)'t"#
+        let negativeFrench = #"(?:n'est-ce|ne\s+(?:dois-je|devrais-je|pourrais-je|puis-je|peut-on|faut-il))"#
+        let question = #"(?:why|what|how|when|where|which|should|could|can|would|do|does|did|is|are|was|were|may|might|will|pourquoi|comment|quand|quel|quelle|quels|quelles|puis-je|dois-je|devrais-je|pourrais-je|est-ce|faut-il|peut-on|"# + negativeEnglish + "|" + negativeFrench + #")\b"#
         guard body.last == "?", matches(body, #"\A"# + question),
               !matches(String(body.dropLast()), #"[?!;]|(?<![0-9])\.|\.(?![0-9])|(?<![0-9]):|:(?![0-9])"#) else { return false }
         let unquoted = unquotedRequest(body)
@@ -392,6 +394,9 @@ public enum ToolPlanner {
     }
     public static func validate(_ decision: ToolDecision, original: String, records: Records, language: ModelLanguage = .english) throws -> ValidatedAction {
         guard WriteRequestValidation.permits(original, tool: decision.tool) else { throw PlannerError.forbidden }
+        // A closed outer request saves its question payload; names or numbers
+        // inside that payload cannot authorize another app action.
+        guard !explicitSavedQuestionRequest(original) || [.saveQuestion, .reply].contains(decision.tool) else { throw PlannerError.forbidden }
         switch decision.tool {
         case .createAppointment:
             // A closed reminder request is not an appointment-add request,
