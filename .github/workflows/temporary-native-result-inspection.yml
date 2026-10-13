@@ -57,6 +57,37 @@ jobs:
           tests = capture('tests.json', ['get', 'test-results', 'tests', '--path', bundle])
           capture('console.txt', ['get', 'log', '--path', bundle, '--type', 'console'])
           capture('failure-attachments-export.txt', ['export', 'attachments', '--path', bundle, '--output-path', str(output / 'failure-attachments'), '--only-failures'])
+          capture('small-all-attachments-export.txt', ['export', 'attachments', '--path', bundle, '--output-path', str(output / 'small-attachments'), '--test-id', 'HarbourUITests/testLocalModelChat()'])
+          capture('help-export-object.txt', ['help', 'export', 'object'])
+          exports = {
+              'small-screen-recording.mp4': '0~HQU8vSSRjKf8VZXbevrQJMTs1e_PLfkjUIhjyNjeUI2Qd5wX0DMhtBArZnKtXBQEu09ZlwZZRKi83mGy4dyYGg==',
+              'small-final-debug-description.txt': '0~t1eOTb03XLOwa50fzYKVjrQbbqSJN4dqzJH5d38Ze50z12t8avcR7t_3PyPVEBiYydiUSthjCKWoo1xM2qtGrA==',
+              'small-final-ui-snapshot.bin': '0~UpsmdFBRHRU2gE91iQrxfApo9Wz7t_78beFqPaiIkJn9kmcSrZRKG4uAxcHjiT2qVeup2j1yH8pf1W9PqOVGbw=='
+          }
+          for filename, payload_id in exports.items():
+              capture(filename + '-export.txt', ['export', 'object', '--legacy', '--path', bundle, '--id', payload_id, '--type', 'file', '--output-path', str(output / filename)])
+          video = output / 'small-screen-recording.mp4'
+          if video.is_file() and video.stat().st_size:
+              helper = output / 'extract-original-video-frame.swift'
+              helper.write_text("""import Foundation
+          import AVFoundation
+          import AppKit
+          let asset = AVURLAsset(url: URL(fileURLWithPath: CommandLine.arguments[1]))
+          let duration = try await asset.load(.duration)
+          let requestedSeconds = max(0, duration.seconds - 1)
+          let generator = AVAssetImageGenerator(asset: asset)
+          generator.appliesPreferredTrackTransform = true
+          let frame = try await generator.image(at: CMTime(seconds: requestedSeconds, preferredTimescale: 600))
+          let bitmap = NSBitmapImageRep(cgImage: frame.image)
+          try bitmap.representation(using: .png, properties: [:])!.write(to: URL(fileURLWithPath: CommandLine.arguments[2]))
+          let metadata: [String: Any] = ["originalVideoDurationSeconds": duration.seconds, "requestedTimeSeconds": requestedSeconds, "actualFrameTimeSeconds": frame.actualTime.seconds, "purpose": "Frame near end of original failed test recording, no new app/test/inference run."]
+          print(String(data: try JSONSerialization.data(withJSONObject: metadata, options: [.sortedKeys]), encoding: .utf8)!)
+          """, encoding='utf-8')
+              frame_command = ['swift', str(helper), str(video), str(output / 'small-near-failure-original-frame.png')]
+              frame_result = subprocess.run(frame_command, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=180)
+              (output / 'original-frame-extraction.json').write_text(frame_result.stdout, encoding='utf-8')
+              (output / 'original-frame-extraction.stderr.txt').write_text(frame_result.stderr, encoding='utf-8')
+              manifest['commands'].append({'output': 'original-frame-extraction.json', 'command': frame_command, 'exitCode': frame_result.returncode})
           legacy = capture('legacy-root.json', ['get', 'object', '--legacy', '--path', bundle, '--format', 'json'])
           def nodes(value):
               if isinstance(value, dict):
