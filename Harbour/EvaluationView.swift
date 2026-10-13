@@ -26,7 +26,7 @@ struct EvaluationReport: Codable {
     static func evaluateVisit(_ fixture: VisitSummaryEvaluationCase, models: ModelManager) async -> ModelRun {
         let start = Date(); var output = ""
         do {
-            output = try await models.generate(VisitReview.prompt(fixture.transcript, medicines: Evaluation.records.medicines), maxTokens: 650, responseGrammar: VisitReview.outputGrammar(transcript: fixture.transcript), purpose: .visit)
+            output = try await models.generate(VisitReview.prompt(fixture.transcript, medicines: Evaluation.records.medicines), maxTokens: 650, responseGrammar: VisitReview.outputGrammar(transcript: fixture.transcript, medicines: Evaluation.records.medicines), purpose: .visit)
             let passed = fixture.matches(output)
             return ModelRun(model: models.resolved.rawValue, effort: models.effort.rawValue, input: fixture.transcript, expected: fixture.expectedJSON, observed: passed ? "Matched transcript facts" : "Transcript mismatch", rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: passed)
         } catch {

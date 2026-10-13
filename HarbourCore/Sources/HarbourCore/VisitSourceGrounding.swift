@@ -257,4 +257,85 @@ enum VisitSourceGrounding {
         }
         return result
     }
+
+    /// A minimum is permitted only after constructing and validating one narrow,
+    /// source-verbatim proposal. This does not populate model output or relax parse().
+    static func requiredMedicineProposal(_ transcript: String, medicines: [Medicine], candidates: [VisitMedicineSourceCandidate]) -> VisitMedicineChange? {
+        let source = VisitReview.normalise(transcript)
+        guard source.count <= VisitReview.chunkCharacters, candidates.count == 1,
+              let candidate = candidates.first, candidate.maximumEntries == 1, candidate.actions.count == 1,
+              let action = candidate.actions.first,
+              containingContexts(quote: candidate.quote, source: source).contains(candidate.quote),
+              quotationRanges(source).isEmpty,
+              InputLanguage.folded(source).range(of: "\\b(?:if|unless|might|may|could|consider|maybe|not|never|don't|do not|si|sauf|peut-etre|pourrais|pourrait|devrais|devrait|envisager|pas|jamais|yesterday|previously|formerly|used to|last year|last month|last week|hier|autrefois|auparavant|jadis|l'an dernier|l'annee derniere)\\b|\\?", options: .regularExpression) == nil else { return nil }
+        // No catalog count without a copied, uniquely resolved source name.
+        let mentioned = Catalog.mentioned(in: candidate.quote)
+        guard mentioned.count == 1, let canonical = mentioned.first,
+              sentences(source).filter({ Catalog.mentioned(in: $0, saved: medicines).contains { $0.id == canonical.id } }).count == 1 else { return nil }
+        let selected = verbs(action)
+        let prefixes = "(?:(?:the|your|my|our|dose of|dosage of|treatment with|treatment of|use of|take|taking|to take|la|le|de|du|a|prendre|a prendre|votre|dose de|traitement par|traitement avec)\\s+|l')*"
+        let names = Array(Set(Catalog.names(for: canonical))).sorted { $0.count > $1.count }
+        var extracted: (name: String, instructions: String)?
+        for name in names {
+            // Match the name in the original source so its native range retains
+            // exact accents and spelling. Only the separate prefix is folded;
+            // folded-string offsets are never applied to original source text.
+            guard let nameRange = candidate.quote.range(of: name, options: [.caseInsensitive, .diacriticInsensitive]) else { continue }
+            if nameRange.upperBound < candidate.quote.endIndex {
+                let next = candidate.quote[nameRange.upperBound]
+                if next.isLetter || next.isNumber || next == "_" { continue }
+            }
+            let pattern = "^(?:(?:please|veuillez)\\s+)?(?:" + selected.english + "|" + selected.french + ")\\s+" + prefixes + "$"
+            let prefix = InputLanguage.folded(String(candidate.quote[..<nameRange.lowerBound]))
+            guard prefix.range(of: pattern, options: .regularExpression) != nil else { continue }
+            let copiedName = String(candidate.quote[nameRange])
+            let matchingIDs = Set((medicines + Catalog.medicines).filter { medicine in
+                Catalog.names(for: medicine).contains { InputLanguage.folded($0) == InputLanguage.folded(copiedName) }
+            }.map(\.id))
+            guard matchingIDs == [canonical.id], medicines.filter({ $0.id == canonical.id }).count <= 1,
+                  let resolved = Catalog.resolve(copiedName, saved: medicines), resolved.id == canonical.id,
+                  resolved.ingredients == canonical.ingredients,
+                  names.contains(where: { InputLanguage.folded($0) == InputLanguage.folded(resolved.name) }) else { return nil }
+            var tail = String(candidate.quote[nameRange.upperBound...]).trimmingCharacters(in: .whitespaces)
+            if tail.hasSuffix(".") { tail.removeLast() }
+            tail = tail.trimmingCharacters(in: .whitespaces)
+            if action == .stop {
+                guard InputLanguage.folded(tail).range(of: "^(?:today|now|aujourd'hui|maintenant)?$", options: .regularExpression) != nil else { return nil }
+                extracted = (copiedName, "")
+            } else {
+                if let connector = tail.range(of: "^(?:to|à|a)\\s+", options: [.regularExpression, .caseInsensitive]) { tail.removeSubrange(connector) }
+                // Requiring a quantified dose and explicit interpretable schedule
+                // leaves vague directions, free text and uncertain scopes optional.
+                let folded = InputLanguage.folded(tail)
+                let dose = "^[0-9]+(?:[.,][0-9]+)?\\s*(?:mg|mcg|μg|µg|g|ml|units?|unites?|ui)\\b"
+                guard !tail.isEmpty, tail.count <= 180, candidate.quote.contains(tail),
+                      folded.range(of: dose, options: .regularExpression) != nil,
+                      folded.range(of: ";|\\b(?:or|ou|unless|sauf|as needed|au besoin|depending|selon|until|jusqu|when|after|before|apres|avant|lorsque|another|other|second|autre|deuxieme|then|puis|ensuite|followed by)\\b", options: .regularExpression) == nil else { return nil }
+                let doseCount = (try? NSRegularExpression(pattern: "\\b[0-9]+(?:[.,][0-9]+)?\\s*(?:mg|mcg|μg|µg|g|ml|units?|unites?|ui)\\b"))?.numberOfMatches(in: folded, range: NSRange(folded.startIndex..., in: folded)) ?? 0
+                guard doseCount == 1 else { return nil }
+                let times = CareRules.times(in: tail), frequency = CareRules.frequency(in: tail)
+                let frequencyMentioned = folded.range(of: "\\b(?:times?|fois|daily|weekly|monthly|per|par|jour|semaine|mois|quotidien|quotidienne|hebdomadaire|mensuel|mensuelle)\\b", options: .regularExpression) != nil
+                let clockPattern = "\\b[0-9]{1,2}(?::[0-9]{2})?\\s*(?:am|pm)\\b|\\b[0-9]{1,2}\\s*h(?:\\s*[0-9]{2})?\\b|\\b[0-9]{1,2}:[0-9]{2}\\b(?!\\s*(?:am|pm)\\b)"
+                let clockCount = (try? NSRegularExpression(pattern: clockPattern, options: [.caseInsensitive]))?.numberOfMatches(in: tail, range: NSRange(tail.startIndex..., in: tail)) ?? 0
+                guard clockCount == times.count, !frequencyMentioned || frequency != nil,
+                      frequency != nil || !times.isEmpty else { return nil }
+                extracted = (copiedName, tail)
+            }
+            break
+        }
+        guard let extracted, action == .start || medicines.contains(where: { $0.id == canonical.id }) else { return nil }
+        let raw: [String: Any] = ["highlights": [], "followUps": [], "appointments": [], "medicines": [
+            ["quote": candidate.quote, "action": action.rawValue, "name": extracted.name, "instructions": extracted.instructions]
+        ]]
+        guard let data = try? JSONSerialization.data(withJSONObject: raw),
+              let summary = try? VisitReview.parse(String(decoding: data, as: UTF8.self), transcript: source, medicines: medicines),
+              summary.medicines.count == 1, let proposal = summary.medicines.first,
+              proposal.action == action, proposal.medicine.id == canonical.id,
+              proposal.medicine.instructions == extracted.instructions else { return nil }
+        if action != .stop {
+            let schedule = MedicineSchedule(medicineID: canonical.id, times: proposal.times, frequency: proposal.frequency)
+            guard (try? CareRules.validate(schedule, medicines: [proposal.medicine])) != nil else { return nil }
+        }
+        return proposal
+    }
 }

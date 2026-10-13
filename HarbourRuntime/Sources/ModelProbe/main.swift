@@ -122,7 +122,7 @@ private struct ProbeResult: Codable {
             let start = Date(), records = Evaluation.records
             let language: ModelLanguage = fixture.name.contains("French") ? .french : .english
             let prompt = ModelPrompts.localized(try VisitReview.prompt(fixture.transcript, medicines: records.medicines), language: language, purpose: .visit)
-            let grammar = VisitReview.outputGrammar(transcript: fixture.transcript)
+            let grammar = VisitReview.outputGrammar(transcript: fixture.transcript, medicines: Evaluation.records.medicines)
             var result = ProbeResult(kind: "visit", caseID: fixture.name, input: fixture.transcript, records: records, prompt: try format.prepare(prompt), responseGrammar: grammar, budget: 650)
             do {
                 result.rawOutput = try await runtime.generate(file: file, prompt: prompt, maxTokens: 650, grammar: grammar, promptFormat: format)

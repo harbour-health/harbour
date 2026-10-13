@@ -135,7 +135,7 @@ public enum VisitReview {
 
     /// Medicine quotes and actions come only from source sentences that pass
     /// the same intent checks as parse(); field grounding still happens there.
-    public static func outputGrammar(transcript: String) -> String {
+    public static func outputGrammar(transcript: String, medicines: [Medicine] = []) -> String {
         let candidates = VisitSourceGrounding.candidates(transcript)
         func literal(_ value: String) -> String {
             let encoder = JSONEncoder(); encoder.outputFormatting = .withoutEscapingSlashes
@@ -151,7 +151,9 @@ public enum VisitReview {
         lines.append("medicine ::= " + alternatives)
         // A compound sentence can supply distinct stop/start proposals.
         let maximumEntries = min(12, candidates.reduce(0) { $0 + $1.maximumEntries })
-        lines.append(#"medicines ::= "[" ws (medicine (ws "," ws medicine){0,"# + String(maximumEntries - 1) + #"})? ws "]""#)
+        let required = VisitSourceGrounding.requiredMedicineProposal(transcript, medicines: medicines, candidates: candidates) != nil
+        let optional = required ? "" : "?"
+        lines.append(#"medicines ::= "[" ws (medicine (ws "," ws medicine){0,"# + String(maximumEntries - 1) + "})" + optional + #" ws "]""#)
         for (index, candidate) in candidates.enumerated() {
             let actionRules = candidate.actions.map { "source-medicine-\(index)-\($0.rawValue)" }.joined(separator: " | ")
             lines.append("source-medicine-\(index) ::= " + actionRules)

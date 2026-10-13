@@ -247,7 +247,7 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                         case "visit":
                             prompt = ModelPrompts.localized(try VisitReview.prompt(fixture.input, medicines: records.medicines), language: fixture.language, purpose: .visit)
                             result.budget = 650
-                            result.responseGrammar = options.baseline ? nil : VisitReview.outputGrammar(transcript: fixture.input)
+                            result.responseGrammar = options.baseline ? nil : VisitReview.outputGrammar(transcript: fixture.input, medicines: records.medicines)
                             result.output = try await runtime.generate(file: model, prompt: prompt, maxTokens: 650, grammar: result.responseGrammar, promptFormat: format)
                             let summary = try VisitReview.parse(result.output, transcript: fixture.input, medicines: records.medicines)
                             result.actionSummary = .init(type: "visit", highlightQuotes: summary.highlights.map(\.quote), followUpQuotes: summary.followUps.map(\.quote), appointmentQuotes: (summary.appointments ?? []).map(\.quote), medicines: summary.medicines.map { .init(action: $0.action.rawValue, medicineID: $0.medicine.id, name: $0.medicine.name, instructions: $0.medicine.instructions, quote: $0.quote, frequency: $0.frequency.map { .init(count: $0.count, period: $0.period.rawValue) }, times: $0.times.map { String(format: "%02d:%02d", $0.hour, $0.minute) }) })
@@ -391,6 +391,17 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                     ("source.beyond-prompt-bound", String(repeating: "Background note without medication changes. ", count: 60) + start, summary([medicine(start, "start", "metformin", "500 mg daily")]), false)
                 ]
                 tests += sourceTests.map { ($0.0, VisitReview.outputGrammar(transcript: $0.1), $0.2, $0.3) }
+                // Exercise minimum cardinality in llama.cpp itself, including
+                // the saved-identity branch that an empty baseline cannot use.
+                let requiredStartSource = "Start metformin 500 mg twice daily."
+                let requiredStart = VisitReview.outputGrammar(transcript: requiredStartSource)
+                let requiredStop = VisitReview.outputGrammar(transcript: stop, medicines: Evaluation.records.medicines)
+                tests += [
+                    ("source.required-start-empty", requiredStart, summary([]), false),
+                    ("source.required-start-grounded", requiredStart, summary([medicine(requiredStartSource, "start", "metformin", "500 mg twice daily")]), true),
+                    ("source.required-saved-stop-empty", requiredStop, summary([]), false),
+                    ("source.required-saved-stop-grounded", requiredStop, summary([medicine(stop, "stop", "warfarin", "")]), true),
+                ]
             }
             for (id, grammar, text, expected) in tests {
                 var result = EvalResult(caseID: "grammar." + id, split: "invariant", kind: "grammar", language: "en", model: options.modelID, effort: "standard", repeatIndex: 0, coldLoad: false, output: text, baselinePrompts: options.baseline, expectedAcceptance: expected)

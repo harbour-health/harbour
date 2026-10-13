@@ -1,0 +1,59 @@
+{
+  "formatVersion": 1,
+  "sourceCommit": "80d65ce84cdc8860fa8fa5d2a70b0f889dfbab85",
+  "evidenceArchive": "development-evidence-03.zip",
+  "archiveSHA256": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e",
+  "bytes": 312383,
+  "files": 61,
+  "releaseStatus": "blocked",
+  "heldoutUnopened": true,
+  "focused": {
+    "statusFile": "dev-policy-targeted81-01/focused-status.json",
+    "SHA256": "911b0a65df88fae1b783c68fcd88d3020e126ccde93d41eefd1b96cb24f6ca06",
+    "modelSemanticPasses": {
+      "qwen35": 21,
+      "small": 16,
+      "balanced": 18
+    },
+    "runsPerModel": 27,
+    "requiredReviews": 54,
+    "pendingReviews": 0,
+    "protectedRegressions": [
+      "qwen35 prose.sky.en",
+      "small prose.medicine_count.fr-CA"
+    ],
+    "limits": "Partial Standard-only development subset, with formal baseline effort/matrix mismatch; not a complete release comparison."
+  },
+  "controls": {
+    "statusFile": "dev-policy-controls12-01/controls-status.json",
+    "SHA256": "3bd3a824e9f1e3d7ba5c7478a0d00973452a0bbe1bcc53a906c2970f18533cef",
+    "modelPasses": {
+      "qwen35": 3,
+      "small": 1,
+      "balanced": 2
+    },
+    "runsPerModel": 4,
+    "requiredReviews": 12,
+    "pendingReviews": 0,
+    "limits": "Separate preregistered controls do not replace main app gate."
+  },
+  "nativeDiagnostics": {
+    "cases": 129,
+    "failures": 0,
+    "statusDirectory": "grammar-source-163-01"
+  },
+  "runtimeTests": {
+    "tests": 21,
+    "failures": 0,
+    "statusFile": "runtime-v12-tests-01/test-result.json"
+  },
+  "measuredSourceMaterialization": {
+    "commit": "80d65ce84cdc8860fa8fa5d2a70b0f889dfbab85",
+    "sourceArchiveSHA256": "1077769fd392f16e30c7e888b1fba82e718ecc84279b6b802db41ffdaedc3355",
+    "meaning": "Git archive on the Windows autocrlf checkout materialized CRLF. All28 measured source files match the preserved original tar, remote compiler inputs and metadata byte-for-byte; each is LF-normalized content-equivalent to the Git blob. Earlier LF-only wording was incorrect. Metadata and outputs were not replaced.",
+    "proofFilesSHA256": {
+      "v12-source-byte-audit-01.json": "e939189e5a29a6e9516bd603372ee13a6d7bb8d7c76bf87404b00d93a5710398",
+      "v12-remote-source-byte-audit-01.json": "22d12bd0a9157440b6a8d6c81a26bb7b79057f07cb2ea3babcf94d682c21f959"
+    }
+  }
+}
