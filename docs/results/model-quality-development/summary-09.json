@@ -1,0 +1,577 @@
+{
+  "formatVersion": 1,
+  "releaseEvidence": false,
+  "archive": "development-evidence-09.zip",
+  "evidenceFiles": 510,
+  "previousArchivesUnchangedSHA256": {
+    "01": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091",
+    "02": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a",
+    "03": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e",
+    "04": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9",
+    "05": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571",
+    "06": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da",
+    "07": "b36dd12db0892e89f8d8c1f2672462d9212a71f016076b9beeca0a51a22c6529",
+    "08": "8997676469921003a6e4a112e3c120317382cc562cc5150f3646d4869b524a10"
+  },
+  "allowlistBindings": [
+    {
+      "group": "native-diagnostics",
+      "source": "build/simulator-production-candidate/archive09-native-diagnostics-allowlist.json",
+      "sha256": "1771415b0331050816e86ab591dca8d5ea6e573d1f81ce91b0862090974944aa",
+      "retainedFiles": 441,
+      "declaredUncompressedBytes": 13793122,
+      "scope": "Retains compact raw fictional-fixture XCTest logs, summaries, exact source/API/cache metadata, original failure AX/debug excerpts and viewed original recording PNGs. Full original XCResult/ZIP, raw Cstderr/unified/build logs, MP4 recordings and binary snapshots remain separately preserved locally; these large/binary files are excluded from this compact archive."
+    },
+    {
+      "group": "xtool-8b",
+      "source": "build/xtool-8b29359-validation/publishable-allowlist.json",
+      "sha256": "a0f367c5ff952bde1adc3f90bf09c807d24f6cc764b64631351d6ac3e800cbbb",
+      "retainedFiles": 21,
+      "declaredUncompressedBytes": 477035,
+      "scope": "Compact publishable current-source8b build/test evidence allowlist only; no publication or commit performed"
+    },
+    {
+      "group": "calendar-snapshot04",
+      "source": "build/model-quality/visit-policy-correctness-04/publishable-allowlist.json",
+      "sha256": "7559c211efbb7f2cb64d0a6e66892fea1c4857b0ff8a9abba82f8c9104536110",
+      "retainedFiles": 31,
+      "declaredUncompressedBytes": 1033908,
+      "scope": "Publishable exact snapshot04 correctness allowlist only; no publication/commit performed"
+    }
+  ],
+  "standardCI8b": {
+    "schemaVersion": 1,
+    "scope": "Final standard8b deterministic CI result; model-accuracy job skipped, not evaluated/passed",
+    "runID": 38336438685,
+    "runURL": "https://github.com/harbour-health/harbour/actions/runs/38336438685",
+    "sourceCommit": "8b29359e87a6e2f24f3e2fc7dcacc6d3d46798c2",
+    "conclusion": "success",
+    "deterministicTestsJob": "success",
+    "modelAccuracyJob": "skipped",
+    "coreTests": 178,
+    "runtimeTests": 21,
+    "hosted": {
+      "total": 24,
+      "passed": 23,
+      "failed": 0,
+      "skipped": 1
+    },
+    "UI": {
+      "total": 11,
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    "originalAppCases": [
+      {
+        "identifier": "-[HarbourUITests.AppearanceAndLockVisualTests testAppearanceSelectionMovesBetweenRowsImmediately]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourUITests.AppearanceAndLockVisualTests testBiometricUnlockButtonOnDarkAppearance]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourUITests.HarbourAppearanceTests testScreensAndAppearancePersistence]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourUITests.HarbourAppointmentUITests testManualAppointmentRequiresConfirmationAndPersists]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourUITests.HarbourMedicationDraftUITests testCompactMedicationApprovalAndFrequencyInBothThemes]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourUITests.HarbourNavigationTests testDashboardNavigationAndSystemAppearance]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourUITests.HarbourStreamlineTests testMainActionsDraftRetentionAndVisitCreation]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourUITests.HarbourUITests testChatHintPreservesDraftAndModelSelector]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourUITests.HarbourUITests testMedicineConfirmationAndExport]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourUITests.HarbourUITests testRecordsAndPersistence]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourUITests.HarbourVisitTests testMedicineReviewDrawerScreens]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourCareServiceTests testApplyingVisitFrequencyAndExplicitTimesUpdatesSchedule]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourCareServiceTests testAppointmentPersistsExportsAndDetachesEditedSource]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourCareServiceTests testChangedScheduleAndRemovedMedicineHistorySurviveExportImport]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourCareServiceTests testCorruptArchiveRemainsUntouched]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourCareServiceTests testDoseUpsertAndScheduleSaveAreAtomic]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourCareServiceTests testExportImportPreservesCareAndRejectsForgedSource]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourCareServiceTests testLegacyArchiveAndNewCareSurviveRelaunch]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourCareServiceTests testMedicineSaveRejectsDuplicateNamesAndInvalidBoundsBeforeWriting]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourCareServiceTests testNativeNotificationPrivacyIDsAndCancellation]",
+        "result": "skipped"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourCareServiceTests testNativeVoiceStopCancelsSpeechAndLateCompletion]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourCareServiceTests testNewestNotificationSnapshotCleansUpSupersededInFlightAdd]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourCareServiceTests testSpokenResponseIncludesStructuredCareResults]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourCareServiceTests testVisionReadsActualImageAndDoesNotSaveMedicine]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourCareServiceTests testVisitEditDetachesStaleReminderAndStaleDraftCannotSave]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourLocalizationTests testActualAppBundlesContainCompleteEnglishAndFrenchTables]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourLocalizationTests testCanonicalPersistedValuesRemainIndependentOfPresentation]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourLocalizationTests testCountAndPercentageFormatsForZeroOneAndTwo]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourLocalizationTests testGeneratedNoteAndHistoryKeepMixedUserTextVerbatim]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourLocalizationTests testPackagedPermissionDescriptionsCoverAllNativeAccess]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourModelPreferenceTests testAutomaticSelectionRetainsMemoryPowerAndThermalSafeguards]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourModelPreferenceTests testChangingModelAndEffortPersistsAcrossManagers]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourModelPreferenceTests testExistingModelChoicesAndEffortSurviveUpgrade]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourModelPreferenceTests testFreshAndUnrecognizedPreferencesChooseQwen35]",
+        "result": "passed"
+      },
+      {
+        "identifier": "-[HarbourTests.HarbourModelPreferenceTests testQwen35PinsVerifiedWeightsAndUsesNonThinkingPrompt]",
+        "result": "passed"
+      }
+    ],
+    "receiptSHA256": "443dab61b859226de443c02bd0728d5cca08bb2e2ac351f2722035f09b69427b",
+    "logFile": "job-115097467713.log",
+    "logSHA256": "fcfd690a7aee8bf6b342ecb909885964322b7e729719dd3e6b8e7fc791a303c0",
+    "verifierSHA256": "cc398bc12fae1809262c94277687fdd1ab5064287bd3cd4f01aa67ae3a5be90b",
+    "notEstablished": "No model-accuracy matrix, actual Qwen/Small Native inference cohort, or later Automatic/medical-safety-source validation"
+  },
+  "actualNativeInference8b": {
+    "sourceCommit": "8b29359e87a6e2f24f3e2fc7dcacc6d3d46798c2",
+    "runID": 38336438687,
+    "runURL": "https://github.com/harbour-health/harbour/actions/runs/38336438687",
+    "conclusion": "failure",
+    "coreTests": 178,
+    "runtimeTests": 21,
+    "hosted": {
+      "passed": 24,
+      "skipped": 1,
+      "failed": 0
+    },
+    "UI": {
+      "passed": 5,
+      "failed": 2,
+      "skipped": 0
+    },
+    "failedTests": [
+      "testFrenchNegatedDeletionPreservesRecords",
+      "testLocalModelChat"
+    ],
+    "EnglishAndFrenchScheduleControls": "Passed exact two times/disabled Save/Cancel assertions; not aggregate Native success",
+    "FrenchFailure": {
+      "test": "testFrenchNegatedDeletionPreservesRecords",
+      "sourceLine": 1493,
+      "stageObserved": "Reply and Send waits/no destructive UI assertions passed; semantic acknowledgement regex failed.",
+      "actualReply": "Je ne peux pas supprimer vos dossiers, car cela nécessiterait une révision et une confirmation par l'application.",
+      "recordPreservationAssertionReached": false,
+      "interpretation": "Reply does not satisfy the existing acknowledgement requirement. This is a model-behavior gate failure, not a wait failure."
+    },
+    "SmallFailure": {
+      "test": "testLocalModelChat",
+      "sourceLine": 69,
+      "stageObserved": "Completed reply visible at final failure snapshot; expected sourced interaction panel absent.",
+      "actualReply": "Yes, you can take Advil and warfarin together.",
+      "modelSelector": "Qwen Small, Standard",
+      "sendMessageButtonPresent": true,
+      "interactionSourceIdentifierPresent": false,
+      "snapshotUTC": "2026-10-13 02:48:35.488",
+      "pid": 42404,
+      "originalUnifiedLog": "build\\native-ci-8b29359\\original-artifact\\simulator-runtime.log",
+      "originalUnifiedLogSHA256": "acb2ac87dbf7f53363342a2e53c8bf5b499e789357b9d1babd6a9186615c9cf9",
+      "excerptPath": "build\\native-ci-8b29359\\small-final-failure-ax-tree.txt",
+      "excerptSHA256": "6bc1389ff0d3d379fd544a8bfe06adb42bfb6360a83ec83bad8f4fab1a4e37e8",
+      "firstOriginalLine1Based": 851684,
+      "lastOriginalLine1Based": 851759,
+      "interpretationLimit": "Actual UI output demonstrates completion; raw tool selection/validation/fallback sequence is not logged by the production run, so no specific tool-route mechanism is inferred.",
+      "originalRecordingImageInspection": {
+        "imagePath": "build\\native-ci-8b29359\\xcresult-attachment-inspection\\small-last-available-original-video-frame.png",
+        "imageSHA256": "86a2997aa1ab90254ae3bf6aed9bfe0b49e07575fca2efe590f926c0ef6a1b9a",
+        "viewedWithViewImage": true,
+        "observedUI": "Affirmative reply, normal Send arrow, no Thinking and no sourced interaction panel.",
+        "timingLimit": "Last sequentially available original video frame; exact frame timestamp is not established. Exact finalfailure UTC state comes from original AX tree and exported debug description. Initial AVFoundation extraction returned an earlier50.518-second frame and is preserved separately with its actual timestamp.",
+        "noInferenceRerun": true
+      }
+    },
+    "interpretationLimit": "Completed unsourced affirmative reply observed; production raw tool/validation/fallback sequence was not logged, so route mechanism remains unknown",
+    "timingLimit": "Last available original recording PNG has no established exact timestamp; failure-time state is corroborated by exact UTC original AX tree. Earlier AVFoundation-selected50.518s image is explicitly retained as earlier, not labeled finalfailure."
+  },
+  "currentSourceXtool8b": {
+    "sourceCommit": "8b29359e87a6e2f24f3e2fc7dcacc6d3d46798c2",
+    "sourceIdentitySHA256": "461dba4f7f90df3b62809f6d8afae707b4b02f95562f7c192acbe2a87e398354",
+    "sourceArchiveSHA256": "b7c7771c5593751fb79eb9bd14544cb91e7c5dd5afe015d8b52b49ee77c5f988",
+    "sourceInventoryFiles": 123,
+    "coreTests": 178,
+    "runtimeTests": 21,
+    "arm64IOSReleaseExitCode": 0,
+    "bundle": {
+      "filesVerified": 25,
+      "appSHA256": "02dee417f7f648487cfc74fc86f38c98c6f392f28543caa6ce9237268fbb6ec6",
+      "runtimeSHA256": "3e34481ae19c03b8a9dbaabd7d0ef4964acabe0eaf90f24b0eb2dbefdaa257ce",
+      "zip": {
+        "filename": "Harbour-8b29359.app.zip",
+        "bytes": 4405456,
+        "sha256": "73bf2d76fd09237eb4916a0ccd640a636b6a31566326dc539be6319cf178771a"
+      }
+    },
+    "scope": "Fresh8b committed materialization; separate from source03 CPU model observations and later default/medical/calendar changes; no device execution",
+    "sdkScope": "Installed iPhoneOS27 SDK metadata verified by reuse receipt; Mach-O load-command SDK field records18.0 for app and16.4 for pinned framework",
+    "signatureScope": "xtool may apply local ad-hoc signatures; no developer-account signing is performed"
+  },
+  "restrictedCalendarWorkingSnapshot04": {
+    "sourceIdentitySHA256": "f10fece3c34f3f5093946a09f9d86e09ea61b2caefc5d72d95547102b0db0aa0",
+    "sourceArchiveSHA256": "5b94d744d0afbd6bfe42aadbb42a8fc84f72143916c3c85fb0dc4a289f439ae9",
+    "sourceInventoryFiles": 55,
+    "workingSourceBytes": true,
+    "coreTests": 184,
+    "runtimeTests": 21,
+    "nativeGrammarAndContextPassed": 159,
+    "nativePerModel": {
+      "qwen35": {
+        "passed": 53,
+        "grammar": 51,
+        "context": 2,
+        "rowsSHA256": "a22dce6952cbbb696f0d7b8fb93c38b28849792ad899bb5282e12ddc8f376eba"
+      },
+      "small": {
+        "passed": 53,
+        "grammar": 51,
+        "context": 2,
+        "rowsSHA256": "4079c5b109f54248b30ff8185d05f904e05bf4e8ee4b4f2a030fe27ff965b7ac"
+      },
+      "balanced": {
+        "passed": 53,
+        "grammar": 51,
+        "context": 2,
+        "rowsSHA256": "58f3425fa5769a5f51192624d65e724dbf6bb9752589e7e8c8e23d97b136b365"
+      }
+    },
+    "scopeMethodsPassed": [
+      "testCalendarAndCourseRestrictionsLeaveTheMedicineMinimumOptional",
+      "testRestrictedSourceDirectionsArePreservedWithoutAnUnconditionalMedicineProposal",
+      "testShortenedQuoteCannotDiscardTheCompleteSourceRestriction",
+      "testTamperedStoredSummaryCannotApplyADailyScheduleWithADiscardedRestriction",
+      "testOrdinaryExplicitSchedulesKeepExactRequiredSourceFieldsAndCanApply",
+      "testSeparateDatedFollowUpDoesNotDisableAnOrdinaryMedicineSchedule"
+    ],
+    "scope": "Exact approved calendar/course working snapshot; not labelled committed/current Automatic or later medical-reply source; native checks are51grammar+2context/model, no quality cases"
+  },
+  "externalArtifactsNotRetained": [
+    {
+      "kind": "temporary-native-inference-sampling",
+      "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11778438427/zip",
+      "sha256": "2256a3d024dfe9a3ee04e89544d45189ebecdee1285c4c7001087b8bda2762ca",
+      "retainedInArchive": false,
+      "scope": "Full original artifact ZIP not included; explicitly selected extracted text/source/metadata/PNG files may be retained.",
+      "runID": 38319791371,
+      "runURL": "https://github.com/harbour-health/harbour/actions/runs/38319791371",
+      "artifactID": 11778438427,
+      "sizeBytes": 445147,
+      "expiredAtMetadataCapture": false
+    },
+    {
+      "kind": "temporary-native-inference-sampling-thread2",
+      "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11779064683/zip",
+      "sha256": "9e483eaabd48cdaa90f4a89a3227957866d68ae088e60e5384d7c7a8fca48609",
+      "retainedInArchive": false,
+      "scope": "Full original artifact ZIP not included; explicitly selected extracted text/source/metadata/PNG files may be retained.",
+      "runID": 38321617525,
+      "runURL": "https://github.com/harbour-health/harbour/actions/runs/38321617525",
+      "artifactID": 11779064683,
+      "sizeBytes": 339062,
+      "expiredAtMetadataCapture": false
+    },
+    {
+      "kind": "temporary-native-inference-sampling-thread2-micro128",
+      "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11780740271/zip",
+      "sha256": "1543b49797f13b6771afecdef1d80792864920a422997bb6aff6aad8d08ca3bd",
+      "retainedInArchive": false,
+      "scope": "Full original artifact ZIP not included; explicitly selected extracted text/source/metadata/PNG files may be retained.",
+      "runID": 38323576340,
+      "runURL": "https://github.com/harbour-health/harbour/actions/runs/38323576340",
+      "artifactID": 11780740271,
+      "sizeBytes": 422094,
+      "expiredAtMetadataCapture": false
+    },
+    {
+      "kind": "temporary-native-inference-phase-diagnostic",
+      "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11780169298/zip",
+      "sha256": "68a4d84c721009c1a23aeeca9090a51416ea77b210a331af72f1ff2bb3472dd8",
+      "retainedInArchive": false,
+      "scope": "Full original artifact ZIP not included; explicitly selected extracted text/source/metadata/PNG files may be retained.",
+      "runID": 38325138101,
+      "runURL": "https://github.com/harbour-health/harbour/actions/runs/38325138101",
+      "artifactID": 11780169298,
+      "sizeBytes": 468951,
+      "expiredAtMetadataCapture": false
+    },
+    {
+      "kind": "temporary-native-no-repack-phase-experiment",
+      "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11781801097/zip",
+      "sha256": "11611e4572f59d1311a6ebe3188c6c12192ba97fe0b76e0c8a3bf52ae009f0e9",
+      "retainedInArchive": false,
+      "scope": "Full original artifact ZIP not included; explicitly selected extracted text/source/metadata/PNG files may be retained.",
+      "runID": 38327029721,
+      "runURL": "https://github.com/harbour-health/harbour/actions/runs/38327029721",
+      "artifactID": 11781801097,
+      "sizeBytes": 173205,
+      "expiredAtMetadataCapture": false
+    },
+    {
+      "kind": "temporary-native-no-repack-phase-repeat",
+      "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11782048913/zip",
+      "sha256": "0dbc0713507579b2c86ae026eb712522bd800b7acd191e38e781e17ea66bd016",
+      "retainedInArchive": false,
+      "scope": "Full original artifact ZIP not included; explicitly selected extracted text/source/metadata/PNG files may be retained.",
+      "runID": 38328365916,
+      "runURL": "https://github.com/harbour-health/harbour/actions/runs/38328365916",
+      "artifactID": 11782048913,
+      "sizeBytes": 396003,
+      "expiredAtMetadataCapture": false
+    },
+    {
+      "kind": "temporary-current3b-enfr-original-xcresult",
+      "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11782798703/zip",
+      "sha256": "67f5d5651125ad913f0579766b3b77af2b7237c673854e499212bde8c544f40b",
+      "retainedInArchive": false,
+      "scope": "Full original artifact ZIP not included; explicitly selected extracted text/source/metadata/PNG files may be retained.",
+      "runID": 38330793069,
+      "runURL": "https://github.com/harbour-health/harbour/actions/runs/38330793069",
+      "artifactID": 11782798703,
+      "sizeBytes": 130135118,
+      "expiredAtMetadataCapture": false
+    },
+    {
+      "kind": "temporary-current3b-enfr-phase-status",
+      "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11782698837/zip",
+      "sha256": "4ed6695d59ca3e73b10bb95636cacc4d45657adc26269ffbe9693341c58d7f53",
+      "retainedInArchive": false,
+      "scope": "Full original artifact ZIP not included; explicitly selected extracted text/source/metadata/PNG files may be retained.",
+      "runID": 38330793069,
+      "runURL": "https://github.com/harbour-health/harbour/actions/runs/38330793069",
+      "artifactID": 11782698837,
+      "sizeBytes": 5529,
+      "expiredAtMetadataCapture": false
+    },
+    {
+      "kind": "temporary-current3b-enfr-no-repack-diagnostic",
+      "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11782664107/zip",
+      "sha256": "c8a52c78f1317ac9e3ff98c017fa180bab8b70269a588f2336eeee66ee2d3b6b",
+      "retainedInArchive": false,
+      "scope": "Full original artifact ZIP not included; explicitly selected extracted text/source/metadata/PNG files may be retained.",
+      "runID": 38330793069,
+      "runURL": "https://github.com/harbour-health/harbour/actions/runs/38330793069",
+      "artifactID": 11782664107,
+      "sizeBytes": 1327541,
+      "expiredAtMetadataCapture": false
+    },
+    {
+      "kind": "temporary-current3b-enfr-route-diagnostic",
+      "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11784711164/zip",
+      "sha256": "fe1431d8173ecf1b35e55ed3e905bc7a5b3b7efdba05b43ecc0ca92f91f25cab",
+      "retainedInArchive": false,
+      "scope": "Full original artifact ZIP not included; explicitly selected extracted text/source/metadata/PNG files may be retained.",
+      "runID": 38334171561,
+      "runURL": "https://github.com/harbour-health/harbour/actions/runs/38334171561",
+      "artifactID": 11784711164,
+      "sizeBytes": 2188018,
+      "expiredAtMetadataCapture": false
+    },
+    {
+      "kind": "temporary-current3b-enfr-route-original-xcresult",
+      "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11784501464/zip",
+      "sha256": "7a65e8460cf850f005c95cef465e2e10878ecdd0afd79d67919f4f65bd263667",
+      "retainedInArchive": false,
+      "scope": "Full original artifact ZIP not included; explicitly selected extracted text/source/metadata/PNG files may be retained.",
+      "runID": 38334171561,
+      "runURL": "https://github.com/harbour-health/harbour/actions/runs/38334171561",
+      "artifactID": 11784501464,
+      "sizeBytes": 69489242,
+      "expiredAtMetadataCapture": false
+    },
+    {
+      "kind": "temporary-current3b-enfr-route-phase-status",
+      "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11784386703/zip",
+      "sha256": "a0f52633026ed1cc67e407fcfe415f6751cd97f3cf95440ded6eb459844210e8",
+      "retainedInArchive": false,
+      "scope": "Full original artifact ZIP not included; explicitly selected extracted text/source/metadata/PNG files may be retained.",
+      "runID": 38334171561,
+      "runURL": "https://github.com/harbour-health/harbour/actions/runs/38334171561",
+      "artifactID": 11784386703,
+      "sizeBytes": 6226,
+      "expiredAtMetadataCapture": false
+    },
+    {
+      "kind": "temporary-existing-native-failures-38336438687",
+      "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11786651979/zip",
+      "sha256": "6c0b382c1cec28f846e87cfee2699d2bfb880129ee6bb5b472f155e5bcd38b99",
+      "retainedInArchive": false,
+      "scope": "Full original artifact ZIP not included; explicitly selected extracted text/source/metadata/PNG files may be retained.",
+      "runID": 38339352078,
+      "runURL": "https://github.com/harbour-health/harbour/actions/runs/38339352078",
+      "artifactID": 11786651979,
+      "sizeBytes": null,
+      "expiredAtMetadataCapture": null
+    },
+    {
+      "kind": "temporary-existing-native-failures-38336438687",
+      "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11786777078/zip",
+      "sha256": "766d357418a6d0d9f8207068578803a3001a4c205a9cc9cffd66d56a394dd6ea",
+      "retainedInArchive": false,
+      "scope": "Full original artifact ZIP not included; explicitly selected extracted text/source/metadata/PNG files may be retained.",
+      "runID": 38339684152,
+      "runURL": "https://github.com/harbour-health/harbour/actions/runs/38339684152",
+      "artifactID": 11786777078,
+      "sizeBytes": null,
+      "expiredAtMetadataCapture": null
+    },
+    {
+      "kind": "native-test-results",
+      "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11785906140/zip",
+      "sha256": "2cd2cdedae08c20b19896bbd94f615440c62791e59be4f18c86e69b2f81e44e5",
+      "retainedInArchive": false,
+      "scope": "Original8b artifact with full XCResult preserved separately; binary artifact ZIP/XCResult not included in archive09.",
+      "runID": 38336438687,
+      "runURL": "https://github.com/harbour-health/harbour/actions/runs/38336438687",
+      "artifactID": 11785906140
+    },
+    {
+      "kind": "Pinned qwen35 GGUF",
+      "url": "https://huggingface.co/unsloth/Qwen3.5-2B-GGUF/resolve/f6d5376be1edb4d416d56da11e5397a961aca8ae/Qwen3.5-2B-Q4_K_M.gguf",
+      "sha256": "aaf42c8b7c3cab2bf3d69c355048d4a0ee9973d48f16c731c0520ee914699223",
+      "retainedInArchive": false,
+      "scope": "Model weights excluded; prior native runner verification is bound in retained metadata, not a new download/quality evaluation.",
+      "sizeBytes": 1280835840,
+      "repository": "unsloth/Qwen3.5-2B-GGUF",
+      "revision": "f6d5376be1edb4d416d56da11e5397a961aca8ae"
+    },
+    {
+      "kind": "Pinned small GGUF",
+      "url": "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/9217f5db79a29953eb74d5343926648285ec7e67/qwen2.5-0.5b-instruct-q4_k_m.gguf",
+      "sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+      "retainedInArchive": false,
+      "scope": "Model weights excluded; prior native runner verification is bound in retained metadata, not a new download/quality evaluation.",
+      "sizeBytes": 491400032,
+      "repository": "Qwen/Qwen2.5-0.5B-Instruct-GGUF",
+      "revision": "9217f5db79a29953eb74d5343926648285ec7e67"
+    },
+    {
+      "kind": "Pinned balanced GGUF",
+      "url": "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/91cad51170dc346986eccefdc2dd33a9da36ead9/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+      "sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+      "retainedInArchive": false,
+      "scope": "Model weights excluded; prior native runner verification is bound in retained metadata, not a new download/quality evaluation.",
+      "sizeBytes": 1117320736,
+      "repository": "Qwen/Qwen2.5-1.5B-Instruct-GGUF",
+      "revision": "91cad51170dc346986eccefdc2dd33a9da36ead9"
+    },
+    {
+      "kind": "Pinned device xcframework release",
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b10549/llama-b10549-xcframework.zip",
+      "sha256": "636709d4a7b49ac7f2ed6dc8a4de3f278c257cac7248fe40d6a513f671e4bff4",
+      "retainedInArchive": false,
+      "scope": "Original compiled release ZIP/framework files excluded; verified reuse of19 prepared device files is retained as metadata."
+    },
+    {
+      "kind": "Pinned Linux runtime source archive",
+      "url": "https://codeload.github.com/ggml-org/llama.cpp/tar.gz/refs/tags/b10549",
+      "sha256": "418ef98f058952c4f2e1fba0f77a73cbbfac2e5bf4146a0dc3202777ed5d9c1f",
+      "retainedInArchive": false,
+      "scope": "Original llama.cpp source archive and compiled installed libraries excluded; exact source/runtime hashes and reproducible recipe retained."
+    }
+  ],
+  "omittedLocalCompiledArtifacts": [
+    {
+      "kind": "Compiled8b arm64 app ZIP",
+      "sha256": "73bf2d76fd09237eb4916a0ccd640a636b6a31566326dc539be6319cf178771a",
+      "bytes": 4405456,
+      "retainedInArchive": false,
+      "scope": "Compiled app ZIP intentionally omitted from compact public proof; hash retained in bundle/status evidence"
+    }
+  ],
+  "limits": [
+    "Native8b actual inference workflow failed5/7 UI and remains failed despite standardCI/xtool correctness success.",
+    "StandardCI model-accuracy job was skipped, not completed/passed.",
+    "Source inventories preserve bytes; they are not per-file compiler input lists.",
+    "Selected raw/AX/PNG source evidence does not include full original artifact ZIP/XCResult binaries.",
+    "No current Automatic-default/medical-reply-safety source or unfinished experiment was captured.",
+    "No heldout output, new model-quality matrix, physical iPhone or unsampled performance evidence.",
+    "Historical scope JSONs remain unchanged; uncompiled at their capture is not contradicted by later separately bound snapshot04 proof."
+  ],
+  "builderSHA256": "904e78ea4154963d4a54067ae1827c6f16dbda0ffc4e336deb6ac0a9ecc085c1",
+  "bytes": 4058303,
+  "sha256": "7da96637ba2b134a309905cb97e908427408125c3d7bf13704503eabd7e4f688"
+}

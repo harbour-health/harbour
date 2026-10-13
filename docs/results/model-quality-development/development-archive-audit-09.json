@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "archiveAuditPassed": true,
+  "archiveSHA256": "7da96637ba2b134a309905cb97e908427408125c3d7bf13704503eabd7e4f688",
+  "archiveBytes": 4058303,
+  "summarySHA256": "d0643bf5d49064a477f7a44579c67bb35474b73e5e5584205371823a3c793ec9",
+  "builderSHA256": "904e78ea4154963d4a54067ae1827c6f16dbda0ffc4e336deb6ac0a9ecc085c1",
+  "independentAuditorSHA256": "6cad910cf3d0adb057f5a75bc03fb1c855b383faaf51899768a36ea613c46362",
+  "findings": {
+    "container": {
+      "CRC": "PASS",
+      "members": 511,
+      "evidenceFiles": 510,
+      "allMemberLengthsAndSHA256": "PASS",
+      "uniqueSafeNames": "PASS",
+      "compiledWeightsMediaArchivePayloadExclusions": "PASS",
+      "builderCurrentArchivedSummaryHashesMatch": true
+    },
+    "allowlistBindings": {
+      "native": 441,
+      "xtool8b": 21,
+      "calendar04": 31,
+      "allArchivedAndOriginalSourceFilesMatch": true
+    },
+    "native8b": {
+      "source": "8b29359e87a6e2f24f3e2fc7dcacc6d3d46798c2",
+      "conclusion": "failure",
+      "Core": 178,
+      "Runtime": 21,
+      "UI": {
+        "passed": 5,
+        "failed": 2,
+        "skipped": 0
+      },
+      "hosted": {
+        "passed": 24,
+        "failed": 0,
+        "skipped": 1
+      },
+      "oldQwenDefaultArchived": true,
+      "currentAutomaticAndHelperNotValidatedByHistoricalProof": true
+    },
+    "standard8bFinalReceipt": {
+      "conclusion": "success",
+      "Core": 178,
+      "Runtime": 21,
+      "hosted": {
+        "passed": 23,
+        "failed": 0,
+        "skipped": 1
+      },
+      "UI": {
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0
+      },
+      "modelAccuracyJob": "skipped",
+      "independentlyRecountedOriginalLog": true,
+      "allReceiptHashesSourceAndFinalAPIMetadataMatch": true
+    },
+    "sourceBindings": [
+      {
+        "group": "xtool-8b",
+        "sourceIdentitySHA256": "461dba4f7f90df3b62809f6d8afae707b4b02f95562f7c192acbe2a87e398354",
+        "sourceInventoryFiles": 123,
+        "Core": 178,
+        "Runtime": 21,
+        "opaqueSourceBytesAndReceiptHashesVerified": true
+      },
+      {
+        "group": "calendar-snapshot04",
+        "sourceIdentitySHA256": "f10fece3c34f3f5093946a09f9d86e09ea61b2caefc5d72d95547102b0db0aa0",
+        "sourceInventoryFiles": 55,
+        "Core": 184,
+        "Runtime": 21,
+        "opaqueSourceBytesAndReceiptHashesVerified": true
+      }
+    ],
+    "externalAssetsAndCompiledOutputsExcluded": true
+  },
+  "previousArchivesUnchanged": {
+    "01": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091",
+    "02": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a",
+    "03": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e",
+    "04": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9",
+    "05": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571",
+    "06": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da",
+    "07": "b36dd12db0892e89f8d8c1f2672462d9212a71f016076b9beeca0a51a22c6529",
+    "08": "8997676469921003a6e4a112e3c120317382cc562cc5150f3646d4869b524a10"
+  },
+  "clarifications": [
+    "Native8b aggregate failed with five UI passes and two UI failures; the terse summary limit phrase failed5/7 is interpreted using explicit original cases/count fields.",
+    "Source inventories preserve bytes and do not assert every member was a compiler input.",
+    "All embedded fixture source bytes were hashed opaquely; no heldout fixture cases were inspected.",
+    "Archive09 validates historical8b and working calendar04 scopes only. Current Automatic/helper/default source is not validated by it."
+  ],
+  "releaseEvidence": false
+}
