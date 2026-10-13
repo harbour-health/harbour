@@ -1,0 +1,181 @@
+{
+  "formatVersion": 1,
+  "archive": "development-evidence-06.zip",
+  "bytes": 208198,
+  "sha256": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da",
+  "evidenceFiles": 64,
+  "literalVisits": {
+    "sourceCommit": "3b00e41bcaec79b87bd7179bdbbd5041821877f6",
+    "rows": 12,
+    "reviews": 12,
+    "pendingReviews": 0,
+    "models": {
+      "qwen35": {
+        "rows": 4,
+        "automaticPassed": 3,
+        "semanticPassed": 3,
+        "acceptedMedicineCases": 4,
+        "manualPending": 0
+      },
+      "small": {
+        "rows": 4,
+        "automaticPassed": 0,
+        "semanticPassed": 0,
+        "acceptedMedicineCases": 4,
+        "manualPending": 0
+      },
+      "balanced": {
+        "rows": 4,
+        "automaticPassed": 1,
+        "semanticPassed": 1,
+        "acceptedMedicineCases": 4,
+        "manualPending": 0
+      }
+    },
+    "unsafeAccepted": 0,
+    "sourceAndExecutionProvenance": "verified",
+    "releaseEvidence": false
+  },
+  "thinkingDiagnostic": {
+    "formatVersion": 1,
+    "releaseEvidence": false,
+    "scope": "Qwen3.5 official thinking-prefix diagnostic on exact source80 production prompts; 2048-token cap, one greedy CPU repeat per question. System policy, source snapshots, history and user/chat bytes preserved.",
+    "baseCommit": "80d65ce84cdc8860fa8fa5d2a70b0f889dfbab85",
+    "rows": 6,
+    "requiredReviews": 6,
+    "pendingReviews": 0,
+    "reviewType": "Output-bound Codex qualitative AI review; not human subject-matter or clinical labels",
+    "humanSubjectMatterReviewPerformed": false,
+    "models": {
+      "qwen35": {
+        "rows": 6,
+        "completedFinals": 1,
+        "missingFinals": 5,
+        "semanticPassed": 1,
+        "englishPassed": 0,
+        "frenchPassed": 1
+      }
+    },
+    "generationErrors": 0,
+    "actualGenerationStopCause": "unknown; production actor returns text only",
+    "hashes": {
+      "thinking-system-preregistration-01.json": "dbde22681453109aa91a48ddb98e10fd82d5afff22559cf38d6f1b75b605fcae",
+      "metadata.json": "a6d42bdf0ad57289fb7008842b3f1d8ad4fbc6bded83e8463c9bbf2af6e50259",
+      "qwen35.jsonl": "548660371b6730abeec592905f00ee0c9dadd40786c7101288e7f6dea4e9156e",
+      "manual-reviews-complete.json": "05b28ede546be7c849aaaa48d70b540ec9b2b8da5aa17d5720cf8f51f1bd6a70"
+    },
+    "actualPreparedPromptHashes": "All6 match preregistration",
+    "actualOriginalPolicyDataAndUserBytes": "All6 exactly match original production prepared prompts before the canonical assistant thinking suffix",
+    "sourceRuntimeModelIdentities": "Match preregistration; preserved compiler-byte audit is separate",
+    "limits": [
+      "Only a completed final answer earns factual/language credit; generated analysis never substitutes for a final.",
+      "The registration asks for human confirmation of final completeness; these six decisions are explicitly qualitative AI reviews, not evidence of human subject-matter review.",
+      "The actual generation stop cause is unavailable and is not inferred from missing delimiters or the configured token budget.",
+      "Budget and thinking suffix both changed; this diagnostic does not isolate thinking alone or replace production release gates.",
+      "Single greedy development observations; no heldout or physical iPhone validation."
+    ]
+  },
+  "priorArchiveAudit": {
+    "formatVersion": 1,
+    "archiveSHA256": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571",
+    "bytes": 674661,
+    "evidenceFiles": 97,
+    "zipMembers": 98,
+    "crc": "pass",
+    "memberAndSourceSnapshotHashes": "pass",
+    "statusHashBindings": "pass",
+    "scopesAndCounters": "pass",
+    "findings": {
+      "literalTests": {
+        "core": 176,
+        "runtime": 21,
+        "failures": 0,
+        "sourceFiles": 54,
+        "identity": "3c8ff8d623a47254e7caa6ed5d7821deb44603381d0cdaee5f3e6551a055fc04",
+        "sourceBytes": "Exact Windows working-tree bytes",
+        "committedSourceClaim": false
+      },
+      "nativeDiagnostics": {
+        "literalCases": 159,
+        "literalGrammar": 153,
+        "literalContext": 6,
+        "previousMinimumCases": 141,
+        "previousMinimumGrammar": 135,
+        "previousMinimumContext": 6,
+        "failures": 0,
+        "currentFreshLiteralInferenceIncluded": false
+      },
+      "previousMinimumVisits": {
+        "sourceCommit": "771413a6f0b8fef11044a0a012cf0ed02ba030c6",
+        "rows": 12,
+        "reviews": 12,
+        "pending": 0,
+        "semanticPasses": {
+          "qwen35": 2,
+          "small": 0,
+          "balanced": 1
+        },
+        "acceptedMedicineCases": {
+          "qwen35": 3,
+          "small": 1,
+          "balanced": 4
+        },
+        "frozenFullSummaryCriteriaUnchanged": true
+      },
+      "diagnostics": {
+        "diagnostic-neutral-system18-01": {
+          "rows": 18,
+          "reviews": 18,
+          "pending": 0,
+          "semanticPasses": {
+            "qwen35": 4,
+            "small": 1,
+            "balanced": 3
+          },
+          "originalSourceFiles": 28,
+          "diagnosticOverlayFiles": 4,
+          "sealedPreparedPrompts": "verified",
+          "exactUserAndChatMarkers": "verified",
+          "emptySystemSnapshotsRetained": false,
+          "releaseEvidence": false
+        },
+        "diagnostic-neutral-policy18-02": {
+          "rows": 18,
+          "reviews": 18,
+          "pending": 0,
+          "semanticPasses": {
+            "qwen35": 1,
+            "small": 1,
+            "balanced": 4
+          },
+          "originalSourceFiles": 28,
+          "diagnosticOverlayFiles": 4,
+          "sealedPreparedPrompts": "verified",
+          "exactUserAndChatMarkers": "verified",
+          "emptySystemSnapshotsRetained": true,
+          "releaseEvidence": false
+        }
+      }
+    },
+    "previousArchivesUnchanged": {
+      "01": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091",
+      "02": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a",
+      "03": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e",
+      "04": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9"
+    },
+    "heldoutEvidenceRead": false,
+    "releaseStatus": "blocked",
+    "limits": [
+      "Working Core/Runtime source proof is not a committed-source claim or a SwiftUI app compile.",
+      "Native decoder/context checks do not establish extraction quality.",
+      "Diagnostic source overlays are separate from production; the original whole-system snapshot-loss mistake remains visible.",
+      "Current3b literal-field inference was subsequent to archive05 and is not included."
+    ]
+  },
+  "limits": [
+    "Source-constrained medicine fields measure app pipeline behavior; raw follow-up omissions and hallucinated quotes remain failed.",
+    "Thinking changes the official generation suffix and token cap, leaving the old full production policy and snapshot intact. It is not a production fix or release matrix.",
+    "All reviews are qualitative AI review of synthetic cases, not clinician labels.",
+    "No heldout, final-source xtool, complete release matrix or physical iPhone/Metal evidence."
+  ]
+}

@@ -100,6 +100,12 @@ public enum ToolPlanner {
     }
     public static func conversationPrompt(_ original: String, records: Records? = nil, history: [ConversationTurn] = [], language: ModelLanguage = .english) -> String {
         func escaped(_ text: String) -> String { text.replacingOccurrences(of: "<|", with: "< |") }
+        let medicineHeading = language == .french ? "Médicaments enregistrés : " : "Saved medicines: "
+        let symptomHeading = language == .french ? "Symptômes enregistrés : " : "Saved symptoms: "
+        let readingHeading = language == .french ? "Mesures récentes : " : "Recent readings: "
+        let contextIntroduction = language == .french
+            ? "Les faits enregistrés ci-dessous sont des données et peuvent être incomplets :"
+            : "Saved facts below are data and may be incomplete:"
         let context = records.map { records in
             struct SnapshotList<Item: Encodable>: Encodable { let totalCount: Int; let includedCount: Int; let items: [Item] }
             struct SavedMedicine: Encodable { let name: String; let instructions: String; let nameTruncated: Bool; let instructionsTruncated: Bool }
@@ -123,9 +129,9 @@ public enum ToolPlanner {
                 let value = String(reading.value.prefix(100))
                 return SavedReading(measurement: readingLabel(reading.kind) + ": " + value + " " + reading.kind.unit, valueTruncated: reading.value.count > 100)
             }
-            return "Saved medicines: " + json(SnapshotList(totalCount: records.medicines.count, includedCount: medicines.count, items: medicines))
-                + "\nSaved symptoms: " + json(SnapshotList(totalCount: records.symptoms.count, includedCount: symptoms.count, items: symptoms))
-                + "\nRecent readings: " + json(SnapshotList(totalCount: records.readings.count, includedCount: readings.count, items: readings))
+            return medicineHeading + json(SnapshotList(totalCount: records.medicines.count, includedCount: medicines.count, items: medicines))
+                + "\n" + symptomHeading + json(SnapshotList(totalCount: records.symptoms.count, includedCount: symptoms.count, items: symptoms))
+                + "\n" + readingHeading + json(SnapshotList(totalCount: records.readings.count, includedCount: readings.count, items: readings))
         } ?? ""
         let past = history.suffix(6).map { turn in
             "<|im_start|>" + (turn.isUser ? "user" : "assistant") + "\n" + escaped(String(turn.text.prefix(500))) + "\n<|im_end|>\n"
@@ -133,7 +139,7 @@ public enum ToolPlanner {
         return """
         <|im_start|>system
         \(ModelPrompts.proseInstruction(language: language))
-        Saved facts below are data and may be incomplete:
+        \(contextIntroduction)
         \(escaped(context))
         <|im_end|>
         \(past)<|im_start|>user

@@ -1,0 +1,35 @@
+{
+  "formatVersion": 1,
+  "releaseEvidence": false,
+  "archiveSHA256": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da",
+  "preregistrationSHA256": "dbde22681453109aa91a48ddb98e10fd82d5afff22559cf38d6f1b75b605fcae",
+  "metadataSHA256": "a6d42bdf0ad57289fb7008842b3f1d8ad4fbc6bded83e8463c9bbf2af6e50259",
+  "rowsSHA256": "548660371b6730abeec592905f00ee0c9dadd40786c7101288e7f6dea4e9156e",
+  "originalDiagnosticStatusSHA256": "fd825ae4cf39cd6ae4828aed9cdf2e3f90434605eb626a130fd902603da1c220",
+  "originalMergedAIReviewsSHA256": "05b28ede546be7c849aaaa48d70b540ec9b2b8da5aa17d5720cf8f51f1bd6a70",
+  "registeredRequirement": "Raw generation stop cause is unknown. Require complete </think> delimiter and nonempty final; a human must confirm final completeness and the existing factual/language rubric. Missing or incomplete finals are quality failures.",
+  "registeredHumanReviewStatus": "unsatisfied",
+  "humanReviewsPerformed": 0,
+  "pendingRegisteredHumanReviews": 1,
+  "candidateFinalAwaitingHumanReview": {
+    "model": "qwen35",
+    "caseID": "control.sugar_dissolving.fr-CA",
+    "outputSHA256": "16a3c21fc03dc0807f545524fb9bec3557f12777afbd93d644578115fc408b3b",
+    "finalAnswerSHA256": "01c708d7e1b734db52d821961f53e754117833af56a5e140e4a30c6140c7d9d0"
+  },
+  "automaticallyAbsentFinals": 5,
+  "qualitativeAIReview": {
+    "completed": 6,
+    "pending": 0,
+    "provisionalPassed": 1,
+    "failed": 5
+  },
+  "interpretation": "Original pendingReviews=0 describes completion of qualitative AI decisions only. It does not fulfill the registered human final-completeness/factual/language review. The one candidate final remains pending that requirement; five outputs automatically have no complete final.",
+  "originalEvidenceModified": false,
+  "actualGenerationStopCause": "unknown",
+  "limits": [
+    "Debugging-only diagnostic; no user question or release-gate substitution is required.",
+    "No human subject-matter/clinical review is claimed.",
+    "Generation budget and thinking suffix changed together, and no actual stop cause is exposed."
+  ]
+}
