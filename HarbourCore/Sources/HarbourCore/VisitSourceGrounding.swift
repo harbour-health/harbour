@@ -6,6 +6,16 @@ struct VisitMedicineSourceCandidate: Equatable {
     let maximumEntries: Int
 }
 
+/// Only the prevalidated, unambiguous single-instruction branch may constrain
+/// these exact source fields. The canonical identity is separate from spelling.
+struct VisitMedicineSourceRequirement {
+    let quote: String
+    let action: MedicineChangeAction
+    let name: String
+    let instructions: String
+    let validatedChange: VisitMedicineChange
+}
+
 /// Shared source checks for generation constraints and final proposal validation.
 enum VisitSourceGrounding {
     private static func verbs(_ action: MedicineChangeAction) -> (english: String, french: String) {
@@ -259,8 +269,9 @@ enum VisitSourceGrounding {
     }
 
     /// A minimum is permitted only after constructing and validating one narrow,
-    /// source-verbatim proposal. This does not populate model output or relax parse().
-    static func requiredMedicineProposal(_ transcript: String, medicines: [Medicine], candidates: [VisitMedicineSourceCandidate]) -> VisitMedicineChange? {
+    /// source-verbatim proposal. This does not insert a parsed medicine fallback
+    /// or relax parse().
+    static func requiredMedicineProposal(_ transcript: String, medicines: [Medicine], candidates: [VisitMedicineSourceCandidate]) -> VisitMedicineSourceRequirement? {
         let source = VisitReview.normalise(transcript)
         guard source.count <= VisitReview.chunkCharacters, candidates.count == 1,
               let candidate = candidates.first, candidate.maximumEntries == 1, candidate.actions.count == 1,
@@ -336,6 +347,6 @@ enum VisitSourceGrounding {
             let schedule = MedicineSchedule(medicineID: canonical.id, times: proposal.times, frequency: proposal.frequency)
             guard (try? CareRules.validate(schedule, medicines: [proposal.medicine])) != nil else { return nil }
         }
-        return proposal
+        return .init(quote: candidate.quote, action: action, name: extracted.name, instructions: extracted.instructions, validatedChange: proposal)
     }
 }

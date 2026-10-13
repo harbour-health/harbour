@@ -1,0 +1,69 @@
+{
+  "formatVersion": 1,
+  "evidenceArchive": "development-evidence-05.zip",
+  "archiveSHA256": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571",
+  "bytes": 674661,
+  "files": 97,
+  "releaseStatus": "blocked",
+  "heldoutUnopened": true,
+  "literalWorkingSnapshot": {
+    "sourceIdentitySHA256": "3c8ff8d623a47254e7caa6ed5d7821deb44603381d0cdaee5f3e6551a055fc04",
+    "archiveSHA256": "f0387124fc65d77311a5d3df5349146701a8b926c70b009a6d695f97a4f8da82",
+    "coreTests": 176,
+    "runtimeTests": 21,
+    "nativeCases": 159,
+    "failures": 0,
+    "committedSourceClaim": false,
+    "limits": "Native proof is51 grammar+2 context/model. Fresh model inference with literal fields remains pending."
+  },
+  "previousMinimumVisitFocus": {
+    "sourceCommit": "771413a6f0b8fef11044a0a012cf0ed02ba030c6",
+    "rows": 12,
+    "requiredReviews": 12,
+    "pendingReviews": 0,
+    "semanticPasses": {
+      "qwen35": 2,
+      "small": 0,
+      "balanced": 1
+    },
+    "acceptedMedicineCases": {
+      "qwen35": 3,
+      "small": 1,
+      "balanced": 4
+    },
+    "unsafeAccepted": 0,
+    "limits": "Raw follow-up omissions and source-field failures remain failures; accepted/fallback summaries do not override raw quality."
+  },
+  "diagnostics": {
+    "wholeSystem18": {
+      "rows": 18,
+      "requiredReviews": 18,
+      "pendingReviews": 0,
+      "semanticPasses": {
+        "qwen35": 4,
+        "small": 1,
+        "balanced": 3
+      },
+      "scopeCorrection": "Original design description incorrectly claimed retained snapshots; replacement of entire system removed empty saved-record blocks. Exact prompts/outputs/code remain preserved."
+    },
+    "snapshotPreservingPolicy18": {
+      "rows": 18,
+      "requiredReviews": 18,
+      "pendingReviews": 0,
+      "semanticPasses": {
+        "qwen35": 1,
+        "small": 1,
+        "balanced": 4
+      },
+      "scope": "Only policy replaced; original four-line snapshot block and user/chatmarker bytes retained and independently audited."
+    },
+    "releaseEvidence": false,
+    "limits": "These independent debugging ablations do not replace production evaluations or release gates."
+  },
+  "statusFilesSHA256": {
+    "minimum-correctness-03/independent-audit.json": "17b3a01427ced6e83bf992ef0ceed17a6a34bb1f2346edbad89e6c935dafa8ef",
+    "dev-minimum-visits12-01/visits-status.json": "c0553cec52a913fb65f276a29708787cbc116c73f3c3057e613ed17e544b0aa8",
+    "diagnostic-neutral-system18-01/diagnostic-status.json": "d89799cb64b0f538ed322b260345df170fbe3656370c23ef2868d344f5cc7e0c",
+    "diagnostic-neutral-policy18-02/diagnostic-status.json": "07311d9a3391c9f44a068f1987e96a9c13721b62e3284e62da92d60fac74c388"
+  }
+}

@@ -402,6 +402,16 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                     ("source.required-start-grounded", requiredStart, summary([medicine(requiredStartSource, "start", "metformin", "500 mg twice daily")]), true),
                     ("source.required-saved-stop-empty", requiredStop, summary([]), false),
                     ("source.required-saved-stop-grounded", requiredStop, summary([medicine(requiredStopSource, "stop", "metformin", "")]), true),
+                    ("source.required-start-changed-name", requiredStart, summary([medicine(requiredStartSource, "start", "aspirin", "500 mg twice daily")]), false),
+                    ("source.required-start-changed-dose", requiredStart, summary([medicine(requiredStartSource, "start", "metformin", "850 mg twice daily")]), false),
+                    ("source.required-start-inserted-comma", requiredStart, summary([medicine(requiredStartSource, "start", "metformin", "500 mg, twice daily")]), false),
+                    ("source.required-saved-stop-changed-name", requiredStop, summary([medicine(requiredStopSource, "stop", "warfarin", "")]), false),
+                ]
+                let requiredFrenchSource = "Commencez la metformine 850 mg trois fois par jour."
+                let requiredFrench = VisitReview.outputGrammar(transcript: requiredFrenchSource)
+                tests += [
+                    ("source.required-french-source-spelling", requiredFrench, summary([medicine(requiredFrenchSource, "start", "metformine", "850 mg trois fois par jour")]), true),
+                    ("source.required-french-canonicalized-name", requiredFrench, summary([medicine(requiredFrenchSource, "start", "Metformin", "850 mg trois fois par jour")]), false),
                 ]
             }
             for (id, grammar, text, expected) in tests {

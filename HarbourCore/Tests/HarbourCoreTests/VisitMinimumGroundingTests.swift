@@ -3,7 +3,7 @@ import XCTest
 
 final class VisitMinimumGroundingTests: XCTestCase {
     private func requirement(_ source: String, saved: [Medicine] = []) -> VisitMedicineChange? {
-        VisitSourceGrounding.requiredMedicineProposal(source, medicines: saved, candidates: VisitSourceGrounding.candidates(source))
+        VisitSourceGrounding.requiredMedicineProposal(source, medicines: saved, candidates: VisitSourceGrounding.candidates(source))?.validatedChange
     }
 
     private func requiresOne(_ source: String, saved: [Medicine] = []) -> Bool {
@@ -113,7 +113,7 @@ final class VisitMinimumGroundingTests: XCTestCase {
         }
     }
 
-    func testMinimumDoesNotPrepopulateOrRelaxModelFieldsAndSourceValidation() throws {
+    func testRequiredDecoderBindsSourceFieldsWithoutRelaxingFinalValidation() throws {
         let source = "Start aspirin 81 mg once daily. Book laboratory tests next month."
         XCTAssertTrue(requiresOne(source))
         let wrong: [String: Any] = ["highlights": [], "followUps": [], "appointments": [], "medicines": [
@@ -121,12 +121,15 @@ final class VisitMinimumGroundingTests: XCTestCase {
         ]]
         let output = String(decoding: try JSONSerialization.data(withJSONObject: wrong), as: UTF8.self)
         XCTAssertTrue(try VisitReview.parse(output, transcript: source, medicines: []).medicines.isEmpty)
-        // The grammar requires one model-generated object, retaining independent
-        // name/instruction generation and the mandatory final source checks.
+        // The required branch constrains decoder output to independent source
+        // literals; it does not insert a medicine if model output is rejected.
         let grammar = VisitReview.outputGrammar(transcript: source)
-        XCTAssertTrue(grammar.contains(#"ws ":" ws name"#))
-        XCTAssertTrue(grammar.contains(#"ws ":" ws instructions"#))
-        XCTAssertFalse(grammar.contains(#"name ::= "\"aspirin\"""#))
+        let rule = try XCTUnwrap(grammar.components(separatedBy: "\n").first { $0.hasPrefix("source-medicine-0-start ::=") })
+        XCTAssertTrue(rule.contains(#""\"aspirin\"""#))
+        XCTAssertTrue(rule.contains(#""\"81 mg once daily\"""#))
+        XCTAssertFalse(rule.contains(#"ws ":" ws name"#))
+        XCTAssertFalse(rule.contains(#"ws ":" ws instructions"#))
+        XCTAssertTrue(try VisitReview.parse(#"{"highlights":[],"medicines":[],"followUps":[],"appointments":[]}"#, transcript: source, medicines: []).medicines.isEmpty)
     }
 
     func testLongSourcesAndHistoricalDuplicateScopesStayOptional() {
@@ -159,6 +162,78 @@ final class VisitMinimumGroundingTests: XCTestCase {
             let applied = try VisitReview.applying([proposal.id], from: visit, to: [aspirin])
             XCTAssertEqual(applied.count, action == .stop ? 0 : 1)
             if action != .stop { XCTAssertEqual(applied.first?.instructions, directions) }
+        }
+    }
+
+    func testRequiredSourceFieldsKeepFrenchAliasesCaseAndMultiwordSpelling() throws {
+        let cases = [
+            ("Commencez metformine 850 mg trois fois par jour.", "metformine", "850 mg trois fois par jour", "metformin"),
+            ("Débutez IBUPROFÈNE 200 mg deux fois par jour.", "IBUPROFÈNE", "200 mg deux fois par jour", "ibuprofen"),
+            ("Commencez acide acétylsalicylique 81 mg une fois par jour.", "acide acétylsalicylique", "81 mg une fois par jour", "aspirin"),
+        ]
+        for (source, name, directions, identity) in cases {
+            let bound = try XCTUnwrap(VisitSourceGrounding.requiredMedicineProposal(source, medicines: [], candidates: VisitSourceGrounding.candidates(source)), source)
+            XCTAssertEqual(bound.quote, source)
+            XCTAssertEqual(bound.name, name)
+            XCTAssertEqual(bound.instructions, directions)
+            XCTAssertEqual(bound.validatedChange.medicine.id, identity)
+            XCTAssertNotEqual(bound.name, bound.validatedChange.medicine.name)
+            let rule = try XCTUnwrap(VisitReview.outputGrammar(transcript: source).components(separatedBy: "\n").first { $0.hasPrefix("source-medicine-0-start ::=") })
+            XCTAssertFalse(rule.contains(#"ws ":" ws name"#))
+            XCTAssertFalse(rule.contains(#"ws ":" ws instructions"#))
+            XCTAssertTrue(rule.contains(name), source)
+            XCTAssertTrue(rule.contains(directions), source)
+        }
+    }
+
+    func testCopiedFieldsDoNotMakeChangedDirectionsOrCanonicalizedNamesValid() throws {
+        let source = "Commencez metformine 850 mg trois fois par jour."
+        let bound = try XCTUnwrap(VisitSourceGrounding.requiredMedicineProposal(source, medicines: [], candidates: VisitSourceGrounding.candidates(source)))
+        for (name, directions) in [
+            (bound.name, "850 mg, trois fois par jour"),
+            (bound.name, "850 mg deux fois par jour"),
+            (bound.name, "500 mg trois fois par jour"),
+            ("Metformin", bound.instructions),
+        ] {
+            let raw: [String: Any] = ["highlights": [], "followUps": [], "appointments": [], "medicines": [
+                ["quote": bound.quote, "action": bound.action.rawValue, "name": name, "instructions": directions]
+            ]]
+            let output = String(decoding: try JSONSerialization.data(withJSONObject: raw), as: UTF8.self)
+            XCTAssertTrue(try VisitReview.parse(output, transcript: source, medicines: []).medicines.isEmpty, output)
+        }
+        XCTAssertEqual(bound.name, "metformine")
+        XCTAssertEqual(bound.instructions, "850 mg trois fois par jour")
+    }
+
+    func testRequiredStopAndUpdateUseSavedIdentityButNeverItsCanonicalSpellingOrOldDirections() throws {
+        var metformin = try XCTUnwrap(Catalog.medicines.first { $0.id == "metformin" })
+        metformin.instructions = "500 mg twice daily"
+        let update = "Prenez metformine 850 mg trois fois par jour."
+        let updated = try XCTUnwrap(VisitSourceGrounding.requiredMedicineProposal(update, medicines: [metformin], candidates: VisitSourceGrounding.candidates(update)))
+        XCTAssertEqual(updated.name, "metformine")
+        XCTAssertEqual(updated.instructions, "850 mg trois fois par jour")
+        XCTAssertNotEqual(updated.instructions, metformin.instructions)
+        let stop = "Cessez la metformine aujourd'hui."
+        XCTAssertNil(VisitSourceGrounding.requiredMedicineProposal(stop, medicines: [], candidates: VisitSourceGrounding.candidates(stop)))
+        let stopped = try XCTUnwrap(VisitSourceGrounding.requiredMedicineProposal(stop, medicines: [metformin], candidates: VisitSourceGrounding.candidates(stop)))
+        XCTAssertEqual(stopped.name, "metformine")
+        XCTAssertEqual(stopped.instructions, "")
+        XCTAssertEqual(stopped.validatedChange.medicine.id, metformin.id)
+    }
+
+    func testOptionalSourcesRetainFreeFieldRulesRatherThanSourceFieldLiterals() throws {
+        for source in [
+            "Start CustomMedicine 10 mg once daily.",
+            "Start aspirin and ibuprofen 100 mg once daily.",
+            "My doctor says: \"Start aspirin 81 mg once daily.\"",
+            "Start aspirin 81 mg once daily with another tablet.",
+        ] {
+            XCTAssertNil(VisitSourceGrounding.requiredMedicineProposal(source, medicines: [], candidates: VisitSourceGrounding.candidates(source)), source)
+            let grammar = VisitReview.outputGrammar(transcript: source)
+            let rule = try XCTUnwrap(grammar.components(separatedBy: "\n").first { $0.hasPrefix("source-medicine-0-start ::=") }, source)
+            XCTAssertTrue(rule.contains(#"ws ":" ws name"#), source)
+            XCTAssertTrue(rule.contains(#"ws ":" ws instructions"#), source)
+            XCTAssertTrue(grammar.components(separatedBy: "\n").first { $0.hasPrefix("medicines ::=") }?.contains("})?") == true, source)
         }
     }
 }

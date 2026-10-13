@@ -134,7 +134,10 @@ public enum VisitReview {
     }
 
     /// Medicine quotes and actions come only from source sentences that pass
-    /// the same intent checks as parse(); field grounding still happens there.
+    /// the same intent checks as parse(). For one independently prevalidated
+    /// direct instruction, exact source name/directions also constrain decoding.
+    /// This is app pipeline behaviour, not unconstrained model extraction;
+    /// final source and saved-identity validation remains mandatory in parse().
     public static func outputGrammar(transcript: String, medicines: [Medicine] = []) -> String {
         let candidates = VisitSourceGrounding.candidates(transcript)
         func literal(_ value: String) -> String {
@@ -151,15 +154,17 @@ public enum VisitReview {
         lines.append("medicine ::= " + alternatives)
         // A compound sentence can supply distinct stop/start proposals.
         let maximumEntries = min(12, candidates.reduce(0) { $0 + $1.maximumEntries })
-        let required = VisitSourceGrounding.requiredMedicineProposal(transcript, medicines: medicines, candidates: candidates) != nil
-        let optional = required ? "" : "?"
+        let required = VisitSourceGrounding.requiredMedicineProposal(transcript, medicines: medicines, candidates: candidates)
+        let optional = required == nil ? "?" : ""
         lines.append(#"medicines ::= "[" ws (medicine (ws "," ws medicine){0,"# + String(maximumEntries - 1) + "})" + optional + #" ws "]""#)
         for (index, candidate) in candidates.enumerated() {
             let actionRules = candidate.actions.map { "source-medicine-\(index)-\($0.rawValue)" }.joined(separator: " | ")
             lines.append("source-medicine-\(index) ::= " + actionRules)
-            let fields = #" ws "," ws "\"name\"" ws ":" ws name ws "," ws "\"instructions\"" ws ":" ws "#
             for action in candidate.actions {
-                let instructions = action == .stop ? literal(literal("")) : "instructions"
+                let bound = required.flatMap { $0.quote == candidate.quote && $0.action == action ? $0 : nil }
+                let name = bound.map { literal(literal($0.name)) } ?? "name"
+                let instructions = bound.map { literal(literal($0.instructions)) } ?? (action == .stop ? literal(literal("")) : "instructions")
+                let fields = #" ws "," ws "\"name\"" ws ":" ws "# + name + #" ws "," ws "\"instructions\"" ws ":" ws "#
                 lines.append("source-medicine-\(index)-\(action.rawValue) ::= " + #""{" ws "\"quote\"" ws ":" ws "# + literal(literal(candidate.quote)) + #" ws "," ws "\"action\"" ws ":" ws "# + literal(literal(action.rawValue)) + fields + instructions + #" ws "}""#)
             }
         }
