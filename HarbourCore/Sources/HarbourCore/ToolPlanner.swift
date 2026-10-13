@@ -166,6 +166,33 @@ public enum ToolPlanner {
         return matches(task, #"\A(?:"# + [englishBooking, englishCall, englishDocuments, frenchBooking, frenchCall, frenchDocuments].joined(separator: "|") + #")\z"#)
     }
 
+    private static func explicitNegativeAppointmentRequest(_ original: String) -> Bool {
+        // A closed current imperative only; no date is parsed or stored. An
+        // unknown tail stays on the ordinary reply path rather than asserting
+        // that a conditional, quoted or combined request made no changes.
+        guard original.count <= 1000, !original.contains("<|"),
+              !original.unicodeScalars.contains(where: { CharacterSet.controlCharacters.contains($0) }),
+              unquotedRequest(original) == original else { return false }
+        let input = InputLanguage.folded(original).trimmingCharacters(in: .whitespacesAndNewlines)
+        let courtesy = #"(?:(?:please|svp|s'il vous plait|s'il te plait),?\s+)?"#
+        let englishTarget = #"(?:(?:my|our|the|a|an|any)\s+)?(?:new\s+)?(?:(?:doctor(?:'s)?|dentist(?:'s)?|medical|dental)\s+)?appointments?"#
+        let englishVerb = #"(?:do\s+not|don't|never)\s+(?:add|book|schedule|create|record|save)\s+"#
+        let englishProvider = #"(?:\s+(?:with\s+(?:(?:my|the)\s+)?(?:doctor|dentist)|at\s+(?:(?:my|the)\s+)?clinic))?"#
+        let englishDay = #"(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday)"#
+        let englishWhen = #"(?:\s+(?:today|tomorrow|next\s+(?:week|month|"# + englishDay + #")|(?:on\s+)?"# + englishDay + #"))?"#
+        let englishClock = #"(?:\s+at\s+(?:(?:[1-9]|1[0-2])(?::[0-5][0-9])?\s*(?:am|pm)|(?:[01]?[0-9]|2[0-3]):[0-5][0-9]))?"#
+        let frenchTarget = #"(?:(?:un|une|le|la|mon|ma|mes|nos|les|des|de)\s+)?(?:nouveau\s+)?rendez[- ]vous"#
+        let frenchVerb = #"(?:ne\s+(?:reserve(?:z)?|planifie(?:z)?|programme(?:z)?|cree(?:z)?|prends|prenez)|n'(?:ajoute(?:z)?|enregistre(?:z)?))\s+"#
+        let frenchObject = #"(?:(?:pas|jamais)\s+"# + frenchTarget + #"|aucun\s+rendez[- ]vous)"#
+        let frenchProvider = #"(?:\s+(?:chez\s+(?:(?:mon|le)\s+)?(?:medecin|dentiste)|a\s+(?:(?:ma|la)\s+)?clinique))?"#
+        let frenchDay = #"(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)"#
+        let frenchWhen = #"(?:\s+(?:aujourd'hui|demain|la\s+semaine\s+prochaine|le\s+mois\s+prochain|(?:le\s+)?"# + frenchDay + #"(?:\s+prochain)?))?"#
+        let frenchClock = #"(?:\s+a\s+(?:[01]?[0-9]|2[0-3])\s*h(?:\s*[0-5][0-9])?)?"#
+        let english = englishVerb + englishTarget + englishProvider + englishWhen + englishClock
+        let french = frenchVerb + frenchObject + frenchProvider + frenchWhen + frenchClock
+        return matches(input, #"\A"# + courtesy + "(?:" + english + "|" + french + #")[.!]?\s*\z"#)
+    }
+
     /// Bound the reply path for explicit current requests. This never narrows the
     /// routing catalog, uses model answer keywords, or infers unnamed medicines.
     public static func replyFallback(original: String, records: Records, language: ModelLanguage = .english, rejectedAction: Bool = false) -> ReplyFallback? {
@@ -238,6 +265,12 @@ public enum ToolPlanner {
                 : "Understood; this request makes no changes to your saved records."
             return ReplyFallback(decision: .init(tool: .reply, arg: text), action: .reply(text), reason: "preservation_ack")
         }
+        if explicitNegativeAppointmentRequest(original) {
+            let text = language == .french
+                ? "Compris; cette demande ne modifie aucun rendez-vous."
+                : "Understood; this request makes no appointment changes."
+            return ReplyFallback(decision: .init(tool: .reply, arg: text), action: .reply(text), reason: "appointment_preservation_ack")
+        }
         // A single explicit measurement request opens a draft, never a saved
         // receipt. Bind the whole source and compatible unit to the existing
         // parser's type/value; no model prose or saved reading supplies facts.
@@ -268,6 +301,22 @@ public enum ToolPlanner {
         // prediction or a saved record. Preserve the full current source only.
         if WriteRequestValidation.permits(original, tool: .captureSymptom), explicitCurrentSymptomRequest(input) {
             return ReplyFallback(decision: .init(tool: .captureSymptom), action: .symptom(original), reason: "symptom_draft")
+        }
+        // A closed affirmative note request without supplied content asks for
+        // that content. This is a reply disposition, never a saved note or an
+        // invented set of medical questions; valid copy_note routes stay intact.
+        let noteCourtesy = #"(?:(?:please|svp|s'il vous plait|s'il te plait|veuillez),?\s+)?"#
+        let englishNote = #"(?:make|prepare|create|write)\s+(?:(?:a|an|my|the|some)\s+)?(?:appointment\s+notes?|(?:notes?|questions?)\s+for\s+(?:(?:my|the|an|a)\s+)?(?:appointment|doctor(?:'s)?(?:\s+appointment)?))"#
+        let frenchNote = #"(?:prepare|preparez|cree|creez|redige|redigez|fais|faites)\s+(?:(?:un|une|la|les|ma|mes|des)\s+)?(?:notes?\s+(?:de|pour)\s+(?:(?:mon|le|un)\s+)?(?:rendez-vous|medecin|docteur)|questions?\s+pour\s+(?:(?:mon|le|un)\s+)?(?:medecin|docteur|rendez-vous))"#
+        if outer == original,
+           original.count <= maximumReplyCharacters,
+           !original.contains("<|"),
+           !original.unicodeScalars.contains(where: { CharacterSet.controlCharacters.contains($0) }),
+           matches(input, #"\A"# + noteCourtesy + "(?:" + englishNote + "|" + frenchNote + #")[.!]?\s*\z"#) {
+            let text = language == .french
+                ? "Quel contenu ou quelles questions voulez-vous inclure dans votre note de rendez-vous?"
+                : "What content or questions would you like to include in your appointment note?"
+            return ReplyFallback(decision: .init(tool: .reply, arg: text), action: .reply(text), reason: "appointment_note_content_required")
         }
         return nil
     }

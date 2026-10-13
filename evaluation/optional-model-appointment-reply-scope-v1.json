@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "registeredUTC": "2026-10-13T17:02:39Z",
+  "baselineReleaseCommit": "97df1840cb4b95538704442015d904871e14b9df",
+  "baselineModelSourceCommit": "ba6f96e87dd2bd5623487a212c13f8e3315f77b5",
+  "scope": "Two bounded English/French application reply dispositions following model routing, for direct appointment requests that otherwise receive misleading capability replies.",
+  "appointmentPreservation": {
+    "trigger": "One complete, current, unquoted imperative requesting no appointment write, using finite negative appointment verbs and bounded provider/day/clock tails. No calendar field is parsed or stored.",
+    "reason": "appointment_preservation_ack",
+    "english": "Understood; this request makes no appointment changes.",
+    "french": "Compris; cette demande ne modifie aucun rendez-vous.",
+    "priority": "After existing question, organizational reminder, interaction and record-preservation recovery; before existing reading and symptom recovery."
+  },
+  "appointmentNoteContent": {
+    "trigger": "One complete, direct, unquoted affirmative request to prepare appointment notes or clinician questions, without supplied content, dates or extra tasks.",
+    "reason": "appointment_note_content_required",
+    "english": "What content or questions would you like to include in your appointment note?",
+    "french": "Quel contenu ou quelles questions voulez-vous inclure dans votre note de rendez-vous?",
+    "priority": "After every existing source-specific recovery and before the generic rejected-action clarification. A successfully validated copy_note route remains the existing note action."
+  },
+  "excluded": [
+    "Questions, quoted requests or supplied quoted content, reports/history, third-party framing, hypothetical or conditional/exception clauses.",
+    "Mixed/appended requests, unknown free tails, control characters, chat markers and oversized input.",
+    "The note clarification excludes supplied content and does not invent medical questions, diagnoses, appointment details or record capabilities."
+  ],
+  "provenance": "Raw routing, validation errors and model failures retain their original attribution. Accepted replies and applicationDecision are recorded as application dispositions. Neither disposition saves a note or changes a record, and neither earns raw routing, model prose or independent extraction credit.",
+  "unchangedRequirements": [
+    "All 21 model routing alternatives, prompts, assets, runtime, sampling and token budgets remain unchanged.",
+    "Existing validation, reply-format guards, confirmation/save flows and callers remain unchanged.",
+    "Automatic remains the default; Qwen3.5-2B remains optional, with its original promotion gate blocked.",
+    "Frozen fixtures, scorer, qualitative criteria and acceptance gates remain unchanged.",
+    "Fresh revised-source Core/Runtime/native/Python/localization checks, xtool/app verification, full DEV and supplemental comparisons and all required reviews precede final freeze and paired held-out evaluation."
+  ],
+  "limitations": "This scope registers behavior to validate. It supplies no passing test, model-quality, device-performance, source-freeze, held-out or Ready evidence. Original source14 failures and reviews remain preserved."
+}

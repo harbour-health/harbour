@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "auditedUTC": "2026-10-13T16:41:01.646470+00:00",
+  "result": "PASS_ARCHIVE_OF_INTERRUPTED01_AND_EXPLICIT_PRODUCT_PROOF_GUARDED_INITIAL02",
+  "archiveSHA256": "bea68243601f8501bd20eefd42ce55d7089c5e8532b7f5212ef6468716bbf85d",
+  "members": 78,
+  "evidenceFiles": 77,
+  "CRCAndAllMemberOriginalLocalBytesVerified": true,
+  "freshRuntimeTests": 21,
+  "interruptedAttemptExitCode": 137,
+  "stoppedAttemptNoQualityCredit": true,
+  "actualProductProbeBoundSeparatelyFromHistoricalTestBuild": true,
+  "originalDEVEvalRestoredByteExact": true,
+  "guardBeforeInitialMetadataVerified": true,
+  "excludedBinaryHashesCheckedLocally": 4,
+  "onlyNonexecutedDocumentaryHelperDerivatives": 2,
+  "prior01Through27Unchanged": true,
+  "current120QualityFreezeHeldoutReadyClaim": false,
+  "auditOnlyScopeCorrection": "Original stopped01 partial JSONL and current02 initial transport-stage metadata are properly retained. Initial audit assumptions forbade these two original artifacts; current02 JSONL/reviews and complete metadata remain excluded. Both failed audit helpers retained; no artifact, grade or source change.",
+  "helperSHA256": "13490af04ac5a5ff10ec216282aada4d3876420e21753913a8373f63f4202d5d"
+}

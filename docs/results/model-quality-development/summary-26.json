@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "archiveVersion": "26",
+  "sourceHead": "97df1840cb4b95538704442015d904871e14b9df",
+  "scope": "Actual current97df original Standard and Native PASS with Core212/Runtime21, Standard11UI/23hosted+1skip and Native7UI/24hosted+1skip. Original ba6 model/build identities remain separate through explicit input equivalence; old failed Native Archive25 is retained, not overwritten or waived. No comparative model quality, physical-device performance, final freeze, heldout or Ready evidence.",
+  "archivePath": "build/archive-development-26/development-evidence-26.zip",
+  "archiveSHA256": "253c106cfe011bfef2fd92e98c50d7b229e1e1c922c20754af2a60a3cdc5733a",
+  "archiveBytes": 15088938,
+  "evidenceFilesIncludingAllowlist": 297,
+  "archiveMembers": 298,
+  "manifestSHA256": "23003e5db54693b40f3d37316078c942a36212c0b72c92a9ad6f0a09eeb11253",
+  "allowlistSHA256": "fd33ba55707d98207f8a9aa2d9adb34c418fee81b0bd77889a1adf25ffe68d4e",
+  "cohorts": [
+    {
+      "kind": "standard",
+      "runID": 38421539394,
+      "runURL": "https://github.com/harbour-health/harbour/actions/runs/38421539394",
+      "sourceHead": "97df1840cb4b95538704442015d904871e14b9df",
+      "conclusion": "success",
+      "Core": {
+        "executed": 212,
+        "passed": 212,
+        "failed": 0
+      },
+      "Runtime": {
+        "executed": 21,
+        "passed": 21,
+        "failed": 0
+      },
+      "counts": {
+        "hosted": {
+          "total": 24,
+          "passed": 23,
+          "failed": 0,
+          "skipped": 1
+        },
+        "UI": {
+          "total": 11,
+          "passed": 11,
+          "failed": 0,
+          "skipped": 0
+        }
+      },
+      "receiptSHA256": "9d96d5225fade8c3336ce1b0cb3c507c4dc1ae7eedfb047fe837a9d56bf7d2c9",
+      "originalLogSHA256": "7f19298e4b91fdd2f1ca07332cc22928efc9b44173853e3f063683321ad11f62",
+      "checkout": "fdb2e7fc135befaba6ccbcd1db20a702d26f2014",
+      "modelAccuracyJob": "skipped"
+    },
+    {
+      "kind": "native",
+      "runID": 38421538959,
+      "runURL": "https://github.com/harbour-health/harbour/actions/runs/38421538959",
+      "sourceHead": "97df1840cb4b95538704442015d904871e14b9df",
+      "conclusion": "success",
+      "Core": {
+        "executed": 212,
+        "passed": 212,
+        "failed": 0
+      },
+      "Runtime": {
+        "executed": 21,
+        "passed": 21,
+        "failed": 0
+      },
+      "counts": {
+        "hosted": {
+          "total": 25,
+          "passed": 24,
+          "failed": 0,
+          "skipped": 1
+        },
+        "UI": {
+          "total": 7,
+          "passed": 7,
+          "failed": 0,
+          "skipped": 0
+        }
+      },
+      "receiptSHA256": "7cb14c2d2bc2c39f5461b7e298b725499095557aaaba7018f23e107afcefbfc3",
+      "originalLogSHA256": "793b30b1439f732293f540885d1f84a76d2f1fb6942530ceb69da0fca62bbe69",
+      "checkout": "fdb2e7fc135befaba6ccbcd1db20a702d26f2014",
+      "modelAccuracyJob": "not part of this workflow"
+    }
+  ],
+  "builderSHA256": "5d06efd54da3497e960f25ec4a6af1dae2f0ee041beb9265608729f06f033a3a",
+  "previousArchivesUnchangedSHA256": {
+    "docs/results/model-quality-development/development-evidence-01.zip": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091",
+    "docs/results/model-quality-development/development-evidence-02.zip": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a",
+    "docs/results/model-quality-development/development-evidence-03.zip": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e",
+    "docs/results/model-quality-development/development-evidence-04.zip": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9",
+    "docs/results/model-quality-development/development-evidence-05.zip": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571",
+    "docs/results/model-quality-development/development-evidence-06.zip": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da",
+    "docs/results/model-quality-development/development-evidence-07.zip": "b36dd12db0892e89f8d8c1f2672462d9212a71f016076b9beeca0a51a22c6529",
+    "docs/results/model-quality-development/development-evidence-08.zip": "8997676469921003a6e4a112e3c120317382cc562cc5150f3646d4869b524a10",
+    "docs/results/model-quality-development/development-evidence-09.zip": "7da96637ba2b134a309905cb97e908427408125c3d7bf13704503eabd7e4f688",
+    "docs/results/model-quality-development/development-evidence-10.zip": "ad796f1d76199ad8dd613bbb1f36d4ed05cc2178483d4e1dd23375f506de31f7",
+    "docs/results/model-quality-development/development-evidence-11.zip": "7ef4c58f54f264df70b1b1ddd0e42baa108a16d1a0862e9c5a14e5666bf23108",
+    "docs/results/model-quality-development/development-evidence-12.zip": "e1f44ecd97238f68a6f3e9a3929230059082ae1fdaf69f13d24aa6feb7d64269",
+    "docs/results/model-quality-development/development-evidence-13.zip": "ed487a3e47a7a5ef31c9b21ec72dd3580c157bd25835bc517e26382c3c325810",
+    "docs/results/model-quality-development/development-evidence-14.zip": "41710bf12bf2b1854fb7ec16114c2bbc1b76c7104b350db114b9bd89d89c2796",
+    "docs/results/model-quality-development/development-evidence-15.zip": "ca624ec881a7328f0de79d60f65938887e00e008f15f2af996173cc0377372da",
+    "docs/results/model-quality-development/development-evidence-16.zip": "458aec2324ebc5b6e4ee5ad60e9d3d77ef9377325dc29e409e90d3f024480497",
+    "docs/results/model-quality-development/development-evidence-17.zip": "d6893ec122d0da780a963db896c7cd608f079c95bbd6eaecbd7cfdfa5fca0a9e",
+    "docs/results/model-quality-development/development-evidence-18.zip": "34655ede26a5241d2a37b94f37085c9f966888bcb632a3c988b016022fe84a6a",
+    "docs/results/model-quality-development/development-evidence-19.zip": "77c44c435552002131873a750b610e58a4f0f1fe1130c125b2f960e030539d1a",
+    "docs/results/model-quality-development/development-evidence-20.zip": "6f1390b63d1a40ca44fbe4fe86134f3e1310bf85c95db5acdf9cc380a7b40801",
+    "docs/results/model-quality-development/development-evidence-21.zip": "1441d450a17e33dba68a38e8accaa754e682316fddaa39016351fac50f9819d6",
+    "docs/results/model-quality-development/development-evidence-22.zip": "13194bcb992e6873c3e429793349398e4b499efe0987b6434671e5f5d29f6306",
+    "docs/results/model-quality-development/development-evidence-23.zip": "95bab53815524211fd6b96645b7461fef6dac1361ab0aef0201dbfef8648300c",
+    "docs/results/model-quality-development/development-evidence-24.zip": "18ef4d9308e94a94c0c085b8271bc27adaceaf749595412224f20efd584aaa3f",
+    "docs/results/model-quality-development/development-evidence-25.zip": "093a0a617d4c90e2d4c5a6b01e7752ddea409ed6a7309295b786a4a39fed431a"
+  },
+  "limits": [
+    "All current seven Native UI checks passed; bounded application recoveries remain application evidence, not raw model IQ.",
+    "Standard model-accuracy job was skipped, and only Small/Qwen35 assets were preloaded for these seven UI checks.",
+    "Physical-device performance, full DEV/supplemental/manual source-safety/protected gates and heldout are not established by CI.",
+    "Original failed Native Archive25 and all earlier archives are unchanged.",
+    "Canonical inventory is not actual Mac materialization/frontend compiler-input proof.",
+    "Exact original large artifact references/digests are included but their binary payloads are excluded."
+  ],
+  "independentFinalArchiveAuditPending": true
+}
