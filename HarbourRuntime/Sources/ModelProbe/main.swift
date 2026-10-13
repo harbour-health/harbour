@@ -54,6 +54,7 @@ private struct ProbeResult: Codable {
     var seconds: Double = 0
     var rawOutput = ""
     var rawTool: String?
+    var effectiveTool: String?
     var expectedTool: String?
     var replyPrompt: String?
     var replyOutput: String?
@@ -63,6 +64,12 @@ private struct ProbeResult: Codable {
     var fixtureMatched = false
     var semanticFixtureMatched = false
     var fallbackUsed = false
+    var fallbackReason: String?
+    // Routing/reply disposition only; visit summary fallbacks are recorded independently.
+    var actionOrigin: String?
+    var applicationDecision: ToolDecision?
+    var actionValidationSucceeded: Bool?
+    var validationError: String?
     var rejectedMedicineProposals: Int?
     var error: String?
 }
@@ -100,19 +107,31 @@ private struct ProbeResult: Codable {
             do {
                 result.rawOutput = try await runtime.generate(file: file, prompt: routingPrompt, grammar: grammar, promptFormat: format)
                 decision = try ToolPlanner.parse(result.rawOutput); result.rawTool = decision?.tool.rawValue
-                if decision?.tool == .reply {
+                var action: ValidatedAction?
+                if let decision, decision.tool != .reply {
+                    do { action = try ToolPlanner.validate(decision, original: input, records: records); result.actionValidationSucceeded = true }
+                    catch { result.actionValidationSucceeded = false; result.validationError = error.localizedDescription; result.fallbackUsed = true; result.fallbackReason = "invalid_action" }
+                }
+                if action == nil, let fallback = ToolPlanner.replyFallback(original: input, records: records, language: .english) {
+                    action = fallback.action; result.fallbackUsed = true; result.fallbackReason = fallback.reason
+                    result.actionOrigin = "application"; result.applicationDecision = fallback.decision
+                } else if action == nil {
                     let replyPrompt = ModelPrompts.localized(ToolPlanner.conversationPrompt(input, records: records, language: .english), language: .english, purpose: .prose)
                     result.replyPrompt = try format.prepare(replyPrompt)
-                    decision?.arg = try await runtime.generate(file: file, prompt: replyPrompt, maxTokens: 512, stopAtJSON: false, promptFormat: format)
-                    result.replyOutput = decision?.arg
+                    let reply = try await runtime.generate(file: file, prompt: replyPrompt, maxTokens: 512, stopAtJSON: false, promptFormat: format)
+                    result.replyOutput = reply
+                    action = try ToolPlanner.validate(.init(tool: .reply, arg: reply), original: input, records: records)
                 }
-                if let decision { result.acceptedAction = ProbeAction(try ToolPlanner.validate(decision, original: input, records: records)); result.validationSucceeded = true }
+                if let action {
+                    result.acceptedAction = ProbeAction(action); result.effectiveTool = result.acceptedAction?.type; result.validationSucceeded = true
+                    if result.actionOrigin == nil { result.actionOrigin = "model" }
+                }
             } catch { result.error = error.localizedDescription }
-            result.fixtureMatched = decision?.tool == expected && result.validationSucceeded
+            result.fixtureMatched = result.rawTool == expected.rawValue && result.validationSucceeded && result.actionValidationSucceeded != false
             result.semanticFixtureMatched = result.fixtureMatched
             if result.fixtureMatched { passed += 1 }
             result.seconds = Date().timeIntervalSince(start)
-            print("\(result.fixtureMatched ? "PASS" : "FAIL") \(input) | \(String(format: "%.2f", result.seconds))s | \(result.rawOutput) | \(decision?.arg ?? "")")
+            print("\(result.fixtureMatched ? "PASS" : "FAIL") \(input) | \(String(format: "%.2f", result.seconds))s | \(result.rawOutput) | \(result.replyOutput ?? "")")
             fflush(stdout); try emit(result)
         }
         if transcriptsOnly { print("Routing cases skipped: transcript-only run") }

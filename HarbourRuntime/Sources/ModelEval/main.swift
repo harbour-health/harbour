@@ -83,6 +83,10 @@ private struct EvalResult: Codable {
     var validationSucceeded = false
     var validationError: String?
     var fallbackUsed = false
+    var fallbackReason: String?
+    // Routing/reply disposition only; visit extraction has its separate source/fallback review.
+    var actionOrigin: String?
+    var applicationDecision: ToolDecision?
     var actionSummary: ActionSummary?
     var records: Records?
     var baselinePrompts: Bool
@@ -217,26 +221,42 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                             let decision = try ToolPlanner.parse(raw); result.observedTool = decision.tool.rawValue
                             var action: ValidatedAction?
                             if decision.tool != .reply {
-                                do { action = try ToolPlanner.validate(decision, original: fixture.input, records: records); result.actionValidationSucceeded = true }
-                                catch { result.actionValidationSucceeded = false; result.fallbackUsed = true; result.validationError = error.localizedDescription }
+                                do { action = try ToolPlanner.validate(decision, original: fixture.input, records: records, language: fixture.language); result.actionValidationSucceeded = true }
+                                catch { result.actionValidationSucceeded = false; result.fallbackUsed = true; result.fallbackReason = "invalid_action"; result.validationError = error.localizedDescription }
                             }
                             if let action {
                                 result.finalTool = decision.tool.rawValue; result.output = raw; result.actionSummary = actionSummary(action)
+                                result.actionOrigin = "model"
+                            } else if let fallback = ToolPlanner.replyFallback(original: fixture.input, records: records, language: fixture.language) {
+                                // Retain the raw model route. The effective action is application evidence,
+                                // not a corrected routing prediction or generated prose.
+                                result.output = raw; result.finalTool = fallback.decision.tool.rawValue
+                                result.actionSummary = actionSummary(fallback.action)
+                                result.fallbackUsed = true; result.fallbackReason = fallback.reason
+                                result.actionOrigin = "application"; result.applicationDecision = fallback.decision
                             } else {
                                 replyPrompt = ModelPrompts.localized(ToolPlanner.conversationPrompt(fixture.input, records: records, history: fixture.turns, language: fixture.language), language: fixture.language, purpose: .prose)
                                 result.replyBudget = replyBudget
                                 let replyStart = Date()
                                 result.output = try await runtime.generate(file: model, prompt: replyPrompt!, maxTokens: replyBudget, stopAtJSON: false, promptFormat: format)
-                                result.replySeconds = Date().timeIntervalSince(replyStart); result.finalTool = Tool.reply.rawValue
-                                result.actionSummary = actionSummary(try ToolPlanner.validate(.init(tool: .reply, arg: result.output), original: fixture.input, records: records))
+                                result.replySeconds = Date().timeIntervalSince(replyStart)
+                                result.actionSummary = actionSummary(try ToolPlanner.validate(.init(tool: .reply, arg: result.output), original: fixture.input, records: records, language: fixture.language))
+                                result.finalTool = result.actionSummary?.type
+                                result.actionOrigin = "model"
                             }
                             result.validationSucceeded = true
                         case "prose":
                             prompt = ModelPrompts.localized(ToolPlanner.conversationPrompt(fixture.input, records: records, history: fixture.turns, language: fixture.language), language: fixture.language, purpose: .prose)
                             result.budget = replyBudget
                             result.output = try await runtime.generate(file: model, prompt: prompt, maxTokens: replyBudget, stopAtJSON: false, promptFormat: format)
-                            result.finalTool = Tool.reply.rawValue
-                            result.actionSummary = actionSummary(try ToolPlanner.validate(.init(tool: .reply, arg: result.output), original: fixture.input, records: records)); result.validationSucceeded = true
+                            result.actionSummary = actionSummary(try ToolPlanner.validate(.init(tool: .reply, arg: result.output), original: fixture.input, records: records, language: fixture.language)); result.validationSucceeded = true
+                            result.finalTool = result.actionSummary?.type
+                            result.actionOrigin = "model"
+                            if let fallback = ToolPlanner.replyFallback(original: fixture.input, records: records, language: fixture.language) {
+                                // Prose-only cases retain even suppressed model prose for quality review.
+                                result.fallbackUsed = true; result.fallbackReason = fallback.reason
+                                result.actionOrigin = "application"; result.applicationDecision = fallback.decision
+                            }
                         case "title":
                             prompt = ModelPrompts.localized(try ModelPrompts.title(fixture.input, language: fixture.language), language: fixture.language, purpose: .title)
                             result.budget = ModelPrompts.titleTokenBudget(language: fixture.language)

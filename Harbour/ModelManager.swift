@@ -5,7 +5,7 @@ import HarbourCore
 
 enum ModelChoice: String, CaseIterable, Identifiable, Codable {
     case automatic, small, balanced, qwen35
-    static let defaultModel: ModelChoice = .qwen35
+    static let defaultModel: ModelChoice = .automatic
     var id: String { rawValue }
     var title: String {
         switch self {
@@ -18,37 +18,37 @@ enum ModelChoice: String, CaseIterable, Identifiable, Codable {
     var compactTitle: String { switch self { case .automatic: title; case .small: L10n.string("Small"); case .balanced: L10n.string("Balanced"); case .qwen35: L10n.string("Qwen3.5") } }
     var chatTitle: String { switch self { case .automatic: title; case .small: "Qwen 0.5B"; case .balanced: "Qwen 1.5B"; case .qwen35: L10n.string("Qwen3.5 2B") } }
     var size: Int64 {
-        switch self { case .small: 491_400_032; case .balanced: 1_117_320_736; case .automatic, .qwen35: 1_280_835_840 }
+        switch self { case .automatic, .small: 491_400_032; case .balanced: 1_117_320_736; case .qwen35: 1_280_835_840 }
     }
     var hash: String {
         switch self {
-        case .small: "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db"
+        case .automatic, .small: "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db"
         case .balanced: "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e"
-        case .automatic, .qwen35: "aaf42c8b7c3cab2bf3d69c355048d4a0ee9973d48f16c731c0520ee914699223"
+        case .qwen35: "aaf42c8b7c3cab2bf3d69c355048d4a0ee9973d48f16c731c0520ee914699223"
         }
     }
     var filename: String {
         switch self {
-        case .small: "qwen2.5-0.5b-instruct-q4_k_m.gguf"
+        case .automatic, .small: "qwen2.5-0.5b-instruct-q4_k_m.gguf"
         case .balanced: "qwen2.5-1.5b-instruct-q4_k_m.gguf"
-        case .automatic, .qwen35: "Qwen3.5-2B-Q4_K_M.gguf"
+        case .qwen35: "Qwen3.5-2B-Q4_K_M.gguf"
         }
     }
     var url: URL {
         let repo: String, revision: String
         switch self {
-        case .small:
+        case .automatic, .small:
             repo = "Qwen/Qwen2.5-0.5B-Instruct-GGUF"; revision = "9217f5db79a29953eb74d5343926648285ec7e67"
         case .balanced:
             repo = "Qwen/Qwen2.5-1.5B-Instruct-GGUF"; revision = "91cad51170dc346986eccefdc2dd33a9da36ead9"
-        case .automatic, .qwen35:
+        case .qwen35:
             repo = "unsloth/Qwen3.5-2B-GGUF"; revision = "f6d5376be1edb4d416d56da11e5397a961aca8ae"
         }
         return URL(string: "https://huggingface.co/\(repo)/resolve/\(revision)/\(filename)")!
     }
     var promptFormat: ModelPromptFormat { self == .qwen35 ? .qwen35 : .qwen25 }
     static func automaticModel(memoryBytes: UInt64, isLowPowerModeEnabled: Bool, thermalState: ProcessInfo.ThermalState) -> ModelChoice {
-        memoryBytes >= 8_000_000_000 && !isLowPowerModeEnabled && thermalState == .nominal ? .qwen35 : .small
+        memoryBytes >= 8_000_000_000 && !isLowPowerModeEnabled && thermalState == .nominal ? .balanced : .small
     }
 }
 enum Effort: String, CaseIterable, Identifiable {
@@ -177,6 +177,7 @@ private final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchec
         let output = try await generate(ToolPlanner.prompt(input, hint: hint, records: records, history: history), allowedTools: ToolPlanner.availableTools.map(\.rawValue), purpose: .routing)
         let decision = try ToolPlanner.parse(output)
         if decision.tool != .reply, (try? ToolPlanner.validate(decision, original: input, records: records)) != nil { return decision }
+        if let fallback = ToolPlanner.replyFallback(original: input, records: records, language: language) { return fallback.decision }
         // A tool with missing source facts cannot run. Let the model answer or clarify normally.
         try Task.checkCancellation()
         let answer = try await generate(ToolPlanner.conversationPrompt(input, records: records, history: history, language: language), maxTokens: effort.chatTokens, stopAtJSON: false)

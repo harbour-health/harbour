@@ -258,7 +258,7 @@
 "Negated then affirmative" = "Negated then affirmative";
 "New chat" = "New chat";
 "New confusion" = "New confusion";
-"New installs default to Qwen3.5 2B. Automatic chooses a model based on this device." = "New installs default to Qwen3.5 2B. Automatic chooses a model based on this device.";
+"New installs use Automatic. Qwen3.5 2B is optional." = "New installs use Automatic. Qwen3.5 2B is optional.";
 "Next step" = "Next step";
 "NHS source" = "NHS source";
 "No details extracted. Review the transcript." = "No details extracted. Review the transcript.";

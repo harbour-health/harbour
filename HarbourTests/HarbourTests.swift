@@ -17,24 +17,26 @@ import HarbourCore
         try body(defaults, directory)
     }
 
-    func testFreshAndUnrecognizedPreferencesChooseQwen35() throws {
+    func testFreshAndUnrecognizedPreferencesKeepAutomatic() throws {
         try withPreferences { defaults, directory in
             let fresh = ModelManager(defaults: defaults, directory: directory)
-            XCTAssertEqual(fresh.selection, .qwen35)
-            XCTAssertEqual(fresh.resolved, .qwen35)
+            XCTAssertEqual(fresh.selection, .automatic)
+            #if targetEnvironment(simulator)
+            XCTAssertEqual(fresh.resolved, .small)
+            #endif
             XCTAssertEqual(fresh.effort, .standard)
 
             defaults.set("a-model-from-an-unknown-version", forKey: "model")
             defaults.set("an-unknown-effort", forKey: "effort")
             let restored = ModelManager(defaults: defaults, directory: directory)
-            XCTAssertEqual(restored.selection, .qwen35)
+            XCTAssertEqual(restored.selection, .automatic)
             XCTAssertEqual(restored.effort, .standard)
         }
     }
 
     func testExistingModelChoicesAndEffortSurviveUpgrade() throws {
         try withPreferences { defaults, directory in
-            for choice in [ModelChoice.small, .balanced, .automatic] {
+            for choice in ModelChoice.allCases {
                 defaults.set(choice.rawValue, forKey: "model")
                 defaults.set(Effort.extended.rawValue, forKey: "effort")
                 let restored = ModelManager(defaults: defaults, directory: directory)
@@ -66,7 +68,7 @@ import HarbourCore
     func testAutomaticSelectionRetainsMemoryPowerAndThermalSafeguards() {
         let choose = ModelChoice.automaticModel
         XCTAssertEqual(choose(7_999_999_999, false, .nominal), .small)
-        XCTAssertEqual(choose(8_000_000_000, false, .nominal), .qwen35)
+        XCTAssertEqual(choose(8_000_000_000, false, .nominal), .balanced)
         XCTAssertEqual(choose(16_000_000_000, true, .nominal), .small)
         for thermalState in [ProcessInfo.ThermalState.fair, .serious, .critical] {
             XCTAssertEqual(choose(16_000_000_000, false, thermalState), .small)

@@ -208,9 +208,19 @@ public enum VisitReview {
                   change.action == .stop || !instructions.isEmpty else { continue }
             // Validate the complete containing sentence, preserving decimal doses
             // and preventing truncated quotations from dropping negation.
-            guard VisitSourceGrounding.containingContexts(quote: quote, source: source).contains(where: {
+            let contexts = VisitSourceGrounding.containingContexts(quote: quote, source: source).filter {
                 VisitSourceGrounding.permits(change.action, quote: quote, context: $0, name: name, instructions: instructions)
-            }) else { continue }
+            }
+            guard !contexts.isEmpty else { continue }
+            let unsupportedScopes = contexts.flatMap { VisitSourceGrounding.unsupportedScheduleScopes(context: $0, name: name) }
+            if !unsupportedScopes.isEmpty {
+                // Preserve the complete restricted source statement for review;
+                // never turn its partial clock/frequency parse into a schedule.
+                for item in grounded(unsupportedScopes.map { VisitQuote(quote: $0) }) where !summary.highlights.contains(item) {
+                    summary.highlights.append(item)
+                }
+                continue
+            }
             let known = Catalog.resolve(name, saved: medicines)
             // Unknown names remain a transcript item; no model-created ingredient mapping is trusted.
             guard var medicine = known else {

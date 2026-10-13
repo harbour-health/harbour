@@ -187,7 +187,7 @@ struct ChatView: View {
             do {
                 let decision = try await models.chatDecision(input, hint: chosenHint, records: store.records, history: history)
                 try Task.checkCancellation()
-                let action = try ToolPlanner.validate(decision, original: input, records: store.records)
+                let action = try ToolPlanner.validate(decision, original: input, records: store.records, language: L10n.isFrench ? .french : .english)
                 execute(action)
                 if firstMessage, let title = try? await models.title(for: input), !Task.isCancelled, operationID == currentID { store.nameChat(title, firstMessage: message.id) }
             } catch is CancellationError { }

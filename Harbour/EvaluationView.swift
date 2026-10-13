@@ -57,7 +57,7 @@ struct EvaluationReport: Codable {
                 output = try await models.generate(ToolPlanner.prompt(fixture.input, records: Evaluation.records), allowedTools: ToolPlanner.availableTools.map(\.rawValue), purpose: .routing)
                 var decision = try ToolPlanner.parse(output)
                 if decision.tool == .reply { decision.arg = try await models.generate(ToolPlanner.conversationPrompt(fixture.input, records: Evaluation.records, language: L10n.isFrench ? .french : .english), maxTokens: effort.chatTokens, stopAtJSON: false); output += "\nReply: " + decision.arg }
-                _ = try ToolPlanner.validate(decision, original: fixture.input, records: Evaluation.records)
+                _ = try ToolPlanner.validate(decision, original: fixture.input, records: Evaluation.records, language: L10n.isFrench ? .french : .english)
                 report.runs.append(ModelRun(model: models.resolved.rawValue, effort: models.effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: decision.tool.rawValue, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: decision.tool == fixture.tool))
             } catch { report.runs.append(ModelRun(model: models.resolved.rawValue, effort: models.effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: error.localizedDescription, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: false)) }
             checkpoint()
@@ -118,7 +118,7 @@ struct EvaluationView: View {
                         output = try await models.generate(ToolPlanner.prompt(fixture.input, records: Evaluation.records), allowedTools: ToolPlanner.availableTools.map(\.rawValue), purpose: .routing)
                         var decision = try ToolPlanner.parse(output)
                         if decision.tool == .reply { decision.arg = try await models.generate(ToolPlanner.conversationPrompt(fixture.input, records: Evaluation.records, language: L10n.isFrench ? .french : .english), maxTokens: effort.chatTokens, stopAtJSON: false); output += "\nReply: " + decision.arg }
-                        _ = try ToolPlanner.validate(decision, original: fixture.input, records: Evaluation.records)
+                        _ = try ToolPlanner.validate(decision, original: fixture.input, records: Evaluation.records, language: L10n.isFrench ? .french : .english)
                         report.runs.append(ModelRun(model: selectedModel.rawValue, effort: effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: decision.tool.rawValue, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: decision.tool == fixture.tool))
                     } catch { if Task.isCancelled { return }; report.runs.append(ModelRun(model: selectedModel.rawValue, effort: effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: error.localizedDescription, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: false)) }
                 }

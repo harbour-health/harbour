@@ -1,0 +1,34 @@
+{
+  "formatVersion": 1,
+  "scopeRecordedUTC": "2026-10-13T03:17:00Z",
+  "userInstruction": "Keep Automatic; add 2B as optional",
+  "defaultPolicy": {
+    "freshOrUnknownPreference": "automatic",
+    "simulator": "small",
+    "eligiblePhysicalDevice": "balanced",
+    "eligibility": "At least 8000000000 bytes RAM, low power disabled, nominal thermal state; otherwise small",
+    "qwen35SelectedAutomatically": false,
+    "savedExplicitChoicesPreserved": true
+  },
+  "frozenModelQualityProtocol": {
+    "fixtureSHA256": "7a013eae0da56e0d829513ebd4c33a54eccd45c4ce6e8da4ffa81857d42fb5d9",
+    "fixturesScorerAndPromotionThresholdsChanged": false,
+    "qwen35DefaultPromotionGate": "Remains blocked; no default promotion is proposed",
+    "knownOptionalLimitations": "French factual errors and raw visit follow-up omissions remain failures. Accepted source recovery earns no independent model-recall credit.",
+    "finalComparison": "Complete DEV and paired baseline/final held-out matrices across Small, Balanced and Qwen3.5; Standard plus the predeclared effort subset and final timing repeats",
+    "heldOutStateAtScopeChange": "No held-out output generated or reviewed",
+    "freeze": "Freeze source after complete DEV reviews and application regression checks; do not tune on held-out results"
+  },
+  "applicationReleaseRequirements": [
+    "Automatic policy and fresh/unknown/saved preference behavior match the restored policy",
+    "Source-grounding, unsupported schedule-scope, stored-summary revalidation and reply-disposition tests pass",
+    "No unsafe source-guarded action accepted for any model",
+    "Protected French and saved-record grounding regressions for the Automatic models remain blockers",
+    "Raw routing/prose versus application fallback decisions are separately retained; no fallback is represented as model quality",
+    "Full downloaded-model native UI suite and standard hosted/localization checks pass without weakened waits/assertions",
+    "Current frozen-source xtool Release compilation/packaging is verified",
+    "All required comparisons and qualitative reviews complete; failures and physical-device limits remain visible"
+  ],
+  "replyDispositionScope": "After full model routing, bounded current unquoted source requests may receive existing interaction evidence, exact-product clarification or a non-action receipt. This does not claim general medical-answer safety.",
+  "reviewAndHardwareLimits": "Qualitative AI reviews of fictional cases; no clinician labels. CPU/hosted Simulator evidence does not establish physical iPhone Metal performance."
+}

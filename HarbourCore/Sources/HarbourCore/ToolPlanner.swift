@@ -27,6 +27,12 @@ public enum ValidatedAction: Equatable, Sendable {
     case appointment(String), appointments
     case reply(String), symptom(String), add(Medicine, [DoseTime], MedicationFrequency?), remove(Medicine), medicines, interactions([Medicine]), reading(Reading), readings, importHealth, export, note, clear, reminder(String), reminders, schedule(Medicine, [DoseTime], MedicationFrequency?), dose(Medicine, DoseStatus), timeline(String), scan, question(String)
 }
+/// An application response after model routing; it is not a model prediction.
+public struct ReplyFallback: Equatable, Sendable {
+    public let decision: ToolDecision
+    public let action: ValidatedAction
+    public let reason: String
+}
 public enum PlannerError: LocalizedError {
     case malformed, forbidden, missingMedicine, missingReading, emptyReply
     public var errorDescription: String? {
@@ -43,6 +49,82 @@ public enum ToolPlanner {
     private static func matches(_ text: String, _ pattern: String) -> Bool { text.range(of: pattern, options: [.regularExpression, .caseInsensitive]) != nil }
     public static let availableTools = Tool.allCases
     public static let maximumReplyCharacters = 4000
+
+    private static func unquotedRequest(_ original: String) -> String {
+        // Apostrophes inside words are not quoted payload delimiters.
+        let quotes = #""[^"]*"|“[^”]*”|«[^»]*»|‘[^’]*’|(?<![\p{L}\p{N}])'(?:[^']|(?<=[\p{L}])'(?=[\p{L}]))*'(?![\p{L}\p{N}])"#
+        return original.replacingOccurrences(of: quotes, with: " ", options: .regularExpression)
+    }
+
+    private static func explicitSavedInteractionRequest(_ original: String) -> Bool {
+        let outer = unquotedRequest(original)
+        var input = InputLanguage.folded(outer)
+        // An empty note left by a quoted payload adds no current comparand.
+        if outer != original { input = input.replacingOccurrences(of: #"[.!?]\s*(?:note|remarque)\s*:\s*$"#, with: ".", options: .regularExpression) }
+        let request = #"^\s*(?:(?:please|svp|s'il vous plait),?\s+)?(?:(?:can|could|would)\s+you\s+|(?:peux-tu|pouvez-vous)\s+)?(?:check|compare|review|verifi[a-z]*|compar[a-z]*|examin[a-z]*)\s+"#
+        let englishTarget = #"\ball\s+(?:(?:of|my|our|the)\s+)*(?:saved|stored|recorded)\s+(?:medicines|medications|products)\b"#
+        let frenchTarget = #"\btous\s+(?:(?:mes|nos|les|vos)\s+)*(?:medicaments|produits)\s+(?:enregistre[a-z]*|sauvegarde[a-z]*)\b"#
+        let english = #"(?:interactions?\s+(?:among|between|of|for|in)\s+"# + englishTarget + "|" + englishTarget + #"\s+for\s+(?:the\s+)?interactions?)"#
+        let french = #"(?:(?:les\s+)?interactions?\s+(?:entre|parmi|de|pour)\s+"# + frenchTarget + "|" + frenchTarget + #"\s+pour\s+(?:les\s+)?interactions?)"#
+        return matches(input, request + "(?:" + english + "|" + french + #")\s*[.!?]*\s*$"#)
+    }
+
+    /// Bound the reply path for explicit current requests. This never narrows the
+    /// routing catalog, uses model answer keywords, or infers unnamed medicines.
+    public static func replyFallback(original: String, records: Records, language: ModelLanguage = .english) -> ReplyFallback? {
+        // Quoted payloads and apostrophes in words have different roles. Only the
+        // outer current request can trigger an application response.
+        let outer = unquotedRequest(original)
+        let input = InputLanguage.folded(outer).trimmingCharacters(in: .whitespacesAndNewlines)
+        let courtesy = #"(?:(?:please|svp|s'il vous plait|s'il te plait),?\s+)?"#
+        let question = #"(?:can|could|may|should|would|is|are|does|do|what|why|how|puis-je|dois-je|devrais-je|peut-on|est-ce|peux-tu|pouvez-vous|y a-t-il|pourquoi|comment|quelles?|quels?)\b"#
+        let comparison = #"(?:check|compare|verifi[a-z]*|compar[a-z]*)\b"#
+        let questionOrComparison = matches(input, "^" + courtesy + "(?:" + question + "|" + comparison + ")")
+        let recordQuestion = matches(input, "^" + courtesy + #"(?:how many|combien|what (?:are the )?names|(?:can|could|would|will)\s+you\s+(?:show|list|display|save|record|add|remove|delete|export|import)|(?:peux-tu|pouvez-vous)\s+(?:affich[a-z]*|montr[a-z]*|enregistr[a-z]*|ajout[a-z]*|supprim[a-z]*))\b"#)
+        let medicines = Catalog.mentioned(in: outer, saved: records.medicines)
+        let coUse = matches(input, #"\b(?:mix|combine|together|interact[a-z]*|combination|simultaneously|melang[a-z]*|combin[a-z]*|ensemble|interagir|interaction[a-z]*|simultanement)\b"#)
+            || (matches(input, #"\b(?:take|taking|use|using|prendre|prends|utiliser|utilise)\b"#)
+                && matches(input, #"\b(?:with|and|avec|et)\b"#))
+            || (medicines.count >= 2 && matches(input, #"\b(?:safe|safely|compatible|compatibility|securite|compatib[a-z]*)\b"#))
+        let medicineContext = !medicines.isEmpty || matches(input, #"\b(?:medicines?|medications?|pills?|tablets?|drugs?|medicaments?|comprimes?)\b"#)
+        if questionOrComparison && !recordQuestion && coUse && medicineContext {
+            let unspecifiedCompanion = matches(input, #"\b(?:other|another|unknown|unnamed|unspecified|autre|inconnu[a-z]*|non nomme[a-z]*)\s+(?:(?:medicine|medication|pill|tablet|drug|medicament|comprime)s?\b)"#)
+            // A named subset is not a complete comparison when another explicit
+            // list component has no source-resolved product. This small list
+            // grammar is conservative (e.g. a food qualifier needs clarification).
+            let usePrefix = #"(?:(?:(?:can|could|may|should|would)\s+(?:i|we|you|one)|puis-je|dois-je|devrais-je|peut-on)\s+)?(?:safely\s+)?(?:take|use|mix|combine|check|compare|prendre|utiliser|melang[a-z]*|combin[a-z]*|verifi[a-z]*|compar[a-z]*)\b"#
+            let useVerb = input.range(of: "^" + courtesy + usePrefix, options: .regularExpression)
+            let prefix = input.range(of: "^" + courtesy + question + #"(?:\s+que)?\s*"#, options: .regularExpression)
+            let list = (useVerb ?? prefix).map { String(input[$0.upperBound...]) } ?? input
+            let components = list.replacingOccurrences(of: #"\b(?:and|with|or|et|avec|ou|plus)\b|[,/+]"#, with: "\n", options: .regularExpression)
+                .components(separatedBy: "\n").filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+            let unresolvedComponent = components.contains { Catalog.mentioned(in: $0, saved: records.medicines).isEmpty }
+            if medicines.count >= 2 && !unspecifiedCompanion && !unresolvedComponent {
+                return ReplyFallback(decision: .init(tool: .interactions), action: .interactions(medicines), reason: "interaction_evidence")
+            }
+            let text = language == .french
+                ? "Nommez les produits exacts à comparer. L’absence d’une interaction répertoriée ne garantit pas leur sécurité; un pharmacien peut vérifier votre situation."
+                : "Please name the exact products to compare. An absent listed interaction does not establish safety; a pharmacist can review your situation."
+            return ReplyFallback(decision: .init(tool: .reply, arg: text), action: .reply(text), reason: "interaction_names_required")
+        }
+
+        // Acknowledgement is limited to one direct preservation request. Full
+        // matching excludes questions, reports, conditions and appended actions.
+        guard outer == original else { return nil }
+        let englishObject = #"(?:(?:all|my|our|the|saved|stored|health|medical)\s+)*(?:records?|data|information|medicines|medications|readings|schedules|symptoms)(?:\s+(?:that\s+)?I saved)?"#
+        let frenchObject = #"(?:(?:tous|toutes|tout|mes|nos|les|ces|vos|mon|ma)\s+)*(?:donnees|dossiers?|enregistrements?|informations?|medicaments?|mesures?|horaires?|symptomes?)(?:\s+de sante)?(?:\s+(?:enregistre[a-z]*|sauvegarde[a-z]*))?"#
+        let englishNegative = #"(?:do not|don't|never|avoid)\s+(?:delete|erase|clear|remove|change|modify|reset|wipe)\s+"# + englishObject
+        let englishPreserve = #"(?:keep|leave|preserve|retain)\s+"# + englishObject + #"(?:\s+(?:unchanged|intact|as they are|as is))?"#
+        let frenchNegative = #"(?:ne\s+(?:supprim[a-z]*|retir[a-z]*|modifi[a-z]*|chang[a-z]*|vid[a-z]*)|n'(?:effac[a-z]*|alter[a-z]*))\s+(?:pas|jamais|plus)\s+"# + frenchObject
+        let frenchPreserve = #"(?:gard[a-z]*|conserv[a-z]*|laiss[a-z]*|preserv[a-z]*)\s+"# + frenchObject + #"(?:\s+(?:inchang[a-z]*|intact[a-z]*|tels quels|sans modification))?"#
+        if matches(input, "^" + courtesy + "(?:" + englishNegative + "|" + englishPreserve + "|" + frenchNegative + "|" + frenchPreserve + #")[.!]*\s*$"#) {
+            let text = language == .french
+                ? "Compris; cette demande ne modifie pas vos données enregistrées."
+                : "Understood; this request makes no changes to your saved records."
+            return ReplyFallback(decision: .init(tool: .reply, arg: text), action: .reply(text), reason: "preservation_ack")
+        }
+        return nil
+    }
 
     public static func prompt(_ original: String, hint: String? = nil, records: Records? = nil, history: [ConversationTurn] = []) -> String {
         func escaped(_ text: String) -> String { text.replacingOccurrences(of: "<|", with: "< |") }
@@ -174,7 +256,7 @@ public enum ToolPlanner {
         guard arg.count <= maximumReplyCharacters else { throw PlannerError.malformed }
         return ToolDecision(tool: tool, arg: arg)
     }
-    public static func validate(_ decision: ToolDecision, original: String, records: Records) throws -> ValidatedAction {
+    public static func validate(_ decision: ToolDecision, original: String, records: Records, language: ModelLanguage = .english) throws -> ValidatedAction {
         guard WriteRequestValidation.permits(original, tool: decision.tool) else { throw PlannerError.forbidden }
         switch decision.tool {
         case .createAppointment:
@@ -186,11 +268,15 @@ public enum ToolPlanner {
             guard !answer.isEmpty else { throw PlannerError.emptyReply }
             guard answer.count <= maximumReplyCharacters, !answer.contains("<|"),
                   !answer.unicodeScalars.contains(where: { CharacterSet.controlCharacters.contains($0) && $0 != "\n" && $0 != "\t" }) else { throw PlannerError.malformed }
+            if let fallback = replyFallback(original: original, records: records, language: language) { return fallback.action }
             return .reply(answer)
         case .captureSymptom: return .symptom(original)
         case .addMedicine:
             let meds = Catalog.mentioned(in: original, saved: records.medicines)
             guard meds.count == 1 else { throw PlannerError.missingMedicine }
+            guard Catalog.names(for: meds[0]).allSatisfy({
+                VisitSourceGrounding.unsupportedScheduleScopes(context: original, name: $0, requiresMedicineInstruction: false).isEmpty
+            }) else { throw CareError.invalid }
             let times = CareRules.times(in: original)
             let frequency = CareRules.frequency(in: original) ?? (times.isEmpty ? nil : MedicationFrequency(count: times.count, period: .day))
             var medication = meds[0]
@@ -206,6 +292,13 @@ public enum ToolPlanner {
             guard meds.count == 1 else { throw PlannerError.missingMedicine }; return .remove(meds[0])
         case .listMedicines: return .medicines
         case .interactions:
+            if explicitSavedInteractionRequest(original) { return .interactions(records.medicines) }
+            if let fallback = replyFallback(original: original, records: records, language: language) {
+                guard fallback.reason == "interaction_evidence", case .interactions = fallback.action else { throw PlannerError.forbidden }
+                // Revalidating an application decision must retain the same outer
+                // source, rather than reintroducing quoted or unnamed products.
+                return fallback.action
+            }
             let meds = Catalog.mentioned(in: original, saved: records.medicines)
             return .interactions(meds.count >= 2 ? meds : meds + records.medicines.filter { saved in !meds.contains { $0.id == saved.id } })
         case .logReading:
@@ -236,6 +329,9 @@ public enum ToolPlanner {
             guard meds.count == 1 else { throw CareError.missingMedicine }
             let medicine = records.medicines.first { $0.id == meds[0].id }!
             if decision.tool == .scheduleMedicine {
+                guard Catalog.names(for: meds[0]).allSatisfy({
+                    VisitSourceGrounding.unsupportedScheduleScopes(context: original, name: $0, requiresMedicineInstruction: false).isEmpty
+                }) else { throw CareError.invalid }
                 let times = CareRules.times(in: original)
                 let frequency = CareRules.frequency(in: original) ?? (times.isEmpty ? nil : MedicationFrequency(count: times.count, period: .day))
                 guard !times.isEmpty || frequency != nil else { throw CareError.invalid }

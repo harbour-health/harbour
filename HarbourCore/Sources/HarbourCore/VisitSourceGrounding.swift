@@ -268,6 +268,38 @@ enum VisitSourceGrounding {
         return result
     }
 
+    /// Clock times/frequency cannot encode exceptions, weekdays, intervals or finite courses.
+    /// Inspect complete medicine-bearing source sentences, never only model fields;
+    /// a separate dated follow-up is not a restriction on this medicine.
+    /// Standalone callers validate request intent before disabling visit verbs.
+    static func unsupportedScheduleScopes(context: String, name: String, requiresMedicineInstruction: Bool = true) -> [String] {
+        let sourceName = "(?<![\\p{L}\\p{M}\\p{N}_])" + NSRegularExpression.escapedPattern(for: InputLanguage.folded(name)) + "(?![\\p{L}\\p{M}\\p{N}_])"
+        // Detect a bounded duration phrase; do not interpret its number or rewrite it.
+        let quantity = "(?:[0-9]+(?:[.,][0-9]+)?|[\\p{L}\\p{M}]+)(?:[ -](?:[0-9]+|[\\p{L}\\p{M}]+)){0,4}"
+        let unit = "(?:minutes?|hours?|days?|weeks?|months?|years?|heures?|jours?|semaines?|mois|annees?|ans?)"
+        let restrictions = [
+            "\\b(?:except|excepting|excluding|other than|unless|sauf|excepte|excluant|a l'exception)\\b",
+            "\\b(?:mondays?|tuesdays?|wednesdays?|thursdays?|fridays?|saturdays?|sundays?|weekdays?|weekends?|week-ends?|lundis?|mardis?|mercredis?|jeudis?|vendredis?|samedis?|dimanches?|jours? ouvrables)\\b",
+            "\\b(?:for|during|over|pendant|durant|pour|sur)\\s+" + quantity + "\\s+" + unit + "\\b",
+            "\\b(?:every|each)\\s+(?!(?:one|1)\\s+days?\\b)" + quantity + "\\s+" + unit + "\\b",
+            "\\b(?:tous|toutes)\\s+les\\s+(?!(?:un|une|1)\\s+jours?\\b)" + quantity + "\\s+" + unit + "\\b",
+            "\\bun\\s+jour\\s+sur\\s+deux\\b",
+            "\\b(?:until|through|jusqu'a|jusqu'au|jusqu'aux)\\b",
+            "\\b[0-9]{4}-[0-9]{2}-[0-9]{2}\\b"
+        ]
+        return sentences(context).filter { sentence in
+            let folded = InputLanguage.folded(sentence)
+            // Bare non-daily periods cannot fall back to one daily clock time.
+            // Explicit counted weekly/monthly frequencies remain representable.
+            let barePeriod = "\\b(?:every|each)\\s+(?:minute|hour|week|month|year)\\b|\\bchaque\\s+(?:minute|heure|semaine|mois|annee|an)\\b"
+            let uncountedPeriod = CareRules.frequency(in: sentence) == nil
+                && folded.range(of: barePeriod, options: .regularExpression) != nil
+            return folded.range(of: sourceName, options: .regularExpression) != nil
+                && (!requiresMedicineInstruction || !instructionRanges(folded).isEmpty)
+                && (uncountedPeriod || restrictions.contains { folded.range(of: $0, options: .regularExpression) != nil })
+        }
+    }
+
     /// A minimum is permitted only after constructing and validating one narrow,
     /// source-verbatim proposal. This does not insert a parsed medicine fallback
     /// or relax parse().
@@ -334,7 +366,8 @@ enum VisitSourceGrounding {
             }
             break
         }
-        guard let extracted, action == .start || medicines.contains(where: { $0.id == canonical.id }) else { return nil }
+        guard let extracted, action == .start || medicines.contains(where: { $0.id == canonical.id }),
+              unsupportedScheduleScopes(context: candidate.quote, name: extracted.name).isEmpty else { return nil }
         let raw: [String: Any] = ["highlights": [], "followUps": [], "appointments": [], "medicines": [
             ["quote": candidate.quote, "action": action.rawValue, "name": extracted.name, "instructions": extracted.instructions]
         ]]

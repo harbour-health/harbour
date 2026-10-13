@@ -123,7 +123,7 @@ import XCTest
         app.buttons["nav-chat"].tap()
         let selector = app.buttons["modelSelector"]
         XCTAssertTrue(selector.waitForExistence(timeout: 5))
-        XCTAssertTrue((selector.value as? String ?? "").hasPrefix("Qwen3.5 2B, "))
+        XCTAssertTrue((selector.value as? String ?? "").hasPrefix("Automatic, "))
         selector.tap()
         for title in ["Automatic", "Qwen Small", "Qwen Balanced", "Qwen3.5 2B"] {
             XCTAssertTrue(app.staticTexts[title].firstMatch.waitForExistence(timeout: 5), title)

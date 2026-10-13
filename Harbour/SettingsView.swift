@@ -51,7 +51,7 @@ struct ModelsView: View {
                         }.foregroundStyle(Palette.ink).padding(.vertical, 5)
                     }.disabled(models.downloading != nil || models.generating)
                 }
-            } header: { Text("Model") } footer: { Text("New installs default to Qwen3.5 2B. Automatic chooses a model based on this device.") }
+            } header: { Text("Model") } footer: { Text("New installs use Automatic. Qwen3.5 2B is optional.") }
             Section {
                 Text(models.effort.title).font(.headline)
                 EffortSlider(value: Binding(get: { Double(Effort.allCases.firstIndex(of: models.effort) ?? 1) }, set: { models.effort = Effort.allCases[Int($0.rounded())] })).frame(height: 48).padding(.vertical, 6)

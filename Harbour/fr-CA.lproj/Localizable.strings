@@ -258,7 +258,7 @@
 "Negated then affirmative" = "Négation suivie d’une affirmation";
 "New chat" = "Nouvelle conversation";
 "New confusion" = "Confusion nouvelle";
-"New installs default to Qwen3.5 2B. Automatic chooses a model based on this device." = "Les nouvelles installations utilisent Qwen3.5 2B par défaut. Le mode automatique choisit un modèle selon cet appareil.";
+"New installs use Automatic. Qwen3.5 2B is optional." = "Les nouvelles installations utilisent le mode automatique. Qwen3.5 2B est disponible en option.";
 "Next step" = "Prochaine étape";
 "NHS source" = "Source du NHS";
 "No details extracted. Review the transcript." = "Aucun détail extrait. Vérifiez la transcription.";
