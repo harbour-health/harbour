@@ -1,0 +1,35 @@
+{
+  "formatVersion": 1,
+  "scopeRecordedUTC": "2026-10-13T04:44:00Z",
+  "originalOptionalScopeCanonicalSHA256": "95e309cf97c14ca7cb9904bfd60f44cd7845d55c2b85867d1cd70c52c26259bd",
+  "defaultPolicyChanged": false,
+  "fixtureScorerAndPromotionThresholdsChanged": false,
+  "frozenFixtureSHA256": "7a013eae0da56e0d829513ebd4c33a54eccd45c4ce6e8da4ffa81857d42fb5d9",
+  "observedFailure": {
+    "sourceCommit": "063fa479e73cac722f6a278c5da1138b2c963fbc",
+    "nativeRun": "https://github.com/harbour-health/harbour/actions/runs/38344454125",
+    "fictionalInput": "Please save my heart rate of 72",
+    "observed": "Completed snapshot echo and unsupported saved-state claim, with no reading review form",
+    "rawRoutingMechanism": "Unlogged; not inferred from the completed reply",
+    "retainedDevelopmentRun": "Stopped with 56 Qwen rows preserved; no Small/Balanced, supplemental or heldout generation"
+  },
+  "boundedSourceDisposition": {
+    "position": "After full model routing; all 21 model alternatives remain available",
+    "trigger": "One complete direct current unquoted affirmative recording request with one supported explicit reading type and valid source value",
+    "authority": "Existing ReadingParser and WriteRequestValidation; no value, type or reference inferred from model text, history or saved records",
+    "result": "Existing reading review draft; the user confirms Save",
+    "identity": "ReadingParser assigns fresh draft UUID and current creation time; semantic type/value parity is required on revalidation",
+    "excluded": "Quoted payloads, hypothetical/negated/third-person statements, context-only questions, invalid or missing values/types, ambiguous or compound readings, and appended actions",
+    "scopeLimit": "Bounded English/French syntax, not arbitrary language coverage or clinical correctness"
+  },
+  "evidenceRequirements": [
+    "Raw route and suppressed prose retained separately from effective application action, origin and reason",
+    "Application recovery earns no raw routing or model prose quality credit",
+    "Meaningful English/French source, bounds, quotation, negation, compound and revalidation controls pass",
+    "Fresh source-bound correctness, native app flows and xtool checks remain required",
+    "Full final development and paired heldout comparisons use the corrected frozen source and declared timing repetitions"
+  ],
+  "heldoutGeneratedOrReviewed": false,
+  "sourceFreeze": "After complete development review and application regression checks; no tuning on heldout results",
+  "promotionGateWaived": false
+}

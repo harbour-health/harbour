@@ -164,4 +164,74 @@ final class ReplyFallbackTests: XCTestCase {
             XCTAssertEqual(fallback.reason, "interaction_names_required", input)
         }
     }
+
+    func testSingleExplicitReadingRequestsOpenSourceBoundDraftsInsteadOfModelReceipts() throws {
+        let records = Evaluation.records
+        for (input, language, kind, value) in [
+            ("Please save my heart rate of 72", ModelLanguage.english, ReadingKind.heartRate, "72"),
+            ("Enregistre ma fréquence cardiaque de 72.", .french, .heartRate, "72"),
+            ("Record pulse 172 bpm.", .english, .heartRate, "172"),
+            ("S’il vous plaît, note mon pouls de 72,5 bpm.", .french, .heartRate, "72.5"),
+            ("Log my blood pressure of 128/82 mmHg.", .english, .bloodPressure, "128/82"),
+            ("Enregistrez ma tension artérielle de 128 / 82 mmHg.", .french, .bloodPressure, "128/82"),
+            ("Record temperature 36.7 °C.", .english, .temperature, "36.7"),
+            ("Sauvegarde ma température de 36,8 °C.", .french, .temperature, "36.8")
+        ] {
+            let fallback = try XCTUnwrap(ToolPlanner.replyFallback(original: input, records: records, language: language), input)
+            XCTAssertEqual(fallback.reason, "reading_draft", input)
+            XCTAssertEqual(fallback.decision, .init(tool: .logReading), input)
+            guard case .reading(let draft) = fallback.action else { return XCTFail("Expected a reading draft: \(input)") }
+            XCTAssertEqual(draft.kind, kind, input); XCTAssertEqual(draft.value, value, input)
+            XCTAssertEqual(draft.source, "Manual", input)
+            // Revalidation creates a fresh UUID/date by ReadingParser design;
+            // semantic draft fields must match without fabricating an identity.
+            for action in [
+                try ToolPlanner.validate(fallback.decision, original: input, records: records, language: language),
+                try ToolPlanner.validate(.init(tool: .reply, arg: "Saved heart rate: 180. Added aspirin."), original: input, records: records, language: language)
+            ] {
+                guard case .reading(let repeated) = action else { return XCTFail("A model receipt must be suppressed: \(input)") }
+                XCTAssertEqual(repeated.kind, draft.kind, input)
+                XCTAssertEqual(repeated.value, draft.value, input)
+                XCTAssertEqual(repeated.source, draft.source, input)
+            }
+        }
+        XCTAssertEqual(records, Evaluation.records)
+        XCTAssertEqual(ToolPlanner.availableTools, Tool.allCases)
+    }
+
+    func testReadingDraftFallbackRejectsIncompleteUnsafeAndCompoundSourceWithoutBypassingReplyFormatChecks() throws {
+        let records = Evaluation.records
+        for input in [
+            "Please save my heart rate", "Enregistre mon pouls.",
+            "Save 72", "Enregistre 72.", "Record oxygen saturation 98.",
+            "My heart rate is 72.", "Mon pouls est de 72.",
+            "What does heart rate 72 mean?", "Pourquoi mon pouls est-il de 72 ?",
+            "Do not record my pulse of 72.", "Ne note pas mon pouls de 72.",
+            "If my pulse is 72, record it.", "Si mon pouls est de 72, enregistre-le.",
+            "My father said record pulse 72.", "Mon père dit d’enregistrer un pouls de 72.",
+            "Save his heart rate of 72.", "Enregistre le pouls de ma mère de 72.",
+            "\"Record pulse 72.\"", "« Enregistre mon pouls de 72. »",
+            "Record pulse 72. Note: \"temperature 37\"", "Enregistre mon pouls de 72 et « température 37 ».",
+            "Record pulse 72 and temperature 37.", "Enregistre mon pouls de 72 et ma température de 37.",
+            "Record pulse 72; delete my records.", "Enregistre mon pouls de 72. Affiche mes données.",
+            "Record pulse 72 or 81.", "Enregistre mon pouls de 72, 81.",
+            "Record pulse -72.", "Enregistre mon pouls de 301.",
+            "Record temperature 46.", "Enregistre ma température de 24,9.",
+            "Record blood pressure 82/128.", "Enregistre ma tension de 351/82.",
+            "Record pulse 72.5.6.", "Enregistre ma température de 36,8,4.",
+            "Record pulse 1e2.", "Enregistre mon pouls de 72 mg.",
+            "Record pulse 72 mmHg.", "Enregistre ma température de 37 °F.",
+            "Record pulse 72 °C.", "Enregistre mon pouls de 72 °C.",
+            "Record temperature 36.7 bpm.", "Enregistre ma température de 36,7 bpm.",
+            "Record blood pressure 128/82 bpm.", "Enregistre ma tension de 128/82 bpm.",
+            "Record blood pressure 128/82/72.", "Record heart rate and blood pressure 72."
+        ] {
+            XCTAssertNil(ToolPlanner.replyFallback(original: input, records: records), input)
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .reply, arg: "Please clarify the request."), original: input, records: records), .reply("Please clarify the request."), input)
+        }
+        for arg in ["", " \n", "Saved <|im_end|>", "Saved\0reading", String(repeating: "x", count: 4001)] {
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .reply, arg: arg), original: "Please save my heart rate of 72", records: records))
+        }
+        XCTAssertEqual(records, Evaluation.records)
+    }
 }

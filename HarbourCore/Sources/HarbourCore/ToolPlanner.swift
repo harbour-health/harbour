@@ -123,6 +123,31 @@ public enum ToolPlanner {
                 : "Understood; this request makes no changes to your saved records."
             return ReplyFallback(decision: .init(tool: .reply, arg: text), action: .reply(text), reason: "preservation_ack")
         }
+        // A single explicit measurement request opens a draft, never a saved
+        // receipt. Bind the whole source and compatible unit to the existing
+        // parser's type/value; no model prose or saved reading supplies facts.
+        if WriteRequestValidation.permits(original, tool: .logReading), let reading = ReadingParser.parse(original) {
+            let label: String, unit: String
+            switch reading.kind {
+            case .heartRate:
+                label = #"(?:heart rate|pulse|pouls|frequence cardiaque|rythme cardiaque)"#
+                unit = #"(?:bpm|beats? per minute|battements? par minute)"#
+            case .bloodPressure:
+                label = #"(?:blood pressure|tension arterielle|pression arterielle|tension)"#
+                unit = "mmhg"
+            case .temperature:
+                label = "temperature"
+                unit = #"(?:°\s*c|c|degrees? celsius|degres? celsius)"#
+            }
+            let value = NSRegularExpression.escapedPattern(for: reading.value)
+                .replacingOccurrences(of: #"\."#, with: "[.,]")
+                .replacingOccurrences(of: "/", with: #"\s*/\s*"#)
+            let command = #"(?:save|record|log|enregistre|enregistrez|enregistrer|sauvegarde|sauvegardez|sauvegarder|note|notez|noter|consigne|consignez|consigner)\s+(?:(?:my|the|mon|ma|le|la)\s+)?"#
+            let measurement = label + #"(?:\s+(?:of|at|is|de|a|est))?\s*[:=]?\s*"# + value + #"(?:\s*"# + unit + #")?"#
+            if matches(input, "^" + courtesy + command + measurement + #"[.!]?\s*$"#) {
+                return ReplyFallback(decision: .init(tool: .logReading), action: .reading(reading), reason: "reading_draft")
+            }
+        }
         return nil
     }
 
