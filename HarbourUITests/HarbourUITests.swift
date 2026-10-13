@@ -1457,7 +1457,7 @@ import XCTest
     func testFrenchScheduleOpensReview() { schedule(french: true) }
 
     private func openPreservedMedicineRecords(_ app: XCUIApplication) -> Bool {
-        let deadline = Date().addingTimeInterval(10)
+        var deadline = Date().addingTimeInterval(10)
         func confirm(_ element: XCUIElement, _ predicate: NSPredicate, _ state: String) -> Bool {
             let remaining = deadline.timeIntervalSinceNow
             guard remaining > 0 else {
@@ -1471,6 +1471,7 @@ import XCTest
         let records = app.buttons["nav-records"]
         guard confirm(records, NSPredicate(format: "exists == true AND hittable == true"), "Records tab must be ready before its one tap") else { return false }
         records.tap()
+        deadline = Date().addingTimeInterval(10)
         guard confirm(records, NSPredicate(format: "exists == true AND selected == true"), "Records tab must become selected") else { return false }
         let category = app.buttons["record-category-1"]
         guard confirm(category, NSPredicate(format: "exists == true AND hittable == true"), "Medication category must be present and ready") else { return false }
