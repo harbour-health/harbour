@@ -68,6 +68,36 @@ final class WriteRequestValidationTests: XCTestCase {
         }
     }
 
+    func testMedicineAddRejectsDoseReportsAndBareNames() throws {
+        for original in [
+            "I took Metformin.", "I have taken Metformin.", "I take Metformin daily.",
+            "J'ai pris metformine.", "Je prends metformine chaque jour.",
+            "Metformin", "metformine", "Should I start Metformin?", "Dois-je commencer metformine ?",
+            "Do not add Metformin.", "N'ajoute pas metformine.",
+            #"The note says "Add Metformin.""#, "La note dit « Ajoute metformine. »"
+        ] {
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .addMedicine, arg: "metformin"), original: original, records: records), original)
+        }
+        let medicine = records.medicines[0]
+        for original in ["I took Metformin.", "J'ai pris metformine."] {
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .logDose), original: original, records: records), .dose(medicine, .taken), original)
+        }
+    }
+
+    func testAffirmativeMedicineAddRequestsRetainIdentityAndRoutingAlternatives() throws {
+        let medicine = records.medicines[0]
+        for original in [
+            "Add Metformin to my medication list.", "Could you please add Metformin?",
+            "Put Metformin on my list.", "Start Metformin.", "Begin Metformin.",
+            "Ajoute metformine à ma liste de médicaments.", "Pourriez-vous ajouter metformine ?",
+            "Commence metformine.", "Débute metformine.", "Enregistre metformine."
+        ] {
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .addMedicine, arg: "warfarin"), original: original, records: records), .add(medicine, [], nil), original)
+            let prompt = ToolPlanner.prompt(original, records: records)
+            for tool in Tool.allCases { XCTAssertTrue(prompt.contains(tool.rawValue), "\(original): \(tool.rawValue)") }
+        }
+    }
+
     func testAffirmativeReminderRequestsPreserveConditionalOrNegativePayloads() throws {
         for original in [
             "Remind me not to forget the appointment if it rains.",
@@ -120,6 +150,25 @@ final class WriteRequestValidationTests: XCTestCase {
             "Ma sœur a un rendez-vous jeudi à 11 h."
         ] {
             XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .createAppointment), original: original, records: records), original)
+        }
+    }
+
+    func testAppointmentNotePreparationCannotAuthorizeAnAppointmentWrite() throws {
+        for original in [
+            "Make an appointment note", "Create appointment notes for my doctor.",
+            "Prepare notes for my appointment.", "Write a question about the appointment.",
+            "Crée une note pour mon rendez-vous.", "Prépare un compte rendu pour la consultation.",
+            "Ajoute une question pour mon rendez-vous."
+        ] {
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .createAppointment), original: original, records: records), original)
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .appointmentNote), original: original, records: records), .note, original)
+        }
+        for original in [
+            "Add my dentist appointment Tuesday at 2 pm.",
+            "Enregistre mon rendez-vous mardi à 14 h.",
+            "Add my appointment Tuesday; notes: bring my test results."
+        ] {
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .createAppointment), original: original, records: records), .appointment(original), original)
         }
     }
 

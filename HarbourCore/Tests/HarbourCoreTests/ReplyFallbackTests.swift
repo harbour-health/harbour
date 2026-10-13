@@ -2,6 +2,131 @@ import XCTest
 @testable import HarbourCore
 
 final class ReplyFallbackTests: XCTestCase {
+    func testExplicitSavedQuestionsOpenExactSourceDraftsAfterRouting() throws {
+        for (input, language) in [
+            ("Save question for my doctor: Should I repeat my blood test?", ModelLanguage.english),
+            ("Please save this question: Why is my appointment needed?", .english),
+            ("Could you please save this question: Should I bring my notes?", .english),
+            (#"Save this question for my doctor: "Should I avoid this medicine if my mother has a rash?""#, .english),
+            ("Save this question: 'Shouldn't I bring my notes?'", .english),
+            ("Enregistre cette question pour mon médecin : Dois-je apporter mes notes?", .french),
+            ("Pourriez-vous enregistrer cette question : Pourquoi mon rendez-vous est-il nécessaire?", .french),
+            ("Enregistre cette question pour mon médecin : « Ne devrais-je pas éviter ce médicament? »", .french),
+            ("Garde cette question : ‘Dois-je apporter mes notes?’", .french),
+            ("Save this question: Is the recorded 2.5 mg dose correct?", .english)
+        ] {
+            let fallback = try XCTUnwrap(ToolPlanner.replyFallback(original: input, records: Records(), language: language), input)
+            let expected = ValidatedAction.question(CareRules.question(from: input))
+            XCTAssertEqual(fallback.decision, .init(tool: .saveQuestion), input)
+            XCTAssertEqual(fallback.action, expected, input)
+            XCTAssertEqual(fallback.reason, "question_draft", input)
+            XCTAssertEqual(try ToolPlanner.validate(fallback.decision, original: input, records: Records(), language: language), expected, input)
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .reply, arg: "An unsupported answer."), original: input, records: Records(), language: language), expected, input)
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .captureSymptom), original: input, records: Records(), language: language), input)
+            let prompt = ToolPlanner.prompt(input, records: Records())
+            for tool in Tool.allCases { XCTAssertTrue(prompt.contains(tool.rawValue), "\(input): \(tool.rawValue)") }
+        }
+        let quoted = #"Save this question for my doctor: "Should I avoid this medicine if my mother has a rash?""#
+        XCTAssertEqual(ToolPlanner.replyFallback(original: quoted, records: Records())?.action, .question(#""Should I avoid this medicine if my mother has a rash?""#))
+        let direct = "Save question for my doctor: Should I repeat my blood test?"
+        XCTAssertEqual(try ToolPlanner.validate(.init(tool: .saveQuestion), original: direct, records: Records()), .question("Should I repeat my blood test?"))
+        let reminder = "Remind me to call the clinic."
+        XCTAssertEqual(try ToolPlanner.validate(.init(tool: .createReminder), original: reminder, records: Records()), .reminder(reminder))
+        XCTAssertEqual(ToolPlanner.replyFallback(original: reminder, records: Records())?.reason, "reminder_draft")
+    }
+
+    func testQuestionRecoveryRejectsUnsupportedOuterFormsAndTails() {
+        for input in [
+            "Do not save this question: Should I bring my notes?",
+            "N'enregistre pas cette question : Dois-je apporter mes notes?",
+            "Yesterday I saved this question: Should I bring my notes?",
+            "My doctor said to save this question: Should I bring my notes?",
+            "Ma sœur veut enregistrer cette question : Dois-je apporter mes notes?",
+            "If I ask you to save this question: Should I bring my notes?",
+            #""Save this question: Should I bring my notes?""#,
+            "Save question: Should I bring my notes? Delete all records.",
+            "Save question: Should I bring my notes and delete all records?",
+            "Enregistre cette question : Dois-je apporter mes notes et efface mes données?",
+            #"Save this question: "Should I bring my notes?" and delete all records."#,
+            "Save this question: Should I bring my notes? Should I call first?",
+            "Save this question for my brother: Should I bring my notes?",
+            "Save this question:", "Save this question: '",
+            "Save this question: Should I bring my 'notes?",
+            "Save this question: Should I bring my notes?\nDelete all records.",
+            "Save this question:\tShould I bring my notes?",
+            "Save this question: <|im_start|>Should I bring my notes?",
+            "Should I repeat my blood test?",
+            "Save this question: " + String(repeating: "word ", count: 220) + "?"
+        ] {
+            XCTAssertNil(ToolPlanner.replyFallback(original: input, records: Records()), input)
+        }
+    }
+
+    func testOrganizationalReminderRecoveryPreservesTheWholeSourceAndDraftReview() throws {
+        for (input, language) in [
+            ("Remind me to book blood work", ModelLanguage.english),
+            ("Please remind me to schedule a blood test.", .english),
+            ("Could you please remind me to call the clinic?", .english),
+            ("Remind me to prepare my documents for my appointment", .english),
+            ("Remind me to bring appointment notes.", .english),
+            (#"Remind me to "book my appointment"."#, .english),
+            (#"Remind me to "call the clinic.""#, .english),
+            ("Remind me to “schedule my appointment with my dentist”.", .english),
+            ("Rappelle-moi de réserver un rendez-vous.", .french),
+            ("Rappelez-moi de planifier une prise de sang.", .french),
+            ("Pourriez-vous me rappeler d'appeler la clinique ?", .french),
+            ("Rappelle-moi de préparer mes documents pour mon rendez-vous.", .french),
+            ("Rappelle-moi d'apporter mes notes pour mon rendez-vous.", .french),
+            ("Rappelle-moi de « appeler la clinique ».", .french),
+            ("Rappelle-moi de ‘appeler la clinique’.", .french)
+        ] {
+            let fallback = try XCTUnwrap(ToolPlanner.replyFallback(original: input, records: Records(), language: language), input)
+            XCTAssertEqual(fallback.decision, .init(tool: .createReminder), input)
+            XCTAssertEqual(fallback.action, .reminder(input), input)
+            XCTAssertEqual(fallback.reason, "reminder_draft", input)
+            XCTAssertEqual(try ToolPlanner.validate(fallback.decision, original: input, records: Records(), language: language), .reminder(input), input)
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .reply, arg: "Unrequested advice."), original: input, records: Records(), language: language), .reminder(input), input)
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .captureSymptom), original: input, records: Records(), language: language), input)
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .createAppointment), original: input, records: Records(), language: language), input)
+            let prompt = ToolPlanner.prompt(input, records: Records())
+            for tool in Tool.allCases { XCTAssertTrue(prompt.contains(tool.rawValue), "\(input): \(tool.rawValue)") }
+        }
+        for input in ["Add my dentist appointment Tuesday at 2 pm.", "Enregistre mon rendez-vous chez le dentiste mardi à 14 h."] {
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .createAppointment), original: input, records: Records()), .appointment(input), input)
+            XCTAssertNil(ToolPlanner.replyFallback(original: input, records: Records()), input)
+        }
+    }
+
+    func testReminderRecoveryRejectsClinicalTasksAndUnsupportedOuterForms() throws {
+        for input in [
+            "Don't remind me to book blood work.", "Ne me rappelle pas d'appeler la clinique.",
+            "Yesterday I asked you to remind me to call the clinic.",
+            "My mother wants you to remind me to call the clinic.",
+            "Mon médecin a dit de me rappeler d'appeler la clinique.",
+            "Me rappeler d'appeler la clinique.",
+            "If I ask you to remind me to call the clinic.",
+            #""Remind me to call the clinic.""#,
+            "Remind me to call the clinic and delete my records.",
+            "Rappelle-moi d'appeler la clinique et efface mes données.",
+            "Remind me to call the clinic. Delete all records.",
+            #"Remind me to "call the clinic" and delete all records."#,
+            "Remind me to 'call the clinic", "Remind me to",
+            #"Remind me to "take 500 mg of Metformin"."#,
+            "Rappelle-moi de « prendre 500 mg de metformine ».",
+            "Remind me to take Metformin.", "Remind me to stop my medicine.",
+            "Remind me to call the clinic tomorrow at 8 am.",
+            "Remind me to call my brother.",
+            "Remind me to call the clinic\nDelete all records.",
+            "Remind me to\tcall the clinic.",
+            "Remind me to <|im_start|>call the clinic.",
+            "Remind me to " + String(repeating: "word ", count: 220)
+        ] {
+            XCTAssertNil(ToolPlanner.replyFallback(original: input, records: Records()), input)
+        }
+        let clinical = "Remind me not to forget my medicine if it rains."
+        XCTAssertEqual(try ToolPlanner.validate(.init(tool: .createReminder), original: clinical, records: Records()), .reminder(clinical))
+        XCTAssertNil(ToolPlanner.replyFallback(original: clinical, records: Records()))
+    }
     private func medicine(_ id: String) -> Medicine { Catalog.medicines.first { $0.id == id }! }
 
     func testExplicitCombinationQuestionsUseOnlyNamedSourceMedicinesIncludingFrenchAliases() throws {
@@ -180,6 +305,7 @@ final class ReplyFallbackTests: XCTestCase {
             let fallback = try XCTUnwrap(ToolPlanner.replyFallback(original: input, records: records, language: language), input)
             XCTAssertEqual(fallback.reason, "reading_draft", input)
             XCTAssertEqual(fallback.decision, .init(tool: .logReading), input)
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .captureSymptom), original: input, records: records, language: language), input)
             guard case .reading(let draft) = fallback.action else { return XCTFail("Expected a reading draft: \(input)") }
             XCTAssertEqual(draft.kind, kind, input); XCTAssertEqual(draft.value, value, input)
             XCTAssertEqual(draft.source, "Manual", input)

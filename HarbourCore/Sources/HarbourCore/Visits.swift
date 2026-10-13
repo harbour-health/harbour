@@ -183,7 +183,9 @@ public enum VisitReview {
         var summary = VisitSummary()
         func grounded(_ quotes: [VisitQuote]) -> [VisitQuote] {
             var seen = Set<String>()
-            return quotes.filter { quoteIsValid($0.quote) }.map { VisitQuote(quote: normalise($0.quote)) }.filter { seen.insert($0.quote).inserted }
+            return quotes.filter { quoteIsValid($0.quote) }.map { VisitQuote(quote: normalise($0.quote)) }
+                .filter { VisitSourceGrounding.preservesQuoteScope($0.quote, source: source) }
+                .filter { seen.insert($0.quote).inserted }
         }
         summary.highlights = grounded(raw.highlights)
         summary.followUps = grounded(raw.followUps)
@@ -191,7 +193,8 @@ public enum VisitReview {
         let followUpPattern = "\\b(book|schedule|arrange|follow[- ]?up|blood work|bloodwork|return|call the|repeat the|prendre rendez-vous|prenez rendez-vous|prendre un rendez-vous|prenez un rendez-vous|planifier|planifiez|suivi|prise de sang|analyses sanguines|revenez|retournez|appelez|repeter|repetez)\\b"
         let sourceSentences = VisitSourceGrounding.sentences(source)
         for sentence in sourceSentences {
-            if quoteIsValid(sentence), InputLanguage.folded(sentence).range(of: followUpPattern, options: .regularExpression) != nil {
+            if quoteIsValid(sentence), VisitSourceGrounding.preservesQuoteScope(sentence, source: source),
+               InputLanguage.folded(sentence).range(of: followUpPattern, options: .regularExpression) != nil {
                 let item = VisitQuote(quote: sentence)
                 if !summary.followUps.contains(item) { summary.followUps.append(item) }
             }
@@ -221,6 +224,7 @@ public enum VisitReview {
                 }
                 continue
             }
+            guard contexts.contains(where: { VisitSourceGrounding.instructionsAreComplete(change.action, quote: quote, context: $0, name: name, instructions: instructions, medicines: medicines) }) else { continue }
             let known = Catalog.resolve(name, saved: medicines)
             // Unknown names remain a transcript item; no model-created ingredient mapping is trusted.
             guard var medicine = known else {

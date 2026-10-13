@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "auditedUTC": "2026-10-13T06:50:50.300870+00:00",
+  "archiveAuditPassed": true,
+  "archive": "development-evidence-12.zip",
+  "archiveSHA256": "e1f44ecd97238f68a6f3e9a3929230059082ae1fdaf69f13d24aa6feb7d64269",
+  "archiveBytes": 4164289,
+  "summarySHA256": "b13d0eb7f77e2a3932c4fd22506f7c84e448ab4f9599ce83b326d291865b9d71",
+  "membersIncludingManifest": 592,
+  "evidenceFiles": 591,
+  "selectionSourceFiles": 590,
+  "manifestSHA256": "ac8d1b4e15219c3c7381739d4a8cb302aaa1d24de4b01dff41205dc4302f460f",
+  "allowlistSHA256": "d57c2d17678e6c33d97996fc743c09bb1d9c2a8d52aabf021b20b05b94c89553",
+  "ZIPCRCChecked": true,
+  "allMemberAndSelectedSourceHashesMatch": true,
+  "previousArchives01To11Unchanged": true,
+  "old8b4CI": {
+    "standardUI": 11,
+    "nativePassed": 6,
+    "nativeFailed": 1,
+    "symptomSourceAndCompletedStaleReceiptBound": true,
+    "rawRouteStillUnlogged": true
+  },
+  "failed3eCoreLinuxAndMac": {
+    "executed": 200,
+    "passed": 199,
+    "failed": 1,
+    "RuntimeAndAppNotRun": true,
+    "originalCancellationFalseFieldAndCorrectionPreserved": true
+  },
+  "source09To10OnlyTestContractChanged": true,
+  "source10": {
+    "Core": 200,
+    "Runtime": 21,
+    "nativeGrammarContext": 159,
+    "Python": 60,
+    "localizationKeys": 598,
+    "replyMethods": 14,
+    "scheduleMethods": 8
+  },
+  "xtool545": {
+    "exitCode": 0,
+    "bundleFiles": 25,
+    "Core200Runtime21ImportedNotRerun": true,
+    "identicalPackageFiles": 48
+  },
+  "preparedDEV291Supplement120Unexecuted": true,
+  "current545MacCIExcluded": true,
+  "weightsBinariesFullXCResultZIPAndMP4ExcludedWithReferences": true,
+  "heldoutOutputsInspected": false,
+  "scope": "Independent local ZIP/source/hash/receipt audit only; no remote CPU work, tests, inference, app execution, publication, model-quality or readiness acceptance."
+}

@@ -1,0 +1,39 @@
+{
+  "formatVersion": 1,
+  "kind": "optional-model-source-reminder-scope-amendment",
+  "createdUTC": "2026-10-13",
+  "authorization": "The user requested English/French failures fixed after proper Small/Balanced evaluations. The parent reviewed the preserved reminder failure and approved only finite organizational tasks, including balanced quotes around a supported task. Opaque arbitrary quoted clinical tasks are explicitly excluded.",
+  "testedFailingSourceCommit": "7a4181264af9c5443811796aacd6d64c13a76339",
+  "scope": {
+    "stage": "The existing post-routing replyFallback stage after the full21-tool model choice, on reply or a source-invalid nonreply. No early routing or narrowing of model alternatives.",
+    "outerRequest": "One current affirmative Remind me to or Rappelle/Rappelez-moi de/d', or modal me rappeler de/d', with finite existing English/French courtesy/modal prefixes. Production createReminder source validation must also pass.",
+    "wholeSourceBounds": "At most1000 characters, one line, no control characters/model-control opener; anchored complete source consumption. Optional single terminal punctuation and balanced double/curly-double/guillemet/single/curly-single task quotes. No extra outer action or unconsumed tail.",
+    "englishTasks": "Book/schedule an appointment, blood work, a blood test or laboratory/lab test, optionally with a named doctor/dentist/clinic role; call the clinic; prepare/bring documents, papers or notes for an appointment, including appointment documents/notes phrasing. Only finite articles/possessives and these named organizational roles are accepted.",
+    "frenchTasks": "Prendre/fixer/planifier/réserver un rendez-vous, optionally chez/à a médecin/dentiste/clinique role; réserver/planifier/programmer a bilan sanguin, analyse de sang, prise de sang or test; appeler la clinique; préparer/apporter documents, notes or papiers pour un rendez-vous. Only finite articles/possessives and these task phrases are accepted.",
+    "quotedTasks": "Quotes preserve the supported organizational task text and punctuation but never widen the finite grammar. Arbitrary clinical/dose/stop instructions remain excluded even inside complete balanced quotes.",
+    "excluded": ["outer negation", "history or reported wrapper", "hypothetical/third-party request", "quoted whole request", "compound or appended outer actions", "unknown task/recipient", "clinical treatment tasks", "malformed/partial quotation", "empty payload", "multiline/oversized/control-token input", "date/time or other modifiers outside the finite task grammar"],
+    "sourcePreservation": "Case/diacritic folding is for matching only. Pass the entire original source unchanged into production createReminder validation and return its existing .reminder(original) action. Retain all original quotes, Unicode and wording.",
+    "action": "Return reminder_draft and the existing createReminder decision/action. Open the existing reminder review screen and date picker; infer no due date/time, execute no task and persist nothing. Manual review/date choice/save remain required.",
+    "typedContradictions": "A source-closed organizational reminder cannot authorize a model-selected captureSymptom or createAppointment write, even if the task mentions an appointment. Reject those contradictory proposals and let the same post-routing recovery open the reminder. Existing appointment-note exclusion remains unchanged.",
+    "priority": "Otherwise valid source-appropriate nonreply actions retain their existing priority. Correctly model-routed reminders outside this recovery's finite grammar keep existing validation and manual draft behavior.",
+    "recursionBoundary": "The helper revalidates only .createReminder, whose production branch returns .reminder(original) without calling replyFallback. No recursive .reply validation or inference loop is added.",
+    "attribution": "Preserve raw routing, failed action and any generated/suppressed advice beside the application draft/origin/reason. Recovery earns application disposition credit only, never raw intent, model prose or clinical-answer credit."
+  },
+  "preservedTriggeringFailure": {
+    "phase": "supplemental-120-source7a41812-01",
+    "model": "balanced",
+    "caseID": "routing.21",
+    "streamSHA256": "ddc0859def2fc2a6b748d0517b0d49419c20305493234ea6e03bdbe701d37116",
+    "rowSHA256": "2d80d0a12964cc1f966451b9f68c6642604eb3d84935cc1098c07d0dea5e40c8",
+    "rawOutputSHA256": "077096e05ccabfa4086cddecc3975908346a42e9ff2bf11481dfcad26c397aad",
+    "replyOutputSHA256": "785bc45697c0506189b9ea018fbf03676c6d6954280ddee551c597e854a1af45",
+    "input": "Remind me to book blood work",
+    "rawTool": "create_appointment",
+    "invalidAction": true,
+    "generatedReply": "You should consider scheduling blood work to check your health.",
+    "failureRetained": "Wrong model intent and an unsupported recommendation/health purpose replace the requested reminder draft. The new application draft cannot rewrite this preserved result or earn model-answer credit."
+  },
+  "unchanged": ["Automatic default and optional2B choice", "all21 routing alternatives", "routing/prose/visit prompts and grammars", "source fixtures/scorer/thresholds", "original default-promotion gate", "model/snapshot/history/token budgets/sampling", "manual review and save", "original raw outputs/reviews/failed results"],
+  "requiredBeforeReadiness": ["independent source review", "fresh source-bound correctness/build and full native app checks", "fresh complete DEV and supplemental runs/reviews", "paired held-out evaluation after source freeze"],
+  "currentStatus": "Working-source patch awaiting fresh QA; no source freeze, held-out generation/read, final gate, promotion or Ready approval. Source11 failures remain immutable."
+}

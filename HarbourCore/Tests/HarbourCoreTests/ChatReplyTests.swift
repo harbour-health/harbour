@@ -224,10 +224,11 @@ final class ChatReplyTests: XCTestCase {
         }
     }
 
-    func testModelChosenToolDoesNotRequireAnActionKeyword() throws {
+    func testReadAndSymptomToolsRemainAvailableWhileMedicineAddsRequireRequests() throws {
         XCTAssertEqual(try ToolPlanner.validate(.init(tool: .listMedicines), original: "What am I currently using?", records: Records()), .medicines)
         XCTAssertEqual(try ToolPlanner.validate(.init(tool: .captureSymptom), original: "Something is bothering me", records: Records()), .symptom("Something is bothering me"))
-        let action = try ToolPlanner.validate(.init(tool: .addMedicine, arg: "warfarin"), original: "Metformin", records: Records())
+        XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .addMedicine, arg: "warfarin"), original: "Metformin", records: Records()))
+        let action = try ToolPlanner.validate(.init(tool: .addMedicine, arg: "warfarin"), original: "Add Metformin", records: Records())
         guard case .add(let medicine, _, _) = action else { return XCTFail("Expected medicine") }
         XCTAssertEqual(medicine.id, "metformin")
     }

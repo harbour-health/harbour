@@ -124,17 +124,23 @@ enum VisitSourceGrounding {
         return result
     }
 
-    private static func sourceContext(first: Range<String.Index>, last: Range<String.Index>, source: String) -> String {
+    private static func sourceContext(first: Range<String.Index>, last: Range<String.Index>, source: String, retainQuotedContext: Bool = false) -> String {
         let ranges = sentenceRanges(source)
         var first = first, last = last
         // A later sentence inside a quotation keeps the clinician/reporting
         // introduction outside the opening quote, rather than losing its tense.
         for quoted in quotationRanges(source) where quoted.overlaps(first) {
             let overlap = max(first.lowerBound, quoted.lowerBound)..<min(first.upperBound, quoted.upperBound)
-            guard !instructionRanges(InputLanguage.folded(String(source[overlap]))).isEmpty else { continue }
+            guard retainQuotedContext || !instructionRanges(InputLanguage.folded(String(source[overlap]))).isEmpty else { continue }
             if let start = ranges.first(where: { $0.contains(quoted.lowerBound) }), start.lowerBound < first.lowerBound { first = start }
             let closing = source.index(before: quoted.upperBound)
             if let end = ranges.first(where: { $0.contains(closing) }), end.upperBound > last.upperBound { last = end }
+        }
+        if retainQuotedContext {
+            // Displayed excerpts retain the whole terminal punctuation run.
+            var end = last.upperBound
+            while end < source.endIndex, ".!?".contains(source[end]) { end = source.index(after: end) }
+            last = last.lowerBound..<end
         }
         var historicalStart: String.Index?
         for range in ranges where range.lowerBound < first.lowerBound {
@@ -151,19 +157,135 @@ enum VisitSourceGrounding {
         containingContexts(quote: quote, source: source).first
     }
 
-    static func containingContexts(quote: String, source: String) -> [String] {
+    static func containingContexts(quote: String, source: String, retainQuotedContext: Bool = false) -> [String] {
         guard !quote.isEmpty else { return [] }
         var contexts: [String] = [], seen = Set<String>(), start = source.startIndex
         let ranges = sentenceRanges(source)
         while start < source.endIndex, let quoted = source.range(of: quote, range: start..<source.endIndex) {
             let containing = ranges.filter { $0.overlaps(quoted) }
             if let first = containing.first, let last = containing.last {
-                let context = sourceContext(first: first, last: last, source: source)
+                let context = sourceContext(first: first, last: last, source: source, retainQuotedContext: retainQuotedContext)
                 if seen.insert(context).inserted { contexts.append(context) }
             }
             start = quoted.upperBound
         }
         return contexts
+    }
+
+    /// A displayed excerpt cannot turn a qualified statement into an unqualified fact.
+    /// Complete qualified statements remain source documentation, not proposed actions.
+    static func preservesQuoteScope(_ quote: String, source: String) -> Bool {
+        let contexts = containingContexts(quote: quote, source: source, retainQuotedContext: true)
+        guard !contexts.isEmpty else { return false }
+        let qualified = "\\b(?:not|don't|never|no|without|if|unless|might|may|could|consider|maybe|unchanged|same dose|same regimen|same treatment|pas|jamais|aucun|aucune|sans|si|sauf|peut-etre|pourrais|pourrait|devrais|devrait|envisager|inchang[a-z]*|meme dose|meme traitement|except|excepting|excluding|other than|excepte|excluant|a l'exception|until|through|jusqu'a|jusqu'au|jusqu'aux)\\b|\\?"
+        let quantity = "(?:[0-9]+(?:[.,][0-9]+)?|[\\p{L}\\p{M}]+)(?:[ -](?:[0-9]+|[\\p{L}\\p{M}]+)){0,4}"
+        let course = "\\b(?:for|during|over|pendant|durant|pour|sur)\\s+" + quantity + "\\s+(?:minutes?|hours?|days?|weeks?|months?|years?|heures?|jours?|semaines?|mois|annees?|ans?)\\b"
+        let pastReport = "\\b(?:yesterday|last (?:night|week|month|year)|previously|formerly|in the past|reported|recalled|remembered|hier|avant-hier|la nuit derniere|la semaine derniere|le mois dernier|l'an dernier|l'annee derniere|auparavant|autrefois|dans le passe|a rapporte|avait rapporte|avait dit|se souvenait)\\b"
+        return contexts.allSatisfy { context in
+            let folded = InputLanguage.folded(context)
+            let historical = isHistoricalPrefix(folded)
+                || instructionRanges(folded).contains { isHistoricalInstruction($0, in: folded) }
+                || folded.range(of: pastReport, options: .regularExpression) != nil
+            let hasScope = historical || folded.range(of: qualified, options: .regularExpression) != nil
+                || folded.range(of: course, options: .regularExpression) != nil
+            let sameCompleteStatement = quote == context
+                || (context.hasSuffix(".") && !context.hasSuffix("..") && quote == String(context.dropLast()))
+            return !hasScope || sameCompleteStatement
+        }
+    }
+
+    /// Locate verbs in original text; folded-string offsets never index source bytes.
+    private static func originalInstructionRanges(_ source: String) -> [Range<String.Index>] {
+        let accepted = Set(MedicineChangeAction.allCases.flatMap { (verbs($0).english + "|" + verbs($0).french).split(separator: "|").map(String.init) })
+        guard let expression = try? NSRegularExpression(pattern: "\\b[\\p{L}\\p{M}]+\\b") else { return [] }
+        var result: [Range<String.Index>] = []
+        for match in expression.matches(in: source, range: NSRange(source.startIndex..., in: source)) {
+            guard let range = Range(match.range, in: source), accepted.contains(InputLanguage.folded(String(source[range]))) else { continue }
+            if ["take", "prendre"].contains(InputLanguage.folded(String(source[range]))), let outer = result.last {
+                let link = InputLanguage.folded(String(source[outer.upperBound..<range.lowerBound])).trimmingCharacters(in: .whitespaces)
+                if ["to", "a", "de"].contains(link) { continue }
+            }
+            result.append(range)
+        }
+        return result
+    }
+
+    private static func nameRanges(_ name: String, in source: String) -> [Range<String.Index>] {
+        guard !name.isEmpty else { return [] }
+        var result: [Range<String.Index>] = [], start = source.startIndex
+        while start < source.endIndex, let range = source.range(of: name, options: [.caseInsensitive, .diacriticInsensitive], range: start..<source.endIndex) {
+            let before: Character? = range.lowerBound == source.startIndex ? nil : source[source.index(before: range.lowerBound)]
+            let after: Character? = range.upperBound == source.endIndex ? nil : source[range.upperBound]
+            if !(before.map { $0.isLetter || $0.isNumber || $0 == "_" } ?? false),
+               !(after.map { $0.isLetter || $0.isNumber || $0 == "_" } ?? false) { result.append(range) }
+            start = range.upperBound
+        }
+        return result
+    }
+
+    private static func organizationalActionBoundaries(in source: String) -> [Range<String.Index>] {
+        let test = "(?:blood ?work|(?:(?:blood|laboratory|lab)\\s+)?tests?)"
+        let english = "(?:(?:book|schedule|arrange)\\s+(?:(?:a|an|the|my|your)\\s+)?(?:appointments?|consultations?|follow[- ]?up(?: visits?)?|" + test + ")|call\\s+(?:(?:the|my|your)\\s+)?(?:clinic|doctor|office)|return\\s+(?:to|for)\\s+(?:(?:a|an|the)\\s+)?(?:clinic|appointments?|follow[- ]?up|" + test + ")|repeat\\s+(?:(?:a|an|the)\\s+)?" + test + ")"
+        let frenchTest = "(?:prise de sang|analyses?(?: sanguines?)?|tests?)"
+        let french = "(?:(?:prendre|prenez)\\s+(?:un\\s+)?rendez-vous|(?:planifier|planifiez|programmer|programmez|r[ée]server|r[ée]servez)\\s+(?:(?:un|une|le|la|les|des)\\s+)?(?:rendez-vous|consultations?|suivi|" + frenchTest + ")|(?:appeler|appelez)\\s+(?:(?:la|le|une|un|votre)\\s+)?(?:clinique|m[ée]decin|cabinet)|(?:revenir|revenez|retourner|retournez)\\s+(?:[àa]|pour)\\s+(?:(?:la|le|une|un|votre)\\s+)?(?:clinique|rendez-vous|consultation|suivi|" + frenchTest + ")|(?:r[ée]p[ée]ter|r[ée]p[ée]tez|refaire|refaites)\\s+(?:(?:la|le|les|une|un|des)\\s+)?" + frenchTest + ")"
+        let separator = "(?:\\b(?:and|et)\\s+|[,;]\\s*(?:(?:and|et)\\s+)?)"
+        guard let expression = try? NSRegularExpression(pattern: separator + "(?:(?:please|veuillez)\\s+)?(?:" + english + "|" + french + ")\\b", options: .caseInsensitive) else { return [] }
+        return expression.matches(in: source, range: NSRange(source.startIndex..., in: source)).compactMap { Range($0.range, in: source) }
+    }
+
+    /// Start/update directions must retain their entire unambiguously attributed source span.
+    /// This guards final parsing and stored-draft revalidation without changing decoding rules.
+    static func instructionsAreComplete(_ action: MedicineChangeAction, quote: String, context: String, name: String, instructions: String, medicines: [Medicine]) -> Bool {
+        if action == .stop { return instructions.isEmpty }
+        let verbsForAction = verbs(action)
+        let selected = Set((verbsForAction.english + "|" + verbsForAction.french).split(separator: "|").map(String.init))
+        let directives = originalInstructionRanges(context)
+        let organizationalActions = organizationalActionBoundaries(in: context)
+        let sourceNames = Array(Set([name] + (medicines + Catalog.medicines).flatMap { Catalog.names(for: $0) })).sorted { $0.count > $1.count }
+        var mentioned: [Range<String.Index>] = []
+        for sourceName in sourceNames {
+            for range in nameRanges(sourceName, in: context) where !mentioned.contains(where: { $0.overlaps(range) }) { mentioned.append(range) }
+        }
+        mentioned.sort { $0.lowerBound < $1.lowerBound }
+        func directions(_ text: String) -> String {
+            var value = text.trimmingCharacters(in: .whitespaces)
+            let separators = "(?:[,;]|\\b(?:and|et|as well as|ainsi que))"
+            if let separator = value.range(of: separators + "(?:\\s*" + separators + ")*\\s*$", options: [.regularExpression, .caseInsensitive]) { value.removeSubrange(separator) }
+            value = value.trimmingCharacters(in: .whitespaces)
+            if value.hasSuffix(".") { value.removeLast() }
+            return value.trimmingCharacters(in: .whitespaces)
+        }
+        func withoutConnector(_ text: String) -> String {
+            var value = text
+            if let connector = value.range(of: "^(?:to|à|a)\\s+", options: [.regularExpression, .caseInsensitive]) { value.removeSubrange(connector) }
+            return value
+        }
+        let proposed = withoutConnector(directions(instructions))
+        guard !proposed.isEmpty else { return false }
+        for target in nameRanges(name, in: context) {
+            guard let sentence = sentenceRanges(context).first(where: { $0.overlaps(target) }),
+                  let directive = directives.last(where: { $0.lowerBound >= sentence.lowerBound && $0.upperBound <= target.lowerBound }),
+                  selected.contains(InputLanguage.folded(String(context[directive]))),
+                  !organizationalActions.contains(where: { $0.lowerBound >= directive.upperBound && $0.lowerBound < target.lowerBound }) else { continue }
+            let nextDirective = directives.first { $0.lowerBound > target.upperBound && $0.lowerBound < sentence.upperBound }
+            let nextOrganization = organizationalActions.first { $0.lowerBound > target.upperBound && $0.lowerBound < sentence.upperBound }
+            // A separate follow-up's clock is never this medicine's direction.
+            let clauseEnd = min(nextDirective?.lowerBound ?? sentence.upperBound, nextOrganization?.lowerBound ?? sentence.upperBound)
+            let nextMedicine = mentioned.first { $0.lowerBound >= target.upperBound && $0.lowerBound < clauseEnd }
+            let end = nextMedicine?.lowerBound ?? clauseEnd
+            // A shared list with no directions between names has uncertain attribution.
+            if let previous = mentioned.last(where: { $0.upperBound <= target.lowerBound && $0.lowerBound > directive.upperBound }),
+               directions(String(context[previous.upperBound..<target.lowerBound])).isEmpty { continue }
+            let sourceTail = directions(String(context[target.upperBound..<end]))
+            let required = withoutConnector(sourceTail)
+            guard !required.isEmpty else { continue }
+            // An unlisted second name plus quantified dose is not this medicine's directions.
+            let uncertainOther = "\\b(?:and|et)\\s+[\\p{L}\\p{M}][\\p{L}\\p{M}\\p{N}_'-]*(?:\\s+[\\p{L}\\p{M}]+){0,3}\\s+[0-9]+(?:[.,][0-9]+)?\\s*(?:mg|mcg|μg|µg|g|ml|units?|unites?|ui)\\b"
+            guard InputLanguage.folded(required).range(of: uncertainOther, options: .regularExpression) == nil,
+                  required == proposed, quote.contains(String(context[target]) + " " + sourceTail) else { continue }
+            return true
+        }
+        return false
     }
 
     private static func isHistoricalInstruction(_ instruction: Range<String.Index>, in context: String) -> Bool {

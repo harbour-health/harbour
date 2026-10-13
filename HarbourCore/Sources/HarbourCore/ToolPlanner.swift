@@ -95,6 +95,75 @@ public enum ToolPlanner {
         return matches(input, request + "(?:" + english + "|" + french + #")\s*[.!?]*\s*$"#)
     }
 
+    private static func explicitSavedQuestionRequest(_ original: String) -> Bool {
+        // Only a closed current outer save request can open a question draft.
+        // Matching is normalized; validation and draft content keep the source.
+        guard original.count <= 1000, !original.contains("<|"),
+              !original.unicodeScalars.contains(where: { CharacterSet.controlCharacters.contains($0) }),
+              WriteRequestValidation.permits(original, tool: .saveQuestion) else { return false }
+        let input = InputLanguage.folded(original).trimmingCharacters(in: .whitespacesAndNewlines)
+        let courtesy = #"(?:(?:please|svp|s'il vous plait|s'il te plait),?\s+)?"#
+        let modal = #"(?:(?:(?:can|could|would|will)\s+you|(?:peux|pourrais|pouvez|pourriez)[ -](?:tu|vous)|est-ce que (?:tu (?:peux|pourrais)|vous (?:pouvez|pourriez)))\s+)?"#
+        let action = #"(?:save|add|remember|keep|store|enregistre|enregistrez|enregistrer|sauvegarde|sauvegardez|sauvegarder|ajoute|ajoutez|ajouter|garde|gardez|garder|note|notez|noter)"#
+        let target = #"(?:(?:this|a|the|my|cette|une|la|ma)\s+)?question"#
+        let recipient = #"(?:\s+(?:for\s+(?:(?:my|the)\s+)?(?:doctor|appointment)|pour\s+(?:(?:mon|le|un|la|ma)\s+)?(?:medecin|docteur|rendez-vous)))?"#
+        guard let header = input.range(of: #"\A"# + courtesy + modal + courtesy + action + #"\s+"# + target + recipient + #"\s*:\s*"#, options: .regularExpression) else { return false }
+        var body = String(input[header.upperBound...]).trimmingCharacters(in: .whitespaces)
+        let delimiters: [(Character, Character)] = [("\"", "\""), ("“", "”"), ("«", "»"), ("‘", "'"), ("'", "'")]
+        let quoted: Bool
+        if let pair = delimiters.first(where: { body.first == $0.0 }) {
+            guard body.count > 2, body.last == pair.1 else { return false }
+            body = String(body.dropFirst().dropLast()).trimmingCharacters(in: .whitespaces)
+            quoted = true
+        } else {
+            quoted = false
+        }
+        // One question sentence only. Quoted negation, conditions or other
+        // people's circumstances are question content, not outer commands.
+        let question = #"(?:why|what|how|when|where|which|should|could|can|would|do|does|did|is|are|was|were|may|might|will|pourquoi|comment|quand|quel|quelle|quels|quelles|puis-je|dois-je|devrais-je|pourrais-je|est-ce|faut-il|peut-on|ne\s+(?:dois-je|devrais-je|pourrais-je))\b"#
+        guard body.last == "?", matches(body, #"\A"# + question),
+              !matches(String(body.dropLast()), #"[?!;]|(?<![0-9])\.|\.(?![0-9])|(?<![0-9]):|:(?![0-9])"#) else { return false }
+        let unquoted = unquotedRequest(body)
+        guard !matches(unquoted, #"["“”«»‘]|(?<![\p{L}\p{N}])'|'(?![\p{L}\p{N}])"#) else { return false }
+        if !quoted {
+            let extraWrite = #"\b(?:and|then|et|puis|ensuite)\s+(?:(?:please|svp)\s+)?(?:save|record|log|add|remove|delete|clear|set|schedule|remind|create|book|scan|export|import|enregistr[a-z]*|ajout[a-z]*|supprim[a-z]*|effac[a-z]*|programm[a-z]*|rappel[a-z]*|cre[a-z]*|reserv[a-z]*|import[a-z]*)\b"#
+            guard !matches(unquoted, extraWrite) else { return false }
+        }
+        return true
+    }
+
+    private static func explicitOrganizationalReminderRequest(_ original: String) -> Bool {
+        // Reminder recovery accepts only one named organizational task. Even
+        // a quoted clinical instruction cannot widen this closed task grammar.
+        guard original.count <= 1000, !original.contains("<|"),
+              !original.unicodeScalars.contains(where: { CharacterSet.controlCharacters.contains($0) }),
+              WriteRequestValidation.permits(original, tool: .createReminder) else { return false }
+        let input = InputLanguage.folded(original).trimmingCharacters(in: .whitespacesAndNewlines)
+        let courtesy = #"(?:(?:please|svp|s'il vous plait|s'il te plait),?\s+)?"#
+        let command = #"(?:remind\s+me\s+to\s+|(?:rappelle|rappelez)[ -]moi\s+(?:de\s+|d'))"#
+        let frenchInfinitive = #"me\s+rappeler\s+(?:de\s+|d')"#
+        // The infinitive needs an affirmative modal outer request; a bare
+        // reported/todo fragment must not authorize the recovery.
+        let requiredModal = #"(?:(?:can|could|would|will)\s+you|(?:peux|pourrais|pouvez|pourriez)[ -](?:tu|vous)|est-ce que (?:tu (?:peux|pourrais)|vous (?:pouvez|pourriez)))\s+"#
+        let request = #"\A"# + courtesy + "(?:" + requiredModal + courtesy + "(?:" + command + "|" + frenchInfinitive + ")|" + command + ")"
+        guard let header = input.range(of: request, options: .regularExpression) else { return false }
+        var task = String(input[header.upperBound...]).trimmingCharacters(in: .whitespaces)
+        if let last = task.last, ".!?".contains(last) { task.removeLast(); task = task.trimmingCharacters(in: .whitespaces) }
+        let delimiters: [(Character, Character)] = [("\"", "\""), ("“", "”"), ("«", "»"), ("‘", "'"), ("'", "'")]
+        if let pair = delimiters.first(where: { task.first == $0.0 }) {
+            guard task.count > 2, task.last == pair.1 else { return false }
+            task = String(task.dropFirst().dropLast()).trimmingCharacters(in: .whitespaces)
+            if let last = task.last, ".!".contains(last) { task.removeLast(); task = task.trimmingCharacters(in: .whitespaces) }
+        }
+        let englishBooking = #"(?:book|schedule)\s+(?:(?:my|the|an|a)\s+)?(?:appointment|blood\s+(?:work|tests?)|(?:lab|laboratory)\s+tests?)(?:\s+(?:with|at)\s+(?:(?:my|the)\s+)?(?:doctor|dentist|clinic))?"#
+        let englishCall = #"call\s+(?:(?:my|the)\s+)?clinic"#
+        let englishDocuments = #"(?:prepare|bring)\s+(?:(?:my|the)\s+)?(?:(?:documents|papers|notes)\s+for\s+(?:(?:my|the|an|a)\s+)?appointment|appointment\s+(?:documents|papers|notes))"#
+        let frenchBooking = #"(?:(?:prendre|fixer|planifier|reserver)\s+(?:(?:mon|le|un)\s+)?rendez-vous(?:\s+(?:chez|a)\s+(?:(?:mon|le|la)\s+)?(?:medecin|dentiste|clinique))?|(?:reserver|planifier|programmer)\s+(?:(?:mon|ma|le|la|un|une)\s+)?(?:bilan\s+sanguin|analyse\s+de\s+sang|prise\s+de\s+sang|test))"#
+        let frenchCall = #"appeler\s+(?:(?:la|ma)\s+)?clinique"#
+        let frenchDocuments = #"(?:preparer|apporter)\s+(?:(?:mes|les|des)\s+)?(?:documents|notes|papiers)\s+pour\s+(?:(?:mon|le|un)\s+)?rendez-vous"#
+        return matches(task, #"\A(?:"# + [englishBooking, englishCall, englishDocuments, frenchBooking, frenchCall, frenchDocuments].joined(separator: "|") + #")\z"#)
+    }
+
     /// Bound the reply path for explicit current requests. This never narrows the
     /// routing catalog, uses model answer keywords, or infers unnamed medicines.
     public static func replyFallback(original: String, records: Records, language: ModelLanguage = .english) -> ReplyFallback? {
@@ -103,6 +172,14 @@ public enum ToolPlanner {
         let outer = unquotedRequest(original)
         let input = InputLanguage.folded(outer).trimmingCharacters(in: .whitespacesAndNewlines)
         let courtesy = #"(?:(?:please|svp|s'il vous plait|s'il te plait),?\s+)?"#
+        if explicitSavedQuestionRequest(original),
+           let action = try? validate(.init(tool: .saveQuestion), original: original, records: records, language: language) {
+            return ReplyFallback(decision: .init(tool: .saveQuestion), action: action, reason: "question_draft")
+        }
+        if explicitOrganizationalReminderRequest(original),
+           let action = try? validate(.init(tool: .createReminder), original: original, records: records, language: language) {
+            return ReplyFallback(decision: .init(tool: .createReminder), action: action, reason: "reminder_draft")
+        }
         let question = #"(?:can|could|may|should|would|is|are|does|do|what|why|how|puis-je|dois-je|devrais-je|peut-on|est-ce|peux-tu|pouvez-vous|y a-t-il|pourquoi|comment|quelles?|quels?)\b"#
         let comparison = #"(?:check|compare|verifi[a-z]*|compar[a-z]*)\b"#
         let questionOrComparison = matches(input, "^" + courtesy + "(?:" + question + "|" + comparison + ")")
@@ -317,6 +394,9 @@ public enum ToolPlanner {
         guard WriteRequestValidation.permits(original, tool: decision.tool) else { throw PlannerError.forbidden }
         switch decision.tool {
         case .createAppointment:
+            // A closed reminder request is not an appointment-add request,
+            // even when its organizational task mentions an appointment.
+            guard replyFallback(original: original, records: records, language: language)?.reason != "reminder_draft" else { throw PlannerError.forbidden }
             guard AppointmentRules.isAppointment(original) else { throw PlannerError.forbidden }
             return .appointment(original)
         case .listAppointments: return .appointments
@@ -327,7 +407,16 @@ public enum ToolPlanner {
                   !answer.unicodeScalars.contains(where: { CharacterSet.controlCharacters.contains($0) && $0 != "\n" && $0 != "\t" }) else { throw PlannerError.malformed }
             if let fallback = replyFallback(original: original, records: records, language: language) { return fallback.action }
             return .reply(answer)
-        case .captureSymptom: return .symptom(original)
+        case .captureSymptom:
+            // A closed, explicitly typed reading request cannot authorize a
+            // symptom draft merely because the model selected the wrong tool.
+            // The existing post-routing reading recovery retains its source
+            // type/value and the normal confirmation step.
+            // A closed saved-question request likewise cannot authorize a
+            // symptom draft; it retains its original question review payload.
+            // The same boundary applies to a closed organizational reminder.
+            guard !["reading_draft", "question_draft", "reminder_draft"].contains(replyFallback(original: original, records: records, language: language)?.reason ?? "") else { throw PlannerError.forbidden }
+            return .symptom(original)
         case .addMedicine:
             let meds = Catalog.mentioned(in: original, saved: records.medicines)
             guard meds.count == 1 else { throw PlannerError.missingMedicine }

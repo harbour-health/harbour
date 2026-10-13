@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "auditedUTC": "2026-10-13T10:00:48.304877+00:00",
+  "auditor": "Codex root, independent of Archive16 builder",
+  "passed": true,
+  "archiveSHA256": "458aec2324ebc5b6e4ee5ad60e9d3d77ef9377325dc29e409e90d3f024480497",
+  "memberCount": 252,
+  "CRCAllPass": true,
+  "allMemberBytesHashesAndLocalFilesMatch": true,
+  "sourceHead": "7a4181264af9c5443811796aacd6d64c13a76339",
+  "actualCounts": {
+    "standard": {
+      "Core": 200,
+      "Runtime": 21,
+      "UI": 11,
+      "hostedPassed": 23,
+      "hostedSkipped": 1
+    },
+    "native": {
+      "Core": 200,
+      "Runtime": 21,
+      "UI": 7,
+      "hostedPassed": 24,
+      "hostedSkipped": 1
+    }
+  },
+  "canonicalGitFilesVerified": 97,
+  "canonicalInventoryAttestsMacMaterializedCompilerBytes": false,
+  "duplicatePushCancellationVerifiedSeparately": true,
+  "prior15ArchivesUnchanged": true,
+  "initialHelperSchemaError": {
+    "scope": "Audit-helper schema assumption only; no original evidence failure",
+    "detail": "Initial helper assumed confirmedCancelled. Original receipt uses finalStatus/finalConclusion, both checked in the corrected helper. No receipt was produced by the failed attempt.",
+    "initialHelperSHA256": "7a747c78dd0225a56e88d13338bae6df4c9c95b723897ecfe1e095bede328773"
+  },
+  "compilerTestsModelsOrWorkflowInvoked": false,
+  "newQualityOrPhysicalDeviceVerdict": false,
+  "auditorSHA256": "dd4a59524e0074b5e7d73f07aad41aa98d573d0c100f9193ca2349f0542f9e2a"
+}

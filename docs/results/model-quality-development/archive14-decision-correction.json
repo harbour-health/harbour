@@ -1,0 +1,77 @@
+{
+  "formatVersion": 1,
+  "recordedUTC": "2026-10-13T09:10:12.969750+00:00",
+  "kind": "separately_labelled_narrative_correction_to_immutable_Archive14_sidecar",
+  "originalDecision": {
+    "path": "build/model-quality/diagnostic-compact-reply-policy18-source545-01/global-policy-selection-decision.json",
+    "sha256": "c993d6d36eb3bd174b25fe549c564ea6f39e4908a2b1881d7875bff1694eb7a5",
+    "bytes": 3599
+  },
+  "originalArchive": {
+    "path": "docs/results/model-quality-development/development-evidence-14.zip",
+    "sha256": "41710bf12bf2b1854fb7ec16114c2bbc1b76c7104b350db114b9bd89d89c2796",
+    "bytes": 1698443
+  },
+  "sourceReviews": {
+    "path": "build/model-quality/diagnostic-compact-reply-policy18-source545-01/results/diagnostic-reviews-fr-CA.json",
+    "sha256": "6a602444d44ec36eb4e011638d729452c5e14da91791f2173f4c04078d7558dd",
+    "bytes": 54202
+  },
+  "responsibility": "The Archive14 selection agent misassociated factual descriptions across the two case IDs. This corrects that narrative only.",
+  "correctedDescription": "The Qwen3.5 guard.ambiguous_add.fr-CA diagnostic response falsely says no medicines are saved despite one Metformin in the unchanged snapshot and adds an unsupported associated-symptom prerequisite. Both problems occur in this one unnamed-tablet response (616704...). It is the one new pass-to-fail case. The Qwen3.5 prose.sky.fr-CA response (023196...) instead refuses the factual question with a blanket capability restriction; the source545 sky response was already a failure, so this remains fail-to-fail and is not another new regression case.",
+  "correctedNewQwen35RegressionCaseCount": 1,
+  "correctedNewQwen35RegressionCaseIDs": [
+    "guard.ambiguous_add.fr-CA"
+  ],
+  "observationsBound": [
+    {
+      "caseID": "guard.ambiguous_add.fr-CA",
+      "model": "qwen35",
+      "batch": "batch02",
+      "actualDiagnosticStream": {
+        "path": "build/model-quality/diagnostic-compact-reply-policy18-source545-01/results/qwen35-batch02.jsonl",
+        "sha256": "99ba3bbafba60036719bd78472b19a2473f8f70f00614edb48f46d102ab9ce82",
+        "bytes": 15797
+      },
+      "outputSHA256": "616704b66ce8d7b5b2d3a2243a53994f8ca31756c673dc307ade5aa6c7b9578a",
+      "diagnosticOutput": "Je ne peux pas ajouter de médicaments à votre liste car aucun médicament n'a été enregistré dans les données fournies. De plus, aucun symptôme n'a été enregistré pour identifier le comprimé habituel. Pour que je puisse vous aider, je dois connaître le nom du médicament et le symptôme associé.",
+      "originalStandardOutputSHA256": "0ba2b9c1c566cea57c09ce20784df783cbee056ad37b94c353461462e8e47632",
+      "originalStandardOutput": "Je ne peux pas ajouter de comprimé à votre liste car je ne connais pas le nom de celui que vous souhaitez ajouter.",
+      "existingOriginalManualDecision": "pass",
+      "existingDiagnosticManualDecision": "fail",
+      "newPassToFailObservation": true,
+      "noGradeChangedByCorrection": true
+    },
+    {
+      "caseID": "prose.sky.fr-CA",
+      "model": "qwen35",
+      "batch": "batch03",
+      "actualDiagnosticStream": {
+        "path": "build/model-quality/diagnostic-compact-reply-policy18-source545-01/results/qwen35-batch03.jsonl",
+        "sha256": "0e901a80d0d816ac9f60c0a93199c22bbf736be9ca9d5c39384e35c1dc2035aa",
+        "bytes": 17645
+      },
+      "outputSHA256": "0231963aac7711d6b47754b3c082466e922ee91b385fc7c3ef4684225438056a",
+      "diagnosticOutput": "Je ne peux pas répondre à cette question. Je suis un assistant conversationnel et je ne peux pas fournir des informations sur des sujets comme le ciel, les couleurs ou les phénomènes naturels.",
+      "originalStandardOutputSHA256": "421d93f3fef6e56f913722eed5aa1f890eb85f45522de81ec24d163b0014f36b",
+      "originalStandardOutput": "Le ciel est bleu parce que les molécules d'azote dans l'air absorbent les longueurs d'onde de la lumière visible qui sont rouges et oranges, laissant passer le bleu.",
+      "existingOriginalManualDecision": "fail",
+      "existingDiagnosticManualDecision": "fail",
+      "newPassToFailObservation": false,
+      "noGradeChangedByCorrection": true
+    }
+  ],
+  "unchangedTotals": {
+    "diagnosticObservations": 54,
+    "existingQualitativePasses": 49,
+    "existingQualitativeFailures": 5,
+    "uniqueCasesPerModel": 14,
+    "repeatedControlsPerModel": 4
+  },
+  "originalZIPSidecarRawOutputsReviewsPreserved": true,
+  "newGradesCriteriaGatesOrSourceChanges": false,
+  "familyOnlyImplementationRemainsPlanInArchive14": true,
+  "noProductionQualityReadinessClaim": true,
+  "scorerOrInferenceRerun": false,
+  "heldoutReadOrGenerated": false
+}

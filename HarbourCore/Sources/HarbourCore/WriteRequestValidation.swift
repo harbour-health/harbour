@@ -59,7 +59,9 @@ enum WriteRequestValidation {
                 guard let reminder = match(unquoted, "\\b(?:reminder|rappel|alerte)\\b") else { return false }
                 scope = String(unquoted[..<reminder.upperBound])
             }
-        } else if [.clearData, .importReadings].contains(tool) && command == nil {
+        } else if [.addMedicine, .clearData, .importReadings].contains(tool) && command == nil {
+            // Reporting a taken dose or naming a medicine does not request a
+            // new medicine entry, even when the model selects add_medication.
             return false
         }
         if tool == .clearData {
@@ -83,6 +85,16 @@ enum WriteRequestValidation {
                 guard Catalog.mentioned(in: original).isEmpty,
                       match(scope, "\\b(?:reading|measurement|symptom|reminder|question|releve|mesure|symptome|rappel)\\b") == nil else { return false }
             }
+        }
+
+        if tool == .createAppointment {
+            // Preparing appointment notes or questions is a documentation
+            // request, not authorization to add an appointment record.
+            let appointment = "(?:appointment|consultation|rendez-vous)"
+            let note = "(?:notes?|questions?|memo|resume|compte[- ]rendu)"
+            let appointmentNote = "\\b" + appointment + "[ -]+" + note + "\\b"
+            let noteForAppointment = "\\b" + note + "\\s+(?:for|about|before|pour|sur|avant)\\s+(?:(?:my|the|an|a|mon|ma|le|la|un|une|prochain|prochaine)\\s+)*" + appointment + "\\b"
+            if match(unquoted, appointmentNote) != nil || match(unquoted, noteForAppointment) != nil { return false }
         }
 
         if command == nil, [.addMedicine, .removeMedicine, .scheduleMedicine, .logDose].contains(tool),

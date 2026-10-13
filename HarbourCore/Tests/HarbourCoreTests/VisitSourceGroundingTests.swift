@@ -2,6 +2,174 @@ import XCTest
 @testable import HarbourCore
 
 final class VisitSourceGroundingTests: XCTestCase {
+    private func proposal(quote: String, names: [String], instructions: [String], actions: [String]? = nil) throws -> String {
+        let changes = names.indices.map { index in
+            ["quote": quote, "name": names[index], "instructions": instructions[index], "action": actions?[index] ?? "start"]
+        }
+        return String(decoding: try JSONSerialization.data(withJSONObject: ["highlights": [], "followUps": [], "appointments": [], "medicines": changes]), as: UTF8.self)
+    }
+
+    func testMedicineDirectionsKeepEverySourceDoseFrequencyClockAndQualifierForTheirOwnMedicine() throws {
+        let cases = [
+            ("Start metformin 500 mg at 8 am and 8 pm.", "metformin", "500 mg at 8 am and 8 pm", ["8 am and 8 pm.", "500 mg", "500 mg at 8 am"]),
+            ("Commencez aspirine 81,5 µg deux fois par jour à 8 h et 20 h avec nourriture.", "aspirine", "81,5 µg deux fois par jour à 8 h et 20 h avec nourriture", ["8 h et 20 h avec nourriture.", "81,5 µg", "81,5 µg deux fois par jour à 8 h et 20 h"]),
+            ("Start aspirin 81.5 μg twice daily with food.", "aspirin", "81.5 μg twice daily with food", ["twice daily with food.", "81.5 μg", "81.5 μg twice daily"])
+        ]
+        for (source, name, full, partials) in cases {
+            let summary = try VisitReview.parse(proposal(quote: source, names: [name], instructions: [full]), transcript: source, medicines: [])
+            XCTAssertEqual(summary.medicines.map(\.medicine.instructions), [full], source)
+            for partial in partials {
+                XCTAssertTrue(try VisitReview.parse(proposal(quote: source, names: [name], instructions: [partial]), transcript: source, medicines: []).medicines.isEmpty, partial)
+            }
+        }
+        for (source, names, instructions) in [
+            ("Start aspirin 81.5 µg daily and ibuprofen 200 mg twice daily.", ["aspirin", "ibuprofen"], ["81.5 µg daily", "200 mg twice daily"]),
+            ("Commencez aspirine 81,5 μg par jour et ibuprofène 200 mg deux fois par jour.", ["aspirine", "ibuprofène"], ["81,5 μg par jour", "200 mg deux fois par jour"])
+        ] {
+            let summary = try VisitReview.parse(proposal(quote: source, names: names, instructions: instructions), transcript: source, medicines: [])
+            XCTAssertEqual(summary.medicines.map(\.medicine.id), ["aspirin", "ibuprofen"], source)
+            XCTAssertEqual(summary.medicines.map(\.medicine.instructions), instructions, source)
+            let borrowed = try VisitReview.parse(proposal(quote: source, names: names, instructions: [instructions[1], instructions[0]]), transcript: source, medicines: [])
+            XCTAssertTrue(borrowed.medicines.isEmpty, source)
+        }
+        for (source, names) in [
+            ("Start aspirin and ibuprofen 200 mg daily.", ["aspirin", "ibuprofen"]),
+            ("Commencez aspirine et ibuprofène 200 mg par jour.", ["aspirine", "ibuprofène"])
+        ] {
+            let directions = source.contains("par jour") ? "200 mg par jour" : "200 mg daily"
+            XCTAssertTrue(try VisitReview.parse(proposal(quote: source, names: names, instructions: [directions, directions]), transcript: source, medicines: []).medicines.isEmpty, source)
+        }
+        let threeMedicines = "Start aspirin 81 mg daily, ibuprofen 200 mg twice daily, and metformin 500 mg twice daily."
+        let threeDirections = ["81 mg daily", "200 mg twice daily", "500 mg twice daily"]
+        let three = try VisitReview.parse(proposal(quote: threeMedicines, names: ["aspirin", "ibuprofen", "metformin"], instructions: threeDirections), transcript: threeMedicines, medicines: [])
+        XCTAssertEqual(three.medicines.map(\.medicine.instructions), threeDirections)
+        for (source, quote, name, full, borrowed) in [
+            ("Start aspirin 81 mg daily and book blood work at 2 pm.", "Start aspirin 81 mg daily and book blood work at 2 pm.", "aspirin", "81 mg daily", "81 mg daily and book blood work at 2 pm"),
+            ("Book blood work at 2 pm and start aspirin 81 mg daily.", "Book blood work at 2 pm and start aspirin 81 mg daily.", "aspirin", "81 mg daily", "blood work at 2 pm and start aspirin 81 mg daily"),
+            ("Commencez aspirine 81 mg par jour et prenez rendez-vous à 14 h.", "Commencez aspirine 81 mg par jour", "aspirine", "81 mg par jour", "81 mg par jour et prenez rendez-vous à 14 h"),
+            ("Prenez rendez-vous à 14 h et commencez aspirine 81 mg par jour.", "commencez aspirine 81 mg par jour.", "aspirine", "81 mg par jour", "rendez-vous à 14 h et commencez aspirine 81 mg par jour"),
+            ("Commencez aspirine 81 mg par jour et planifiez une prise de sang à 14 h.", "Commencez aspirine 81 mg par jour et planifiez une prise de sang à 14 h.", "aspirine", "81 mg par jour", "81 mg par jour et planifiez une prise de sang à 14 h"),
+            ("Start aspirin 81 mg daily; book blood work at 2 pm.", "Start aspirin 81 mg daily; book blood work at 2 pm.", "aspirin", "81 mg daily", "81 mg daily; book blood work at 2 pm"),
+            ("Start aspirin 81 mg daily; please book blood work at 2 pm.", "Start aspirin 81 mg daily; please book blood work at 2 pm.", "aspirin", "81 mg daily", "81 mg daily; please book blood work at 2 pm"),
+            ("Start aspirin 81 mg daily, schedule an appointment at 2 pm.", "Start aspirin 81 mg daily, schedule an appointment at 2 pm.", "aspirin", "81 mg daily", "81 mg daily, schedule an appointment at 2 pm"),
+            ("Commencez aspirine 81 mg par jour; veuillez planifier une prise de sang à 14 h.", "Commencez aspirine 81 mg par jour; veuillez planifier une prise de sang à 14 h.", "aspirine", "81 mg par jour", "81 mg par jour; veuillez planifier une prise de sang à 14 h"),
+            ("Commencez aspirine 81 mg par jour, planifiez un rendez-vous à 14 h.", "Commencez aspirine 81 mg par jour, planifiez un rendez-vous à 14 h.", "aspirine", "81 mg par jour", "81 mg par jour, planifiez un rendez-vous à 14 h")
+        ] {
+            let summary = try VisitReview.parse(proposal(quote: quote, names: [name], instructions: [full]), transcript: source, medicines: [])
+            let medicine = try XCTUnwrap(summary.medicines.first, source)
+            XCTAssertEqual(medicine.medicine.instructions, full, source)
+            XCTAssertTrue(medicine.times.isEmpty, source)
+            XCTAssertEqual(medicine.frequency, MedicationFrequency(count: 1, period: .day), source)
+            XCTAssertTrue(try VisitReview.parse(proposal(quote: source, names: [name], instructions: [borrowed]), transcript: source, medicines: []).medicines.isEmpty, source)
+        }
+        for (source, name, full) in [
+            ("Start aspirin 81 mg daily and arrange a laboratory test at 2 pm.", "aspirin", "81 mg daily"),
+            ("Start aspirin 81 mg daily and call the clinic at 2 pm.", "aspirin", "81 mg daily"),
+            ("Start aspirin 81 mg daily and return to the clinic at 2 pm.", "aspirin", "81 mg daily"),
+            ("Start aspirin 81 mg daily and repeat the blood test at 2 pm.", "aspirin", "81 mg daily"),
+            ("Commencez aspirine 81 mg par jour et appelez la clinique à 14 h.", "aspirine", "81 mg par jour"),
+            ("Commencez aspirine 81 mg par jour et revenez à la clinique à 14 h.", "aspirine", "81 mg par jour"),
+            ("Commencez aspirine 81 mg par jour et répétez les analyses sanguines à 14 h.", "aspirine", "81 mg par jour")
+        ] {
+            let summary = try VisitReview.parse(proposal(quote: source, names: [name], instructions: [full]), transcript: source, medicines: [])
+            XCTAssertEqual(summary.medicines.first?.medicine.instructions, full, source)
+            XCTAssertEqual(summary.medicines.first?.times, [], source)
+        }
+        for (source, names, shared) in [
+            ("Start aspirin and book blood work at 2 pm and ibuprofen 200 mg daily.", ["aspirin", "ibuprofen"], "200 mg daily"),
+            ("Commencez aspirine et planifiez une prise de sang à 14 h et ibuprofène 200 mg par jour.", ["aspirine", "ibuprofène"], "200 mg par jour")
+        ] {
+            XCTAssertTrue(try VisitReview.parse(proposal(quote: source, names: names, instructions: [shared, shared]), transcript: source, medicines: []).medicines.isEmpty, source)
+        }
+        let source = "Commencez l’aspirine à 81,5\u{00a0}µg une fois par jour."
+        let summary = try VisitReview.parse(proposal(quote: source, names: ["aspirine"], instructions: ["81,5 µg une fois par jour"]), transcript: source, medicines: [])
+        XCTAssertEqual(summary.medicines.first?.medicine.instructions, "81,5 µg une fois par jour")
+        let ordinary = "Start metformin 500 mg at 8 am and 8 pm."
+        let withEmptySavedName = try VisitReview.parse(proposal(quote: ordinary, names: ["metformin"], instructions: ["500 mg at 8 am and 8 pm"]), transcript: ordinary, medicines: [Medicine(id: "empty", name: "")])
+        XCTAssertEqual(withEmptySavedName.medicines.first?.medicine.id, "metformin")
+    }
+
+    func testStoredMedicineDraftTamperingCannotDiscardDoseOrClockDirectionsAndStopsStayEmpty() throws {
+        for (source, name, full, shortened) in [
+            ("Start metformin 500 mg at 8 am and 8 pm.", "metformin", "500 mg at 8 am and 8 pm", "8 am and 8 pm."),
+            ("Commencez aspirine 81,5 mg à 8 h et 20 h.", "aspirine", "81,5 mg à 8 h et 20 h", "81,5 mg à 8 h"),
+            ("Start aspirin 81 mg daily and book blood work at 2 pm.", "aspirin", "81 mg daily", "81 mg daily and book blood work at 2 pm"),
+            ("Commencez aspirine 81 mg par jour et planifiez une prise de sang à 14 h.", "aspirine", "81 mg par jour", "81 mg par jour et planifiez une prise de sang à 14 h")
+        ] {
+            let summary = try VisitReview.parse(proposal(quote: source, names: [name], instructions: [full]), transcript: source, medicines: [])
+            let original = try XCTUnwrap(summary.medicines.first, source)
+            var visit = DoctorVisit(transcript: source)
+            visit.summary = summary
+            visit.medicineBaseline = []
+            XCTAssertEqual(try VisitReview.applying([original.id], from: visit, to: []).first?.instructions, full)
+            var tampered = summary
+            tampered.medicines[0].medicine.instructions = shortened
+            visit.summary = tampered
+            XCTAssertThrowsError(try VisitReview.applying([original.id], from: visit, to: []), source)
+        }
+        let aspirin = try XCTUnwrap(Catalog.medicines.first { $0.id == "aspirin" })
+        for (source, name) in [("Stop aspirin today.", "aspirin"), ("Cessez de prendre l'aspirine aujourd'hui.", "aspirine")] {
+            let summary = try VisitReview.parse(proposal(quote: source, names: [name], instructions: [""], actions: ["stop"]), transcript: source, medicines: [aspirin])
+            let change = try XCTUnwrap(summary.medicines.first, source)
+            XCTAssertEqual(change.medicine.instructions, "")
+            var visit = DoctorVisit(transcript: source)
+            visit.summary = summary
+            visit.medicineBaseline = [aspirin]
+            XCTAssertTrue(try VisitReview.applying([change.id], from: visit, to: [aspirin]).isEmpty)
+            XCTAssertTrue(try VisitReview.parse(proposal(quote: source, names: [name], instructions: [name], actions: ["stop"]), transcript: source, medicines: [aspirin]).medicines.isEmpty)
+        }
+    }
+
+    func testDisplayedQuotesPreserveNegationHistoryConditionsExceptionsAndCourseContext() throws {
+        let cases = [
+            ("Do not book an appointment tomorrow.", ["book", "an appointment", "tomorrow."]),
+            ("Ne prenez pas un rendez-vous demain.", ["prenez", "un rendez-vous", "demain."]),
+            ("Do not start metformin 500 mg twice daily.", ["Do not start", "metformin", "500 mg", "twice daily"]),
+            ("Ne commencez pas aspirine 81 mg par jour.", ["Ne commencez pas", "aspirine", "81 mg", "par jour"]),
+            ("Last year the doctor told me to start aspirin 81 mg daily.", ["start aspirin 81 mg daily.", "81 mg daily"]),
+            ("L’an dernier, le médecin m’avait dit de commencer aspirine 81 mg par jour.", ["commencer aspirine 81 mg par jour.", "81 mg par jour"]),
+            ("If symptoms return, start aspirin 81 mg daily.", ["start aspirin 81 mg daily.", "aspirin"]),
+            ("Si les symptômes reviennent, commencez aspirine 81 mg par jour.", ["commencez aspirine 81 mg par jour.", "aspirine"]),
+            ("Take aspirin 81 mg daily except Mondays.", ["Take aspirin 81 mg daily", "81 mg daily"]),
+            ("Prenez aspirine 81 mg par jour sauf le lundi.", ["Prenez aspirine 81 mg par jour", "81 mg par jour"]),
+            ("Take aspirin 81 mg daily for five days.", ["Take aspirin 81 mg daily", "81 mg daily"]),
+            ("Prenez aspirine 81 mg par jour pendant cinq jours.", ["Prenez aspirine 81 mg par jour", "81 mg par jour"]),
+            ("Last year the doctor said, “Start aspirin 81 mg daily. Book blood work.”", ["Book blood work.", "blood work"])
+        ]
+        for (source, fragments) in cases {
+            let quotes = ([source] + fragments).map { ["quote": $0] }
+            let output = String(decoding: try JSONSerialization.data(withJSONObject: ["highlights": quotes, "followUps": quotes, "appointments": [], "medicines": []]), as: UTF8.self)
+            let summary = try VisitReview.parse(output, transcript: source, medicines: [])
+            XCTAssertEqual(summary.highlights, [VisitQuote(quote: source)], source)
+            XCTAssertFalse(summary.followUps.contains { fragments.contains($0.quote) }, source)
+            XCTAssertTrue(summary.followUps.contains(VisitQuote(quote: source)), source)
+            XCTAssertTrue(summary.medicines.isEmpty)
+        }
+        for (source, fullWithoutPeriod, fragments) in [
+            ("Yesterday, my knee hurt.", "Yesterday, my knee hurt", ["my knee hurt", "knee hurt"]),
+            ("Hier, mon genou était douloureux.", "Hier, mon genou était douloureux", ["mon genou était douloureux", "genou était douloureux"]),
+            ("The patient reported dizziness.", "The patient reported dizziness", ["dizziness"]),
+            ("Le patient a rapporté des étourdissements.", "Le patient a rapporté des étourdissements", ["des étourdissements"]),
+            ("Yesterday, my temperature was 36.7.", "Yesterday, my temperature was 36.7", ["Yesterday, my temperature was 36", "temperature was 36.7"])
+        ] {
+            let quotes = ([fullWithoutPeriod] + fragments).map { ["quote": $0] }
+            let output = String(decoding: try JSONSerialization.data(withJSONObject: ["highlights": quotes, "followUps": quotes, "appointments": [], "medicines": []]), as: UTF8.self)
+            let summary = try VisitReview.parse(output, transcript: source, medicines: [])
+            XCTAssertEqual(summary.highlights, [VisitQuote(quote: fullWithoutPeriod)], source)
+            XCTAssertEqual(summary.followUps, [VisitQuote(quote: fullWithoutPeriod)], source)
+        }
+        for source in ["If symptoms return, book blood work?", "Si les symptômes reviennent, prenez rendez-vous!", "If symptoms return, book blood work..."] {
+            let shortened = String(source.dropLast())
+            let output = String(decoding: try JSONSerialization.data(withJSONObject: ["highlights": [["quote": shortened]], "followUps": [], "appointments": [], "medicines": []]), as: UTF8.self)
+            XCTAssertTrue(try VisitReview.parse(output, transcript: source, medicines: []).highlights.isEmpty, source)
+        }
+        let source = "We discussed laboratory preparation. Book blood work in two weeks."
+        let output = #"{"highlights":[{"quote":"laboratory preparation"}],"followUps":[{"quote":"blood work"}],"appointments":[],"medicines":[]}"#
+        let summary = try VisitReview.parse(output, transcript: source, medicines: [])
+        XCTAssertEqual(summary.highlights, [VisitQuote(quote: "laboratory preparation")])
+        XCTAssertTrue(summary.followUps.contains(VisitQuote(quote: "blood work")))
+    }
+
     func testCandidatesKeepDecimalDosesAndExcludeUnchangedOrFollowUpFacts() {
         let source = "Start aspirin 81.5 mg daily. Continue the current treatment unchanged. Book laboratory tests next month. Cessez l'ibuprofène aujourd'hui. Gardez le traitement inchangé. Prenez un rendez-vous à la clinique."
         let candidates = VisitSourceGrounding.candidates(source)

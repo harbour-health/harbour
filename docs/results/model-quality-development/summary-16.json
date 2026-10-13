@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "createdUTC": "2026-10-13T09:56:41.839329+00:00",
+  "archive": "development-evidence-16.zip",
+  "archiveSHA256": "458aec2324ebc5b6e4ee5ad60e9d3d77ef9377325dc29e409e90d3f024480497",
+  "archiveBytes": 14034752,
+  "manifestSHA256": "04468956f314b2109dfa57d9530a73863a923d7c4b46319c710bdbd5d4ed23a2",
+  "evidenceFiles": 251,
+  "memberCount": 252,
+  "allowlistSHA256": "904902e9f8c5ad1973e99938688a7e13af709e31b473ce9a307c51a7feb901f3",
+  "preflightSHA256": "84ee54d0b3272be0b55a18a74ff6a137dbc99eb77281e9c82acd815b95cecd75",
+  "builderSHA256": "eb35f62a815723e87cb0a7c00c38153f59a0aec94879bd6e17e998d7b6826213",
+  "scope": "Completed exact-source11 Standard and Native Mac Simulator workflows only, with original evidence, source-tree binding and separate duplicate-push cancellation proof. No current DEV/supplement/heldout, raw model-quality, physical-device or production-readiness result.",
+  "releaseEvidence": false,
+  "CRCAndAllMemberHashesVerified": true,
+  "previousArchivesUnchanged": true,
+  "preflight": {
+    "schemaVersion": 1,
+    "result": "PASS",
+    "createdUTC": "2026-10-13T09:56:41.839329+00:00",
+    "sourceCommit": "7a4181264af9c5443811796aacd6d64c13a76339",
+    "scope": "Completed exact-source11 Standard and Native Mac Simulator workflows only, with original evidence, source-tree binding and separate duplicate-push cancellation proof. No current DEV/supplement/heldout, raw model-quality, physical-device or production-readiness result.",
+    "allowlistSHA256": "904902e9f8c5ad1973e99938688a7e13af709e31b473ce9a307c51a7feb901f3",
+    "selectedEvidenceFiles": 251,
+    "totalUncompressedBytes": 20889661,
+    "maximumMemberBytes": 963072,
+    "actualCounts": {
+      "standard": {
+        "runID": 38374929978,
+        "Core": {
+          "executed": 200,
+          "passed": 200,
+          "failed": 0
+        },
+        "Runtime": {
+          "executed": 21,
+          "passed": 21,
+          "failed": 0
+        },
+        "counts": {
+          "hosted": {
+            "total": 24,
+            "passed": 23,
+            "failed": 0,
+            "skipped": 1
+          },
+          "UI": {
+            "total": 11,
+            "passed": 11,
+            "failed": 0,
+            "skipped": 0
+          }
+        }
+      },
+      "native": {
+        "runID": 38374930021,
+        "Core": {
+          "executed": 200,
+          "passed": 200,
+          "failed": 0
+        },
+        "Runtime": {
+          "executed": 21,
+          "passed": 21,
+          "failed": 0
+        },
+        "counts": {
+          "hosted": {
+            "total": 25,
+            "passed": 24,
+            "failed": 0,
+            "skipped": 1
+          },
+          "UI": {
+            "total": 7,
+            "passed": 7,
+            "failed": 0,
+            "skipped": 0
+          }
+        }
+      }
+    },
+    "canonicalGitInventoryFiles": 97,
+    "gitTree": "2de4d56bb6b34224bd629767b2881689fd062d17",
+    "measuredCheckoutCommits": [
+      "485b5f376b80f30f5f6f0a09f86f2fd4871b8b94",
+      "485b5f376b80f30f5f6f0a09f86f2fd4871b8b94"
+    ],
+    "checkoutTreesEqualHeadTree": true,
+    "actualMacCompilerMaterializedByteInventoryClaimed": false,
+    "duplicatePushFinalConclusion": "cancelled",
+    "rootCancellationReceiptPreserved": true,
+    "historicalArchive15AuditSidecarsAreDistinct": true,
+    "priorArchivesSHA256": {
+      "01": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091",
+      "02": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a",
+      "03": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e",
+      "04": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9",
+      "05": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571",
+      "06": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da",
+      "07": "b36dd12db0892e89f8d8c1f2672462d9212a71f016076b9beeca0a51a22c6529",
+      "08": "8997676469921003a6e4a112e3c120317382cc562cc5150f3646d4869b524a10",
+      "09": "7da96637ba2b134a309905cb97e908427408125c3d7bf13704503eabd7e4f688",
+      "10": "ad796f1d76199ad8dd613bbb1f36d4ed05cc2178483d4e1dd23375f506de31f7",
+      "11": "7ef4c58f54f264df70b1b1ddd0e42baa108a16d1a0862e9c5a14e5666bf23108",
+      "12": "e1f44ecd97238f68a6f3e9a3929230059082ae1fdaf69f13d24aa6feb7d64269",
+      "13": "ed487a3e47a7a5ef31c9b21ec72dd3580c157bd25835bc517e26382c3c325810",
+      "14": "41710bf12bf2b1854fb7ec16114c2bbc1b76c7104b350db114b9bd89d89c2796",
+      "15": "ca624ec881a7328f0de79d60f65938887e00e008f15f2af996173cc0377372da"
+    },
+    "privateIPv4AndTailnetAddressesAbsent": true,
+    "activeQualityRowsOrResultsIncluded": false,
+    "compiledBinariesWeightsSDKFullXCResultOriginalArtifactZipVideoIncluded": false,
+    "noTestCompilerModelScorerNetworkPublicationCommitOrSourceEditPerformedByPackager": true
+  }
+}
