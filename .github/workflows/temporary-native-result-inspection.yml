@@ -1,0 +1,96 @@
+name: Temporary existing native failure inspection
+
+# Temporary read-only existing8b archive inspection; no build or inference runs. Delete internal branch after review.
+on:
+  push:
+    branches: [codex/qwen35-ci-diagnostics]
+    paths: [.github/workflows/temporary-native-result-inspection.yml]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: Existing Native tests run whose archive should be inspected
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  inspect-existing-result:
+    runs-on: macos-26
+    timeout-minutes: 15
+    steps:
+      - name: Download existing test archive
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4, verified official tag
+        with:
+          name: native-test-results
+          run-id: ${{ inputs.run_id || '38336438687' }}
+          github-token: ${{ github.token }}
+          path: existing-archive
+      - name: Extract existing console and diagnostic logs
+        env:
+          ARCHIVE_RUN_ID: ${{ inputs.run_id || '38336438687' }}
+        run: |
+          mkdir -p diagnostic-output
+          xcodebuild -version > diagnostic-output/xcode.txt
+          python3 - <<'PY'
+          import json, os, pathlib, re, subprocess
+          output = pathlib.Path('diagnostic-output')
+          bundles = list(pathlib.Path('existing-archive').rglob('*.xcresult'))
+          if len(bundles) != 1:
+              raise SystemExit(f'Expected one xcresult, found {len(bundles)}')
+          bundle = str(bundles[0])
+          manifest = {'sourceRunID': os.environ['ARCHIVE_RUN_ID'], 'bundle': bundle, 'commands': []}
+          def capture(name, args):
+              command = ['xcrun', 'xcresulttool', *args]
+              result = subprocess.run(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=180)
+              (output / name).write_text(result.stdout, encoding='utf-8')
+              (output / (name + '.stderr.txt')).write_text(result.stderr, encoding='utf-8')
+              manifest['commands'].append({'output': name, 'command': command, 'exitCode': result.returncode})
+              print(name, 'exit', result.returncode, 'stdout bytes', len(result.stdout.encode()), flush=True)
+              return result
+          capture('help-get-log.txt', ['help', 'get', 'log'])
+          capture('help-export-attachments.txt', ['help', 'export', 'attachments'])
+          capture('help-test-activities.txt', ['help', 'get', 'test-results', 'activities'])
+          capture('summary.json', ['get', 'test-results', 'summary', '--path', bundle])
+          tests = capture('tests.json', ['get', 'test-results', 'tests', '--path', bundle])
+          capture('console.txt', ['get', 'log', '--path', bundle, '--type', 'console'])
+          capture('failure-attachments-export.txt', ['export', 'attachments', '--path', bundle, '--output-path', str(output / 'failure-attachments'), '--only-failures'])
+          legacy = capture('legacy-root.json', ['get', 'object', '--legacy', '--path', bundle, '--format', 'json'])
+          def nodes(value):
+              if isinstance(value, dict):
+                  yield value
+                  for child in value.values(): yield from nodes(child)
+              elif isinstance(value, list):
+                  for child in value: yield from nodes(child)
+          if legacy.returncode == 0:
+              root = json.loads(legacy.stdout)
+              ids = set()
+              for node in nodes(root):
+                  reference = node.get('logRef')
+                  if isinstance(reference, dict):
+                      value = reference.get('id', {}).get('_value')
+                      if isinstance(value, str): ids.add(value)
+              for index, log_id in enumerate(sorted(ids)):
+                  capture(f'action-console-{index}.txt', ['get', 'log', '--path', bundle, '--type', 'console', '--id', log_id])
+                  capture(f'action-log-{index}.json', ['get', 'object', '--legacy', '--path', bundle, '--format', 'json', '--id', log_id])
+          if tests.returncode == 0:
+              identifiers = set()
+              for node in nodes(json.loads(tests.stdout)):
+                  if node.get('result') in ('Failed', 'Failure') and isinstance(node.get('nodeIdentifier'), str):
+                      identifiers.add(node['nodeIdentifier'])
+              for index, identifier in enumerate(sorted(identifiers)):
+                  capture(f'failed-test-{index}-activities.json', ['get', 'test-results', 'activities', '--path', bundle, '--test-id', identifier])
+                  capture(f'failed-test-{index}-details.json', ['get', 'test-results', 'test-details', '--path', bundle, '--test-id', identifier])
+          (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
+          files = [{'path': str(path.relative_to(output)), 'bytes': path.stat().st_size} for path in sorted(output.rglob('*')) if path.is_file()]
+          (output / 'inventory.json').write_text(json.dumps(files, indent=2) + '\n', encoding='utf-8')
+          PY
+      - name: Upload extracted diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: temporary-existing-native-failures-${{ inputs.run_id || '38336438687' }}
+          path: diagnostic-output
+          retention-days: 14
