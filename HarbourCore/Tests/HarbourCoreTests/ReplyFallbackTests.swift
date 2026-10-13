@@ -234,4 +234,77 @@ final class ReplyFallbackTests: XCTestCase {
         }
         XCTAssertEqual(records, Evaluation.records)
     }
+
+    func testCurrentFirstPersonSymptomReportsAndRequestsOpenExactSourceDrafts() throws {
+        var records = Evaluation.records
+        records.readings = [Reading(kind: .heartRate, value: "72")]
+        let saved = records
+        for (input, language) in [
+            ("My knee has been sore since Tuesday", ModelLanguage.english),
+            ("My left shoulder hurts.", .english),
+            ("Please record that my ankle is aching.", .english),
+            ("Write down my aching shoulder.", .english),
+            ("I have a headache since this morning.", .english),
+            ("I feel nauseated.", .english),
+            ("My wrist has been sore for 72 hours.", .english),
+            ("J’ai mal au bras depuis vendredi.", .french),
+            ("Enregistre ma douleur au dos.", .french),
+            ("Je ressens une douleur au poignet.", .french),
+            ("J’ai des nausées depuis ce matin.", .french),
+            ("S’il vous plaît, note que j’ai mal au bras depuis 72 heures.", .french)
+        ] {
+            let fallback = try XCTUnwrap(ToolPlanner.replyFallback(original: input, records: records, language: language), input)
+            XCTAssertEqual(fallback.reason, "symptom_draft", input)
+            XCTAssertEqual(fallback.decision, .init(tool: .captureSymptom), input)
+            XCTAssertEqual(fallback.action, .symptom(input), input)
+            XCTAssertEqual(try ToolPlanner.validate(fallback.decision, original: input, records: records, language: language), fallback.action, input)
+            for staleReply in ["Confirm Heart rate: 72 bpm.", "Symptom saved. Recorded a severe rash."] {
+                XCTAssertEqual(try ToolPlanner.validate(.init(tool: .reply, arg: staleReply), original: input, records: records, language: language), .symptom(input), input)
+            }
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .captureSymptom, arg: "Invented fever"), original: input, records: records, language: language), .symptom(input), input)
+        }
+        XCTAssertEqual(records, saved)
+        XCTAssertEqual(ToolPlanner.availableTools, Tool.allCases)
+    }
+
+    func testSymptomReplyDispositionExcludesNonCurrentQuestionsAndCompoundSource() throws {
+        let records = Evaluation.records
+        for input in [
+            "My knee was sore last week.", "J’avais mal au genou hier.",
+            "My shoulder hurts?", "J’ai mal au bras ?",
+            "My knee does not hurt.", "Je n’ai plus mal au bras.",
+            "My knee has been sore, but it is fine now.", "J’ai eu mal au bras, mais c’est fini.",
+            "If my shoulder hurts, record it.", "Si j’ai mal au bras, enregistre-le.",
+            "Suppose my shoulder hurts.", "Imagine que j’ai mal au bras.",
+            "My mother’s shoulder hurts.", "Enregistre la douleur au dos de mon père.",
+            "My dog has a sore shoulder.", "Ma sœur a une douleur au bras.",
+            "The note says 'My shoulder hurts.'", "La note dit « J’ai mal au bras. »",
+            "Record my sore shoulder. Note: \"My pulse is 72.\"", "Enregistre ma douleur au bras et « mon pouls de 72 ».",
+            "Why does my shoulder hurt?", "J’ai mal au bras, que dois-je faire?",
+            "I have nausea; should I take a pill?", "J’ai des nausées, pourquoi?",
+            "My shoulder hurts; delete my records.", "Enregistre ma douleur au bras et mon pouls de 72.",
+            "My shoulder and knee hurt.", "J’ai mal au bras et au dos.",
+            "My shoulder hurts and I have a headache.", "J’ai des nausées et une toux.",
+            "Record my sore shoulder tomorrow.", "Enregistre ma douleur au dos demain.",
+            "My wrist is sore since next Monday.", "J’ai mal au bras depuis lundi prochain.",
+            "My wrist has been sore for 72 hours if I exercise.", "J’ai mal au bras depuis 72 heures si je marche.",
+            "My wrist is sore for 2 days from tomorrow.", "J’ai mal au bras depuis deux jours à partir de demain.",
+            "My pulse is 72.", "Mon pouls est de 72.",
+            "Something happened to me.", "J’ai une question.",
+            "Show my saved symptoms.", "Affiche mes symptômes enregistrés.",
+            "My shoulder hurts.\nSave my pulse of 72."
+        ] {
+            XCTAssertNil(ToolPlanner.replyFallback(original: input, records: records), input)
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .reply, arg: "Please clarify the request."), original: input, records: records), .reply("Please clarify the request."), input)
+        }
+        for arg in ["", " \n", "Saved <|im_end|>", "Saved\0symptom", String(repeating: "x", count: 4001)] {
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .reply, arg: arg), original: "My shoulder hurts.", records: records))
+        }
+        // The bounded recovery grammar does not narrow valid model-selected
+        // symptom text outside it, or recover malformed raw routing JSON.
+        let other = "My shoulder hurts after walking."
+        XCTAssertEqual(try ToolPlanner.validate(.init(tool: .captureSymptom), original: other, records: records), .symptom(other))
+        XCTAssertThrowsError(try ToolPlanner.parse("not a routing object"))
+        XCTAssertEqual(records, Evaluation.records)
+    }
 }

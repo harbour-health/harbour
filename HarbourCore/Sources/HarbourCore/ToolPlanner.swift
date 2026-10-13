@@ -56,6 +56,32 @@ public enum ToolPlanner {
         return original.replacingOccurrences(of: quotes, with: " ", options: .regularExpression)
     }
 
+    private static func explicitCurrentSymptomRequest(_ input: String) -> Bool {
+        // Closed current reports only. Onset text is retained, never parsed into
+        // a clinical field; an unsupported tail stays on the ordinary reply path.
+        guard input.count <= 1000, !input.contains("\n"), !input.contains("\r") else { return false }
+        let englishSite = #"(?:(?:left|right)\s+)?(?:head|neck|shoulder|arm|elbow|wrist|hand|finger|back|chest|stomach|abdomen|hip|knee|leg|ankle|foot|throat)"#
+        let frenchSite = #"(?:tete|cou|epaule|bras|coude|poignet|main|doigt|dos|poitrine|ventre|abdomen|hanche|genou|jambe|cheville|pied|gorge)(?:\s+(?:gauche|droit|droite))?"#
+        let frenchLocation = #"(?:au\s+|a\s+la\s+|a\s+l')"# + frenchSite
+        let englishSymptom = #"(?:a\s+(?:headache|rash|cough)|nausea|pain\s+in\s+my\s+"# + englishSite + ")"
+        let frenchSymptom = #"(?:un\s+mal\s+de\s+tete|une\s+(?:eruption\s+cutanee|toux)|des\s+nausees)"#
+        let englishReport = #"(?:my\s+"# + englishSite + #"\s+(?:hurts|aches|is\s+(?:sore|aching)|has\s+been\s+(?:sore|aching))|i\s+(?:have\s+"# + englishSymptom + #"|(?:feel|am\s+feeling|have\s+been\s+feeling)\s+(?:dizzy|nauseated)))"#
+        let frenchReport = #"(?:j'ai\s+(?:(?:mal|une\s+douleur)\s+"# + frenchLocation + "|" + frenchSymptom + #")|je\s+ressens\s+une\s+douleur\s+"# + frenchLocation + #"|je\s+me\s+sens\s+(?:etourdi|etourdie|nauseux|nauseuse))"#
+        let quantity = #"(?:[1-9][0-9]{0,2}|one|two|three|four|five|six|seven|eight|nine|ten|un|une|deux|trois|quatre|cinq|sept|huit|neuf|dix)"#
+        let englishStart = #"(?:today|yesterday|this\s+(?:morning|afternoon|evening)|(?:last\s+)?(?:monday|tuesday|wednesday|thursday|friday|saturday|sunday))"#
+        let frenchStart = #"(?:aujourd'hui|hier|ce\s+matin|cet\s+apres-midi|ce\s+soir|(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)(?:\s+dernier)?)"#
+        let englishOnset = #"(?:\s+since\s+"# + englishStart + #"|\s+for\s+"# + quantity + #"\s+(?:minutes?|hours?|days?|weeks?|months?))?"#
+        let frenchOnset = #"(?:\s+depuis\s+(?:"# + frenchStart + "|" + quantity + #"\s+(?:minutes?|heures?|jours?|semaines?|mois)))?"#
+        let englishCommand = #"(?:record|save|log|note|track|write\s+down)\s+"#
+        let frenchCommand = #"(?:enregistre|enregistrez|enregistrer|sauvegarde|sauvegardez|sauvegarder|note|notez|noter|consigne|consignez|consigner)\s+"#
+        let english = "(?:" + englishCommand + #"(?:(?:that|this\s+symptom:)\s+)?"# + englishReport + "|" + englishReport
+            + "|" + englishCommand + #"my\s+(?:(?:sore|aching)\s+"# + englishSite + #"|headache|rash|cough|nausea))"# + englishOnset
+        let french = "(?:" + frenchCommand + #"(?:(?:que|ce\s+symptome\s*:)\s+)?"# + frenchReport + "|" + frenchReport
+            + "|" + frenchCommand + #"(?:ma\s+douleur\s+"# + frenchLocation + #"|mon\s+mal\s+de\s+tete|mes\s+nausees|ma\s+toux|mon\s+eruption\s+cutanee))"# + frenchOnset
+        let courtesy = #"(?:(?:please|svp|s'il\s+vous\s+plait|s'il\s+te\s+plait),?\s+)?"#
+        return matches(input, #"\A"# + courtesy + "(?:" + english + "|" + french + #")[.!]?\s*\z"#)
+    }
+
     private static func explicitSavedInteractionRequest(_ original: String) -> Bool {
         let outer = unquotedRequest(original)
         var input = InputLanguage.folded(outer)
@@ -148,6 +174,11 @@ public enum ToolPlanner {
             if matches(input, "^" + courtesy + command + measurement + #"[.!]?\s*$"#) {
                 return ReplyFallback(decision: .init(tool: .logReading), action: .reading(reading), reason: "reading_draft")
             }
+        }
+        // Recovery is an application draft after routing, not a model
+        // prediction or a saved record. Preserve the full current source only.
+        if WriteRequestValidation.permits(original, tool: .captureSymptom), explicitCurrentSymptomRequest(input) {
+            return ReplyFallback(decision: .init(tool: .captureSymptom), action: .symptom(original), reason: "symptom_draft")
         }
         return nil
     }

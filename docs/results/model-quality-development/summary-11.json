@@ -1,0 +1,426 @@
+{
+  "formatVersion": 1,
+  "releaseEvidence": false,
+  "archive": "development-evidence-11.zip",
+  "archiveSHA256": "7ef4c58f54f264df70b1b1ddd0e42baa108a16d1a0862e9c5a14e5666bf23108",
+  "archiveBytes": 1952260,
+  "evidenceFiles": 168,
+  "membersIncludingManifest": 169,
+  "manifestSHA256": "2dc9ff7e2a01656300551c5d76a785ca2f66d101f56ff8ddcd72e9ccce5d23df",
+  "builderSHA256": "9862722f7242e93cdd16a56a5817190c5fdd644ba0c427e81ef6098d2cc7fbd1",
+  "allowlistSHA256": "6fd1c181cdcd926c0a62134f2ef3f93cc8412d6a544b72b300fd201debe1d943",
+  "previousArchivesUnchangedSHA256": {
+    "01": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091",
+    "02": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a",
+    "03": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e",
+    "04": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9",
+    "05": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571",
+    "06": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da",
+    "07": "b36dd12db0892e89f8d8c1f2672462d9212a71f016076b9beeca0a51a22c6529",
+    "08": "8997676469921003a6e4a112e3c120317382cc562cc5150f3646d4869b524a10",
+    "09": "7da96637ba2b134a309905cb97e908427408125c3d7bf13704503eabd7e4f688",
+    "10": "ad796f1d76199ad8dd613bbb1f36d4ed05cc2178483d4e1dd23375f506de31f7"
+  },
+  "allowlistBindings": [
+    {
+      "group": "failed-CI5b",
+      "source": "build/native-ci-5b4b615/publishable-allowlist.json",
+      "sha256": "cc86f1fae6db80bb5629e4a71a010797af1d918a3d4b1a38d3dbaddb0d8751b0",
+      "sourceFiles": 27,
+      "scope": "Failed source5b Core-only CI cohorts. Both ran198 tests with1 failure; no Runtime, hosted/UI or model inference ran. No platform-exclusive cause established; actual escaped pattern strings were not observed."
+    },
+    {
+      "group": "source08-correctness",
+      "source": "build/model-quality/committed-source08-publishable-allowlist.json",
+      "sha256": "c4461a2b78fba035141321a5674e0cea906b564492143d80cb30f6d07bb40181",
+      "sourceFiles": 45,
+      "scope": "Fresh committed8b4a40d source08 correctness proof only; no quality comparison, compiled apps/test artifacts, native UI execution, heldout results or promotion claim"
+    },
+    {
+      "group": "xtool8b4",
+      "source": "build/xtool-8b4a40d-validation/publishable-allowlist.json",
+      "sha256": "45e4721951ff57e1a82fd99ac90d7c507ad65e890c0690243444078494aa6792",
+      "sourceFiles": 33,
+      "scope": "Compact final-source8b4 xtool build and source-bound coordinated test evidence allowlist; no publication/commit performed."
+    }
+  ],
+  "cohorts": {
+    "failedSource07": {
+      "sourceCommit": "5b4b6153f1945ccde845f1db8f12afb06b9c8ce9",
+      "sourceIdentitySHA256": "674240c1d151441461cd00e04266f3f81a972193417468d0b61e0b119807ee09",
+      "actualCore": {
+        "executed": 198,
+        "passed": 197,
+        "failed": 1
+      },
+      "originalHelperParsedTotals": {
+        "executed": 16,
+        "failed": 0
+      },
+      "originalExitCode": 1,
+      "originalReceiptUnchanged": true,
+      "Runtime": "not run",
+      "native": "not run",
+      "auxiliary": "not run",
+      "modelQuality": "not run",
+      "scope": "Original failed198-test log/helper/16-sub-suite receipt plus separately derived correction retained; exit/count gate still blocked all dependent stages."
+    },
+    "failedCI5b": {
+      "sourceCommit": "5b4b6153f1945ccde845f1db8f12afb06b9c8ce9",
+      "runs": [
+        {
+          "kind": "standard",
+          "runID": 38348651577,
+          "url": "https://github.com/harbour-health/harbour/actions/runs/38348651577",
+          "conclusion": "failure",
+          "sourceHead": "5b4b6153f1945ccde845f1db8f12afb06b9c8ce9",
+          "Core": {
+            "executed": 198,
+            "passed": 197,
+            "failed": 1
+          },
+          "failedTest": "ReplyFallbackTests.testSingleExplicitReadingRequestsOpenSourceBoundDraftsInsteadOfModelReceipts",
+          "failedSourceLine": 180,
+          "exactInput": "Log my blood pressure of 128/82 mmHg.",
+          "failureAssertion": "2026-10-13T04:54:40.5072080Z /Users/runner/work/harbour/harbour/HarbourCore/Tests/HarbourCoreTests/ReplyFallbackTests.swift:180: error: -[HarbourCoreTests.ReplyFallbackTests testSingleExplicitReadingRequestsOpenSourceBoundDraftsInsteadOfModelReceipts] : XCTUnwrap failed: expected non-nil value of type \"ReplyFallback\" - Log my blood pressure of 128/82 mmHg.",
+          "Runtime": "not run",
+          "hosted": "not run",
+          "UI": "not run",
+          "receiptSHA256": "357c5102ac6473bf9ac6d788787e76b5db084014040f5fbcbabcc158c185f97b",
+          "jobLogSHA256": "8295aa819edf04e1a247245e77b30f89deb08a827c8737f1884a7c6e5c912d49",
+          "originalArtifactReferences": []
+        },
+        {
+          "kind": "native",
+          "runID": 38348651598,
+          "url": "https://github.com/harbour-health/harbour/actions/runs/38348651598",
+          "conclusion": "failure",
+          "sourceHead": "5b4b6153f1945ccde845f1db8f12afb06b9c8ce9",
+          "Core": {
+            "executed": 198,
+            "passed": 197,
+            "failed": 1
+          },
+          "failedTest": "ReplyFallbackTests.testSingleExplicitReadingRequestsOpenSourceBoundDraftsInsteadOfModelReceipts",
+          "failedSourceLine": 180,
+          "exactInput": "Log my blood pressure of 128/82 mmHg.",
+          "failureAssertion": "2026-10-13T04:54:34.8057500Z /Users/runner/work/harbour/harbour/HarbourCore/Tests/HarbourCoreTests/ReplyFallbackTests.swift:180: error: -[HarbourCoreTests.ReplyFallbackTests testSingleExplicitReadingRequestsOpenSourceBoundDraftsInsteadOfModelReceipts] : XCTUnwrap failed: expected non-nil value of type \"ReplyFallback\" - Log my blood pressure of 128/82 mmHg.",
+          "Runtime": "not run",
+          "hosted": "not run",
+          "UI": "not run",
+          "receiptSHA256": "35e5c8a917486647ba43c9cfb3762e15e5967aeae288bbf03b5c684bd27d728b",
+          "jobLogSHA256": "80a0d4a2915b35796d0854b3f8049e08f12a74b544100797a8aa823edc7bf950",
+          "originalArtifactReferences": [
+            {
+              "artifactID": 11789774372,
+              "name": "native-test-results",
+              "url": "https://github.com/harbour-health/harbour/actions/runs/38348651598/artifacts/11789774372",
+              "apiReportedDigest": "sha256:8fe6c14b3e24a37fff14c2c2791f3402dff1063b332af71282ea9a56f4898564",
+              "archive": "original-artifacts/11789774372-native-test-results.zip",
+              "bytes": 3749,
+              "observedZipSHA256": "8fe6c14b3e24a37fff14c2c2791f3402dff1063b332af71282ea9a56f4898564",
+              "CRCValidated": true,
+              "members": [
+                {
+                  "path": "runner-hardware.txt",
+                  "bytes": 514,
+                  "sha256": "ca56f2f75f6e06ce8348283a2f2b8d33fa1cc8ec2d41a5f0ea843bdfef6bc175"
+                },
+                {
+                  "path": "simulators.json",
+                  "bytes": 32912,
+                  "sha256": "629ee95e3f3d34f1216b29877bce4a69544d2d480b3cd16655776f0dd4bf568e"
+                },
+                {
+                  "path": "swift.txt",
+                  "bytes": 98,
+                  "sha256": "b674f79b747370a1c05ae7cec551fffe557816c6c807f35f39f933ecbcca80d7"
+                },
+                {
+                  "path": "xcode.txt",
+                  "bytes": 32,
+                  "sha256": "18730ed2ae28a2c9cf0c2d5db549033a4f07089331391a7133b7b32187454fa9"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "scope": "Both terminal PR CI runs:198 executed/197passed/1failed. Runtime/hosted/UI skipped;4 native environment artifact files retained, original ZIP external."
+    },
+    "xtool5bPreparedOnly": {
+      "sourceCommit": "5b4b6153f1945ccde845f1db8f12afb06b9c8ce9",
+      "sourceIdentitySHA256": "7dfe4ab7de1409ef4c76193e27d7679595a0e58554a28cbf5e71d2351cc61a02",
+      "preparedOnly": true,
+      "buildExecuted": false,
+      "scope": "Prepared archive/scripts only. Failed source07 gates prevented build."
+    },
+    "acceptedNumericFix": {
+      "sourceCommit": "8b4a40dbae603be67ec72dafd5f20b01e158ce98",
+      "patchSHA256": "e1057a3bdd32b8add1b817bc11e19fbe39c3c8e50a5d763690e02bf20ebc6aed",
+      "testsUnchanged": true,
+      "testMethodsAdded": 0,
+      "platformExclusiveCauseEstablished": false,
+      "scope": "Literal numeric components escaped separately; actual old escapedPattern return was not captured. Original controls and198-count retained."
+    },
+    "source08Correctness": {
+      "sourceCommit": "8b4a40dbae603be67ec72dafd5f20b01e158ce98",
+      "sourceIdentitySHA256": "d504c53b36f7c315b3a2255af1a81a4bb062caa21d26312ff752e95fe0fbf615",
+      "sourceArchiveSHA256": "b7124bdc9a08c06754d03d9efd67665ada98ea3dd2a5c8cdfab52d91750f8be5",
+      "actualFiles": 130,
+      "Core": 198,
+      "Runtime": 21,
+      "nativeGrammarContext": 159,
+      "Python": 60,
+      "localizationKeys": 598,
+      "independentAuditScope": "Local source/hash/receipt binding to retained remote audit; no independent remote binary reread.",
+      "scope": "Fresh actual committed materialization and coordinated correctness/native grammar-context proof; no app UI/model-quality or clinical validation."
+    },
+    "xtool8b4": {
+      "sourceCommit": "8b4a40dbae603be67ec72dafd5f20b01e158ce98",
+      "sourceIdentitySHA256": "7a1140b3904b8dcd1fdd5a95ab8385ce47ca426e302d6839c7272e5e64f7b933",
+      "sourceArchiveSHA256": "8909311840bc014ffff7d62a26dd700c91819db39b2bc071f942cf13f8397d9f",
+      "actualFiles": 127,
+      "arm64IOSReleaseExitCode": 0,
+      "elapsedSeconds": 74.88382171001285,
+      "bundleFiles": 25,
+      "importedCore": 198,
+      "importedRuntime": 21,
+      "testsRerunInXtool": false,
+      "identicalPackageFiles": 48,
+      "scope": "Fresh isolatedRelease cross-build and Mach-O/locale/privacy/ad-hoc bundle checks. Separate imported exact48-source test proof; no device/model-quality execution."
+    },
+    "source08QualityPreparedOnly": {
+      "sourceCommit": "8b4a40dbae603be67ec72dafd5f20b01e158ce98",
+      "sourceIdentitySHA256": "d504c53b36f7c315b3a2255af1a81a4bb062caa21d26312ff752e95fe0fbf615",
+      "runnerSHA256": "1c1f817bad6829a6ab9a4d757c9a97aa0eb3ca92896b9e9afd32d5ff817c8430",
+      "packetExtractorSHA256": "0803a7482cfc188bb9ff38e737b8aa0013a85f1ea2151f7b4a04ef1263019397",
+      "DEV": {
+        "rows": 291,
+        "primaryRows": 267,
+        "extraStandardTimingRows": 24,
+        "rowsPerModel": 97,
+        "repeats": 3
+      },
+      "supplement": {
+        "rows": 120,
+        "routingPerModel": 31,
+        "visitsPerModel": 9
+      },
+      "qualityExecutionStarted": false,
+      "heldoutAuthorized": false,
+      "hostSnapshotScope": "Readiness epoch, not the yet-unstarted measured inference start; capture a new non-overwriting start snapshot after rootGO",
+      "scope": "ImmutableDEV291/supplement120 wrapper and complete97-row/model English extraction preparation; no phase execution, answers, reviews, scores or gate approval."
+    }
+  },
+  "externalAssetsAndArtifactsExcluded": [
+    {
+      "group": "failed-CI5b",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-5b4b615/native/original-artifacts/11789774372-native-test-results.zip",
+        "bytes": 3749,
+        "sha256": "8fe6c14b3e24a37fff14c2c2791f3402dff1063b332af71282ea9a56f4898564",
+        "url": "https://github.com/harbour-health/harbour/actions/runs/38348651598/artifacts/11789774372",
+        "reason": "Original environment ZIP retained locally; selected four text/JSON files included; no compiled or app artifacts exist for this failed Core gate."
+      }
+    },
+    {
+      "group": "xtool8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/xtool-8b4a40d-validation/Harbour-8b4a40d.app.zip",
+        "bytes": 4416556,
+        "sha256": "39631afeb07e8b734ad37bcccc228710b3e2eaa3bf8b3475889bbdc2b3f4e4b4",
+        "reason": "Compiled app retained locally; omitted from compact publishable proof"
+      }
+    },
+    {
+      "kind": "Compiled XCTest artifacts",
+      "group": "failed-source07",
+      "retainedInArchive": false,
+      "sourceReceipt": "build/model-quality/committed-source07/HarbourCore-test-result.json",
+      "artifactsSHA256": {
+        "HarbourCore/.build/out/Products/Release-linux-x86_64/HarbourCoreTests-test-runner": "8c1312dc54db7b2a1a1341e2815a9b48a4e85aa9f795a6090abccf1c0b76589f",
+        "HarbourCore/.build/out/Products/Release-linux-x86_64/HarbourCoreTests.so": "5d0367c52cf49973f477e0d149cd881ca90215ea86b4125bc52614d6cb4a4771"
+      },
+      "verificationScope": "Original retained measured hashes; not reread from remote by archive preparation"
+    },
+    {
+      "kind": "Compiled XCTest artifacts",
+      "group": "source08-correctness",
+      "retainedInArchive": false,
+      "sourceReceipt": "build/model-quality/committed-source08/HarbourCore-test-result.json",
+      "artifactsSHA256": {
+        "HarbourCore/.build/out/Products/Release-linux-x86_64/HarbourCoreTests-test-runner": "e5e2e9ef7a237ef0e285dd02876fe884fc4eaa57c32c60fd37688dc9ddca7243",
+        "HarbourCore/.build/out/Products/Release-linux-x86_64/HarbourCoreTests.so": "9a91db13f3d7d44716a09b1021487ed0b50c89d351fe7b3877e16ed038a897f7"
+      },
+      "verificationScope": "Original retained measured hashes; not reread from remote by archive preparation"
+    },
+    {
+      "kind": "Compiled XCTest artifacts",
+      "group": "source08-correctness",
+      "retainedInArchive": false,
+      "sourceReceipt": "build/model-quality/committed-source08/HarbourRuntime-test-result.json",
+      "artifactsSHA256": {
+        "HarbourRuntime/.build/out/Products/Release-linux-x86_64/HarbourRuntimeTests-test-runner": "badd7592ec02f0a2b8eaf989f9f604775bf4c647a9b5e10c1cce03becfa06312",
+        "HarbourRuntime/.build/out/Products/Release-linux-x86_64/HarbourRuntimeTests.so": "847ee2d5b0178bdb0f8e765d7d209a5ab9b2ffe7f0eddb0231b7dbe54302854b"
+      },
+      "verificationScope": "Original retained measured hashes; not reread from remote by archive preparation"
+    },
+    {
+      "kind": "Pinned GGUF model assets",
+      "retainedInArchive": false,
+      "assets": [
+        {
+          "model": "qwen35",
+          "repository": "unsloth/Qwen3.5-2B-GGUF",
+          "revision": "f6d5376be1edb4d416d56da11e5397a961aca8ae",
+          "url": "https://huggingface.co/unsloth/Qwen3.5-2B-GGUF/resolve/f6d5376be1edb4d416d56da11e5397a961aca8ae/Qwen3.5-2B-Q4_K_M.gguf",
+          "filename": "Qwen3.5-2B-Q4_K_M.gguf",
+          "bytes": 1280835840,
+          "sha256": "aaf42c8b7c3cab2bf3d69c355048d4a0ee9973d48f16c731c0520ee914699223",
+          "verified": true
+        },
+        {
+          "model": "small",
+          "repository": "Qwen/Qwen2.5-0.5B-Instruct-GGUF",
+          "revision": "9217f5db79a29953eb74d5343926648285ec7e67",
+          "url": "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/9217f5db79a29953eb74d5343926648285ec7e67/qwen2.5-0.5b-instruct-q4_k_m.gguf",
+          "filename": "qwen2.5-0.5b-instruct-q4_k_m.gguf",
+          "bytes": 491400032,
+          "sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+          "verified": true
+        },
+        {
+          "model": "balanced",
+          "repository": "Qwen/Qwen2.5-1.5B-Instruct-GGUF",
+          "revision": "91cad51170dc346986eccefdc2dd33a9da36ead9",
+          "url": "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/91cad51170dc346986eccefdc2dd33a9da36ead9/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+          "filename": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+          "bytes": 1117320736,
+          "sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+          "verified": true
+        }
+      ],
+      "verificationScope": "Original readiness hash/revision records retained; archive prep does not reread model files"
+    },
+    {
+      "kind": "Linux compiled ModelEval executable",
+      "retainedInArchive": false,
+      "sha256": "2707a284a3db0cc187e50200275f9d303940c75afcebba9f3c4c848d57a75153",
+      "originalReceipt": "build/model-quality/committed-source08/validation-status.json"
+    },
+    {
+      "kind": "Installed Linux runtime inventory",
+      "retainedInArchive": false,
+      "filesSHA256": {
+        "harbour-runtime.json": "6a7920a8c06038bfa85e58c7d6b1b7bc3b6fe80313e0efe2de92af23d885823b",
+        "include/ggml-alloc.h": "94e4cd069b9313b2ceb35dacec901981e0bb478d8bb31035b7126be091998c23",
+        "include/ggml-backend.h": "46d84cb998105f871240864fd0f55446939a2fe86c5c281afa63a010fb1f65a2",
+        "include/ggml-blas.h": "e76cb8594dc9866d99e7d63191b9fff6ab8b50244b4a28ce3af0f962964a6b5b",
+        "include/ggml-cann.h": "2cdb134f27fe5c4ec19d52f1eb58f5355aa42b8f54bf385f0e487501c5df7362",
+        "include/ggml-cpp.h": "bc15ba002c68685df23faae42df0d2b3d58032011f88b649021ab92485862c72",
+        "include/ggml-cpu.h": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e",
+        "include/ggml-cuda.h": "9cbfcea49f6da4d07f41dc22fa8dbf870825faaa2a68e34e65fe30ea6c41e042",
+        "include/ggml-metal.h": "322f36cd30f3e9e7aad7b5b9bc63078012fd0b7706ac4e24f5721b604f3d8980",
+        "include/ggml-openvino.h": "c2e3f301e28ad815b4285888aad6130808a77e6acb4e8b558de63a648cf9743e",
+        "include/ggml-opt.h": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2",
+        "include/ggml-rpc.h": "3d396875aadee0c8dea93a68adac82e0aa1ecbf6d492e06ea680f74fd45b2a4a",
+        "include/ggml-sycl.h": "58429f8045b335f5e740faa2198caf72ba3beb04df0eb970103b932340daca8b",
+        "include/ggml-virtgpu.h": "ed231e7db3f0f58b84073f5ee67f9ec9d63046d1a7ed091c36a6cfe9f685a463",
+        "include/ggml-vulkan.h": "7eae5dad2cc7bb4d3eca828539f441816d5fd59fdc7b224d49aa229fc7b7248c",
+        "include/ggml-webgpu.h": "a91d855313a9e85e75ba597ff869a267247dea936a2c0faef03aeb7f1ea6e79c",
+        "include/ggml-zendnn.h": "2cb034b842438281616ce647232d922fb224450323f0d422d2af567c334aa8ff",
+        "include/ggml.h": "6fe9b62d3ea48c2de82cce6e9e06d3ae4f0de34f4b5831399c49c099badefb09",
+        "include/gguf.h": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4",
+        "include/llama-cpp.h": "c48fd31095d2403a3bf7cbe98333ba0e61a398ee6e83b56f9d8b7237143b9877",
+        "include/llama.h": "1fbcba4003cfc089fa9681973acb3d9e24e465f32c3506ceb0ec7fa29952bdae",
+        "lib/cmake/ggml/ggml-config-version.cmake": "00841778e95a6839287ebf5f48d95424885a7bacff38b8bb4d2207aa82506e34",
+        "lib/cmake/ggml/ggml-config.cmake": "ef60f518315c7f8c2c2e39bc996ec6cac23b71653187883d06d7c920eb6db56c",
+        "lib/cmake/llama/llama-config-version.cmake": "91c838b8ca2061a63e2bc75339c7c508059b86d6f2fe8b819c560e1303ddfd84",
+        "lib/cmake/llama/llama-config.cmake": "7314f182e73fd3b1bf571b7c42f9c14bf9e5fbd3f645f9b9ec4b807938e9fb8c",
+        "lib/libggml-base.so": "f1b2badc2fdc96500c35010ad2502a702c5e6a34fd80bab5c7bb98847626a2f9",
+        "lib/libggml-base.so.0": "f1b2badc2fdc96500c35010ad2502a702c5e6a34fd80bab5c7bb98847626a2f9",
+        "lib/libggml-base.so.0.20.2": "f1b2badc2fdc96500c35010ad2502a702c5e6a34fd80bab5c7bb98847626a2f9",
+        "lib/libggml-cpu.so": "edb09ad46888b06f86cadcb27fb86c8810b5b04c1ce158691a837d3954404309",
+        "lib/libggml-cpu.so.0": "edb09ad46888b06f86cadcb27fb86c8810b5b04c1ce158691a837d3954404309",
+        "lib/libggml-cpu.so.0.20.2": "edb09ad46888b06f86cadcb27fb86c8810b5b04c1ce158691a837d3954404309",
+        "lib/libggml.so": "69412d6ec524eb45af6ee66cf5af153fca55be7fb2ec5eeaca18e8199e56756b",
+        "lib/libggml.so.0": "69412d6ec524eb45af6ee66cf5af153fca55be7fb2ec5eeaca18e8199e56756b",
+        "lib/libggml.so.0.20.2": "69412d6ec524eb45af6ee66cf5af153fca55be7fb2ec5eeaca18e8199e56756b",
+        "lib/libllama.so": "37c4b12b68104a3d497d0871bbba9802605947f81b66e853a8ae61b771d6c39b",
+        "lib/libllama.so.0": "37c4b12b68104a3d497d0871bbba9802605947f81b66e853a8ae61b771d6c39b",
+        "lib/libllama.so.0.1.2": "37c4b12b68104a3d497d0871bbba9802605947f81b66e853a8ae61b771d6c39b",
+        "lib/pkgconfig/llama.pc": "7a6bfb94d03196730758ee23e35fde8756b6d9fcfef24de782ecc333ffcbd927"
+      },
+      "verificationScope": "Original retained38-file measured inventory; no remote reread"
+    },
+    {
+      "kind": "Official xtool/container/Apple SDK/pinned arm64 framework assets",
+      "retainedInArchive": false,
+      "sourceReceipts": [
+        "build/xtool-8b4a40d-validation/external-references.json",
+        "build/xtool-8b4a40d-validation/environment-reuse.json"
+      ],
+      "verificationScope": "Original tool/image/3 SDK metadata/19 device framework hashes retained; not every SDK file hashed"
+    },
+    {
+      "kind": "Failed5b full XCResult and MP4",
+      "retainedInArchive": false,
+      "produced": false,
+      "reason": "Both runs stopped at Core; original native artifact contains only4 environment files. No nonexistent artifact digest fabricated."
+    },
+    {
+      "kind": "New8b4 standard/native CI",
+      "retainedInArchive": false,
+      "reason": "Outside this archive scope; terminal application outcomes will be separate evidence."
+    },
+    {
+      "kind": "Source08 DEV/supplement/heldout outputs",
+      "retainedInArchive": false,
+      "executedAtReadiness": false,
+      "reason": "Only prepared scripts/readiness records retained; no model-quality or heldout verdict established."
+    }
+  ],
+  "limits": [
+    "Original failed Core log/helper/misparsed receipt are unchanged; corrected198/197/1 interpretation is a separate derivation.",
+    "The numeric regex construction avoids whole-value delimiter escaping; actual old escaped strings were not captured and no platform-exclusive failure mechanism is established.",
+    "Source08 native159 checks are51 grammar plus2 context per model, not app UI or general model-quality evaluation.",
+    "Source inventories are broader than per-frontend compiler inputs; raw committed LF and actual materialized CRLF bytes are separately bound.",
+    "Xtool imported coordinated Core198/Runtime21 through exact48-source equality; it did not rerun those tests.",
+    "Cross-build and local ad-hoc signature inspection establish no simulator/physical-device execution, developer-account provisioning, installation or distribution.",
+    "New8b4 terminal app CI and subsequent model-quality runs are intentionally outside this archive; preparation/readiness does not authorize inference.",
+    "Application recovery/source-literal constraints earn no raw model routing/prose or pure extraction credit.",
+    "No heldout inputs were semantically inspected by archive preparation; DEV-only criteria remain unchanged.",
+    "Automatic default and optional Qwen policy, frozen fixtures/scorer/thresholds remain unchanged; no clinician or clinical correctness claim.",
+    "Previous01\u201310 archives remain byte-identical. Models, compiled binaries, app/original artifact ZIPs and SDK/framework assets are excluded with retained references/digests."
+  ],
+  "checks": {
+    "failedSource07ActualCore": {
+      "executed": 198,
+      "passed": 197,
+      "failed": 1
+    },
+    "originalParsedSource07TotalsPreserved": {
+      "executed": 16,
+      "failed": 0,
+      "exitCode": 1
+    },
+    "failedCI5bCoreOnlyRunsVerified": 2,
+    "priorXtool5bPreparedOnly": true,
+    "unchangedReadingTestSourceBytes": true,
+    "source08Core": 198,
+    "source08Runtime": 21,
+    "source08NativeGrammarContext": 159,
+    "source08Python": 60,
+    "source08LocalizationKeys": 598,
+    "xtoolBuildExitCode": 0,
+    "xtoolImportedTestsNotRerun": true,
+    "xtoolPackageIdenticalFiles": 48,
+    "qualityPreparationUnexecuted": true,
+    "new8b4CIExcluded": true,
+    "heldoutInputsSemanticallyInspected": false,
+    "remoteBinaryRereadByThisBuilder": false
+  }
+}

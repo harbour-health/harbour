@@ -1,0 +1,331 @@
+{
+  "formatVersion": 1,
+  "releaseEvidence": false,
+  "archive": "development-evidence-10.zip",
+  "archiveSHA256": "ad796f1d76199ad8dd613bbb1f36d4ed05cc2178483d4e1dd23375f506de31f7",
+  "archiveBytes": 3091201,
+  "evidenceFiles": 393,
+  "membersIncludingManifest": 394,
+  "manifestSHA256": "efb7e7ed0c45264da5c27baaa654750abe5acff76ef9c6178eaa0343426030f0",
+  "builderSHA256": "3da7c6cc771c06382f464222645eb59f862a375b1aa20abb8a21944b2e82c330",
+  "allowlistSHA256": "c8674e1d0c1727695a42cbe20cbab9b3368c43c0ea2a2f013ffd199a8e9839b8",
+  "previousArchivesUnchangedSHA256": {
+    "01": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091",
+    "02": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a",
+    "03": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e",
+    "04": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9",
+    "05": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571",
+    "06": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da",
+    "07": "b36dd12db0892e89f8d8c1f2672462d9212a71f016076b9beeca0a51a22c6529",
+    "08": "8997676469921003a6e4a112e3c120317382cc562cc5150f3646d4869b524a10",
+    "09": "7da96637ba2b134a309905cb97e908427408125c3d7bf13704503eabd7e4f688"
+  },
+  "allowlistBindings": [
+    {
+      "group": "committed063-proof",
+      "source": "build/model-quality/committed-source06-publishable-allowlist.json",
+      "sha256": "f7bd604ed59732ba3b4f523718e740527925f024c0877310414a97e8484dc4b6",
+      "sourceFiles": 50,
+      "scope": "Committed063 compact correctness proof allowlist only; no quality matrix results, compiled apps/test artifacts, device execution, or heldout results"
+    },
+    {
+      "group": "xtool063",
+      "source": "build/xtool-063fa47-validation/publishable-allowlist.json",
+      "sha256": "0f2def8b8d6219ce029dbdcaf0cfa79ac7260f880d5d5b1a8634b1d72058dbbd",
+      "sourceFiles": 29,
+      "scope": "Compact final-source063 xtool build and source-bound coordinated test evidence allowlist; no publication/commit performed."
+    },
+    {
+      "group": "CI063",
+      "source": "build/native-ci-063fa479/publishable-allowlist.json",
+      "sha256": "6e9a7ab4bfc2e29ded0f9d69af8ab27a144c0094b1da2d719d71f1df89c0f01a",
+      "sourceFiles": 243,
+      "scope": "Compact immutable completed063 CI/native failure evidence. No source changes, new app run, inference, threshold changes or success claims. All original artifact URLs/hashes and exclusions are explicit."
+    }
+  ],
+  "cohorts": {
+    "working05": {
+      "workingSourceIdentitySHA256": "c339a1bb51ab63429a1b7693aba1e0a6da370b82bd39ec46aaad1fe25dd36bef",
+      "archiveSHA256": "d6ae0104300927a8419c9c1fc44eb6372c1172c79a9a7b01ea1e8354ad6da741",
+      "Core": 194,
+      "Runtime": 21,
+      "nativeGrammarContext": 159,
+      "Python": 60,
+      "localizationKeys": 598,
+      "scope": "Exact historical129-file working snapshot; not relabelled committed063 or later fixes."
+    },
+    "committed063": {
+      "sourceCommit": "063fa479e73cac722f6a278c5da1138b2c963fbc",
+      "sourceIdentitySHA256": "cbbdb73f31e85d6186a85dfdeb4a2746db569c64bcec4e2355f94e35707718d3",
+      "archiveSHA256": "fe9c8026b3bb04dc9ff345080ffd86378c1c6bca290b26f3072a66f514000394",
+      "Core": 196,
+      "Runtime": 21,
+      "nativeGrammarContext": 159,
+      "Python": 60,
+      "localizationKeys": 598,
+      "scope": "Distinct committed actual CRLF materialization proof; compiled binary hashes retained but binaries excluded."
+    },
+    "xtool063": {
+      "sourceCommit": "063fa479e73cac722f6a278c5da1138b2c963fbc",
+      "sourceIdentitySHA256": "0a529771c6fb229ff4859d1705f0296d230a1b99b9c552014d765856cffa9bbc",
+      "arm64IOSReleaseExitCode": 0,
+      "bundleFiles": 25,
+      "importedCore": 196,
+      "importedRuntime": 21,
+      "testsRerunInXtool": false,
+      "scope": "Fresh Release cross-build, imported exact48-source package proof; no device execution/model quality."
+    },
+    "standardCI063": {
+      "runID": 38344454074,
+      "conclusion": "failure",
+      "Core": 196,
+      "Runtime": 21,
+      "hosted": {
+        "passed": 23,
+        "failed": 0,
+        "skipped": 1
+      },
+      "UI": {
+        "passed": 10,
+        "failed": 1,
+        "skipped": 0
+      },
+      "failure": "Appearance system selection immediate isSelected assertion line265."
+    },
+    "nativeCI063": {
+      "runID": 38344454125,
+      "conclusion": "failure",
+      "Core": 196,
+      "Runtime": 21,
+      "hosted": {
+        "passed": 24,
+        "failed": 0,
+        "skipped": 1
+      },
+      "UI": {
+        "passed": 5,
+        "failed": 2,
+        "skipped": 0
+      },
+      "QwenFourStrictCasesPassed": true,
+      "acknowledgementOrigin": "Application recovery, not generated-prose IQ evidence.",
+      "failures": [
+        "Small completed snapshot echo and unsupported Saved heart rate:72 claim instead of review draft; raw routing unlogged; later symptom stage not reached.",
+        "Unknown preference selector accessibility value expected Automatic, while source contract resolves Small on Simulator; later persistence assertions not reached."
+      ]
+    },
+    "partialDEV063": {
+      "sourceCommit": "063fa479e73cac722f6a278c5da1138b2c963fbc",
+      "executableSHA256": "7e796d9f63a34fe4a12c7034a37a0e8a6802c483bec8f1a54e83082e03edad80",
+      "rows": 56,
+      "quickRows": 15,
+      "standardRows": 41,
+      "extendedRows": 0,
+      "complete": false,
+      "modelsCompleted": [],
+      "modelsStarted": [
+        "qwen35"
+      ],
+      "stopReason": "New exact app evidence: Small reading request claimed saved/snapshot echo without a review draft; source fix required before final evaluation. No heldout or supplemental authorized.",
+      "scope": "Interrupted because separate Small app evidence required repair; not a quality verdict on the emitted Qwen rows. No full model stream, comparison, supplemental or heldout."
+    },
+    "subsequentUntestedChanges": {
+      "UIOnlyCommit": "b8749b03635cc1966a7d9eaaf6e439a601813e7a",
+      "UIOnlyPatchSHA256": "a30291174d1a6c845268763d09d467fb43102c23efbf0e7a645eec9841c61b6e",
+      "readingScopeSHA256": "4db2b619edd640d26763874358a061bf4093b253b16a734505278bc7293b5b74",
+      "Core198Claimed": false,
+      "readingImplementationBytesRetained": false,
+      "scope": "Bounded reading plan and UI-only correction retained as historical context. Later198 source/tests/failures belong to separate evidence; no current reading implementation copied."
+    }
+  },
+  "externalAssetsAndArtifactsExcluded": [
+    {
+      "group": "xtool063",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/xtool-063fa47-validation/Harbour-063fa47.app.zip",
+        "bytes": 4414981,
+        "sha256": "19ff9b228f5dcadb089ba21a503bf23309aa64b0aa2655802ca4a8434316e2ae",
+        "reason": "Compiled app retained locally; omitted from compact publishable proof"
+      }
+    },
+    {
+      "group": "CI063",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-063fa479/standard/original-artifacts/11789490375-harbour-ci-results.zip",
+        "bytes": 197341501,
+        "sha256": "c5345265ef7213976b76bf01a0bdb8f7062761ac9ac3e7d4806bee9483f767ab",
+        "originalArtifactURL": "https://github.com/harbour-health/harbour/actions/runs/38344454074/artifacts/11789490375",
+        "scope": "Full original artifact ZIP/extracted xcresult and screenshot binaries are locally preserved; excluded from this compact allowlist."
+      }
+    },
+    {
+      "group": "CI063",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-063fa479/standard/original-artifacts/11789295897-harbour-ci-screenshots.zip",
+        "bytes": 95338343,
+        "sha256": "a6c699db38423a6119f932775ecb9fb3a02b9d9435db4395c989d8f70606c3da",
+        "originalArtifactURL": "https://github.com/harbour-health/harbour/actions/runs/38344454074/artifacts/11789295897",
+        "scope": "Full original artifact ZIP/extracted xcresult and screenshot binaries are locally preserved; excluded from this compact allowlist."
+      }
+    },
+    {
+      "group": "CI063",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-063fa479/native/original-artifacts/11788464516-native-test-results.zip",
+        "bytes": 122151515,
+        "sha256": "e123ee21a177eb9bbff1d494f421fe9b0684993a95e829bd4e9440616ffc0726",
+        "originalArtifactURL": "https://github.com/harbour-health/harbour/actions/runs/38344454125/artifacts/11788464516",
+        "scope": "Full original artifact ZIP/extracted xcresult and screenshot binaries are locally preserved; excluded from this compact allowlist."
+      }
+    },
+    {
+      "group": "CI063",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-063fa479/xcresult-inspection/extracted/small-attachments/0CCA0E2B-510B-465D-9862-9912B597471F",
+        "bytes": 1891,
+        "sha256": "5fc810511d68f9ff9cb5506ca9a5a1771405cecccd1f398202f99dd4e292e052",
+        "scope": "Original binary attachment is locally preserved; compact allowlist includes decoded text and any separately bound derived last-available frame only."
+      }
+    },
+    {
+      "group": "CI063",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-063fa479/xcresult-inspection/extracted/small-attachments/22EC0EA1-EBB2-4702-8A6A-7B2CBF1DCD49.mp4",
+        "bytes": 31611960,
+        "sha256": "bc90a1de0345510ecf6e2ee0e4c8fe9899f022fe40a5c6fef75e9f810fefb825",
+        "scope": "Original binary attachment is locally preserved; compact allowlist includes decoded text and any separately bound derived last-available frame only."
+      }
+    },
+    {
+      "group": "CI063",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-063fa479/xcresult-inspection/extracted/small-attachments/415F1292-C86E-4DE9-8AE7-B12FECB6D5AC",
+        "bytes": 1879,
+        "sha256": "bb7d2a07c1da97d1b13604c636fb525af31750aaa48b83de5a949bcc09ddabc0",
+        "scope": "Original binary attachment is locally preserved; compact allowlist includes decoded text and any separately bound derived last-available frame only."
+      }
+    },
+    {
+      "group": "CI063",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-063fa479/xcresult-inspection/extracted/small-attachments/85006128-2639-4122-AABC-95B337313B4C",
+        "bytes": 1778,
+        "sha256": "8f2dd81134c604fdd53931073688f3db46f6d78e8e18f4a3b2cf1726eb892630",
+        "scope": "Original binary attachment is locally preserved; compact allowlist includes decoded text and any separately bound derived last-available frame only."
+      }
+    },
+    {
+      "group": "CI063",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-063fa479/xcresult-inspection/extracted/small-attachments/B0C4A4EE-9C33-4C7A-AA5E-A522F37045DB",
+        "bytes": 1879,
+        "sha256": "9925da2481aaf520cace176e948e2f4765c3e020d18470ab04ba746191014fa9",
+        "scope": "Original binary attachment is locally preserved; compact allowlist includes decoded text and any separately bound derived last-available frame only."
+      }
+    },
+    {
+      "group": "CI063",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-063fa479/xcresult-inspection/extracted/small-attachments/B7C12FD1-A5A5-4809-A272-9AFD748D7D35",
+        "bytes": 1879,
+        "sha256": "9925da2481aaf520cace176e948e2f4765c3e020d18470ab04ba746191014fa9",
+        "scope": "Original binary attachment is locally preserved; compact allowlist includes decoded text and any separately bound derived last-available frame only."
+      }
+    },
+    {
+      "group": "CI063",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-063fa479/xcresult-inspection/extracted/small-attachments/BE864EE5-FF6C-4F5F-9926-727BC92BFEB5",
+        "bytes": 1879,
+        "sha256": "6250ae5b13632716768508bb826e2efd2b6fa1c248e0b63cc330a62f8abb8360",
+        "scope": "Original binary attachment is locally preserved; compact allowlist includes decoded text and any separately bound derived last-available frame only."
+      }
+    },
+    {
+      "group": "CI063",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-063fa479/xcresult-inspection/extracted/small-attachments/BEE4B64A-2F91-4A4F-BBEF-8CCCDB0C8E32",
+        "bytes": 62409,
+        "sha256": "cde25d18321f8ed49b641a74359b3a4db9cb087c7cc5515cefae034d36313cfb",
+        "scope": "Original binary attachment is locally preserved; compact allowlist includes decoded text and any separately bound derived last-available frame only."
+      }
+    },
+    {
+      "group": "CI063",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-063fa479/xcresult-inspection/extracted/small-attachments/CB95FEBA-31C3-47BB-97A1-0772A9EB9173",
+        "bytes": 1770,
+        "sha256": "78c0aed4a0f67c5c99a916a621383090cfac815c2cd965e31eadf0bd41b2a60a",
+        "scope": "Original binary attachment is locally preserved; compact allowlist includes decoded text and any separately bound derived last-available frame only."
+      }
+    },
+    {
+      "group": "CI063",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-063fa479/xcresult-inspection/extracted/small-attachments/E31A4F26-D56E-43EA-AE69-F835A0DA30A1",
+        "bytes": 1879,
+        "sha256": "bb7d2a07c1da97d1b13604c636fb525af31750aaa48b83de5a949bcc09ddabc0",
+        "scope": "Original binary attachment is locally preserved; compact allowlist includes decoded text and any separately bound derived last-available frame only."
+      }
+    },
+    {
+      "group": "CI063",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-063fa479/xcresult-inspection/original-inspection-artifact.zip",
+        "bytes": 31492632,
+        "sha256": "11ab73817a18d183b0eb44110e742d6383bb2de1a83f455c4db31914f37e201f",
+        "scope": "Original large artifact/log retained locally; relevant original runner/test excerpts and receipt hashes retained in compact evidence."
+      }
+    },
+    {
+      "group": "CI063",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-063fa479/native/original-artifacts/11788464516-native-test-results/simulator-runtime.log",
+        "bytes": 59307227,
+        "sha256": "29e7b325f9ecfc24bccd1898761f9f2bd924886ea555fa8d854d1553ecd00b79",
+        "scope": "Original large artifact/log retained locally; relevant original runner/test excerpts and receipt hashes retained in compact evidence."
+      }
+    },
+    {
+      "group": "CI063",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-063fa479/native/original-artifacts/11788464516-native-test-results/build.log",
+        "bytes": 293129,
+        "sha256": "f54a28c6a4612dc8437118ac921d96d67a8d654e03cc3efbbcd0241d6f124bc4",
+        "scope": "Original large artifact/log retained locally; relevant original runner/test excerpts and receipt hashes retained in compact evidence."
+      }
+    },
+    {
+      "kind": "Pinned models/runtime",
+      "retainedInArchive": false,
+      "scope": "Weights, compiled runtime/XCTest artifacts and SDK/framework assets excluded; original URLs/hashes appear in retained source06/native metadata and xtool environment receipts."
+    }
+  ],
+  "limits": [
+    "Both original063 CI and Native failed despite Core/Runtime/xtool correctness success.",
+    "PartialDEV56 is incomplete and unreviewed as a full matrix; Small/Balanced/supplemental/heldout never launched.",
+    "Application recovery/source-literal constraints earn no raw model routing/prose or pure extraction credit.",
+    "Preserved source inventories are broader than per-frontend compiler inputs; canonical Git vs actual CRLF representations separately bound.",
+    "No physical-device execution, clinician review or clinical correctness established.",
+    "Original Qwen promotion gate remains blocked. Default Automatic and optionalQwen scope/gold/scorer/thresholds are unchanged.",
+    "Original01\u201309 remain unchanged. Full ZIP/XCResult/MP4/model/framework/SDK/compiled artifacts excluded with original references/digests where retained.",
+    "Later5b failed198 Mac results are separately preserved and intentionally outside completed063 archive10 scope."
+  ]
+}

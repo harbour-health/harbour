@@ -1,0 +1,43 @@
+{
+  "formatVersion": 1,
+  "recordedBeforeGenerationUTC": "2026-10-13T05:53:58Z",
+  "scope": "Separate bounded application disposition for one current first-person symptom report or recording request after model routing; this amends application behavior without changing raw model evaluation criteria.",
+  "approvedDesignSHA256": "df29eb977e574f5e24f87731bf11effc25711670484ca69400d47fef8f582741",
+  "priorPolicyUnchangedSHA256": "95e309cf97c14ca7cb9904bfd60f44cd7845d55c2b85867d1cd70c52c26259bd",
+  "priorReadingScopeUnchangedSHA256": "4db2b619edd640d26763874358a061bf4093b253b16a734505278bc7293b5b74",
+  "readingScopeDifference": "Reading recovery requires an explicit recording command plus a supported source type and valid numeric value. Symptom recovery additionally supports a closed implicit current first-person symptom report.",
+  "afterRoutingOnly": true,
+  "allowedSource": [
+    "One complete unquoted current affirmative first-person English or French report in a closed pain/soreness or named-symptom grammar.",
+    "One affirmative record/save/log/note/write-down request wrapping the supported report or identifying the user's supported symptom directly.",
+    "Optional bounded weekday/relative onset or positive integer duration phrase. Preserve it in source text without deriving an onset date."
+  ],
+  "excludedSource": [
+    "Quoted payloads, past-tense-only or resolved reports, negation, conditions, hypotheticals, third-person ownership, advice or questions.",
+    "Multiple symptoms/body-site lists, appended actions, free-text suffixes, future onset phrases or unspecified/unsupported symptom intent."
+  ],
+  "sourceAuthority": "Full current original text only; saved records, history and model prose cannot supply or rewrite symptom facts.",
+  "applicationAction": {
+    "tool": "capture_symptom",
+    "arg": "",
+    "reason": "symptom_draft",
+    "text": "Exact entire original source"
+  },
+  "draftFields": {
+    "onset": "",
+    "severity": "Not specified",
+    "signs": [],
+    "noneOfTheseApply": false,
+    "reviewed": false
+  },
+  "confirmation": "Existing manual emergency-sign selection or None choice, Review then Save. No saved record is created by recovery.",
+  "preserved": [
+    "All21 raw tool alternatives and existing valid nonreply action handling; malformed routing JSON is not recovered.",
+    "Existing reply format guards run before shared reply disposition.",
+    "Existing fallback order and explicit numeric-reading, interaction and preservation behavior.",
+    "Automatic default, optional Qwen model, model assets/prompts/runtime/app/CLI/UI behavior and all inference waits.",
+    "Original DEV/supplement/heldout fixtures, scorer and promotion thresholds."
+  ],
+  "evaluationAttribution": "Retain raw route/output and raw quality grades. Mark the effective symptom draft as application origin with symptom_draft reason. Source recovery earns no model routing, prose, extraction or clinical credit.",
+  "subsequentValidation": "New immutable source and correctness/native-app evidence required before quality generation. This recorded scope is not a test, quality verdict or permission to launch inference."
+}

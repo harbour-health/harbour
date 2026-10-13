@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "checkedUTC": "2026-10-13T05:42:25.634580+00:00",
+  "archiveAuditPassed": true,
+  "archive": "development-evidence-11.zip",
+  "archiveSHA256": "7ef4c58f54f264df70b1b1ddd0e42baa108a16d1a0862e9c5a14e5666bf23108",
+  "archiveBytes": 1952260,
+  "summarySHA256": "4866e49dc4dd19e3c17bbe80216ca534e29d50b55b6d6ee597749da9fb2a815a",
+  "members": 169,
+  "evidenceFiles": 168,
+  "selectionSourceFiles": 167,
+  "manifestSHA256": "2dc9ff7e2a01656300551c5d76a785ca2f66d101f56ff8ddcd72e9ccce5d23df",
+  "allowlistSHA256": "6fd1c181cdcd926c0a62134f2ef3f93cc8412d6a544b72b300fd201debe1d943",
+  "ZIPCRCChecked": true,
+  "allMemberAndSelectedSourceHashesMatch": true,
+  "previousArchives01To10Unchanged": true,
+  "sourceInventories": {
+    "failedSource07": 130,
+    "passedSource08": 130,
+    "preparedXtool5b": 127,
+    "passedXtool8b4": 127
+  },
+  "failedSource07ActualCore": {
+    "executed": 198,
+    "passed": 197,
+    "failed": 1
+  },
+  "originalHelper16TestReceiptPreserved": true,
+  "failed5bCI": {
+    "cohorts": 2,
+    "CoreOnly": true,
+    "RuntimeAndAppNotRun": true,
+    "platformExclusiveCauseEstablished": false
+  },
+  "source08Correctness": {
+    "Core": 198,
+    "Runtime": 21,
+    "nativeGrammarContext": 159,
+    "Python": 60,
+    "localizationKeys": 598
+  },
+  "numericFixTestsUnchanged": true,
+  "xtool8b4": {
+    "exitCode": 0,
+    "bundleFiles": 25,
+    "identicalPackageFiles": 48,
+    "Core198Runtime21ImportedNotRerun": true
+  },
+  "qualityPreparationOnly": {
+    "DEVPlanned": 291,
+    "supplementPlanned": 120,
+    "executed": false,
+    "heldoutInputsInspectedByAuditor": false
+  },
+  "current8b4MacCIExcluded": true,
+  "externalCompiledAndLargeArtifactExclusionsPreserved": true,
+  "scope": "Independent local container/source/hash/receipt audit; no source edits, remote binary reread, compile, app execution, quality generation, promotion acceptance or clinical assessment."
+}
