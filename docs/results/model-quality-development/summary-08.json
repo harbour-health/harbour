@@ -1,0 +1,1783 @@
+{
+  "formatVersion": 1,
+  "archive": "development-evidence-08.zip",
+  "bytes": 2646556,
+  "sha256": "8997676469921003a6e4a112e3c120317382cc562cc5150f3646d4869b524a10",
+  "evidenceFiles": 338,
+  "previousArchive07UnchangedSHA256": "b36dd12db0892e89f8d8c1f2672462d9212a71f016076b9beeca0a51a22c6529",
+  "quantizationDiagnostic": {
+    "formatVersion": 1,
+    "releaseEvidence": false,
+    "scope": "Six same-2B same-revision Q6 development questions, exact original source02 production prompt/runtime/greedy512 settings; only the separately verified Q6 model path changed.",
+    "sourceIdentitySHA256": "562e13947dd959edf951c13e79f016b2ac3caf38471bdb09332c6416a6cf4be8",
+    "diagnosticModel": "qwen35-q6",
+    "assetSHA256": "fc90339420b4298887aafb307a4291c55440b730133bbffe6ba9630503dcb548",
+    "rows": 6,
+    "requiredQualitativeAIReviews": 6,
+    "pendingQualitativeAIReviews": 0,
+    "semanticPassed": 4,
+    "englishPassed": 3,
+    "frenchPassed": 1,
+    "generationErrors": 0,
+    "comparisonAcceptedMeaning": "All six actual prepared prompts match the sealed Q4 source02 strings; this is prompt parity, not a quality acceptance.",
+    "actualGenerationStopCause": "unknown; unchanged actor returns text only",
+    "hashes": {
+      "quantization-q6-preregistration-01.json": "2fcb73e6df8f9a43db8aa35af53ccb0f0f8eebef5a15ff88d5faca0cb3b95c1a",
+      "metadata.json": "1cf8e2e65ccfc22ee527bac3b1ebc50235f6550ca9225ff9085025169f00ef43",
+      "qwen35-q6.raw.jsonl": "feb1fc77844a9e71c8597043322a3b686deab1dc0b49908f01247ae6b784952c",
+      "qwen35-q6.labelled.jsonl": "64d3f89f3b1a0f4b6ea1eec09129c76b00aba0de7317a36ae6bdb0693f94dcb8",
+      "manual-reviews-complete.json": "0cfe3c70f06a5c0f0e8c15280f4548115eb3c3bd39c297085dc41b0f1391e428"
+    },
+    "limits": [
+      "No production/default asset or source/sampler/release-gate change.",
+      "Metadata equivalence does not establish equality of prequantization floating weights.",
+      "Single greedy development observations are not independent quality replications; no heldout or physical iPhone evidence.",
+      "Qualitative AI labels do not constitute human subject-matter/clinical validation.",
+      "Complete finalDEV267/current supplementalall3 remain required."
+    ]
+  },
+  "rollbackSourceCorrectness": {
+    "sourceIdentitySHA256": "df80c1424ace54d4e15e747abac4e6734eae8cb4406cf17c7b827afaa2fe1ae0",
+    "sourceArchiveSHA256": "aba67e7787d9434a3e0fe40e271ffdf3066b394320a0a0336226dfb97f14e5c9",
+    "sourceInventoryFiles": 54,
+    "workingSourceBytes": true,
+    "coreTests": 178,
+    "runtimeTests": 21,
+    "failures": 0,
+    "scope": "Source inventories are preserved-byte lists, not per-file compiler-use or full SwiftUI app compilation claims."
+  },
+  "rollbackVisits": {
+    "formatVersion": 1,
+    "releaseEvidence": false,
+    "sourceSnapshotIdentitySHA256": "df80c1424ace54d4e15e747abac4e6734eae8cb4406cf17c7b827afaa2fe1ae0",
+    "sourceArchiveSHA256": "aba67e7787d9434a3e0fe40e271ffdf3066b394320a0a0336226dfb97f14e5c9",
+    "sourceHEADAtCapture": "790389fc96b9015cc13dba40e764d0f7f2a15bbc",
+    "scope": "Exact working source03 restores prior3b visit base+locale appendices minus placeholder sentence/JSON, with explicit four-key reference. Same four frozen Standard DEV visits per model; unchanged parser/grammar/gold/thresholds.",
+    "models": {
+      "qwen35": {
+        "rows": 4,
+        "automaticPassed": 0,
+        "semanticPassed": 0,
+        "acceptedMedicineCases": 4,
+        "manualPending": 0
+      },
+      "small": {
+        "rows": 4,
+        "automaticPassed": 2,
+        "semanticPassed": 2,
+        "acceptedMedicineCases": 4,
+        "manualPending": 0
+      },
+      "balanced": {
+        "rows": 4,
+        "automaticPassed": 0,
+        "semanticPassed": 0,
+        "acceptedMedicineCases": 4,
+        "manualPending": 0
+      }
+    },
+    "requiredReviews": 12,
+    "pendingReviews": 0,
+    "unsafeAccepted": 0,
+    "provenanceStatus": "verified",
+    "releaseGate": {
+      "status": "blocked",
+      "reasons": [
+        "incomplete_or_mismatched_matrix",
+        "paired_execution_identity_mismatch",
+        "partial_suite_scope",
+        "qwen35_grounding_or_extraction_checks_not_passed",
+        "qwen35_raw_routing_below_95_percent",
+        "qwen35_required_manual_review_failed"
+      ],
+      "meaning": "Fixture regression and review gate only. CPU evaluation does not establish device speed, clinical safety, or end-to-end iOS behavior."
+    },
+    "originalBaselineProtectedRegressions": [],
+    "cases": [
+      {
+        "model": "qwen35",
+        "caseID": "visit.start.en",
+        "outputSHA256": "7c03047b44c4ed7665f7d830204882043aab727a44fa0785307f1fc218a05c65",
+        "automaticPass": false,
+        "semanticPass": false,
+        "failures": [
+          "visit_raw_missing_followup"
+        ],
+        "rawFollowUps": 0,
+        "acceptedFollowUps": 1,
+        "rawAppointments": 0,
+        "acceptedAppointments": 0,
+        "rawHighlights": 0,
+        "acceptedHighlights": 0
+      },
+      {
+        "model": "qwen35",
+        "caseID": "visit.start.fr-CA",
+        "outputSHA256": "5a4d40d7744de4822a91cafbd8cc0a2b8e76a5db9a264a3d642dde7228cbef31",
+        "automaticPass": false,
+        "semanticPass": false,
+        "failures": [
+          "visit_raw_missing_followup"
+        ],
+        "rawFollowUps": 0,
+        "acceptedFollowUps": 1,
+        "rawAppointments": 0,
+        "acceptedAppointments": 1,
+        "rawHighlights": 0,
+        "acceptedHighlights": 0
+      },
+      {
+        "model": "qwen35",
+        "caseID": "visit.stop.en",
+        "outputSHA256": "0382b8c769d4c768dd96923e86b752f3fa24bacd10e0bb81b55602d592178a71",
+        "automaticPass": false,
+        "semanticPass": false,
+        "failures": [
+          "visit_raw_missing_followup"
+        ],
+        "rawFollowUps": 0,
+        "acceptedFollowUps": 1,
+        "rawAppointments": 0,
+        "acceptedAppointments": 1,
+        "rawHighlights": 0,
+        "acceptedHighlights": 0
+      },
+      {
+        "model": "qwen35",
+        "caseID": "visit.stop.fr-CA",
+        "outputSHA256": "f137b4b3f3ace4629901c150e1469ff2c752cd35e535b9ed547466c1873f44f5",
+        "automaticPass": false,
+        "semanticPass": false,
+        "failures": [
+          "visit_raw_missing_followup"
+        ],
+        "rawFollowUps": 0,
+        "acceptedFollowUps": 1,
+        "rawAppointments": 0,
+        "acceptedAppointments": 0,
+        "rawHighlights": 0,
+        "acceptedHighlights": 0
+      },
+      {
+        "model": "small",
+        "caseID": "visit.start.en",
+        "outputSHA256": "db5bea03128449fa291da7afeedeeccd79dedfe94bf5cfb9b9ffad59e9c74909",
+        "automaticPass": true,
+        "semanticPass": true,
+        "failures": [],
+        "rawFollowUps": 1,
+        "acceptedFollowUps": 1,
+        "rawAppointments": 1,
+        "acceptedAppointments": 0,
+        "rawHighlights": 6,
+        "acceptedHighlights": 6
+      },
+      {
+        "model": "small",
+        "caseID": "visit.start.fr-CA",
+        "outputSHA256": "4bb7456fd15a4751a8292840413937e6dd084170ee2bb1782a40760cf62c2189",
+        "automaticPass": true,
+        "semanticPass": true,
+        "failures": [],
+        "rawFollowUps": 2,
+        "acceptedFollowUps": 1,
+        "rawAppointments": 1,
+        "acceptedAppointments": 1,
+        "rawHighlights": 0,
+        "acceptedHighlights": 0
+      },
+      {
+        "model": "small",
+        "caseID": "visit.stop.en",
+        "outputSHA256": "d45456e22940cbf405d6c5931a7ec5d1c9af5ae530148db9cfde5d8cba4fe7d6",
+        "automaticPass": false,
+        "semanticPass": false,
+        "failures": [
+          "visit_raw_missing_followup"
+        ],
+        "rawFollowUps": 0,
+        "acceptedFollowUps": 1,
+        "rawAppointments": 0,
+        "acceptedAppointments": 1,
+        "rawHighlights": 0,
+        "acceptedHighlights": 0
+      },
+      {
+        "model": "small",
+        "caseID": "visit.stop.fr-CA",
+        "outputSHA256": "a733b5965742dd25aa7cd339818d3e86a0af0c70683adb377b806addc1c68d92",
+        "automaticPass": false,
+        "semanticPass": false,
+        "failures": [
+          "visit_raw_missing_followup"
+        ],
+        "rawFollowUps": 0,
+        "acceptedFollowUps": 1,
+        "rawAppointments": 0,
+        "acceptedAppointments": 0,
+        "rawHighlights": 0,
+        "acceptedHighlights": 0
+      },
+      {
+        "model": "balanced",
+        "caseID": "visit.start.en",
+        "outputSHA256": "66ae62f86503ed9484790fa0c638adf744793650effcccd4b41ac984b969ebc0",
+        "automaticPass": false,
+        "semanticPass": false,
+        "failures": [
+          "visit_raw_missing_followup"
+        ],
+        "rawFollowUps": 0,
+        "acceptedFollowUps": 1,
+        "rawAppointments": 0,
+        "acceptedAppointments": 0,
+        "rawHighlights": 0,
+        "acceptedHighlights": 0
+      },
+      {
+        "model": "balanced",
+        "caseID": "visit.start.fr-CA",
+        "outputSHA256": "2a4c2df63218088d8b6aae38c03f2c624ea85e7b2ba51e12ad29a15ea2ac04d3",
+        "automaticPass": false,
+        "semanticPass": false,
+        "failures": [
+          "visit_raw_missing_followup"
+        ],
+        "rawFollowUps": 0,
+        "acceptedFollowUps": 1,
+        "rawAppointments": 0,
+        "acceptedAppointments": 1,
+        "rawHighlights": 0,
+        "acceptedHighlights": 0
+      },
+      {
+        "model": "balanced",
+        "caseID": "visit.stop.en",
+        "outputSHA256": "bbd85e7723e02c9207352b1b550be45b59f12c68490e2a02458b7c301ba5b9eb",
+        "automaticPass": false,
+        "semanticPass": false,
+        "failures": [
+          "visit_raw_missing_followup"
+        ],
+        "rawFollowUps": 0,
+        "acceptedFollowUps": 1,
+        "rawAppointments": 0,
+        "acceptedAppointments": 1,
+        "rawHighlights": 0,
+        "acceptedHighlights": 0
+      },
+      {
+        "model": "balanced",
+        "caseID": "visit.stop.fr-CA",
+        "outputSHA256": "136b517ea3ca7ff1c00a8a229fbc9d73752f849c4ce2b56882c68b8c548be9e1",
+        "automaticPass": false,
+        "semanticPass": false,
+        "failures": [
+          "visit_raw_missing_followup"
+        ],
+        "rawFollowUps": 0,
+        "acceptedFollowUps": 1,
+        "rawAppointments": 0,
+        "acceptedAppointments": 0,
+        "rawHighlights": 0,
+        "acceptedHighlights": 0
+      }
+    ],
+    "hashes": {
+      "metadata.json": "c3ae597cca40ce2640094103bf61adba93cdced15533cef35873c97af493d43d",
+      "collection-manifest.json": "818b63970284361f3dd9522c510203482993997ecccbd3f13858e3a7e0e15db6",
+      "manual-reviews-visits-complete.json": "6ca0107a3705e16f61445774f1951f73d8e1c6bbfa157b2c3be1e96f3a7ad68f",
+      "score-visits-complete-reviewed.json": "db9392b2ce1373a6796e02458f650c0774b8ce166efa5a71f37be0b25593daea"
+    },
+    "limits": [
+      "Qwen raw follow-up recall remains0/4, so this bounded rollback does not fix the known regression.",
+      "All three models have4/4 accepted medicine proposals through source-literal decoding; this is app pipeline evidence, not pure model extraction.",
+      "Core recovered follow-up/appointment quotes earn no raw recall credit.",
+      "Frozenv1 does not measure full highlight/appointment recall; fragment/duplicate/misclassification nits are visible, without a new post-output threshold.",
+      "Partial Standard-only DEV scope has a formal baseline effort/matrix mismatch; full finalDEV267/current supplementalall3 remain required.",
+      "Source03 exact working bytes are not relabelled as later8b Simulator/UI commit materialization.",
+      "Source inventories are byte-retention maps, not per-file compiler-use or full SwiftUI compilation claims.",
+      "No heldout or physical iPhone/Metal validation."
+    ],
+    "routingCoverage": {
+      "cases": 0,
+      "rateMeasured": false,
+      "meaning": "Visit-only scope supplies no routing-rate estimate. Global release-gate reasons from incomplete coverage are not an observed routing failure rate."
+    }
+  },
+  "sourceInventoryScopeNotes": [
+    "diagnostic-thinking6-01/source-inventory-scope-note.json",
+    "diagnostic-sampling18-01/source-inventory-scope-note.json",
+    "diagnostic-quantization-q6-01/source-inventory-scope-note.json"
+  ],
+  "isolatedNativeDiagnostics": {
+    "scope": "Retains raw fictional-fixture XCTest logs, summaries, process observations, sample text reports, sanitized phase/route metadata, exact source patches/snapshots, runtime cache identity and API inspection notes, plus original GitHub artifact URLs/digests. No XCResult bundles or model/framework/app binaries are included.",
+    "originalAllowlistSHA256": "98783af1bd173748a66855772192ddd90e1bf0b710674f8df652f4c8ae098c7c",
+    "retainedFiles": [
+      {
+        "path": "build/native-current3b-enfr-38330793069/base-source.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/base-source.txt",
+        "bytes": 41,
+        "sha256": "d4d90c263cd7d952a07ae65ee0761b7d581ae56cdd2441a02becc3ed32ef261b"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/checkout.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/checkout.txt",
+        "bytes": 41,
+        "sha256": "f944a7a419027d31b518a41762e0a650be6fc578e7a7e363ae3104c63778fda8"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/diagnostic-findings.json",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/diagnostic-findings.json",
+        "bytes": 13677,
+        "sha256": "18b28d94ddc49786f1785c02977035964a79933649433b2a72f9b4c7c0ac3378"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/github-artifact-metadata.json",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/github-artifact-metadata.json",
+        "bytes": 2747,
+        "sha256": "75b63589bb029566523464f8f51508e4674bc79e9dc01f1916b0817df1239856"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/hardware.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/hardware.txt",
+        "bytes": 34,
+        "sha256": "3cc735b1e3e4ddeb68625347b1f2f25d9c096d6168b460e32b437c18010ced3e"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/inference-phase-events-0.jsonl",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/inference-phase-events-0.jsonl",
+        "bytes": 13411,
+        "sha256": "b9b8b7064c06f69a7b5f38bb4bf07dbdc5291915d6f9ee03bf8b88cc834c1738"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/inference-phase-parse-errors-0.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/inference-phase-parse-errors-0.txt",
+        "bytes": 53,
+        "sha256": "4cf77da33dd7070ac2ae715a4a82fb820d72123c16c7988f8d6cdfee1540b506"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/manifest.json",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/manifest.json",
+        "bytes": 3685,
+        "sha256": "c267a8d5c42aacf6a6766afe3b22f33f6346ffa736abd5f0292e546f3308d455"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/original-artifact-sha256.json",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/original-artifact-sha256.json",
+        "bytes": 3406,
+        "sha256": "2a5e490da3275e18b602bab6f1957cbc116abfe4a098747e05d11f217d667422"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/phase-opt-in.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/phase-opt-in.txt",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/phase-source-diff.patch",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/phase-source-diff.patch",
+        "bytes": 12974,
+        "sha256": "97864c5f7a0d8e9000757732764a94286244c019eaa68fcece5e4802f3d79a7f"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/process-observations.jsonl",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/process-observations.jsonl",
+        "bytes": 153913,
+        "sha256": "44aed96bc79a4e5c44c571a5333e94b2a067b37f754bcb6535792e1849098420"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/runtime-cache-identity.json",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/runtime-cache-identity.json",
+        "bytes": 6449,
+        "sha256": "53e692eaef487f3552fe4cb6eb4e937b56d00e5fb53965520c96122830711e0e"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/sample-help.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/sample-help.txt",
+        "bytes": 771,
+        "sha256": "8715ea43582eb3457151800309e565d173241286e9db7311c41147b0c504d7d1"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/sample-pid-10962-after-send-105s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/sample-pid-10962-after-send-105s.command.txt",
+        "bytes": 232,
+        "sha256": "c9d443d6a9d7ee89402fa364fef2f751c57eb1c165d58b825f04ee5c1d60157f"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/sample-pid-10962-after-send-105s.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/sample-pid-10962-after-send-105s.txt",
+        "bytes": 181003,
+        "sha256": "0044a8c630387da75bcbb513dc9bcca9098fd845825d10b3b5f4432d179f6932"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/sample-pid-10962-after-send-15s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/sample-pid-10962-after-send-15s.command.txt",
+        "bytes": 231,
+        "sha256": "74c001e1ce9863dc48a1945a265400ee7e4939c3536f170eef3896ec3358e7db"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/sample-pid-10962-after-send-15s.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/sample-pid-10962-after-send-15s.txt",
+        "bytes": 181003,
+        "sha256": "5c538f3433311525114a74b6ff6b42a5c876d3a5de00c4454e058c09bb21e028"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/sample-pid-10962-after-send-60s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/sample-pid-10962-after-send-60s.command.txt",
+        "bytes": 231,
+        "sha256": "c2f2d3c8c506c2c02edc1796dfcf34f61ed37e0a74d0f68dce1b7044cbf99844"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/sample-pid-10962-after-send-60s.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/sample-pid-10962-after-send-60s.txt",
+        "bytes": 181003,
+        "sha256": "911dc139b331f4f66ca2905ebea6d6005a35c9ef7e051606fbaf6a6afd971e12"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/sample-pid-15879-after-send-105s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/sample-pid-15879-after-send-105s.command.txt",
+        "bytes": 232,
+        "sha256": "6bfe913b354c0c9e1d9d9e4a2c719a7362ad7573dd2fa9c2588b64586279bea2"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/sample-pid-15879-after-send-105s.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/sample-pid-15879-after-send-105s.txt",
+        "bytes": 181003,
+        "sha256": "f385d7457fd1ce8692ad4b9a33f4236e03327b7e48fca8ea08c26736227cee6d"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/sample-pid-15879-after-send-15s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/sample-pid-15879-after-send-15s.command.txt",
+        "bytes": 231,
+        "sha256": "0cb1980cf9e35638422110dccf7ecbfe77285928c34bca765fe1b8ea506ea21b"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/sample-pid-15879-after-send-15s.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/sample-pid-15879-after-send-15s.txt",
+        "bytes": 181003,
+        "sha256": "73fd86c9918118bfb70e50dc39183098ea43c5fd8de4ed1a558a788bb3b98610"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/sample-pid-15879-after-send-60s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/sample-pid-15879-after-send-60s.command.txt",
+        "bytes": 231,
+        "sha256": "fb2715d6259cb2588ecfcb3dcf4c79924fa1f20849dbfab3273540671e3f6a9a"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/sample-pid-15879-after-send-60s.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/sample-pid-15879-after-send-60s.txt",
+        "bytes": 181003,
+        "sha256": "167a03c210f8e52a685c11a5f942c0c78822f32f13d8372cf8d51eeb33b60d66"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/source-sha256.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/source-sha256.txt",
+        "bytes": 502,
+        "sha256": "e333268a8f0db862cfce92dab06db3d553b1dbbbccdbfb27f675bcd49a0877fe"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/swift.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/swift.txt",
+        "bytes": 98,
+        "sha256": "b674f79b747370a1c05ae7cec551fffe557816c6c807f35f39f933ecbcca80d7"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/test-presentation-source-diff.patch",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/test-presentation-source-diff.patch",
+        "bytes": 1269,
+        "sha256": "324e2e76371ca8087d0e1cc44b7f966f0c3610aa4712e0f1b81bf37ef605f683"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/test-summary.json",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/test-summary.json",
+        "bytes": 1867,
+        "sha256": "4f25e0c8353198159c87a5d35ac9d1a452ce568b3cd466a18dd363c60b89d9c3"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/test.log",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/test.log",
+        "bytes": 60637,
+        "sha256": "950e6918632639728c3881ca96a432c45addd14e2b0332fc19ba81db26a395f7"
+      },
+      {
+        "path": "build/native-current3b-enfr-38330793069/xcode.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-enfr-38330793069/xcode.txt",
+        "bytes": 32,
+        "sha256": "18730ed2ae28a2c9cf0c2d5db549033a4f07089331391a7133b7b32187454fa9"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/base-source.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/base-source.txt",
+        "bytes": 41,
+        "sha256": "d4d90c263cd7d952a07ae65ee0761b7d581ae56cdd2441a02becc3ed32ef261b"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/checkout.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/checkout.txt",
+        "bytes": 41,
+        "sha256": "0ea19075f46cf6d3c9c01629e499b535b54836ce7d2928bb9cefb869c7da2bc7"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/diagnostic-findings.json",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/diagnostic-findings.json",
+        "bytes": 20292,
+        "sha256": "568e497da641c9b11e11e1f0825f589a044b5c717615a2a669bcb3e915e175b5"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/github-artifact-metadata.json",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/github-artifact-metadata.json",
+        "bytes": 2754,
+        "sha256": "0f82cf5a3247b28151bb3b09633be80d98f578709a19de64fc58913b1fafd078"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/hardware.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/hardware.txt",
+        "bytes": 34,
+        "sha256": "3cc735b1e3e4ddeb68625347b1f2f25d9c096d6168b460e32b437c18010ced3e"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/inference-phase-events-0.jsonl",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/inference-phase-events-0.jsonl",
+        "bytes": 13598,
+        "sha256": "ba5f3e0ac7c51c373cbe2df2d0fa1a1ead4d76e0191a0db0d9f83b552d9ab4c2"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/inference-phase-parse-errors-0.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/inference-phase-parse-errors-0.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/manifest.json",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/manifest.json",
+        "bytes": 3694,
+        "sha256": "108c2d74978b82b3b0fd2ffc87b4c932f9047f27413f195eec02478ca08b6a74"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/original-artifact-sha256.json",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/original-artifact-sha256.json",
+        "bytes": 3635,
+        "sha256": "b106177a3976278e1e6d254bea0397102d044549eb7d28934db7514f89e5e813"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/phase-opt-in.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/phase-opt-in.txt",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/phase-source-diff.patch",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/phase-source-diff.patch",
+        "bytes": 20856,
+        "sha256": "e41f88d4cc701459236d025b8319da42339360b44b176b846aab800498fc3c1e"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/process-observations.jsonl",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/process-observations.jsonl",
+        "bytes": 155119,
+        "sha256": "ae535d6739ec10d9385337522bfb61b066607d0a574ed03208d74b199f27ebc3"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/route-state-events.jsonl",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/route-state-events.jsonl",
+        "bytes": 2944,
+        "sha256": "256d5ce1e18a92fc2c910b7e1c8b8ab9bcf3cc2b0ca1301b6921a8cb577e0401"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/runtime-cache-identity.json",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/runtime-cache-identity.json",
+        "bytes": 6449,
+        "sha256": "53e692eaef487f3552fe4cb6eb4e937b56d00e5fb53965520c96122830711e0e"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/sample-help.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/sample-help.txt",
+        "bytes": 771,
+        "sha256": "8715ea43582eb3457151800309e565d173241286e9db7311c41147b0c504d7d1"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/sample-pid-13036-after-send-105s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/sample-pid-13036-after-send-105s.command.txt",
+        "bytes": 232,
+        "sha256": "36e9429ba5c56565e76aac2f2376ae235fe625038d33f9762aa2d2f0199b807c"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/sample-pid-13036-after-send-105s.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/sample-pid-13036-after-send-105s.txt",
+        "bytes": 181003,
+        "sha256": "960728ea1f5120fb1a34883250d62f8772a42834bb5aa63ac136189d9484dfb0"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/sample-pid-13036-after-send-15s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/sample-pid-13036-after-send-15s.command.txt",
+        "bytes": 231,
+        "sha256": "2e59a7afc4b15dab726ade29fab05ff91121e282eb88ad831f3b9df34c39e9a1"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/sample-pid-13036-after-send-15s.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/sample-pid-13036-after-send-15s.txt",
+        "bytes": 181003,
+        "sha256": "7569adef00d3f7464d62b46f4745c1fb518c0a64e30bb9ac5efdeff772da48a7"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/sample-pid-13036-after-send-60s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/sample-pid-13036-after-send-60s.command.txt",
+        "bytes": 231,
+        "sha256": "7e47faa942453f01745bcfc0c71b88654b7fde336e4d200dcd827897b239a421"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/sample-pid-13036-after-send-60s.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/sample-pid-13036-after-send-60s.txt",
+        "bytes": 181003,
+        "sha256": "302481168a66f7c1460886e5d732936702750c1ae91eaf6f32fce44de8be6e8b"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/sample-pid-18153-after-send-105s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/sample-pid-18153-after-send-105s.command.txt",
+        "bytes": 232,
+        "sha256": "7ea3e9508acd8ca0aa3f8cedd2c703a826a120a4bce32f7155a39bd88c197666"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/sample-pid-18153-after-send-105s.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/sample-pid-18153-after-send-105s.txt",
+        "bytes": 275556,
+        "sha256": "5d4de78fc3b113c153577c587fbd46bbda78f28bc889c62ae66809be94f18545"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/sample-pid-18153-after-send-15s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/sample-pid-18153-after-send-15s.command.txt",
+        "bytes": 231,
+        "sha256": "9a47f9c504d4513fc2f53c5ce0db0e85a12aa01a7c15ce18b09079576dd61912"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/sample-pid-18153-after-send-15s.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/sample-pid-18153-after-send-15s.txt",
+        "bytes": 266538,
+        "sha256": "bce71b69748327147f6c6cb0e67c8d596ee83a7337839c43945881cfbf8230eb"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/sample-pid-18153-after-send-60s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/sample-pid-18153-after-send-60s.command.txt",
+        "bytes": 231,
+        "sha256": "9a3ca579f61100086ee2f211fc3b6341d8b9caee9e09fa733b0ca2cf66030204"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/sample-pid-18153-after-send-60s.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/sample-pid-18153-after-send-60s.txt",
+        "bytes": 278707,
+        "sha256": "bd18c82c353b6f6cd7eb86f8758d4928a92eef75a71e727877e1d0ea100442a2"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/source-sha256.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/source-sha256.txt",
+        "bytes": 682,
+        "sha256": "c0520669e074c2dce71f16e87643d951f8eb9aa04ed74d7470e8be385ddc87a3"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/swift.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/swift.txt",
+        "bytes": 98,
+        "sha256": "b674f79b747370a1c05ae7cec551fffe557816c6c807f35f39f933ecbcca80d7"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/test-presentation-source-diff.patch",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/test-presentation-source-diff.patch",
+        "bytes": 2127,
+        "sha256": "58f4ec5e1929ccbbb748baa3d375d89332d313a86ce09ba3062dced9b6c9aab3"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/test-summary.json",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/test-summary.json",
+        "bytes": 970,
+        "sha256": "47eef381567c630d007544e61ab316ac72a1486e6cdcc03a07b75d59845b3bf7"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/test.log",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/test.log",
+        "bytes": 62806,
+        "sha256": "4492fc76a48a7ef712b641ea20617d853f1563701b1634b9b328c7a4a685e408"
+      },
+      {
+        "path": "build/native-current3b-route-38334171561/xcode.txt",
+        "archiveMember": "native-diagnostics/build/native-current3b-route-38334171561/xcode.txt",
+        "bytes": 32,
+        "sha256": "18730ed2ae28a2c9cf0c2d5db549033a4f07089331391a7133b7b32187454fa9"
+      },
+      {
+        "path": "build/native-live-sampling-38319791371/checkout.txt",
+        "archiveMember": "native-diagnostics/build/native-live-sampling-38319791371/checkout.txt",
+        "bytes": 41,
+        "sha256": "04405f1ba34b0036fcf44f72fec9bf69ffa10aaa39e39e27edc0bfebf1e576f0"
+      },
+      {
+        "path": "build/native-live-sampling-38319791371/diagnostic-findings.json",
+        "archiveMember": "native-diagnostics/build/native-live-sampling-38319791371/diagnostic-findings.json",
+        "bytes": 12281,
+        "sha256": "75f25d356993bebd98e54c0869c4f8237e20404a3da32efc4d0d478353311f2d"
+      },
+      {
+        "path": "build/native-live-sampling-38319791371/github-artifact-metadata.json",
+        "archiveMember": "native-diagnostics/build/native-live-sampling-38319791371/github-artifact-metadata.json",
+        "bytes": 938,
+        "sha256": "d4e001761d8af612066e171bbc5576bc80d4ffd023433daf11eeaaec87a46d98"
+      },
+      {
+        "path": "build/native-live-sampling-38319791371/hardware.txt",
+        "archiveMember": "native-diagnostics/build/native-live-sampling-38319791371/hardware.txt",
+        "bytes": 34,
+        "sha256": "3cc735b1e3e4ddeb68625347b1f2f25d9c096d6168b460e32b437c18010ced3e"
+      },
+      {
+        "path": "build/native-live-sampling-38319791371/manifest.json",
+        "archiveMember": "native-diagnostics/build/native-live-sampling-38319791371/manifest.json",
+        "bytes": 1907,
+        "sha256": "ab0b2e2e0b7cb774cda8526757c742989cc3a637dee44071c6d4a3cbf676e85e"
+      },
+      {
+        "path": "build/native-live-sampling-38319791371/process-observations.jsonl",
+        "archiveMember": "native-diagnostics/build/native-live-sampling-38319791371/process-observations.jsonl",
+        "bytes": 98809,
+        "sha256": "3d8ce873c446b602aab9506b5a0f18e1e6740379955edc66d8871ad1e69804ed"
+      },
+      {
+        "path": "build/native-live-sampling-38319791371/sample-help.txt",
+        "archiveMember": "native-diagnostics/build/native-live-sampling-38319791371/sample-help.txt",
+        "bytes": 771,
+        "sha256": "8715ea43582eb3457151800309e565d173241286e9db7311c41147b0c504d7d1"
+      },
+      {
+        "path": "build/native-live-sampling-38319791371/sample-pid-22182-after-send-105s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-live-sampling-38319791371/sample-pid-22182-after-send-105s.command.txt",
+        "bytes": 232,
+        "sha256": "0969553345ea3762dfd4d712ce1462848af9f97b50e1c7f582e8744c2c272a70"
+      },
+      {
+        "path": "build/native-live-sampling-38319791371/sample-pid-22182-after-send-105s.txt",
+        "archiveMember": "native-diagnostics/build/native-live-sampling-38319791371/sample-pid-22182-after-send-105s.txt",
+        "bytes": 228546,
+        "sha256": "f71d264ec3e7382ae87c5b34d6a8d7f0d592bd996a283a9328a291909df54b3a"
+      },
+      {
+        "path": "build/native-live-sampling-38319791371/sample-pid-22182-after-send-15s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-live-sampling-38319791371/sample-pid-22182-after-send-15s.command.txt",
+        "bytes": 231,
+        "sha256": "741df18256886edf2554b6eddc51aed6405d45023680a027e5183f260b9f355d"
+      },
+      {
+        "path": "build/native-live-sampling-38319791371/sample-pid-22182-after-send-15s.txt",
+        "archiveMember": "native-diagnostics/build/native-live-sampling-38319791371/sample-pid-22182-after-send-15s.txt",
+        "bytes": 246818,
+        "sha256": "e64d744fcf0a9a54ac731748342f77589c8108d074971a7e6fed6d1d4bac4f5d"
+      },
+      {
+        "path": "build/native-live-sampling-38319791371/sample-pid-22182-after-send-60s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-live-sampling-38319791371/sample-pid-22182-after-send-60s.command.txt",
+        "bytes": 231,
+        "sha256": "080f7d223cffce1464b83f1516aeae36170b274ffe94c549d81a2fe85052e693"
+      },
+      {
+        "path": "build/native-live-sampling-38319791371/sample-pid-22182-after-send-60s.txt",
+        "archiveMember": "native-diagnostics/build/native-live-sampling-38319791371/sample-pid-22182-after-send-60s.txt",
+        "bytes": 251610,
+        "sha256": "dd2c2bf4698ac4fcac1192d32d3d3b639b04f14c915e352438ba70cd42806c89"
+      },
+      {
+        "path": "build/native-live-sampling-38319791371/swift.txt",
+        "archiveMember": "native-diagnostics/build/native-live-sampling-38319791371/swift.txt",
+        "bytes": 98,
+        "sha256": "b674f79b747370a1c05ae7cec551fffe557816c6c807f35f39f933ecbcca80d7"
+      },
+      {
+        "path": "build/native-live-sampling-38319791371/test-summary.json",
+        "archiveMember": "native-diagnostics/build/native-live-sampling-38319791371/test-summary.json",
+        "bytes": 8792,
+        "sha256": "fcbb19405156566a72840bd86e32eabc1a40fde6ea49084e6e61186401244e45"
+      },
+      {
+        "path": "build/native-live-sampling-38319791371/test.log",
+        "archiveMember": "native-diagnostics/build/native-live-sampling-38319791371/test.log",
+        "bytes": 54497,
+        "sha256": "d6a03a17b866745be573f4822191416e1f2bb1c25943a4b350fdeac36afcf084"
+      },
+      {
+        "path": "build/native-live-sampling-38319791371/xcode.txt",
+        "archiveMember": "native-diagnostics/build/native-live-sampling-38319791371/xcode.txt",
+        "bytes": 32,
+        "sha256": "18730ed2ae28a2c9cf0c2d5db549033a4f07089331391a7133b7b32187454fa9"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/checkout.txt",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/checkout.txt",
+        "bytes": 41,
+        "sha256": "0bf932c58f2c915cb54512324f011c113bfc1acadeb6bf095b581d9cbd86f736"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/diagnostic-findings.json",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/diagnostic-findings.json",
+        "bytes": 14299,
+        "sha256": "0aa55e0d2dc998e2edb23097025348fac50a27650a0635da4a9a3833cdd22b5b"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/github-artifact-metadata.json",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/github-artifact-metadata.json",
+        "bytes": 955,
+        "sha256": "807ec3524a664d3efbb364f22711e46d9534778f6c1f599b7077c59540962d24"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/hardware.txt",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/hardware.txt",
+        "bytes": 34,
+        "sha256": "3cc735b1e3e4ddeb68625347b1f2f25d9c096d6168b460e32b437c18010ced3e"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/manifest.json",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/manifest.json",
+        "bytes": 2017,
+        "sha256": "e9e1b97aa9e8c4a190f6ed237b670827d5e27d2355a8c3debb839c5c275faa94"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/microbatch-source-diff.patch",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/microbatch-source-diff.patch",
+        "bytes": 677,
+        "sha256": "ab954788c359f32af6a9bfdb92cee3e380bce2f26601e7e4409ac88a8b085f06"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/process-observations.jsonl",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/process-observations.jsonl",
+        "bytes": 105047,
+        "sha256": "16b20255026370a87bb441dc5351ecd4ebef16efde883b9a229f0da10e01dea5"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/runtime-cache-identity.json",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/runtime-cache-identity.json",
+        "bytes": 6449,
+        "sha256": "53e692eaef487f3552fe4cb6eb4e937b56d00e5fb53965520c96122830711e0e"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/sample-help.txt",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/sample-help.txt",
+        "bytes": 771,
+        "sha256": "8715ea43582eb3457151800309e565d173241286e9db7311c41147b0c504d7d1"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/sample-pid-11200-after-send-105s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/sample-pid-11200-after-send-105s.command.txt",
+        "bytes": 232,
+        "sha256": "cacf2078fcaf8f3a4c83b4f237f38d79f50963e6504a61a024021861f3a53850"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/sample-pid-11200-after-send-105s.txt",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/sample-pid-11200-after-send-105s.txt",
+        "bytes": 213605,
+        "sha256": "4ce2002039d010ac344082ed09c9f05dfc4d03ca326b219abca9f8c7fd474787"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/sample-pid-11200-after-send-15s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/sample-pid-11200-after-send-15s.command.txt",
+        "bytes": 231,
+        "sha256": "2436ad01865c19a1aafc02c44c41a6a0a54a491b120396f49569ac5d42d1da84"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/sample-pid-11200-after-send-15s.txt",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/sample-pid-11200-after-send-15s.txt",
+        "bytes": 229376,
+        "sha256": "dbee8b296b34b7ae365cbcd896262528befe6d7bbcec6b0d09e63dd065ee62e5"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/sample-pid-11200-after-send-60s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/sample-pid-11200-after-send-60s.command.txt",
+        "bytes": 231,
+        "sha256": "c94a26ed4da93e39ce7d6754ed163d3c35d32c34ddf1ad2cf57466b8bf7e38b3"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/sample-pid-11200-after-send-60s.txt",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/sample-pid-11200-after-send-60s.txt",
+        "bytes": 225433,
+        "sha256": "d3b43c862c83ab98681b915f1c1c932be9e273bce8e9aa5a5cf130d55568b531"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/source-sha256.txt",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/source-sha256.txt",
+        "bytes": 307,
+        "sha256": "b94082e03950a5be58dab82e3f541ee580982a348f952e45d333734ea2e58314"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/swift.txt",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/swift.txt",
+        "bytes": 98,
+        "sha256": "b674f79b747370a1c05ae7cec551fffe557816c6c807f35f39f933ecbcca80d7"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/test-summary.json",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/test-summary.json",
+        "bytes": 8791,
+        "sha256": "a8d48a5b25ccbeeff7972200b22d629b73c6916556f9eaf6711d4d918282419c"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/test.log",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/test.log",
+        "bytes": 49732,
+        "sha256": "f1049dd5ca361b7c6812187c857cd5c27cdeb19dad0b476cec2c3303349f34e7"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/thread-source-diff.patch",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/thread-source-diff.patch",
+        "bytes": 1014,
+        "sha256": "7aab5c03d6481e7404b6faaa083bde6b05b7f24e1335d18db2022c74672b1540"
+      },
+      {
+        "path": "build/native-micro128-experiment-38323576340/xcode.txt",
+        "archiveMember": "native-diagnostics/build/native-micro128-experiment-38323576340/xcode.txt",
+        "bytes": 32,
+        "sha256": "18730ed2ae28a2c9cf0c2d5db549033a4f07089331391a7133b7b32187454fa9"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/checkout.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/checkout.txt",
+        "bytes": 41,
+        "sha256": "086f40bc85378ad0d6b966d07f307e732106b8f1499d87091fc72d71afc64977"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/diagnostic-findings.json",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/diagnostic-findings.json",
+        "bytes": 15942,
+        "sha256": "283386668e3a596a9d109aaa82a8a2365e4b87217cbcfeef45c0aec4c2d7d0b4"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/github-artifact-metadata.json",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/github-artifact-metadata.json",
+        "bytes": 946,
+        "sha256": "5cee1961e6e598f58aa5d6ebf239563eaa16f3ae543a286892a86c864bd58b62"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/hardware.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/hardware.txt",
+        "bytes": 34,
+        "sha256": "3cc735b1e3e4ddeb68625347b1f2f25d9c096d6168b460e32b437c18010ced3e"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/inference-phase-events-0.jsonl",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/inference-phase-events-0.jsonl",
+        "bytes": 1798,
+        "sha256": "cf356665e3a42a0cc4b178e2a9204f3f63b912391a2a88bec8ad6a3f13567344"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/inference-phase-parse-errors-0.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/inference-phase-parse-errors-0.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/manifest.json",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/manifest.json",
+        "bytes": 1676,
+        "sha256": "f22de266fdd32929c40db4f87b41d490bc1263abbd3f5390b8fa88a3cd7ce7be"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/microbatch-source-diff.patch",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/microbatch-source-diff.patch",
+        "bytes": 12313,
+        "sha256": "6101a0044604160e346014ae813d8b1f30c8d1949f2240983c7647a7de51d8bb"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/no-repack-source-diff.patch",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/no-repack-source-diff.patch",
+        "bytes": 655,
+        "sha256": "70a8a2d56fa1dd9e306bdede619b8a7bddf5a722255e5b4e924126e8818ee3a9"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/phase-opt-in.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/phase-opt-in.txt",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/phase-source-diff.patch",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/phase-source-diff.patch",
+        "bytes": 12974,
+        "sha256": "97864c5f7a0d8e9000757732764a94286244c019eaa68fcece5e4802f3d79a7f"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/process-observations.jsonl",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/process-observations.jsonl",
+        "bytes": 62364,
+        "sha256": "5f80890c490f6c3873dd364d686ee592e86a36e76e535c1182fa4fa820fc5931"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/runtime-cache-identity.json",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/runtime-cache-identity.json",
+        "bytes": 6449,
+        "sha256": "53e692eaef487f3552fe4cb6eb4e937b56d00e5fb53965520c96122830711e0e"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/sample-help.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/sample-help.txt",
+        "bytes": 771,
+        "sha256": "8715ea43582eb3457151800309e565d173241286e9db7311c41147b0c504d7d1"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/sample-pid-17486-after-send-15s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/sample-pid-17486-after-send-15s.command.txt",
+        "bytes": 231,
+        "sha256": "e24c2f820e4ce93adc4619fafa1656221c9ebade342fe83a80b6867b695fa108"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/sample-pid-17486-after-send-15s.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/sample-pid-17486-after-send-15s.txt",
+        "bytes": 181003,
+        "sha256": "503762701fda36e9a20a00a3c915a9eb4ecdb0f35d21fcba3bb9080a51a4703b"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/sample-pid-17486-after-send-60s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/sample-pid-17486-after-send-60s.command.txt",
+        "bytes": 120,
+        "sha256": "a81993e78e26af0da195688658020a1c21cc052a2e99217821876591ba90013d"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/source-sha256.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/source-sha256.txt",
+        "bytes": 400,
+        "sha256": "c6c2a69217ec2352b2ae229ddda03572c23a078a27f058056bf2a51cabefec7b"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/swift.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/swift.txt",
+        "bytes": 98,
+        "sha256": "b674f79b747370a1c05ae7cec551fffe557816c6c807f35f39f933ecbcca80d7"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/test-summary.json",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/test-summary.json",
+        "bytes": 1431,
+        "sha256": "3d23124ff1f7d8d6d25b8a71efa57a817d7df7156632143e036a6800c80a7614"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/test.log",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/test.log",
+        "bytes": 11777,
+        "sha256": "4aa9eb47cff7e08dfe31db2c989ce5cb50dbe1bcea1f6360b8b2dbca383e3ee4"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/thread-source-diff.patch",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/thread-source-diff.patch",
+        "bytes": 11603,
+        "sha256": "85ad80b42211bdf71f4611cced150ac2b217151d6a7d551381de479a7b66be53"
+      },
+      {
+        "path": "build/native-no-repack-experiment-38327029721/xcode.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-experiment-38327029721/xcode.txt",
+        "bytes": 32,
+        "sha256": "18730ed2ae28a2c9cf0c2d5db549033a4f07089331391a7133b7b32187454fa9"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/checkout.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/checkout.txt",
+        "bytes": 41,
+        "sha256": "da02cb86443f867c7501eb5bd657cefd604d7a005fdedeb9c76c37366c487f32"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/diagnostic-findings.json",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/diagnostic-findings.json",
+        "bytes": 24522,
+        "sha256": "5b5bd6c77b499a0b3aa2f063a6652b50a84a41a9cf2fef8d4ad55aa98303365e"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/github-artifact-metadata.json",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/github-artifact-metadata.json",
+        "bytes": 942,
+        "sha256": "f95cf06b5d0cb1b588eba2288a703c110f6fa14f1e8b7268eaa6645e9036f6e6"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/hardware.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/hardware.txt",
+        "bytes": 34,
+        "sha256": "3cc735b1e3e4ddeb68625347b1f2f25d9c096d6168b460e32b437c18010ced3e"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/inference-phase-events-0.jsonl",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/inference-phase-events-0.jsonl",
+        "bytes": 6582,
+        "sha256": "fffc3bc482c23858b629a95abb55226ac91f8937af0656d25c95fb9975f86a7b"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/inference-phase-parse-errors-0.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/inference-phase-parse-errors-0.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/manifest.json",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/manifest.json",
+        "bytes": 2056,
+        "sha256": "be61fc8f5e4cdea2d797019fc8b824a9a00221f54e0a8f433dfdeb0927ed5661"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/microbatch-source-diff.patch",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/microbatch-source-diff.patch",
+        "bytes": 12313,
+        "sha256": "6101a0044604160e346014ae813d8b1f30c8d1949f2240983c7647a7de51d8bb"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/no-repack-source-diff.patch",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/no-repack-source-diff.patch",
+        "bytes": 655,
+        "sha256": "70a8a2d56fa1dd9e306bdede619b8a7bddf5a722255e5b4e924126e8818ee3a9"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/original-artifact-sha256.json",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/original-artifact-sha256.json",
+        "bytes": 2928,
+        "sha256": "7cabe47b9b6f72d4e8846dde9899ca23dbcfc018858b51dcb2fb378e6ac9a71c"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/phase-opt-in.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/phase-opt-in.txt",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/phase-source-diff.patch",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/phase-source-diff.patch",
+        "bytes": 12974,
+        "sha256": "97864c5f7a0d8e9000757732764a94286244c019eaa68fcece5e4802f3d79a7f"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/process-observations.jsonl",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/process-observations.jsonl",
+        "bytes": 99190,
+        "sha256": "87a760473ab0ccae04221633b7c01ac782a85327d6b14f267222797e506131b2"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/runtime-cache-identity.json",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/runtime-cache-identity.json",
+        "bytes": 6449,
+        "sha256": "53e692eaef487f3552fe4cb6eb4e937b56d00e5fb53965520c96122830711e0e"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/sample-help.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/sample-help.txt",
+        "bytes": 771,
+        "sha256": "8715ea43582eb3457151800309e565d173241286e9db7311c41147b0c504d7d1"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/sample-pid-12877-after-send-105s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/sample-pid-12877-after-send-105s.command.txt",
+        "bytes": 232,
+        "sha256": "15beb3db87dc7bc7b3ea13d6eefaa89b870d31813efdc3828dfbd43d7844e580"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/sample-pid-12877-after-send-105s.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/sample-pid-12877-after-send-105s.txt",
+        "bytes": 181003,
+        "sha256": "7019ab2adb8dc1aa5d03886935d8ed298f991f35a3d5bf701b90705e486bdf65"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/sample-pid-12877-after-send-15s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/sample-pid-12877-after-send-15s.command.txt",
+        "bytes": 231,
+        "sha256": "c50249e07e22dd842360eefa7e11c9cbc5f13118b3955538406e31706f0b1d84"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/sample-pid-12877-after-send-15s.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/sample-pid-12877-after-send-15s.txt",
+        "bytes": 181003,
+        "sha256": "69d26fed3d5ff63c5a5ab41ecfd5ab12cd6e5f33fe718131034578ae98b8546e"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/sample-pid-12877-after-send-60s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/sample-pid-12877-after-send-60s.command.txt",
+        "bytes": 231,
+        "sha256": "6d494458526aa357049364808adff92cf9ab4205e7a4e31863688fd06fce5531"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/sample-pid-12877-after-send-60s.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/sample-pid-12877-after-send-60s.txt",
+        "bytes": 181003,
+        "sha256": "92df6d6cc94a6758063450b990421d4cf0b692b896e852233f730fe3a90d6a76"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/source-sha256.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/source-sha256.txt",
+        "bytes": 400,
+        "sha256": "c6c2a69217ec2352b2ae229ddda03572c23a078a27f058056bf2a51cabefec7b"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/swift.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/swift.txt",
+        "bytes": 98,
+        "sha256": "b674f79b747370a1c05ae7cec551fffe557816c6c807f35f39f933ecbcca80d7"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/test-summary.json",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/test-summary.json",
+        "bytes": 1381,
+        "sha256": "755b8a30128d7297cab9695217018a3d721f33496c6303ccfd25282562de8f52"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/test.log",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/test.log",
+        "bytes": 35472,
+        "sha256": "9a3820024d367ca28c51bf44c3d6658dedc72def2c7e48c78b9173016109df10"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/thread-source-diff.patch",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/thread-source-diff.patch",
+        "bytes": 11603,
+        "sha256": "85ad80b42211bdf71f4611cced150ac2b217151d6a7d551381de479a7b66be53"
+      },
+      {
+        "path": "build/native-no-repack-repeat-38328365916/xcode.txt",
+        "archiveMember": "native-diagnostics/build/native-no-repack-repeat-38328365916/xcode.txt",
+        "bytes": 32,
+        "sha256": "18730ed2ae28a2c9cf0c2d5db549033a4f07089331391a7133b7b32187454fa9"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/checkout.txt",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/checkout.txt",
+        "bytes": 41,
+        "sha256": "1478a7a401fac7e1ee16bd4977138db8a56a1065f3a3a015a33a7e094ea405f3"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/diagnostic-findings.json",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/diagnostic-findings.json",
+        "bytes": 17104,
+        "sha256": "aa49c5464d99b46b6d0bb5a7a4c83f83c2c3e72eb400d1028c01d05abffb28ac"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/github-artifact-metadata.json",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/github-artifact-metadata.json",
+        "bytes": 946,
+        "sha256": "60734a982a91cd6b82bd0529582ac59f6ed34ce6e512ece032edc74e51b8dd62"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/hardware.txt",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/hardware.txt",
+        "bytes": 34,
+        "sha256": "3cc735b1e3e4ddeb68625347b1f2f25d9c096d6168b460e32b437c18010ced3e"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/inference-phase-events-0.jsonl",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/inference-phase-events-0.jsonl",
+        "bytes": 1807,
+        "sha256": "37a8f25fdbd77c457ab8ce2202e076b8f3926eb8fe120169328acb0b39ffb8c4"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/inference-phase-parse-errors-0.txt",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/inference-phase-parse-errors-0.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/manifest.json",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/manifest.json",
+        "bytes": 2030,
+        "sha256": "06c8a193638caf5d53824352ba316b38827a0671604a7063c7d4e63b012d1cca"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/microbatch-source-diff.patch",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/microbatch-source-diff.patch",
+        "bytes": 11935,
+        "sha256": "05653d3415d441c1c1f3f7c918ed522b1a98999497266091b69588da0bbf0e60"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/phase-opt-in.txt",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/phase-opt-in.txt",
+        "bytes": 2,
+        "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/phase-source-diff.patch",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/phase-source-diff.patch",
+        "bytes": 12596,
+        "sha256": "1a6e14077bcb8c910ca37c83eeca5fe70a6e15654dad9355b70907bde001963e"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/process-observations.jsonl",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/process-observations.jsonl",
+        "bytes": 107389,
+        "sha256": "6fc6043548659f08f3b531d4c5d15e1de15d546438ffe389fd5924570e3c1eb3"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/runtime-cache-identity.json",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/runtime-cache-identity.json",
+        "bytes": 6449,
+        "sha256": "53e692eaef487f3552fe4cb6eb4e937b56d00e5fb53965520c96122830711e0e"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/sample-help.txt",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/sample-help.txt",
+        "bytes": 771,
+        "sha256": "8715ea43582eb3457151800309e565d173241286e9db7311c41147b0c504d7d1"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/sample-pid-15521-after-send-105s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/sample-pid-15521-after-send-105s.command.txt",
+        "bytes": 232,
+        "sha256": "820b092f6604731021e5d91d4905ca552e4054c96572854065be9c8a28d2e3d5"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/sample-pid-15521-after-send-105s.txt",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/sample-pid-15521-after-send-105s.txt",
+        "bytes": 262134,
+        "sha256": "4e0781c0b76803ce854882a47789afb1c19a6eacd0910bfb08bcbd5cf501bff3"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/sample-pid-15521-after-send-15s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/sample-pid-15521-after-send-15s.command.txt",
+        "bytes": 231,
+        "sha256": "cfd5f34048072550fcce6b86678a622d030226f5c6fda3c474bfb761d6e6152b"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/sample-pid-15521-after-send-15s.txt",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/sample-pid-15521-after-send-15s.txt",
+        "bytes": 274541,
+        "sha256": "9878de91f5d11804bcc5c169f316c0cc73c5ea08d093e1987aaa85be317b1cdf"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/sample-pid-15521-after-send-60s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/sample-pid-15521-after-send-60s.command.txt",
+        "bytes": 231,
+        "sha256": "db8b4d8d93e74d198ccd65e229326daba2218aed0d57843c3fbb9553e5a1a3ed"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/sample-pid-15521-after-send-60s.txt",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/sample-pid-15521-after-send-60s.txt",
+        "bytes": 266930,
+        "sha256": "11c75e5aaef6eeb666773f1542a7d58bf9cbef5ecd108d02b7067f7602bccc78"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/source-sha256.txt",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/source-sha256.txt",
+        "bytes": 400,
+        "sha256": "33d935624e5f7e062183f41a56b1f8f12c86b72ac921faa5d07f19f7ecfed146"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/swift.txt",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/swift.txt",
+        "bytes": 98,
+        "sha256": "b674f79b747370a1c05ae7cec551fffe557816c6c807f35f39f933ecbcca80d7"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/test-summary.json",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/test-summary.json",
+        "bytes": 8792,
+        "sha256": "d644f888c4a592d5afa771f6e2ee65d54ef9d406ee5db889c7a5746f02762924"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/test.log",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/test.log",
+        "bytes": 54700,
+        "sha256": "bee3d6f331025848aff91b6ba0c0572c5ca82b9458a25f9c18f3a5eca0a9d860"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/thread-source-diff.patch",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/thread-source-diff.patch",
+        "bytes": 11225,
+        "sha256": "6b39bf726fa7d20cfe18ceffc0f1d9931502fb2012f6b12f848ee1af70144165"
+      },
+      {
+        "path": "build/native-phase-diagnostic-38325138101/xcode.txt",
+        "archiveMember": "native-diagnostics/build/native-phase-diagnostic-38325138101/xcode.txt",
+        "bytes": 32,
+        "sha256": "18730ed2ae28a2c9cf0c2d5db549033a4f07089331391a7133b7b32187454fa9"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/checkout.txt",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/checkout.txt",
+        "bytes": 41,
+        "sha256": "d3f5e3dc6109f4d1601b5651b33ef611b39ddcdddfd61fc11ab072dee3fc87c1"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/diagnostic-findings.json",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/diagnostic-findings.json",
+        "bytes": 11726,
+        "sha256": "51ee02152170e6e6a550c29a9277012009fec436b331fc8528d52c6e4674f95b"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/github-artifact-metadata.json",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/github-artifact-metadata.json",
+        "bytes": 946,
+        "sha256": "59c03aa8fd99e60c3723994b15448ef3b2e88d920f22862a75b8ae62a87e3d83"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/hardware.txt",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/hardware.txt",
+        "bytes": 34,
+        "sha256": "3cc735b1e3e4ddeb68625347b1f2f25d9c096d6168b460e32b437c18010ced3e"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/manifest.json",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/manifest.json",
+        "bytes": 1987,
+        "sha256": "5655d61cb1bd2d044814be13d67fa5f112bf9e4f0845f42fea09d7c6b5eec110"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/process-observations.jsonl",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/process-observations.jsonl",
+        "bytes": 93218,
+        "sha256": "7600f060d2c2f63e8f477bfbb9fc5797eb8d685db12174e33e637ee4978bf1de"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/runtime-cache-identity.json",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/runtime-cache-identity.json",
+        "bytes": 6449,
+        "sha256": "53e692eaef487f3552fe4cb6eb4e937b56d00e5fb53965520c96122830711e0e"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/sample-help.txt",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/sample-help.txt",
+        "bytes": 771,
+        "sha256": "8715ea43582eb3457151800309e565d173241286e9db7311c41147b0c504d7d1"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/sample-pid-13325-after-send-105s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/sample-pid-13325-after-send-105s.command.txt",
+        "bytes": 232,
+        "sha256": "5e3c7cfb685363ad915e985023c2c2873f2590ed5f557c43b207e2677385e986"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/sample-pid-13325-after-send-105s.txt",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/sample-pid-13325-after-send-105s.txt",
+        "bytes": 181003,
+        "sha256": "82a9af4e33fa08df48642f96a86e75d7f43954a6a6ac6835586946dc19c6ef4a"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/sample-pid-13325-after-send-15s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/sample-pid-13325-after-send-15s.command.txt",
+        "bytes": 231,
+        "sha256": "ac22217bf6f2f6998c61b405be26048cc6160b2b82ab22311a48644ae6ae3d1f"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/sample-pid-13325-after-send-15s.txt",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/sample-pid-13325-after-send-15s.txt",
+        "bytes": 181003,
+        "sha256": "0ffd0b433c6a95a99d6855becf40216236189d41af85491324a9f39f39e4a3a1"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/sample-pid-13325-after-send-60s.command.txt",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/sample-pid-13325-after-send-60s.command.txt",
+        "bytes": 231,
+        "sha256": "40e4ff277c4d36ce037d0ca21fb1b16633f9fbc6c6c8ec1e0408c67b21783155"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/sample-pid-13325-after-send-60s.txt",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/sample-pid-13325-after-send-60s.txt",
+        "bytes": 181003,
+        "sha256": "9ed82bd862af6edfc0477910a30f5b0e424d74e87d075cfdea0ea6c7f6bc10a6"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/source-sha256.txt",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/source-sha256.txt",
+        "bytes": 307,
+        "sha256": "b3d4d8e45fe087e6cdc31d8bf8d1b0403f18e029c3a7c6c84cd9bfc545a525e4"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/swift.txt",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/swift.txt",
+        "bytes": 98,
+        "sha256": "b674f79b747370a1c05ae7cec551fffe557816c6c807f35f39f933ecbcca80d7"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/test-summary.json",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/test-summary.json",
+        "bytes": 8792,
+        "sha256": "67b732935c13df59fdf448d346be758ada979ed862ae1dc1c726666dc6111f16"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/test.log",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/test.log",
+        "bytes": 32358,
+        "sha256": "4a553d38507264a7130e24140207281a843ff01632d8a5ea2ca37e674a4b2418"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/thread-source-diff.patch",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/thread-source-diff.patch",
+        "bytes": 987,
+        "sha256": "526e09e204498b1f027ee7e9f3be53729515db8b430076dee131d22057958290"
+      },
+      {
+        "path": "build/native-thread2-experiment-38321617525/xcode.txt",
+        "archiveMember": "native-diagnostics/build/native-thread2-experiment-38321617525/xcode.txt",
+        "bytes": 32,
+        "sha256": "18730ed2ae28a2c9cf0c2d5db549033a4f07089331391a7133b7b32187454fa9"
+      },
+      {
+        "path": "build/simulator-production-candidate/HarbourUITests.swift.base",
+        "archiveMember": "native-diagnostics/build/simulator-production-candidate/HarbourUITests.swift.base",
+        "bytes": 110096,
+        "sha256": "d8ed0d56973d8489e5575f13e6149258a11cadb4452f32c23a6fb02f8115c02b"
+      },
+      {
+        "path": "build/simulator-production-candidate/HarbourUITests.swift.candidate",
+        "archiveMember": "native-diagnostics/build/simulator-production-candidate/HarbourUITests.swift.candidate",
+        "bytes": 110412,
+        "sha256": "c486417dc955d62d8bea48430927e806258b0073ce88b68de0beabba6654d603"
+      },
+      {
+        "path": "build/simulator-production-candidate/LocalModel.swift.base",
+        "archiveMember": "native-diagnostics/build/simulator-production-candidate/LocalModel.swift.base",
+        "bytes": 6794,
+        "sha256": "ef14e21cc02a8b5303436028ec13ca90a03145f364c60d49d01dae542dc4ed53"
+      },
+      {
+        "path": "build/simulator-production-candidate/LocalModel.swift.candidate",
+        "archiveMember": "native-diagnostics/build/simulator-production-candidate/LocalModel.swift.candidate",
+        "bytes": 6953,
+        "sha256": "6d40375c78b5e25625a09ea61472fe2a4af6f8e970a9c6f4735cba9c4d731d47"
+      },
+      {
+        "path": "build/simulator-production-candidate/manifest-before-comment.json",
+        "archiveMember": "native-diagnostics/build/simulator-production-candidate/manifest-before-comment.json",
+        "bytes": 1399,
+        "sha256": "793ae3e286dafdf67cf74bcd6adeec80e49abef6019fe2ac303787f7f6a62b3c"
+      },
+      {
+        "path": "build/simulator-production-candidate/manifest.json",
+        "archiveMember": "native-diagnostics/build/simulator-production-candidate/manifest.json",
+        "bytes": 1399,
+        "sha256": "7b075650bd803cf6920fa028bf3dfa808c995ccc3bd9736e00d8ddee61bbaeef"
+      },
+      {
+        "path": "build/simulator-production-candidate/production-candidate-before-comment.patch",
+        "archiveMember": "native-diagnostics/build/simulator-production-candidate/production-candidate-before-comment.patch",
+        "bytes": 2470,
+        "sha256": "afc2b15ab02ca7611e56f9e7443d8ba00bcf0fc78b4cdad6e4ab603cf3101922"
+      },
+      {
+        "path": "build/simulator-production-candidate/production-candidate.patch",
+        "archiveMember": "native-diagnostics/build/simulator-production-candidate/production-candidate.patch",
+        "bytes": 2540,
+        "sha256": "714b9217d5bdea43bf15e67248ac1d7ab6b16f9cfa947d66c7d3a7408727fc6f"
+      },
+      {
+        "path": "build/xcresult-diagnostics-38312138417/b10549-logits-evidence.md",
+        "archiveMember": "native-diagnostics/build/xcresult-diagnostics-38312138417/b10549-logits-evidence.md",
+        "bytes": 3050,
+        "sha256": "d102461bdc43f63a735b00b6eaffcecda9e6636c03aa8f3de09f0b78f0accee0"
+      },
+      {
+        "path": "build/xcresult-diagnostics-38312138417/b10549-output-capacity-evidence.md",
+        "archiveMember": "native-diagnostics/build/xcresult-diagnostics-38312138417/b10549-output-capacity-evidence.md",
+        "bytes": 2249,
+        "sha256": "3e3ff034dce63af0b4f2c3f2ba7e52b205b3c53f16a080c163b4a735ab0ecb45"
+      },
+      {
+        "path": "build/xcresult-diagnostics-38312138417/current3b-diagnostic/analyze-route.py",
+        "archiveMember": "native-diagnostics/build/xcresult-diagnostics-38312138417/current3b-diagnostic/analyze-route.py",
+        "bytes": 11034,
+        "sha256": "26854bd53bc6a16086f31f5ccf51c51b247796f5733f867e9ebbe744e9d0f390"
+      },
+      {
+        "path": "build/xcresult-diagnostics-38312138417/current3b-diagnostic/ChatView.swift.route",
+        "archiveMember": "native-diagnostics/build/xcresult-diagnostics-38312138417/current3b-diagnostic/ChatView.swift.route",
+        "bytes": 28672,
+        "sha256": "9da7a0f75d16c9685ecfc058c5595dc6f635250c18cad5be7d3435de74571765"
+      },
+      {
+        "path": "build/xcresult-diagnostics-38312138417/current3b-diagnostic/HarbourApp.swift.route",
+        "archiveMember": "native-diagnostics/build/xcresult-diagnostics-38312138417/current3b-diagnostic/HarbourApp.swift.route",
+        "bytes": 16949,
+        "sha256": "19e25da013388f00faa216873fc43145dd6dcd881e62e6a123f601aa53c3a712"
+      },
+      {
+        "path": "build/xcresult-diagnostics-38312138417/current3b-diagnostic/HarbourUITests.swift.route",
+        "archiveMember": "native-diagnostics/build/xcresult-diagnostics-38312138417/current3b-diagnostic/HarbourUITests.swift.route",
+        "bytes": 110412,
+        "sha256": "c486417dc955d62d8bea48430927e806258b0073ce88b68de0beabba6654d603"
+      },
+      {
+        "path": "build/xcresult-diagnostics-38312138417/current3b-diagnostic/LocalModel.swift.route",
+        "archiveMember": "native-diagnostics/build/xcresult-diagnostics-38312138417/current3b-diagnostic/LocalModel.swift.route",
+        "bytes": 10311,
+        "sha256": "8cbb02e2932f3e5778c669aa7d0f39e722cee70c0728cba381040b134e4af90f"
+      },
+      {
+        "path": "build/xcresult-diagnostics-38312138417/current3b-diagnostic/ModelManager.swift.route",
+        "archiveMember": "native-diagnostics/build/xcresult-diagnostics-38312138417/current3b-diagnostic/ModelManager.swift.route",
+        "bytes": 14536,
+        "sha256": "84d9799d8f324681c4c67cc961f4000674cd85d15e5d2ef2b16149792379d014"
+      },
+      {
+        "path": "build/xcresult-diagnostics-38312138417/current3b-diagnostic/prepare-production-candidate.py",
+        "archiveMember": "native-diagnostics/build/xcresult-diagnostics-38312138417/current3b-diagnostic/prepare-production-candidate.py",
+        "bytes": 4319,
+        "sha256": "58a23e60f1b0d32ddb0c4964eec0b0ec4110eb6ee2d40f77d6dd9cbfcab1403f"
+      },
+      {
+        "path": "build/xcresult-diagnostics-38312138417/current3b-diagnostic/prepare-route.py",
+        "archiveMember": "native-diagnostics/build/xcresult-diagnostics-38312138417/current3b-diagnostic/prepare-route.py",
+        "bytes": 9473,
+        "sha256": "c6e9b30c7e4684bf7bbbec50d27602262fdf86d8e361b1993f5628bee98e9260"
+      },
+      {
+        "path": "build/xcresult-diagnostics-38312138417/current3b-diagnostic/setup-failure-38330659900.log",
+        "archiveMember": "native-diagnostics/build/xcresult-diagnostics-38312138417/current3b-diagnostic/setup-failure-38330659900.log",
+        "bytes": 3008,
+        "sha256": "43e08f9878f920e43ea3875180f10ca6c0eb49ab1d297cd48422893cd1cd57c8"
+      },
+      {
+        "path": "build/xcresult-diagnostics-38312138417/current3b-diagnostic/temporary-xcresult-diagnostics.yml.route",
+        "archiveMember": "native-diagnostics/build/xcresult-diagnostics-38312138417/current3b-diagnostic/temporary-xcresult-diagnostics.yml.route",
+        "bytes": 17364,
+        "sha256": "06876adfc410a74f95618699dd1a31e753f52ff85fc8443381bf7b387008b180"
+      },
+      {
+        "path": "build/xcresult-diagnostics-38312138417/no-repack-api-evidence.md",
+        "archiveMember": "native-diagnostics/build/xcresult-diagnostics-38312138417/no-repack-api-evidence.md",
+        "bytes": 3302,
+        "sha256": "ba167f1039fd08e7774fefe26f5bc5b38bfc63c17eeaf4e7f9b6c4aee4b494f8"
+      }
+    ],
+    "additionalReviewerProof": "native-diagnostics/production-candidate-independent-review.json",
+    "externalArtifactsNotRetained": [
+      {
+        "kind": "temporary-native-inference-sampling",
+        "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11778438427/zip",
+        "runURL": "https://github.com/harbour-health/harbour/actions/runs/38319791371",
+        "runID": 38319791371,
+        "sha256": "2256a3d024dfe9a3ee04e89544d45189ebecdee1285c4c7001087b8bda2762ca",
+        "sizeBytes": 445147,
+        "expiredAtMetadataCapture": false,
+        "retainedInArchive": false,
+        "scope": "Original artifact ZIP is not a member; selected extracted source/text/metadata is explicitly enumerated in the retained allowlist."
+      },
+      {
+        "kind": "temporary-native-inference-sampling-thread2",
+        "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11779064683/zip",
+        "runURL": "https://github.com/harbour-health/harbour/actions/runs/38321617525",
+        "runID": 38321617525,
+        "sha256": "9e483eaabd48cdaa90f4a89a3227957866d68ae088e60e5384d7c7a8fca48609",
+        "sizeBytes": 339062,
+        "expiredAtMetadataCapture": false,
+        "retainedInArchive": false,
+        "scope": "Original artifact ZIP is not a member; selected extracted source/text/metadata is explicitly enumerated in the retained allowlist."
+      },
+      {
+        "kind": "temporary-native-inference-sampling-thread2-micro128",
+        "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11780740271/zip",
+        "runURL": "https://github.com/harbour-health/harbour/actions/runs/38323576340",
+        "runID": 38323576340,
+        "sha256": "1543b49797f13b6771afecdef1d80792864920a422997bb6aff6aad8d08ca3bd",
+        "sizeBytes": 422094,
+        "expiredAtMetadataCapture": false,
+        "retainedInArchive": false,
+        "scope": "Original artifact ZIP is not a member; selected extracted source/text/metadata is explicitly enumerated in the retained allowlist."
+      },
+      {
+        "kind": "temporary-native-inference-phase-diagnostic",
+        "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11780169298/zip",
+        "runURL": "https://github.com/harbour-health/harbour/actions/runs/38325138101",
+        "runID": 38325138101,
+        "sha256": "68a4d84c721009c1a23aeeca9090a51416ea77b210a331af72f1ff2bb3472dd8",
+        "sizeBytes": 468951,
+        "expiredAtMetadataCapture": false,
+        "retainedInArchive": false,
+        "scope": "Original artifact ZIP is not a member; selected extracted source/text/metadata is explicitly enumerated in the retained allowlist."
+      },
+      {
+        "kind": "temporary-native-no-repack-phase-experiment",
+        "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11781801097/zip",
+        "runURL": "https://github.com/harbour-health/harbour/actions/runs/38327029721",
+        "runID": 38327029721,
+        "sha256": "11611e4572f59d1311a6ebe3188c6c12192ba97fe0b76e0c8a3bf52ae009f0e9",
+        "sizeBytes": 173205,
+        "expiredAtMetadataCapture": false,
+        "retainedInArchive": false,
+        "scope": "Original artifact ZIP is not a member; selected extracted source/text/metadata is explicitly enumerated in the retained allowlist."
+      },
+      {
+        "kind": "temporary-native-no-repack-phase-repeat",
+        "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11782048913/zip",
+        "runURL": "https://github.com/harbour-health/harbour/actions/runs/38328365916",
+        "runID": 38328365916,
+        "sha256": "0dbc0713507579b2c86ae026eb712522bd800b7acd191e38e781e17ea66bd016",
+        "sizeBytes": 396003,
+        "expiredAtMetadataCapture": false,
+        "retainedInArchive": false,
+        "scope": "Original artifact ZIP is not a member; selected extracted source/text/metadata is explicitly enumerated in the retained allowlist."
+      },
+      {
+        "kind": "temporary-current3b-enfr-original-xcresult",
+        "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11782798703/zip",
+        "runURL": "https://github.com/harbour-health/harbour/actions/runs/38330793069",
+        "runID": 38330793069,
+        "sha256": "67f5d5651125ad913f0579766b3b77af2b7237c673854e499212bde8c544f40b",
+        "sizeBytes": 130135118,
+        "expiredAtMetadataCapture": false,
+        "retainedInArchive": false,
+        "scope": "Original artifact ZIP is not a member; selected extracted source/text/metadata is explicitly enumerated in the retained allowlist."
+      },
+      {
+        "kind": "temporary-current3b-enfr-phase-status",
+        "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11782698837/zip",
+        "runURL": "https://github.com/harbour-health/harbour/actions/runs/38330793069",
+        "runID": 38330793069,
+        "sha256": "4ed6695d59ca3e73b10bb95636cacc4d45657adc26269ffbe9693341c58d7f53",
+        "sizeBytes": 5529,
+        "expiredAtMetadataCapture": false,
+        "retainedInArchive": false,
+        "scope": "Original artifact ZIP is not a member; selected extracted source/text/metadata is explicitly enumerated in the retained allowlist."
+      },
+      {
+        "kind": "temporary-current3b-enfr-no-repack-diagnostic",
+        "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11782664107/zip",
+        "runURL": "https://github.com/harbour-health/harbour/actions/runs/38330793069",
+        "runID": 38330793069,
+        "sha256": "c8a52c78f1317ac9e3ff98c017fa180bab8b70269a588f2336eeee66ee2d3b6b",
+        "sizeBytes": 1327541,
+        "expiredAtMetadataCapture": false,
+        "retainedInArchive": false,
+        "scope": "Original artifact ZIP is not a member; selected extracted source/text/metadata is explicitly enumerated in the retained allowlist."
+      },
+      {
+        "kind": "temporary-current3b-enfr-route-diagnostic",
+        "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11784711164/zip",
+        "runURL": "https://github.com/harbour-health/harbour/actions/runs/38334171561",
+        "runID": 38334171561,
+        "sha256": "fe1431d8173ecf1b35e55ed3e905bc7a5b3b7efdba05b43ecc0ca92f91f25cab",
+        "sizeBytes": 2188018,
+        "expiredAtMetadataCapture": false,
+        "retainedInArchive": false,
+        "scope": "Original artifact ZIP is not a member; selected extracted source/text/metadata is explicitly enumerated in the retained allowlist."
+      },
+      {
+        "kind": "temporary-current3b-enfr-route-original-xcresult",
+        "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11784501464/zip",
+        "runURL": "https://github.com/harbour-health/harbour/actions/runs/38334171561",
+        "runID": 38334171561,
+        "sha256": "7a65e8460cf850f005c95cef465e2e10878ecdd0afd79d67919f4f65bd263667",
+        "sizeBytes": 69489242,
+        "expiredAtMetadataCapture": false,
+        "retainedInArchive": false,
+        "scope": "Original artifact ZIP is not a member; selected extracted source/text/metadata is explicitly enumerated in the retained allowlist."
+      },
+      {
+        "kind": "temporary-current3b-enfr-route-phase-status",
+        "url": "https://api.github.com/repos/harbour-health/harbour/actions/artifacts/11784386703/zip",
+        "runURL": "https://github.com/harbour-health/harbour/actions/runs/38334171561",
+        "runID": 38334171561,
+        "sha256": "a0f52633026ed1cc67e407fcfe415f6751cd97f3cf95440ded6eb459844210e8",
+        "sizeBytes": 6226,
+        "expiredAtMetadataCapture": false,
+        "retainedInArchive": false,
+        "scope": "Original artifact ZIP is not a member; selected extracted source/text/metadata is explicitly enumerated in the retained allowlist."
+      }
+    ],
+    "excludedButPreservedLocally": "Full original XCResult bundles, raw C stderr console exports and build logs remain in their original downloaded local directories; archive contents do not claim to include them. Their GitHub artifact provenance and downloaded-file SHA manifests are retained where available.",
+    "pendingProofAtAllowlistCapture": {
+      "productionHEAD": "8b29359e87a6e2f24f3e2fc7dcacc6d3d46798c2",
+      "nativeRun": 38336438687,
+      "standardRun": 38336438685,
+      "status": "Still running; do not describe current7-test production proof as archived or passed."
+    },
+    "scopeLimit": "These records capture eight isolated diagnostic runs and pending production8b run references; no live8b log/success or final-source xtool proof is included."
+  },
+  "limits": [
+    "Q6 comparisonAccepted is exact prompt/input parity only, not response-quality acceptance; six development answers do not justify a default/gate waiver.",
+    "Source-literal constrained medication fields are app pipeline evidence; raw follow-up omissions and source-invalid proposals stay failed even with Core recovery.",
+    "All qualitative labels are AI review of synthetic cases, not clinician/human subject-matter labels.",
+    "Native diagnostic scope/source/settings must be read from retained records; no final-source device/full UI success is inferred.",
+    "Full finalDEV267/current supplementalall3 and complete heldout/device matrices are outside this archive."
+  ]
+}
