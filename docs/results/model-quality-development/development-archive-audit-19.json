@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "createdUTC": "2026-10-13T12:06:10.326048+00:00",
+  "result": "PASS",
+  "archive": {
+    "path": "build/model-quality/archive-development-19/development-evidence-19.zip",
+    "bytes": 445859,
+    "sha256": "77c44c435552002131873a750b610e58a4f0f1fe1130c125b2f960e030539d1a"
+  },
+  "summary": {
+    "path": "build/model-quality/archive-development-19/summary-19.json",
+    "bytes": 967,
+    "sha256": "c676c1a948ca480547de451ec52c72c9781ea45ecd30d4f6ee0f19e7b8b64e26"
+  },
+  "manifestSHA256": "e48bc0081e7da41b59ff9d6088e9f710eb358a0e86e9aa3feb79ca6d476b66cc",
+  "members": 25,
+  "evidenceFiles": 24,
+  "CRCAndEveryMemberHashVerified": true,
+  "sourceCommit": "740a797ffcd7f15c9a21c8db8f86d729a362b863",
+  "sourceInventoryFiles": 133,
+  "sourceIdentitySHA256": "124682519a119c73d7db451393dd7b8f083f1b24e844634478c17f7ee0e7d11e",
+  "archiveMaterializedBytesAndRawGitCRLFEquivalenceVerified": true,
+  "Core": {
+    "executedTests": 210,
+    "failedAssertions": 13,
+    "failedMethods": 4,
+    "exitCode": 1
+  },
+  "failedMethods": [
+    "ReplyFallbackTests.testExplicitSavedQuestionsOpenExactSourceDraftsAfterRouting",
+    "ReplyFallbackTests.testQuotedHistoryAndOrdinaryRecordQuestionsDoNotBecomeComparisons",
+    "VisitHistoryGroundingTests.testCurrentContinuedDirectionsCanReferToWhenTreatmentBegan",
+    "VisitSourceGroundingTests.testMedicineDirectionsKeepEverySourceDoseFrequencyClockAndQualifierForTheirOwnMedicine"
+  ],
+  "all13PreservedErrorLinesMatchOriginalLog": true,
+  "laterDependentGatesNotExecuted": [
+    "Runtime tests",
+    "native diagnostics",
+    "Python tests",
+    "localization audit",
+    "xtool build",
+    "source12 DEV or supplemental",
+    "heldout"
+  ],
+  "sourceInventoryIsBroaderThanCompilerInputs": true,
+  "privateHostReferencesFound": false,
+  "weightsBinariesFullXcresultAndModelOutputsExcluded": true,
+  "priorArchivesUnchangedSHA256": {
+    "01": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091",
+    "02": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a",
+    "03": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e",
+    "04": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9",
+    "05": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571",
+    "06": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da",
+    "07": "b36dd12db0892e89f8d8c1f2672462d9212a71f016076b9beeca0a51a22c6529",
+    "08": "8997676469921003a6e4a112e3c120317382cc562cc5150f3646d4869b524a10",
+    "09": "7da96637ba2b134a309905cb97e908427408125c3d7bf13704503eabd7e4f688",
+    "10": "ad796f1d76199ad8dd613bbb1f36d4ed05cc2178483d4e1dd23375f506de31f7",
+    "11": "7ef4c58f54f264df70b1b1ddd0e42baa108a16d1a0862e9c5a14e5666bf23108",
+    "12": "e1f44ecd97238f68a6f3e9a3929230059082ae1fdaf69f13d24aa6feb7d64269",
+    "13": "ed487a3e47a7a5ef31c9b21ec72dd3580c157bd25835bc517e26382c3c325810",
+    "14": "41710bf12bf2b1854fb7ec16114c2bbc1b76c7104b350db114b9bd89d89c2796",
+    "15": "ca624ec881a7328f0de79d60f65938887e00e008f15f2af996173cc0377372da",
+    "16": "458aec2324ebc5b6e4ee5ad60e9d3d77ef9377325dc29e409e90d3f024480497",
+    "17": "d6893ec122d0da780a963db896c7cd608f079c95bbd6eaecbd7cfdfa5fca0a9e",
+    "18": "34655ede26a5241d2a37b94f37085c9f966888bcb632a3c988b016022fe84a6a"
+  },
+  "scope": "Failed source12 Core evidence and preparation only; no passed gate, quality, freeze or held-out result is implied.",
+  "noTestsCompilerScorerModelCaptureNetworkGitMutationOrHeldoutSemanticReview": true,
+  "auditorOnlyInitialFailure": {
+    "scope": "Initial auditor assumed summary-01.json; archive01 actually uses summary.json. The failure occurred before writing an audit receipt. The unchanged archive/evidence passed all checks preceding that path lookup.",
+    "originalHelper": {
+      "path": "build/model-quality/audit-source12-failure-archive19-independent-initial.py",
+      "bytes": 9384,
+      "sha256": "298892ed45b69513a83e09aaf1d30bdd1310cf2917e43e49ad831dd52271301e"
+    },
+    "originalToolObservation": "FileNotFoundError for docs/results/model-quality-development/summary-01.json",
+    "correction": "Select summary.json for archive01 only; no archive, source, test or review bytes changed."
+  },
+  "auditHelperSHA256": "05c3dcbc6d79319a613b20d2b3bd6c8eb8b79a289c9fc9b8902064eefb133d47"
+}

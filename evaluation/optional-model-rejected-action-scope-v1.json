@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "registeredUTC": "2026-10-13T14:18:36Z",
+  "baselineCommit": "fddbac203ee03f8e5470da6867da939bddd188ac",
+  "scope": "Application clarification after a parsed nonreply action fails source validation, following all existing source-specific recoveries.",
+  "trigger": "Only a validation exception for a parsed nonreply decision sets rejectedAction. A reply route, malformed routing, cancellation or generation error does not set it.",
+  "priority": "Existing interaction evidence, saved-question/reminder/reading/symptom drafts and preservation acknowledgements retain priority and their existing review/save requirements.",
+  "disposition": {
+    "tool": "reply",
+    "reason": "rejected_action_clarification",
+    "origin": "application",
+    "english": "I couldn’t prepare that action from your message. Please rephrase it or use the Records tab.",
+    "french": "Je n’ai pas pu préparer cette action à partir de votre message. Reformulez votre demande ou utilisez l’onglet Dossier."
+  },
+  "provenance": "Raw route, tool and validation failure stay unchanged in ModelEval and ModelProbe. The effective reply and applicationDecision are recorded separately. No model prose is generated for this clarification; it earns no raw routing, prose or independent extraction credit.",
+  "language": "The app passes its current language to both source validation and the fallback disposition.",
+  "limitations": [
+    "An ordinary reply route without existing source-specific recovery still generates model prose.",
+    "This scope records behavior to validate, not passed correctness, model quality, device performance or release results."
+  ],
+  "unchangedRequirements": [
+    "All 21 routing alternatives remain available.",
+    "Source validators, model prompts, assets, generation budgets, sampler and Automatic default are unchanged by this amendment.",
+    "Frozen fixtures, scorer, qualitative criteria and original default-promotion gate remain unchanged.",
+    "Revised-source correctness, app/build evidence and complete paired model evaluations and reviews remain required before Ready."
+  ]
+}

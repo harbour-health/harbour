@@ -465,4 +465,84 @@ final class ReplyFallbackTests: XCTestCase {
         XCTAssertThrowsError(try ToolPlanner.parse("not a routing object"))
         XCTAssertEqual(records, Evaluation.records)
     }
+
+    func testRejectedNonreplyActionsGetApplicationClarificationWithoutSourceOrModelFacts() throws {
+        let records = Evaluation.records
+        let cases: [(Tool, String, ModelLanguage)] = [
+            (.addMedicine, "I have taken Metformin.", .english),
+            (.addMedicine, "Je prends metformine chaque jour.", .french),
+            (.addMedicine, "Add the unnamed tablet to my list.", .english),
+            (.addMedicine, "Ajoute le comprimé sans nom à ma liste.", .french),
+            (.addMedicine, #"The note says "Add Metformin.""#, .english),
+            (.addMedicine, "La note dit « Ajoute metformine. »", .french),
+            (.addMedicine, "Suppose I start Metformin.", .english),
+            (.addMedicine, "Si je commence metformine, ajoute-la.", .french),
+            (.addMedicine, "Do not add Metformin; show my readings.", .english),
+            (.addMedicine, "N'ajoute pas metformine; affiche mes mesures.", .french),
+            (.logReading, "Log my pulse of 999.", .english),
+            (.logReading, "Enregistre ma température de 99 °C.", .french)
+        ]
+        for (tool, input, language) in cases {
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: tool), original: input, records: records, language: language), input)
+            XCTAssertNil(ToolPlanner.replyFallback(original: input, records: records, language: language), input)
+            XCTAssertNil(ToolPlanner.replyFallback(original: input, records: records, language: language, rejectedAction: false), input)
+            let expected = language == .french
+                ? "Je n’ai pas pu préparer cette action à partir de votre message. Reformulez votre demande ou utilisez l’onglet Dossier."
+                : "I couldn’t prepare that action from your message. Please rephrase it or use the Records tab."
+            let fallback = try XCTUnwrap(ToolPlanner.replyFallback(original: input, records: records, language: language, rejectedAction: true), input)
+            XCTAssertEqual(fallback.reason, "rejected_action_clarification", input)
+            XCTAssertEqual(fallback.decision, .init(tool: .reply, arg: expected), input)
+            XCTAssertEqual(fallback.action, .reply(expected), input)
+            XCTAssertEqual(try ToolPlanner.validate(fallback.decision, original: input, records: records, language: language), .reply(expected), input)
+        }
+        XCTAssertEqual(records, Evaluation.records)
+        XCTAssertThrowsError(try ToolPlanner.parse("not a routing object"))
+    }
+
+    func testRejectedActionClarificationKeepsSourceRecoveryPriorityAndOrdinaryReplyContracts() throws {
+        let records = Evaluation.records
+        let cases: [(String, ModelLanguage, Tool, String)] = [
+            ("Save this question: Should I bring my notes?", .english, .saveQuestion, "question_draft"),
+            ("Enregistre cette question : Dois-je apporter mes notes?", .french, .saveQuestion, "question_draft"),
+            ("Remind me to call the clinic.", .english, .createReminder, "reminder_draft"),
+            ("Rappelle-moi d'appeler la clinique.", .french, .createReminder, "reminder_draft"),
+            ("Can I take aspirin and warfarin together?", .english, .interactions, "interaction_evidence"),
+            ("Puis-je prendre aspirine et warfarine ensemble?", .french, .interactions, "interaction_evidence"),
+            ("Can I take an unknown pill with aspirin?", .english, .reply, "interaction_names_required"),
+            ("Puis-je prendre un comprimé inconnu avec aspirine?", .french, .reply, "interaction_names_required"),
+            ("Leave my records unchanged.", .english, .reply, "preservation_ack"),
+            ("Conserve mes données inchangées.", .french, .reply, "preservation_ack"),
+            ("Log my pulse of 81.", .english, .logReading, "reading_draft"),
+            ("Enregistre mon pouls de 81.", .french, .logReading, "reading_draft"),
+            ("My wrist hurts.", .english, .captureSymptom, "symptom_draft"),
+            ("J’ai mal au bras.", .french, .captureSymptom, "symptom_draft")
+        ]
+        for (input, language, tool, reason) in cases {
+            let fallback = try XCTUnwrap(ToolPlanner.replyFallback(original: input, records: records, language: language, rejectedAction: true), input)
+            XCTAssertEqual(fallback.reason, reason, input)
+            XCTAssertEqual(fallback.decision.tool, tool, input)
+            let revalidated = try ToolPlanner.validate(fallback.decision, original: input, records: records, language: language)
+            if case .reading(let draft) = fallback.action {
+                guard case .reading(let repeated) = revalidated else { return XCTFail(input) }
+                XCTAssertEqual(draft.kind, .heartRate, input)
+                XCTAssertEqual(draft.value, "81", input)
+                XCTAssertEqual(repeated.kind, draft.kind, input)
+                XCTAssertEqual(repeated.value, draft.value, input)
+                XCTAssertNotEqual(repeated.id, draft.id, input)
+            } else { XCTAssertEqual(revalidated, fallback.action, input) }
+        }
+        for (input, language) in [("Hello", ModelLanguage.english), ("Bonjour", .french)] {
+            XCTAssertNil(ToolPlanner.replyFallback(original: input, records: records, language: language))
+            XCTAssertNil(ToolPlanner.replyFallback(original: input, records: records, language: language, rejectedAction: false))
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .reply, arg: "A model greeting."), original: input, records: records, language: language), .reply("A model greeting."))
+            for arg in ["", "Reply <|im_end|>", "Reply\0text", String(repeating: "x", count: 4001)] {
+                XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .reply, arg: arg), original: input, records: records, language: language), input)
+            }
+            let prompt = ToolPlanner.prompt(input, records: records)
+            for alternative in Tool.allCases { XCTAssertTrue(prompt.contains(alternative.rawValue)) }
+        }
+        let medicine = records.medicines[0]
+        XCTAssertEqual(try ToolPlanner.validate(.init(tool: .addMedicine), original: "Add Metformin.", records: records), .add(medicine, [], nil))
+        XCTAssertEqual(try ToolPlanner.validate(.init(tool: .logDose), original: "I took Metformin.", records: records), .dose(medicine, .taken))
+    }
 }

@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "archiveVersion": "21",
+  "createdUTC": "2026-10-13T12:58:59.292554+00:00",
+  "sourceHead": "fddbac203ee03f8e5470da6867da939bddd188ac",
+  "scope": "Completed original fddbac2 PR run_attempt1 CI split only: Standard38395863163 PASS11UI/23hosted+1skip; Native38395863229 FAIL6of7UI/24hosted+1skip. Both Core210/Runtime21. The failed English record-category tap precedes the final preservation assertion; its cause is unknown. No repeat result, complete Native pass, model-quality, final freeze, heldout, device or readiness result.",
+  "archive": "development-evidence-21.zip",
+  "archiveSHA256": "1441d450a17e33dba68a38e8accaa754e682316fddaa39016351fac50f9819d6",
+  "archiveBytes": 13727885,
+  "manifestSHA256": "af4c041633697503a5204192447e4dda28772d53dfe4eb98eebec93dc0a91ac2",
+  "evidenceFiles": 123,
+  "memberCount": 124,
+  "allowlistSHA256": "e75fad94d4ea0c378b1cfa90800030d698a0ab4b3aeea74ab0d1006a9d459712",
+  "preflightSHA256": "72a842800d35f58ee23353f3ff679339d5cdc611f067b810e9eb01fb23310de3",
+  "builderSHA256": "78f9574ad77cd2b1c2e2a1bcd07640c2f0b90c41ed1e1df4be24e884bdb42b28",
+  "primaryCompactOriginals": 94,
+  "primaryOriginalSelection": 95,
+  "compactExactXCResultOriginalCopies": 4,
+  "originalRuns": {
+    "standard": {
+      "runID": 38395863163,
+      "conclusion": "success",
+      "counts": {
+        "hosted": {
+          "total": 24,
+          "passed": 23,
+          "failed": 0,
+          "skipped": 1
+        },
+        "UI": {
+          "total": 11,
+          "passed": 11,
+          "failed": 0,
+          "skipped": 0
+        }
+      }
+    },
+    "native": {
+      "runID": 38395863229,
+      "conclusion": "failure",
+      "counts": {
+        "hosted": {
+          "total": 25,
+          "passed": 24,
+          "failed": 0,
+          "skipped": 1
+        },
+        "UI": {
+          "total": 7,
+          "passed": 6,
+          "failed": 1,
+          "skipped": 0
+        }
+      }
+    }
+  },
+  "CorePerRun": 210,
+  "RuntimePerRun": 21,
+  "privacyDerivativeCount": 0,
+  "CRCAndAllMemberHashesVerified": true,
+  "priorArchivesUnchanged": true,
+  "previousArchivesUnchangedSHA256": {
+    "docs/results/model-quality-development/development-evidence-01.zip": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091",
+    "docs/results/model-quality-development/development-evidence-02.zip": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a",
+    "docs/results/model-quality-development/development-evidence-03.zip": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e",
+    "docs/results/model-quality-development/development-evidence-04.zip": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9",
+    "docs/results/model-quality-development/development-evidence-05.zip": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571",
+    "docs/results/model-quality-development/development-evidence-06.zip": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da",
+    "docs/results/model-quality-development/development-evidence-07.zip": "b36dd12db0892e89f8d8c1f2672462d9212a71f016076b9beeca0a51a22c6529",
+    "docs/results/model-quality-development/development-evidence-08.zip": "8997676469921003a6e4a112e3c120317382cc562cc5150f3646d4869b524a10",
+    "docs/results/model-quality-development/development-evidence-09.zip": "7da96637ba2b134a309905cb97e908427408125c3d7bf13704503eabd7e4f688",
+    "docs/results/model-quality-development/development-evidence-10.zip": "ad796f1d76199ad8dd613bbb1f36d4ed05cc2178483d4e1dd23375f506de31f7",
+    "docs/results/model-quality-development/development-evidence-11.zip": "7ef4c58f54f264df70b1b1ddd0e42baa108a16d1a0862e9c5a14e5666bf23108",
+    "docs/results/model-quality-development/development-evidence-12.zip": "e1f44ecd97238f68a6f3e9a3929230059082ae1fdaf69f13d24aa6feb7d64269",
+    "docs/results/model-quality-development/development-evidence-13.zip": "ed487a3e47a7a5ef31c9b21ec72dd3580c157bd25835bc517e26382c3c325810",
+    "docs/results/model-quality-development/development-evidence-14.zip": "41710bf12bf2b1854fb7ec16114c2bbc1b76c7104b350db114b9bd89d89c2796",
+    "docs/results/model-quality-development/development-evidence-15.zip": "ca624ec881a7328f0de79d60f65938887e00e008f15f2af996173cc0377372da",
+    "docs/results/model-quality-development/development-evidence-16.zip": "458aec2324ebc5b6e4ee5ad60e9d3d77ef9377325dc29e409e90d3f024480497",
+    "docs/results/model-quality-development/development-evidence-17.zip": "d6893ec122d0da780a963db896c7cd608f079c95bbd6eaecbd7cfdfa5fca0a9e",
+    "docs/results/model-quality-development/development-evidence-18.zip": "34655ede26a5241d2a37b94f37085c9f966888bcb632a3c988b016022fe84a6a",
+    "docs/results/model-quality-development/development-evidence-19.zip": "77c44c435552002131873a750b610e58a4f0f1fe1130c125b2f960e030539d1a",
+    "docs/results/model-quality-development/development-evidence-20.zip": "6f1390b63d1a40ca44fbe4fe86134f3e1310bf85c95db5acdf9cc380a7b40801"
+  },
+  "fullNativePassed": false,
+  "releaseEvidence": false,
+  "independentArchiveAuditPending": true
+}

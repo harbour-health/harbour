@@ -220,14 +220,15 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                             result.routeSeconds = Date().timeIntervalSince(routeStart); result.routeOutput = raw
                             let decision = try ToolPlanner.parse(raw); result.observedTool = decision.tool.rawValue
                             var action: ValidatedAction?
+                            var rejectedAction = false
                             if decision.tool != .reply {
                                 do { action = try ToolPlanner.validate(decision, original: fixture.input, records: records, language: fixture.language); result.actionValidationSucceeded = true }
-                                catch { result.actionValidationSucceeded = false; result.fallbackUsed = true; result.fallbackReason = "invalid_action"; result.validationError = error.localizedDescription }
+                                catch { rejectedAction = true; result.actionValidationSucceeded = false; result.fallbackUsed = true; result.fallbackReason = "invalid_action"; result.validationError = error.localizedDescription }
                             }
                             if let action {
                                 result.finalTool = decision.tool.rawValue; result.output = raw; result.actionSummary = actionSummary(action)
                                 result.actionOrigin = "model"
-                            } else if let fallback = ToolPlanner.replyFallback(original: fixture.input, records: records, language: fixture.language) {
+                            } else if let fallback = ToolPlanner.replyFallback(original: fixture.input, records: records, language: fixture.language, rejectedAction: rejectedAction) {
                                 // Retain the raw model route. The effective action is application evidence,
                                 // not a corrected routing prediction or generated prose.
                                 result.output = raw; result.finalTool = fallback.decision.tool.rawValue

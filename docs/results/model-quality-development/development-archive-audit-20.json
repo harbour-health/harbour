@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "recordedUTC": "2026-10-13T12:36:34.680592+00:00",
+  "result": "PASS",
+  "sourceCommit": "fddbac203ee03f8e5470da6867da939bddd188ac",
+  "archiveSHA256": "6f1390b63d1a40ca44fbe4fe86134f3e1310bf85c95db5acdf9cc380a7b40801",
+  "members": 153,
+  "evidenceFiles": 152,
+  "CRCAndEveryMemberHashVerified": true,
+  "sourceCaptures": {
+    "local": 133,
+    "xtool": 130,
+    "commonByteExact": 130,
+    "packageImportsByteExact": 48
+  },
+  "localTests": {
+    "Core": 210,
+    "Runtime": 21,
+    "nativeGrammarContext": 159,
+    "Python": 60,
+    "localizationKeys": 598
+  },
+  "xtoolBundleFiles": 25,
+  "importedTestsNotRerun": true,
+  "privacyDerivativesBoundToUnchangedOriginals": 8,
+  "originalAllowlistAndOneLFDerivativePreserved": true,
+  "priorArchives01Through19Unchanged": true,
+  "scope": "Completed corrected-source13 local and xtool evidence only; no app-CI, model-quality, final-freeze, heldout, physical-device or release result.",
+  "auditHelperSHA256": "a250820c097a637a4a6ac01602e0c1bc185622db5440ed9e2da76cc7aca9199b"
+}

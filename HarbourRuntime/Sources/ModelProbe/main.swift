@@ -108,11 +108,12 @@ private struct ProbeResult: Codable {
                 result.rawOutput = try await runtime.generate(file: file, prompt: routingPrompt, grammar: grammar, promptFormat: format)
                 decision = try ToolPlanner.parse(result.rawOutput); result.rawTool = decision?.tool.rawValue
                 var action: ValidatedAction?
+                var rejectedAction = false
                 if let decision, decision.tool != .reply {
                     do { action = try ToolPlanner.validate(decision, original: input, records: records); result.actionValidationSucceeded = true }
-                    catch { result.actionValidationSucceeded = false; result.validationError = error.localizedDescription; result.fallbackUsed = true; result.fallbackReason = "invalid_action" }
+                    catch { rejectedAction = true; result.actionValidationSucceeded = false; result.validationError = error.localizedDescription; result.fallbackUsed = true; result.fallbackReason = "invalid_action" }
                 }
-                if action == nil, let fallback = ToolPlanner.replyFallback(original: input, records: records, language: .english) {
+                if action == nil, let fallback = ToolPlanner.replyFallback(original: input, records: records, language: .english, rejectedAction: rejectedAction) {
                     action = fallback.action; result.fallbackUsed = true; result.fallbackReason = fallback.reason
                     result.actionOrigin = "application"; result.applicationDecision = fallback.decision
                 } else if action == nil {

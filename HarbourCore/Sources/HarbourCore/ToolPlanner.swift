@@ -168,7 +168,17 @@ public enum ToolPlanner {
 
     /// Bound the reply path for explicit current requests. This never narrows the
     /// routing catalog, uses model answer keywords, or infers unnamed medicines.
-    public static func replyFallback(original: String, records: Records, language: ModelLanguage = .english) -> ReplyFallback? {
+    public static func replyFallback(original: String, records: Records, language: ModelLanguage = .english, rejectedAction: Bool = false) -> ReplyFallback? {
+        if let fallback = sourceReplyFallback(original: original, records: records, language: language) { return fallback }
+        // Callers set this only after a parsed nonreply action fails validation.
+        guard rejectedAction else { return nil }
+        let text = language == .french
+            ? "Je n’ai pas pu préparer cette action à partir de votre message. Reformulez votre demande ou utilisez l’onglet Dossier."
+            : "I couldn’t prepare that action from your message. Please rephrase it or use the Records tab."
+        return ReplyFallback(decision: .init(tool: .reply, arg: text), action: .reply(text), reason: "rejected_action_clarification")
+    }
+
+    private static func sourceReplyFallback(original: String, records: Records, language: ModelLanguage) -> ReplyFallback? {
         // Quoted payloads and apostrophes in words have different roles. Only the
         // outer current request can trigger an application response.
         let outer = unquotedRequest(original)

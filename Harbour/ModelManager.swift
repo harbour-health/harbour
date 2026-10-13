@@ -176,9 +176,15 @@ private final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchec
     func chatDecision(_ input: String, hint: String? = nil, records: Records, history: [ConversationTurn] = []) async throws -> ToolDecision {
         let output = try await generate(ToolPlanner.prompt(input, hint: hint, records: records, history: history), allowedTools: ToolPlanner.availableTools.map(\.rawValue), purpose: .routing)
         let decision = try ToolPlanner.parse(output)
-        if decision.tool != .reply, (try? ToolPlanner.validate(decision, original: input, records: records)) != nil { return decision }
-        if let fallback = ToolPlanner.replyFallback(original: input, records: records, language: language) { return fallback.decision }
-        // A tool with missing source facts cannot run. Let the model answer or clarify normally.
+        var rejectedAction = false
+        if decision.tool != .reply {
+            do {
+                _ = try ToolPlanner.validate(decision, original: input, records: records, language: language)
+                return decision
+            } catch { rejectedAction = true }
+        }
+        if let fallback = ToolPlanner.replyFallback(original: input, records: records, language: language, rejectedAction: rejectedAction) { return fallback.decision }
+        // An ordinary reply route retains the model's conversation path.
         try Task.checkCancellation()
         let answer = try await generate(ToolPlanner.conversationPrompt(input, records: records, history: history, language: language, compactProsePolicy: resolved.promptFormat.usesCompactProsePolicy), maxTokens: effort.chatTokens, stopAtJSON: false)
         return ToolDecision(tool: .reply, arg: answer)
