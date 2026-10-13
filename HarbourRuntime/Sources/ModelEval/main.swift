@@ -395,12 +395,13 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                 // the saved-identity branch that an empty baseline cannot use.
                 let requiredStartSource = "Start metformin 500 mg twice daily."
                 let requiredStart = VisitReview.outputGrammar(transcript: requiredStartSource)
-                let requiredStop = VisitReview.outputGrammar(transcript: stop, medicines: Evaluation.records.medicines)
+                let requiredStopSource = "Stop metformin today."
+                let requiredStop = VisitReview.outputGrammar(transcript: requiredStopSource, medicines: Evaluation.records.medicines)
                 tests += [
                     ("source.required-start-empty", requiredStart, summary([]), false),
                     ("source.required-start-grounded", requiredStart, summary([medicine(requiredStartSource, "start", "metformin", "500 mg twice daily")]), true),
                     ("source.required-saved-stop-empty", requiredStop, summary([]), false),
-                    ("source.required-saved-stop-grounded", requiredStop, summary([medicine(stop, "stop", "warfarin", "")]), true),
+                    ("source.required-saved-stop-grounded", requiredStop, summary([medicine(requiredStopSource, "stop", "metformin", "")]), true),
                 ]
             }
             for (id, grammar, text, expected) in tests {
