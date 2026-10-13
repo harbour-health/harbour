@@ -1456,6 +1456,28 @@ import XCTest
     func testEnglishScheduleOpensReview() { schedule(french: false) }
     func testFrenchScheduleOpensReview() { schedule(french: true) }
 
+    private func openPreservedMedicineRecords(_ app: XCUIApplication) -> Bool {
+        let deadline = Date().addingTimeInterval(10)
+        func confirm(_ element: XCUIElement, _ predicate: NSPredicate, _ state: String) -> Bool {
+            let remaining = deadline.timeIntervalSinceNow
+            guard remaining > 0 else {
+                XCTFail("Record navigation deadline expired: " + state + "\n" + app.debugDescription)
+                return false
+            }
+            let result = XCTWaiter.wait(for: [expectation(for: predicate, evaluatedWith: element)], timeout: remaining)
+            XCTAssertEqual(result, .completed, state + "\n" + app.debugDescription)
+            return result == .completed
+        }
+        let records = app.buttons["nav-records"]
+        guard confirm(records, NSPredicate(format: "exists == true AND hittable == true"), "Records tab must be ready before its one tap") else { return false }
+        records.tap()
+        guard confirm(records, NSPredicate(format: "exists == true AND selected == true"), "Records tab must become selected") else { return false }
+        let category = app.buttons["record-category-1"]
+        guard confirm(category, NSPredicate(format: "exists == true AND hittable == true"), "Medication category must be present and ready") else { return false }
+        category.tap()
+        return true
+    }
+
     private func negatedDeletion(french: Bool) {
         let app = launch(french: french)
         send(french ? "Ne supprime pas mes dossiers." : "Do not delete my records.", app: app, french: french)
@@ -1497,8 +1519,7 @@ import XCTest
         for forbidden in ["no access", "cannot access", "can't access", "don't have access", "do not have access", "don't have any access", "pas accès", "aucun accès", "i deleted", "have deleted", "j'ai supprimé", "ont été supprimés"] {
             XCTAssertFalse(forbiddenText.contains(forbidden), raw)
         }
-        app.buttons["nav-records"].tap()
-        app.buttons["record-category-1"].tap()
+        guard openPreservedMedicineRecords(app) else { return }
         XCTAssertTrue(app.staticTexts[french ? "Metformine" : "Metformin"].firstMatch.waitForExistence(timeout: 10))
     }
 
