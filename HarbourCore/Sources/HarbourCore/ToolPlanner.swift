@@ -139,9 +139,10 @@ public enum ToolPlanner {
                 label = "temperature"
                 unit = #"(?:°\s*c|c|degrees? celsius|degres? celsius)"#
             }
-            let value = NSRegularExpression.escapedPattern(for: reading.value)
-                .replacingOccurrences(of: #"\."#, with: "[.,]")
-                .replacingOccurrences(of: "/", with: #"\s*/\s*"#)
+            let value = reading.value.components(separatedBy: "/").map { pressurePart in
+                pressurePart.components(separatedBy: ".").map { NSRegularExpression.escapedPattern(for: $0) }
+                    .joined(separator: "[.,]")
+            }.joined(separator: #"\s*/\s*"#)
             let command = #"(?:save|record|log|enregistre|enregistrez|enregistrer|sauvegarde|sauvegardez|sauvegarder|note|notez|noter|consigne|consignez|consigner)\s+(?:(?:my|the|mon|ma|le|la)\s+)?"#
             let measurement = label + #"(?:\s+(?:of|at|is|de|a|est))?\s*[:=]?\s*"# + value + #"(?:\s*"# + unit + #")?"#
             if matches(input, "^" + courtesy + command + measurement + #"[.!]?\s*$"#) {
