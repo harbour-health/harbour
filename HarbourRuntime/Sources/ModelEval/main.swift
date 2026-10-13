@@ -235,7 +235,7 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                                 result.fallbackUsed = true; result.fallbackReason = fallback.reason
                                 result.actionOrigin = "application"; result.applicationDecision = fallback.decision
                             } else {
-                                replyPrompt = ModelPrompts.localized(ToolPlanner.conversationPrompt(fixture.input, records: records, history: fixture.turns, language: fixture.language), language: fixture.language, purpose: .prose)
+                                replyPrompt = ModelPrompts.localized(ToolPlanner.conversationPrompt(fixture.input, records: records, history: fixture.turns, language: fixture.language, compactProsePolicy: format.usesCompactProsePolicy), language: fixture.language, purpose: .prose)
                                 result.replyBudget = replyBudget
                                 let replyStart = Date()
                                 result.output = try await runtime.generate(file: model, prompt: replyPrompt!, maxTokens: replyBudget, stopAtJSON: false, promptFormat: format)
@@ -246,7 +246,7 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                             }
                             result.validationSucceeded = true
                         case "prose":
-                            prompt = ModelPrompts.localized(ToolPlanner.conversationPrompt(fixture.input, records: records, history: fixture.turns, language: fixture.language), language: fixture.language, purpose: .prose)
+                            prompt = ModelPrompts.localized(ToolPlanner.conversationPrompt(fixture.input, records: records, history: fixture.turns, language: fixture.language, compactProsePolicy: format.usesCompactProsePolicy), language: fixture.language, purpose: .prose)
                             result.budget = replyBudget
                             result.output = try await runtime.generate(file: model, prompt: prompt, maxTokens: replyBudget, stopAtJSON: false, promptFormat: format)
                             result.actionSummary = actionSummary(try ToolPlanner.validate(.init(tool: .reply, arg: result.output), original: fixture.input, records: records, language: fixture.language)); result.validationSucceeded = true

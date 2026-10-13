@@ -180,7 +180,7 @@ private final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchec
         if let fallback = ToolPlanner.replyFallback(original: input, records: records, language: language) { return fallback.decision }
         // A tool with missing source facts cannot run. Let the model answer or clarify normally.
         try Task.checkCancellation()
-        let answer = try await generate(ToolPlanner.conversationPrompt(input, records: records, history: history, language: language), maxTokens: effort.chatTokens, stopAtJSON: false)
+        let answer = try await generate(ToolPlanner.conversationPrompt(input, records: records, history: history, language: language, compactProsePolicy: resolved.promptFormat.usesCompactProsePolicy), maxTokens: effort.chatTokens, stopAtJSON: false)
         return ToolDecision(tool: .reply, arg: answer)
     }
     private var language: ModelLanguage { L10n.isFrench ? .french : .english }

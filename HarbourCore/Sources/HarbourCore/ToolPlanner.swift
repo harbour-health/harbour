@@ -237,7 +237,7 @@ public enum ToolPlanner {
         <|im_start|>assistant
         """
     }
-    public static func conversationPrompt(_ original: String, records: Records? = nil, history: [ConversationTurn] = [], language: ModelLanguage = .english) -> String {
+    public static func conversationPrompt(_ original: String, records: Records? = nil, history: [ConversationTurn] = [], language: ModelLanguage = .english, compactProsePolicy: Bool = false) -> String {
         func escaped(_ text: String) -> String { text.replacingOccurrences(of: "<|", with: "< |") }
         let medicineHeading = language == .french ? "Médicaments enregistrés : " : "Saved medicines: "
         let symptomHeading = language == .french ? "Symptômes enregistrés : " : "Saved symptoms: "
@@ -277,7 +277,7 @@ public enum ToolPlanner {
         }.joined()
         return """
         <|im_start|>system
-        \(ModelPrompts.proseInstruction(language: language))
+        \(ModelPrompts.proseInstruction(language: language, compact: compactProsePolicy))
         \(contextIntroduction)
         \(escaped(context))
         <|im_end|>

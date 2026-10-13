@@ -116,7 +116,7 @@ private struct ProbeResult: Codable {
                     action = fallback.action; result.fallbackUsed = true; result.fallbackReason = fallback.reason
                     result.actionOrigin = "application"; result.applicationDecision = fallback.decision
                 } else if action == nil {
-                    let replyPrompt = ModelPrompts.localized(ToolPlanner.conversationPrompt(input, records: records, language: .english), language: .english, purpose: .prose)
+                    let replyPrompt = ModelPrompts.localized(ToolPlanner.conversationPrompt(input, records: records, language: .english, compactProsePolicy: format.usesCompactProsePolicy), language: .english, purpose: .prose)
                     result.replyPrompt = try format.prepare(replyPrompt)
                     let reply = try await runtime.generate(file: file, prompt: replyPrompt, maxTokens: 512, stopAtJSON: false, promptFormat: format)
                     result.replyOutput = reply
