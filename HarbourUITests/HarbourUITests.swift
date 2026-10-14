@@ -1419,7 +1419,13 @@ import XCTest
     private func send(_ text: String, app: XCUIApplication, french: Bool) {
         let input = app.textFields["chatInput"]
         XCTAssertTrue(input.waitForExistence(timeout: 10))
-        input.tap(); input.typeText(text)
+        input.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 10), app.debugDescription)
+        input.typeText(text)
+        let completeInput = NSPredicate(format: "value == %@", text)
+        let result = XCTWaiter.wait(for: [expectation(for: completeInput, evaluatedWith: input)], timeout: 10)
+        XCTAssertEqual(result, .completed, "The complete evaluation request must be present before Send.\n" + app.debugDescription)
+        guard result == .completed else { return }
         app.buttons[french ? "Envoyer le message" : "Send message"].tap()
     }
 

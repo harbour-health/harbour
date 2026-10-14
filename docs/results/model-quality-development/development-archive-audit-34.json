@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "recordedUTC": "2026-10-14T00:12:17.988612+00:00",
+  "passed": true,
+  "archiveSHA256": "a43ae9d6c143e01643789f0aae667c21f77680f8bce7979bfd88175b2637c5ca",
+  "manifestSHA256": "f63447710001bcc3e579e8ad32df3ac04fc3e34c8693997a0a5307b6760b0f82",
+  "evidenceFiles": 238,
+  "membersIncludingSelectionBuilderManifest": 241,
+  "allSelectedBytesEqualLocalOriginals": true,
+  "priorArchives01Through33Unchanged": true,
+  "currentAppGate": "BLOCKED_NATIVE_FAILURE",
+  "observedSubmittedUserBubble": "D",
+  "intendedPreservationSourceExercised": false,
+  "typingLossCauseOrProductionRoutingDefectEstablished": false,
+  "scope": "Original current-head Standard-pass/Native-fail evidence integrity and separately bound recording diagnosis/UI draft. No fresh app pass, source freeze, heldout or Ready claim.",
+  "auditorSHA256": "561a9e04b33f46df4b7e2ff4e9c75758139682e0ce282cdac4d0aa82ecc34316"
+}

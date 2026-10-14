@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "recordedUTC": "2026-10-13T23:51:27.987997+00:00",
+  "passed": true,
+  "archiveSHA256": "ea2cf0156ff3d7e4d1041c21285361b952694e5670d204acae14f775cbb618b9",
+  "manifestSHA256": "80811de65263ffaeecb3f4dad9f09dbfd08c42351758c9b242d360dab08f4737",
+  "evidenceFiles": 89,
+  "membersIncludingSelectionBuilderManifest": 92,
+  "allSelectedBytesEqualLocalOriginals": true,
+  "priorArchives01Through32Unchanged": true,
+  "reviewed": 120,
+  "pending": 0,
+  "manualPassCounts": {
+    "qwen35": 34,
+    "small": 26,
+    "balanced": 33
+  },
+  "unsafeAcceptedActions": 0,
+  "unsafeAcceptedSummaries": 0,
+  "supplementalSourceSafetyCondition": "PASS",
+  "rawModelFailuresRetained": true,
+  "applicationRecoveryModelCredit": false,
+  "scope": "Completed source15 supplemental generation and AI source/safety-review evidence integrity only. Current docs-head app and heldout not included; no final release/Ready claim.",
+  "auditorSHA256": "d39162a1dc50f495a5deb5784f51b4997e4480e636f5e9690c265d003724f132"
+}

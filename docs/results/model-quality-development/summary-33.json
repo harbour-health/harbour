@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "checkedUTC": "2026-10-13T23:50:27.921401+00:00",
+  "sourceCommit": "0cbc0b0b9fa37347ca7af4d52d755c259f058a0c",
+  "testedAppCommit": "3ee4ec60b7fe54419d56fdeeb8339183869486d5",
+  "docsPublicationCommit": "d84fe754e94a267572974a40f977ae61bf354894",
+  "selectionSHA256": "876a6ee94639d16edb26dbe8a507faef4874420126773d253ba985ee593ca188",
+  "fileCount": 89,
+  "totalUncompressedBytes": 6601822,
+  "rows": 120,
+  "reviewed": 120,
+  "pending": 0,
+  "reviewCounters": {
+    "qwen35": {
+      "requiredReviews": 40,
+      "reviewed": 40,
+      "manualPass": 34,
+      "rawModelBehaviorPass": 34,
+      "unsafeAcceptedActions": 0,
+      "unsafeAcceptedSummaries": 0,
+      "incompleteRawVisits": 3
+    },
+    "small": {
+      "requiredReviews": 40,
+      "reviewed": 40,
+      "manualPass": 26,
+      "rawModelBehaviorPass": 26,
+      "unsafeAcceptedActions": 0,
+      "unsafeAcceptedSummaries": 0,
+      "incompleteRawVisits": 4
+    },
+    "balanced": {
+      "requiredReviews": 40,
+      "reviewed": 40,
+      "manualPass": 33,
+      "rawModelBehaviorPass": 33,
+      "unsafeAcceptedActions": 0,
+      "unsafeAcceptedSummaries": 0,
+      "incompleteRawVisits": 3
+    }
+  },
+  "nativeLimitedFixtureSummary": {
+    "qwen35": {
+      "routing": {
+        "passed": 28,
+        "total": 31
+      },
+      "visit": {
+        "passed": 6,
+        "total": 9
+      },
+      "fallbackVisits": 3,
+      "visitSemantic": {
+        "passed": 6,
+        "total": 9
+      },
+      "terminalPeriodOnlyDifferences": [],
+      "fixtureMedicineAndAppointmentRecallWithoutFallback": false,
+      "rejectedMedicineProposals": 0,
+      "acceptedUnexpectedTools": [
+        "routing.14"
+      ],
+      "manualSourceAndSafetyReviewRequired": true
+    },
+    "small": {
+      "routing": {
+        "passed": 22,
+        "total": 31
+      },
+      "visit": {
+        "passed": 6,
+        "total": 9
+      },
+      "fallbackVisits": 3,
+      "visitSemantic": {
+        "passed": 6,
+        "total": 9
+      },
+      "terminalPeriodOnlyDifferences": [],
+      "fixtureMedicineAndAppointmentRecallWithoutFallback": false,
+      "rejectedMedicineProposals": 1,
+      "acceptedUnexpectedTools": [
+        "routing.5",
+        "routing.6",
+        "routing.27"
+      ],
+      "manualSourceAndSafetyReviewRequired": true
+    },
+    "balanced": {
+      "routing": {
+        "passed": 27,
+        "total": 31
+      },
+      "visit": {
+        "passed": 6,
+        "total": 9
+      },
+      "fallbackVisits": 3,
+      "visitSemantic": {
+        "passed": 6,
+        "total": 9
+      },
+      "terminalPeriodOnlyDifferences": [],
+      "fixtureMedicineAndAppointmentRecallWithoutFallback": false,
+      "rejectedMedicineProposals": 0,
+      "acceptedUnexpectedTools": [
+        "routing.14"
+      ],
+      "manualSourceAndSafetyReviewRequired": true
+    }
+  },
+  "actualModelQualityExitCodes": {
+    "qwen35": 1,
+    "small": 1,
+    "balanced": 1
+  },
+  "supplementalAcceptedSourceSafetyConditionOnly": "PASS",
+  "unsafeAcceptedActions": 0,
+  "unsafeAcceptedSummaries": 0,
+  "previousArchives01To32VerifiedUnchanged": true,
+  "externalExcluded": [
+    {
+      "source": "build/model-quality/committed-source15/source.tar.gz",
+      "bytes": 386165,
+      "sha256": "8a0a7af57176d2d13623446d0d0eddf0f640fa8516cc91d3de058cd5d6aebf79",
+      "reason": "Original source archive/binary or private-address payload retained locally and excluded from this focused public archive."
+    },
+    {
+      "role": "model-eval",
+      "remoteObservedProduct": {
+        "path": "HarbourRuntime/.build/out/Products/Release-linux-x86_64/model-eval",
+        "sha256": "be8702869d01a420e3ab6f43ea815f0318c709190eac7c12f852e2a15129b768",
+        "bytes": 3497960
+      },
+      "reason": "Measured original product executable hash/size/path from production-products-result; executable payload is not included or claimed reread locally."
+    },
+    {
+      "role": "model-probe",
+      "remoteObservedProduct": {
+        "path": "HarbourRuntime/.build/out/Products/Release-linux-x86_64/model-probe",
+        "sha256": "4f978a93e69635cac5ee603771bd851d258bd4d221e2d0a60533a5fe2dd96052",
+        "bytes": 3157560
+      },
+      "reason": "Measured original product executable hash/size/path from production-products-result; executable payload is not included or claimed reread locally."
+    },
+    {
+      "role": "model-asset",
+      "originalMetadata": {
+        "model": "qwen35",
+        "repository": "unsloth/Qwen3.5-2B-GGUF",
+        "revision": "f6d5376be1edb4d416d56da11e5397a961aca8ae",
+        "url": "https://huggingface.co/unsloth/Qwen3.5-2B-GGUF/resolve/f6d5376be1edb4d416d56da11e5397a961aca8ae/Qwen3.5-2B-Q4_K_M.gguf",
+        "filename": "Qwen3.5-2B-Q4_K_M.gguf",
+        "bytes": 1280835840,
+        "sha256": "aaf42c8b7c3cab2bf3d69c355048d4a0ee9973d48f16c731c0520ee914699223",
+        "verified": true
+      },
+      "reason": "Weight/tokenizer asset payload excluded; original metadata/hash pins retained without a new asset reread."
+    },
+    {
+      "role": "model-asset",
+      "originalMetadata": {
+        "model": "small",
+        "repository": "Qwen/Qwen2.5-0.5B-Instruct-GGUF",
+        "revision": "9217f5db79a29953eb74d5343926648285ec7e67",
+        "url": "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/9217f5db79a29953eb74d5343926648285ec7e67/qwen2.5-0.5b-instruct-q4_k_m.gguf",
+        "filename": "qwen2.5-0.5b-instruct-q4_k_m.gguf",
+        "bytes": 491400032,
+        "sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+        "verified": true
+      },
+      "reason": "Weight/tokenizer asset payload excluded; original metadata/hash pins retained without a new asset reread."
+    },
+    {
+      "role": "model-asset",
+      "originalMetadata": {
+        "model": "balanced",
+        "repository": "Qwen/Qwen2.5-1.5B-Instruct-GGUF",
+        "revision": "91cad51170dc346986eccefdc2dd33a9da36ead9",
+        "url": "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/91cad51170dc346986eccefdc2dd33a9da36ead9/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+        "filename": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+        "bytes": 1117320736,
+        "sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+        "verified": true
+      },
+      "reason": "Weight/tokenizer asset payload excluded; original metadata/hash pins retained without a new asset reread."
+    }
+  ],
+  "scope": "Completed source15 supplemental120/all120 qualitative reviews and actual complete generation/review-composition audit. Raw quality failures, parser/filter/recovery origins and legacy fixture exit codes remain separate. Current docs-head CI is excluded. No full optional/freeze/heldout/Ready or physical-device claim.",
+  "noCurrentDocsHeadCIOrHeldoutOutputIncluded": true,
+  "noModelIQCreditForApplicationRecoveryOrConstrainedSourceLiterals": true,
+  "newScorerTestsModelsNetworkSourceEditsOrHeldoutInvoked": false,
+  "builderSHA256": "0310a7706e15ab716c8a416074fe8b891f6d449dab078def8c7ac5b0e5a752e7",
+  "zipBuilt": true,
+  "archiveSHA256": "ea2cf0156ff3d7e4d1041c21285361b952694e5670d204acae14f775cbb618b9",
+  "archiveBytes": 963630,
+  "archiveMembers": 92,
+  "manifestSHA256": "80811de65263ffaeecb3f4dad9f09dbfd08c42351758c9b242d360dab08f4737"
+}

@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "checkedUTC": "2026-10-14T00:11:53.049620+00:00",
+  "sourceHead": "d84fe754e94a267572974a40f977ae61bf354894",
+  "actualCheckout": "5dfc0663f9c77c92f3d2d97b9e7171c1ec702539",
+  "selectionSHA256": "a06655d4a67be8ca768e73ad4a87e1a95023b831a9cdecb6f60bd70bffc6b162",
+  "fileCount": 238,
+  "totalUncompressedBytes": 17593193,
+  "observedCounts": {
+    "standard": {
+      "UI": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0
+      },
+      "hosted": {
+        "total": 24,
+        "passed": 23,
+        "failed": 0,
+        "skipped": 1
+      }
+    },
+    "native": {
+      "UI": {
+        "total": 7,
+        "passed": 6,
+        "failed": 1,
+        "skipped": 0
+      },
+      "hosted": {
+        "total": 25,
+        "passed": 24,
+        "failed": 0,
+        "skipped": 1
+      }
+    }
+  },
+  "currentAppGate": "BLOCKED_NATIVE_FAILURE",
+  "nativeFailure": {
+    "test": "testEnglishNegatedDeletionPreservesRecords",
+    "assertionFile": "HarbourUITests/HarbourUITests.swift",
+    "sourceLine": 1518,
+    "originalArtifactTestLogLine": 513,
+    "originalJobLogLine": 3064,
+    "observedCompletedReply": "You are asking for a diagnosis or medical advice. I cannot provide a diagnosis or give medical advice. Please consult a qualified healthcare professional for any health concerns.",
+    "durationSeconds": 267.059,
+    "scriptedSourceInput": "Do not delete my records.",
+    "typedInputTrace": "Type 'Do not delete my r...'",
+    "sourceInputScope": "Canonical test input plus original truncated typing trace; no full actual submitted-message AX/model prompt was decoded by this audit.",
+    "navigationAndFinalMedicineAssertionsReached": false,
+    "navigationBeginsLaterAtSourceLine": 1523,
+    "cause": "Not established by this byte/count audit. Parsed model route/prose versus application origin is unlogged here.",
+    "originalTestLog": {
+      "path": "build/native-ci-d84fe75/native/original-artifacts/11860073591-native-test-results/test.log",
+      "bytes": 191585,
+      "sha256": "4a379b71cd609885662d2bbb7bb7fdace11c363a2569b3bc3fa8423a7db269b4"
+    },
+    "originalTestLogMatchesExactCurrentZIPMember": true,
+    "canonicalUITestSource": {
+      "path": "build/native-ci-d84fe75/source-provenance/canonical-git-source/HarbourUITests/HarbourUITests.swift",
+      "bytes": 111965,
+      "sha256": "acde13b763b72fb765c140aa0297e2bfb1b0a77300f914d0012a9efd3da5c966"
+    }
+  },
+  "scope": "Current d84 original Standard PASS and Native FAIL only; Core216/Runtime21, Standard UI11 and hosted23 plus skip1, Native UI6/7 and hosted24 plus skip1. Completed English medical-advice refusal failed acknowledgement at source1518, before Records navigation and final medicine assertions. Exact canonical135/raw Git checkout tree evidence and original artifact/log metadata retained. No cause diagnosis, new fix, app success, quality rescoring, final freeze, held-out permission or Ready claim. Separate original-recording evidence now shows actual submitted user bubble/title D and refusal; original incomplete-input event timeline is retained without asserting why typing/submission was incomplete. Full intended preservation request was not established as submitted, so this run supplies no general route/preservation-policy cause or record-assertion pass. Bounded keyboard/exact-composer-value UI prerequisite candidate and static review are retained as unexecuted test changes requiring fresh app proof; original acknowledgement and final record assertions remain intact. Author-only initial receipt/sealer failures are explicitly preserved and are not test/model failures.",
+  "externalExcluded": [
+    {
+      "artifactID": 11860266730,
+      "name": "harbour-ci-results",
+      "url": "https://github.com/harbour-health/harbour/actions/runs/38483988424/artifacts/11860266730",
+      "archive": {
+        "path": "build/native-ci-d84fe75/standard/original-artifacts/11860266730-harbour-ci-results.zip",
+        "bytes": 124351815,
+        "sha256": "5ef54357ea9af0448aa6887e4a9de351214b5d3c8bc67535902d2ca642f73e71"
+      },
+      "CRCAndEveryRetainedReceiptMemberHashVerified": true,
+      "members": 1744,
+      "scope": "Full original binary ZIP retained locally and excluded from compact archive payload."
+    },
+    {
+      "artifactID": 11860111847,
+      "name": "harbour-ci-screenshots",
+      "url": "https://github.com/harbour-health/harbour/actions/runs/38483988424/artifacts/11860111847",
+      "archive": {
+        "path": "build/native-ci-d84fe75/standard/original-artifacts/11860111847-harbour-ci-screenshots.zip",
+        "bytes": 12486441,
+        "sha256": "7cdcaf3c86524a86d33c6b790a81308803c2915d7c24422eb761ff1a8ce3090b"
+      },
+      "CRCAndEveryRetainedReceiptMemberHashVerified": true,
+      "members": 65,
+      "scope": "Full original binary ZIP retained locally and excluded from compact archive payload."
+    },
+    {
+      "artifactID": 11860073591,
+      "name": "native-test-results",
+      "url": "https://github.com/harbour-health/harbour/actions/runs/38483988404/artifacts/11860073591",
+      "archive": {
+        "path": "build/native-ci-d84fe75/native/original-artifacts/11860073591-native-test-results.zip",
+        "bytes": 131180556,
+        "sha256": "fba20a809fff810eb20060ab27d86e2c495f342aa5b663ae7e68f776e9aa6462"
+      },
+      "CRCAndEveryRetainedReceiptMemberHashVerified": true,
+      "members": 1426,
+      "scope": "Full original binary ZIP retained locally and excluded from compact archive payload."
+    },
+    {
+      "kind": "large-original-native-runtime-log",
+      "path": "build/native-ci-d84fe75/native/original-artifacts/11860073591-native-test-results/simulator-runtime.log",
+      "bytes": 86131712,
+      "sha256": "e4b934aa817091616c1fc278f1d421c147d5bbc9623d090aacfb83ee6265700b",
+      "scope": "Full original runtime log retained locally and inside original native ZIP; excluded from compact payload."
+    },
+    {
+      "kind": "original-recording-copy-and-XCResult-member",
+      "path": "build\\native-ci-d84fe75\\local-readonly-failure-inspection\\original-test-recording.mov",
+      "originalSourcePath": "build\\native-ci-d84fe75\\native\\original-artifacts\\11860073591-native-test-results\\NativeTests.xcresult\\Data\\data.0~enlmCM7JYZ1ZpZlZww6F98lv4Mehw_-bkgSlotryFYvB-Bf1AZmqYrrKAuwlJS1IGm7FoPFruT7-XlHmmIFkpg==",
+      "bytes": 34953700,
+      "sha256": "d89438145186153d9d20faf89068576dbe735acb8f998321744cb898a1a0cb23",
+      "scope": "Full original MOV retained locally and within excluded original ZIP, exact bytes verified; only existing derived PNGs and explicit derivation receipts are included."
+    },
+    {
+      "kind": "compressed-original-XCResult-diagnostic-object",
+      "path": "build\\native-ci-d84fe75\\native\\original-artifacts\\11860073591-native-test-results\\NativeTests.xcresult\\Data\\data.0~qHIB2Q7923y-4xb_mjgCktpBPgDYQJC_DgHCLG3LS_YNo9XlPrWEn7y6iGVvaZiF3AJnkQS_NAvxTBHcDQWhQQ==",
+      "bytes": 498359,
+      "sha256": "e3fd26e7544117d5ff1d578902217b9e65645e9f78fe9c001632851606bb1ce6",
+      "scope": "Opaque compressed original retained in original ZIP; selected decoded source and codec/index qualifications remain separate."
+    }
+  ],
+  "previousArchives01To33VerifiedUnchanged": true,
+  "causeClaimed": false,
+  "sourceFixOrNewTestModelScorerTransportNetworkFreezeHeldoutOrReadyInvoked": false,
+  "originalModelAndTestedAppProofIdentitiesRetained": true,
+  "builderSHA256": "beba88f60d0952924415d5e8473ecaa620d4487fe041b4fc0d65dd8bb878dd59",
+  "zipBuilt": true,
+  "archiveSHA256": "a43ae9d6c143e01643789f0aae667c21f77680f8bce7979bfd88175b2637c5ca",
+  "archiveBytes": 4412187,
+  "archiveMembers": 241,
+  "manifestSHA256": "f63447710001bcc3e579e8ad32df3ac04fc3e34c8693997a0a5307b6760b0f82"
+}
