@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent-actual-protocol-support-addendum37-integrity-audit",
+  "auditedUTC": "2026-10-14T03:06:03.471241+00:00",
+  "reviewer": "/root/verify_model_list",
+  "result": "PASS_ARCHIVE37_ALL22_MEMBERS_AND20_PROTOCOL_SOURCE_ORIGINALS_EXACT",
+  "archive": {
+    "path": "build/archive-development-37/development-evidence-37.zip",
+    "bytes": 116781,
+    "sha256": "6656648a56ecde06ffae9393482f260f73b8496d2268e55d9f62fc418c393cef"
+  },
+  "summary": {
+    "path": "build/archive-development-37/summary-37.json",
+    "bytes": 696,
+    "sha256": "6aa2c835b97827a73a4af130ba92145e9e3b8603c7c2d66191bfd2caa1983b4d"
+  },
+  "allowlist": {
+    "path": "build/archive-development-36/protocol-and-preparation-support-allowlist-01.json",
+    "bytes": 5223,
+    "sha256": "5b31bd619c1a6c1e0b3650226f33f5d4c22a9553a9cae97bf34d8e6506ad4b53"
+  },
+  "parentArchive36": {
+    "path": "build/archive-development-36/development-evidence-36.zip",
+    "bytes": 5278095,
+    "sha256": "642ae13b931087644fb491562d06ccb9d2ecc1f088cc4423ada3b1d0f44ec031"
+  },
+  "parentArchive36PostbuildAudit": {
+    "path": "build/archive-development-36/development-archive-audit-36.json",
+    "bytes": 1976,
+    "sha256": "e4e6578d8b579a5b589cedaa726f9e095f8c08ac29ff024292c20115a49a5b4f"
+  },
+  "manifestSHA256": "ded85690800d608c1037a078a0d1c70d8a3e1a34c87f895737563b8e0f953aa4",
+  "archiveMembers": 22,
+  "originalProtocolSupportFiles": 20,
+  "originalProtocolSupportBytes": 3349264,
+  "allMemberCRCExactHashesAndLocalOriginalBytesVerified": true,
+  "members": [
+    {
+      "path": "build/archive-development-36/builder-independent-static-review-01.json",
+      "bytes": 4963,
+      "sha256": "7256938ca746846004ecfc90afe314dacbb5164a5830561f413cb188cde0cbd2",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/archive-development-36/postbuild-auditor-preparation-01.json",
+      "bytes": 1139,
+      "sha256": "b50f5c3d4f01ff4f37504c5142967b257c5169c374fd83cb976bf806daa9e997",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/archive-development-36/preparation-status-01.json",
+      "bytes": 5115,
+      "sha256": "1203e35fee0425f30e4a525d59f0419609ae72ba5fc00b5943aad50357ecca86",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/model-quality/source15-heldout-evidence-mirror-transfer-03/independent-static-review.json",
+      "bytes": 1551,
+      "sha256": "a6ed090f2a1b18159fd32405a358f68a084f227adfdec379a317ca9226440a4d",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/model-quality/source15-heldout-evidence-mirror-transfer-03/install-exact-mirror.py",
+      "bytes": 3743,
+      "sha256": "8dacdf0f1931a153b32c68f7a4a9146db7e50f52988d5bfbab77729e2829fca5",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/model-quality/source15-heldout-evidence-mirror-transfer-03/launch-recipe.json",
+      "bytes": 7345,
+      "sha256": "4706f452e10fd5b592df5cf0e4264ce8f2034b04d80edade1f10581ed820097c",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/model-quality/source15-heldout-evidence-mirror-transfer-03/plan.json",
+      "bytes": 2149,
+      "sha256": "9a9d29119d8b468d6981a4d96054c7567109cb7c7e1d9196780c44abbaf48599",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/model-quality/source15-heldout-evidence-mirror-transfer-03/preparation.json",
+      "bytes": 1916,
+      "sha256": "4459c3e7c5184c88ab4c6f6ee0365e22d3078ac17d2c3af50894a317ad409f22",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/model-quality/source15-heldout-evidence-mirror-transfer-03/root-transfer-exact-mirror.py",
+      "bytes": 5070,
+      "sha256": "e7840c5af15423d3d687c98973729979f5b044fce20074255826f7e54139e9b0",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/model-quality/source15-heldout-evidence-mirror-transfer-03/transfer-manifest.json",
+      "bytes": 3204702,
+      "sha256": "5e2efcd8a896e51be24219ffb8139d68f244c80807dfa5758dfe9c0506021a6d",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/model-quality/source15-heldout-public-execution-evidence-01/public-actual-precheck-transfer-launch-receipt.json",
+      "bytes": 10386,
+      "sha256": "b649e58e5ad6aaa7419ff581c7541adfbcc55f33b6e9ba9078ee3dae0c9d71f2",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/model-quality/source15-heldout-public-execution-evidence-01/public-allowlist-02.json",
+      "bytes": 5241,
+      "sha256": "5cc4b79e265f94176ab5ab4194bb239a878d2e8c5559eaba83aec13523c02017",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/model-quality/source15-heldout-public-execution-evidence-01/public-allowlist.json",
+      "bytes": 4562,
+      "sha256": "81bebeda806c1532ef91f166567cdd3167008b7e5cb7c513f993041d22edf97b",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/model-quality/source15-heldout-public-execution-evidence-01/public-paired-execution-completion-addendum-02.json",
+      "bytes": 5345,
+      "sha256": "6c3e61d885d51ed93cfe9f65aa2c7beecbc6a9c6a5e69d5001897421d7ea5b54",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/model-quality/source15-paired-heldout-rendered-protocol-02/independent-static-review.json",
+      "bytes": 3176,
+      "sha256": "ba0d6cf3d8e176db65303f3c217fe84497b3767f8a2071542ac598c22ae928c8",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/model-quality/source15-paired-heldout-rendered-protocol-02/preparation.json",
+      "bytes": 1813,
+      "sha256": "19e4ed6032e93e19332a17046064e669dbbda32e59ab04a3e5669a8f6333343a",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/model-quality/source15-paired-heldout-rendered-protocol-02/prepared-protocol-plan.json",
+      "bytes": 21030,
+      "sha256": "87279bd130c109f2262b1f502253de647e43ec911fcdcac778422cccd6e8698a",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/model-quality/source15-paired-heldout-rendered-protocol-02/run-source15-paired-heldout.py",
+      "bytes": 5887,
+      "sha256": "8b4687a59a1a38308ee2b158b2fc986660cb26fa660c2d87654972b5f4271fac",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/model-quality/source15-paired-heldout-rendered-protocol-02/source15-heldout-evaluator-guard.py",
+      "bytes": 1240,
+      "sha256": "4dedeeabae1716405ca524d47e3444d1c9b3d1553c82859332ad713e28c3744a",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    },
+    {
+      "path": "build/model-quality/source15-paired-heldout-rendered-protocol-02/source15-heldout-preflight.py",
+      "bytes": 52891,
+      "sha256": "228dcc0070338773f0ddf6ea049b3c61ce7309a00eb3faf47f20dfa81b02dd06",
+      "archiveBytesEqualLocalOriginal": true,
+      "privateIPv4Absent": true
+    }
+  ],
+  "priorArchives01To36VerifiedUnchanged": true,
+  "sourceHead": "bba74d659eada0a6dcba834926973dc9d800e8bf",
+  "modelSourceCommit": "0cbc0b0b9fa37347ca7af4d52d755c259f058a0c",
+  "modelRowsAndOriginalSourceIdentitiesNotRelabelled": true,
+  "optionalCondition": "BLOCKED",
+  "qualityOrGateChanged": false,
+  "newQualityResultsOrJudgments": false,
+  "privateIPAddressOrOriginalControllerPayloadSelected": false,
+  "privateIPv4BytesAbsent": true,
+  "helpersModelsTestsScorerTransportNetworkOrSourceOperationsInvoked": false,
+  "ReadyClaim": false,
+  "scope": "Actual byte/CRC/privacy/reference integrity of this20-file protocol-source/preparation support addendum only. It supplements immutable Archive36 without rebuilding it. No source-code review, new evaluation, model-result regrading, clinical/physical-device claim or release approval."
+}

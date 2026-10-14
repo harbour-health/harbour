@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "kind": "root-actual-archive36-postbuild-byte-and-provenance-audit",
+  "auditedUTC": "2026-10-14T03:03:58.232475+00:00",
+  "result": "PASS_ARCHIVE36_EXACT_MEMBERS_ORIGINAL_BYTES_PRIOR35_AND_ACTUAL_PAIRED_CONDITION",
+  "archive": {
+    "source": "build/archive-development-36/development-evidence-36.zip",
+    "bytes": 5278095,
+    "sha256": "642ae13b931087644fb491562d06ccb9d2ecc1f088cc4423ada3b1d0f44ec031"
+  },
+  "selection": {
+    "source": "build/archive-development-36/selection-actual-final-01.json",
+    "bytes": 78550,
+    "sha256": "7ceeab6636889f45011fa5e161e3e29db9a33936a1027da3d42f1308c7de5bf3"
+  },
+  "summary": {
+    "source": "build/archive-development-36/summary-36.json",
+    "bytes": 6121,
+    "sha256": "3c29234f052e57b5f744cca1768cb6f58d7a638918f16ad9e77340a46a08fe90"
+  },
+  "auditorSHA256": "fed50c769883febf5e072817444a10bb69971da6e8c6dfc426766b0b16b09149",
+  "commonSHA256": "14526c77b3ca5d04b1a6c9b52b6de73b530821982eacfb23f347c5cdfe8fc048",
+  "evidenceFiles": 260,
+  "members": 263,
+  "priorArchivesVerified": 35,
+  "exactOriginalAndDeclaredDerivedEvidencePreserved": true,
+  "optionalAllSuiteCondition": "BLOCKED",
+  "originalDefaultPromotionGate": {
+    "status": "blocked",
+    "reasons": [
+      "french_or_grounding_regression",
+      "qwen35_critical_guard_or_schedule_failure",
+      "qwen35_grounding_or_extraction_checks_not_passed",
+      "qwen35_required_manual_review_failed"
+    ],
+    "meaning": "Fixture regression and review gate only. CPU evaluation does not establish device speed, clinical safety, or end-to-end iOS behavior."
+  },
+  "privateOriginalArgvOrPrivateAddressesInPayload": false,
+  "newModelsScorerSourceNetworkGitOrPublishingOperations": false,
+  "ReadyClaim": false,
+  "scope": "Exact archived/local original bytes, manifest/summary, prior archives and completed actual proof bindings. Copies the real PASS/BLOCKED condition; no new grades, clinical or physical-device performance claim."
+}

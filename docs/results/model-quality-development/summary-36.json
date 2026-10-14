@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "checkedUTC": "2026-10-14T03:00:16.395062+00:00",
+  "sourceHead": "bba74d659eada0a6dcba834926973dc9d800e8bf",
+  "modelSourceCommit": "0cbc0b0b9fa37347ca7af4d52d755c259f058a0c",
+  "selectionSHA256": "7ceeab6636889f45011fa5e161e3e29db9a33936a1027da3d42f1308c7de5bf3",
+  "builderSHA256": "ee5989bd894a6f8f6907ec49003ab4645f45ffe92e02291fb8ca2d9ed9b75492",
+  "commonSHA256": "14526c77b3ca5d04b1a6c9b52b6de73b530821982eacfb23f347c5cdfe8fc048",
+  "fileCount": 260,
+  "totalUncompressedBytes": 62165448,
+  "optionalAllSuiteCondition": "BLOCKED",
+  "originalDefaultPromotionGate": {
+    "status": "blocked",
+    "reasons": [
+      "french_or_grounding_regression",
+      "qwen35_critical_guard_or_schedule_failure",
+      "qwen35_grounding_or_extraction_checks_not_passed",
+      "qwen35_required_manual_review_failed"
+    ],
+    "meaning": "Fixture regression and review gate only. CPU evaluation does not establish device speed, clinical safety, or end-to-end iOS behavior."
+  },
+  "actualInputs": {
+    "heldout-bindings": {
+      "source": "build/model-quality/source15-heldout-independent-auditors-01/paired-heldout-gate-actual-bindings-01.json",
+      "bytes": 30045,
+      "sha256": "de99b195941225dd060cc4c368d5c7cd898af7791bd979b34a49ff20b6e8145c"
+    },
+    "all-suite-bindings": {
+      "source": "build/model-quality/source15-heldout-independent-auditors-01/final-all-suite-pair-actual-bindings-01.json",
+      "bytes": 2932,
+      "sha256": "75b39d95f79d5eb19bffd220751f4190f005625ab6c4886edc2b630184b62c23"
+    },
+    "all-suite-pair-audit": {
+      "source": "build/model-quality/source15-paired-heldout-root-execution-actual-02/independent-final-all-suite-pair-audit-01.json",
+      "bytes": 357372,
+      "sha256": "b91254b1072141a0f2db44ed2684a00180b557003155559822c4926744b1ca22"
+    },
+    "public-execution-allowlist": {
+      "source": "build/model-quality/source15-heldout-public-execution-evidence-01/public-allowlist-02.json",
+      "bytes": 5241,
+      "sha256": "5cc4b79e265f94176ab5ab4194bb239a878d2e8c5559eaba83aec13523c02017"
+    }
+  },
+  "previousArchives01To35VerifiedUnchanged": true,
+  "retention": {
+    "baselineHeldoutRows": 210,
+    "candidateHeldoutRows": 234,
+    "baselineAllSuiteRows": 477,
+    "candidateAllSuiteRows": 525,
+    "primaryPairs": 477,
+    "timingRows": 48,
+    "originalAndDerivedReviewsPreserved": true,
+    "noNewJudgmentsOrScoring": true,
+    "privateOriginalArgvAndAddressesInPayload": false,
+    "ReadyClaim": false
+  },
+  "externalExcluded": [
+    {
+      "source": "build/model-quality/source15-heldout-evidence-mirror-transfer-actual-01/transfer-receipt.local-private.json",
+      "bytes": 5563,
+      "sha256": "6bf5ea34034a425a8478bf469d855cad9654162460194d1be17be12402950197",
+      "reason": "Private local-only transport/argv original; retain digest/reference outside payload.",
+      "includedInPayload": false,
+      "originalBytesModified": false
+    },
+    {
+      "source": "build/model-quality/source15-heldout-evidence-mirror-transfer-actual-02/transfer-receipt.local-private.json",
+      "bytes": 5593,
+      "sha256": "60390f30a2ff36ccead29d748d3c44f0dc35e80aff89ea79d5559da0cf2aa56c",
+      "reason": "Private local-only transport/argv original; retain digest/reference outside payload.",
+      "includedInPayload": false,
+      "originalBytesModified": false
+    },
+    {
+      "source": "build/model-quality/source15-heldout-small-stream-additive-transfer-actual-01/receipt.local-private.json",
+      "bytes": 1112,
+      "sha256": "1125951b34d2c0a543352b6a93d5f2c126a6abfcdb79a6b0591c14fb29aab36d",
+      "reason": "Private local-only transport/argv original; retain digest/reference outside payload.",
+      "includedInPayload": false,
+      "originalBytesModified": false
+    },
+    {
+      "source": "build/model-quality/source15-paired-heldout-root-execution-actual-01/invocation-final.local-private.json",
+      "bytes": 2720,
+      "sha256": "de6c777a7d67e6203357c9923d569cde8b97743ce0524b0fa829da3f2455eaa9",
+      "reason": "Private local-only transport/argv original; retain digest/reference outside payload.",
+      "includedInPayload": false,
+      "originalBytesModified": false
+    },
+    {
+      "source": "build/model-quality/source15-paired-heldout-root-execution-actual-01/invocation-initial.local-private.json",
+      "bytes": 2516,
+      "sha256": "96c1531f4321adef4f9fdb1a4df670bdbd2236d353750c6dc37278961f58acde",
+      "reason": "Private local-only transport/argv original; retain digest/reference outside payload.",
+      "includedInPayload": false,
+      "originalBytesModified": false
+    },
+    {
+      "source": "build/model-quality/source15-paired-heldout-root-execution-actual-02/invocation-initial.local-private.json",
+      "bytes": 2682,
+      "sha256": "a2c0dbf94e89f4770c27d66befa470ac571b3f88d9ad8d4069d1248f8d54b3c6",
+      "reason": "Private local-only transport/argv original; retain digest/reference outside payload.",
+      "includedInPayload": false,
+      "originalBytesModified": false
+    },
+    {
+      "source": "build/model-quality/source15-remote-heldout-prerequisite-precheck-actual-01/invocation-receipt.local-private.json",
+      "bytes": 30714,
+      "sha256": "8ba4c7a4352d6a909058bf1cb033850a12a4fc9fd065232e356e3dbc7c424763",
+      "reason": "Private local-only transport/argv original; retain digest/reference outside payload.",
+      "includedInPayload": false,
+      "originalBytesModified": false
+    }
+  ],
+  "scope": "Completed original paired/all-suite CPU evaluation evidence and declared strict consistency derivatives. Preserve actual blocked conditions, raw failures and application/source attribution. Frozen current app/local/xtool proofs remain in Archives30/35; physical device/clinical safety is not established.",
+  "newModelsTestsScorerTransportSourceOrGitOperations": false,
+  "ReadyClaim": false,
+  "zipBuilt": true,
+  "archiveSHA256": "642ae13b931087644fb491562d06ccb9d2ecc1f088cc4423ada3b1d0f44ec031",
+  "archiveBytes": 5278095,
+  "archiveMembers": 263,
+  "manifestSHA256": "4214155ef26b315844ecb2171289e2fca01ab42e0101494dee438a536bb4487f"
+}

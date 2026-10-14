@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "sourceHead": "bba74d659eada0a6dcba834926973dc9d800e8bf",
+  "modelSourceCommit": "0cbc0b0b9fa37347ca7af4d52d755c259f058a0c",
+  "archiveSHA256": "6656648a56ecde06ffae9393482f260f73b8496d2268e55d9f62fc418c393cef",
+  "archiveBytes": 116781,
+  "archiveMembers": 22,
+  "evidenceFiles": 20,
+  "manifestSHA256": "ded85690800d608c1037a078a0d1c70d8a3e1a34c87f895737563b8e0f953aa4",
+  "allowlistSHA256": "5b31bd619c1a6c1e0b3650226f33f5d4c22a9553a9cae97bf34d8e6506ad4b53",
+  "parentArchive36SHA256": "642ae13b931087644fb491562d06ccb9d2ecc1f088cc4423ada3b1d0f44ec031",
+  "optionalCondition": "BLOCKED",
+  "newModelScorerTestsOrGrades": false,
+  "ReadyClaim": false
+}
