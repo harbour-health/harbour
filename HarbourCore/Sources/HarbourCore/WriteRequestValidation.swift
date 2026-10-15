@@ -131,7 +131,9 @@ enum WriteRequestValidation {
             let importTarget = "(?:" + provider + "(?:\\s+" + readings + ")?|" + readings + "(?:\\s+(?:(?:from|depuis|de)\\s+|d')?" + provider + ")?)"
             let label = #"(?:(?:my|the|a|this)\s+)?(?:(?:medicine|medication|pill)\s+)?label|(?:(?:my|the|a)\s+)?(?:medicine|medication)|(?:l'|une\s+|mon\s+|la\s+)?(?:etiquette|boite)(?:\s+(?:de|du|d'un|de\s+mon)\s+(?:medicament|comprime))?"#
             let camera = #"(?:(?:the|my)\s+)?camera|(?:l'|mon\s+|un\s+)?appareil\s+photo"#
-            let scanTarget = #"(?:(?:scan|photograph|read|scanne|scannez|scanner|photographie|photographiez|photographier|lis|lisez|lire)\s+(?:"# + label + #")|(?:open|use|ouvre|ouvrez|ouvrir|utilise|utilisez|utiliser)\s+(?:"# + camera + #")|(?:take\s+a\s+photo\s+of|prends\s+une\s+photo\s+de|prenez\s+une\s+photo\s+de)\s+(?:"# + label + #"))"#
+            let scanVerb = #"(?:scan|photograph|read|scanne|scannez|scanner|photographie|photographiez|photographier|lis|lisez|lire)"#
+            let cameraPurpose = #"(?:\s+(?:to\s+|pour\s+)(?:scan|photograph|read|scanner|photographier|lire)\s+(?:"# + label + #"))?"#
+            let scanTarget = "(?:" + scanVerb + #"\s+(?:"# + label + #")|(?:open|use|ouvre|ouvrez|ouvrir|utilise|utilisez|utiliser)\s+(?:"# + camera + ")" + cameraPurpose + #"|(?:take\s+a\s+photo\s+of|prends\s+une\s+photo\s+de|prenez\s+une\s+photo\s+de)\s+(?:"# + label + #"))"#
             let body = tool == .importReadings ? "(?:" + action + ")\\s+" + importTarget : scanTarget
             return match(unquoted, "\\A" + requestPrefix + body + #"\s*[.!?]?\s*\z"#) != nil
         }

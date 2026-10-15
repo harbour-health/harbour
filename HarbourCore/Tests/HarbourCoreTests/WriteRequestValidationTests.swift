@@ -365,4 +365,31 @@ final class WriteRequestValidationTests: XCTestCase {
             }
         }
     }
+
+    func testMedicineCameraPurposeClausesCannotAuthorizeImportOrMixedActions() throws {
+        for input in [
+            "Open the camera to scan a medication label.",
+            "Use my camera to read the medicine label.",
+            "Ouvre l'appareil photo pour scanner une boîte de médicament.",
+            "Ouvrez l'appareil photo pour lire l'étiquette du médicament."
+        ] {
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .scanMedicine), original: input, records: records), .scan, input)
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .importReadings), original: input, records: records), input)
+        }
+        for input in [
+            "Do not open the camera to scan a medication label.",
+            "N'ouvre pas l'appareil photo pour scanner une boîte de médicament.",
+            "Why open the camera to scan a medication label?",
+            "Si je le demande, ouvre l'appareil photo pour lire l'étiquette du médicament.",
+            "My father wants to open the camera to scan a medication label.",
+            #""Open the camera to scan a medication label.""#,
+            "Open the camera to import my readings.",
+            "Ouvre l'appareil photo pour importer mes mesures Apple Santé.",
+            "Open the camera to scan a medication label and add Aleve.",
+            "Ouvre l'appareil photo pour scanner une boîte de médicament puis efface mes données.",
+            "Open the camera to scan a medication label unless I object."
+        ] {
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .scanMedicine), original: input, records: records), input)
+        }
+    }
 }

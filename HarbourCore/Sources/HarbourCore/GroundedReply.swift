@@ -12,6 +12,40 @@ extension ToolPlanner {
             ReplyFallback(decision: .init(tool: .reply, arg: text), action: .reply(text), reason: reason)
         }
         let courtesy = #"(?:(?:please|svp|s'il vous plait),?\s+)?"#
+        // Retrieve one owned field from one unambiguous saved medicine. A
+        // catalog identity alone cannot supply personal directions, and the
+        // instructions of another product must never fill an empty field.
+        let directionQuestion = #"(?:what\s+(?:directions|instructions)\s+(?:are|have been)\s+(?:saved|stored|recorded)\s+for\s+|(?:show|repeat|read)\s+(?:me\s+)?(?:the\s+)?(?:saved|stored|recorded)\s+(?:directions|instructions)\s+for\s+|quelles\s+(?:consignes|instructions)\s+sont\s+(?:enregistrees|sauvegardees)\s+pour\s+|(?:montre|montrez|repete|repetez|lis|lisez)(?:-moi)?\s+les\s+(?:consignes|instructions)\s+(?:enregistrees|sauvegardees)\s+pour\s+)"#
+        let sourceOnly = #"(?:\s+(?:please\s+)?repeat\s+(?:the\s+)?(?:stored|saved|recorded)\s+(?:directions|instructions),?\s+not\s+a\s+recommendation[.!]?|\s+(?:repete|repetez)\s+(?:seulement\s+)?les\s+(?:consignes|instructions)\s+(?:enregistrees|sauvegardees),?\s+pas\s+(?:un\s+conseil|une\s+recommandation)[.!]?)?"#
+        let candidates = records.medicines.filter { medicine in
+            Catalog.names(for: medicine).contains { name in
+                let target = NSRegularExpression.escapedPattern(for: InputLanguage.folded(name))
+                return !target.isEmpty && matches(#"\A"# + courtesy + directionQuestion + #"(?:(?:the|le|la)\s+|l')?"# + target + #"\s*[?.!]?"# + sourceOnly + #"\s*\z"#)
+            }
+        }
+        if !candidates.isEmpty {
+            guard candidates.count == 1 else {
+                return reply(language == .french ? "Plusieurs médicaments enregistrés correspondent à ce nom. Précisez lequel." : "More than one saved medicine matches that name. Please specify which one.", "source_medicine_instructions")
+            }
+            let medicine = candidates[0]
+            guard medicine.name.count <= 300, [medicine.name, medicine.instructions].allSatisfy({ value in
+                !value.contains("<|") && !value.unicodeScalars.contains(where: {
+                    CharacterSet.controlCharacters.contains($0) && $0 != "\n" && $0 != "\t"
+                })
+            }) else { return nil }
+            let name = medicine.name
+            let directions = medicine.instructions
+            guard !directions.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                return reply(language == .french ? "Aucune consigne n’est enregistrée pour \(name)." : "No directions are recorded for \(name).", "source_medicine_instructions")
+            }
+            let excerpt = directions.count > 1800
+            let quoted = String(directions.prefix(1800))
+            let text = language == .french
+                ? "Consignes enregistrées pour \(name) : « \(quoted) »" + (excerpt ? " [extrait]" : "")
+                : "Recorded directions for \(name): “\(quoted)”" + (excerpt ? " [excerpt]" : "")
+            guard text.count <= maximumReplyCharacters else { return nil }
+            return reply(text, "source_medicine_instructions")
+        }
         let count = #"(?:how many\s+(?:(?:of\s+)?my\s+)?(medicines|medications|symptoms|readings|appointments)\s+(?:(?:do i have|have i|are)\s+)?(?:saved|stored|recorded)|combien\s+(?:de\s+)?(medicaments|symptomes|mesures|rendez-vous)\s+(?:(?:ai-je|sont)\s+)?(?:enregistres|enregistrees|sauvegardes|sauvegardees))"#
         if matches(#"\A"# + courtesy + count + #"\s*[?.!]?\s*\z"#) {
             let total: Int

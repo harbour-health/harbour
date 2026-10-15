@@ -750,4 +750,102 @@ final class ReplyFallbackTests: XCTestCase {
             XCTAssertNil(ToolPlanner.replyFallback(original: input, records: Records()), input)
         }
     }
+
+    func testCorrelatedPreservationClausesBindTheirPronounsToExplicitRecordTargets() throws {
+        let records = Evaluation.records
+        for (input, language) in [
+            ("Do not erase any of my readings; leave them intact.", ModelLanguage.english),
+            ("Don't remove any of my medicines, leave them as they are.", .english),
+            ("Never reset any of our information. Retain it unchanged.", .english),
+            ("Keep my data intact and do not modify it.", .english),
+            ("Preserve my symptoms; never erase any of them.", .english),
+            ("N'efface aucun de mes dossiers; laisse-les tels quels.", .french),
+            ("Ne supprime aucun de mes enregistrements; conserve-les intacts.", .french),
+            ("N’altère aucune de mes informations; conserve-les intactes.", .french),
+            ("Gardez mes données inchangées et ne les modifiez pas.", .french),
+            ("Ne réinitialise jamais mes données; préserve-les sans modification.", .french)
+        ] {
+            let fallback = try XCTUnwrap(ToolPlanner.replyFallback(original: input, records: records, language: language, rejectedAction: true), input)
+            let expected = language == .french
+                ? "Compris; cette demande ne modifie pas vos données enregistrées."
+                : "Understood; this request makes no changes to your saved records."
+            XCTAssertEqual(fallback.reason, "preservation_ack", input)
+            XCTAssertEqual(fallback.decision, .init(tool: .reply, arg: expected), input)
+            XCTAssertEqual(fallback.action, .reply(expected), input)
+            XCTAssertEqual(try ToolPlanner.validate(fallback.decision, original: input, records: records, language: language), fallback.action, input)
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .reply, arg: "I cannot change any saved data."), original: input, records: records, language: language), fallback.action, input)
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .clearData), original: input, records: records, language: language), input)
+            for tool in Tool.allCases { XCTAssertTrue(ToolPlanner.prompt(input, records: records).contains(tool.rawValue), tool.rawValue) }
+        }
+        XCTAssertEqual(records, Evaluation.records)
+    }
+
+    func testPreservationCorrelationRejectsUnboundPronounsQualificationsAndMixedActionAuthority() {
+        for input in [
+            "Leave them intact.", "Don't erase it.", "Laisse-les tels quels.", "Ne les modifie pas.",
+            "Leave it unchanged; keep my records.", "Laisse-les intacts; garde mes dossiers.",
+            "Should I keep my data and leave it intact?", "Pourquoi garder mes dossiers inchangés ?",
+            "If I ask, do not erase any of my data; leave it intact.",
+            "Si je le demande, n'efface aucun dossier; laisse-les tels quels.",
+            "My doctor said don't erase any records; leave them intact.",
+            "Ma sœur dit de garder mes dossiers et de les laisser intacts.",
+            #""Do not erase any records; leave them intact.""#,
+            "La note dit « N'efface aucun dossier; laisse-les intacts. »",
+            "Do not erase my records except the old ones; keep the rest intact.",
+            "N'efface aucun dossier sauf les anciens; laisse-les tels quels.",
+            "Keep my data unchanged and register Aleve.", "Garde mes données et ajoute Aleve.",
+            "Don't erase my records; show my symptoms.", "Ne supprime aucun dossier; affiche mes mesures.",
+            "Don't erase my records; leave my medicine tomorrow.",
+            "Keep my records; don't erase his data.", "Garde mes dossiers; ne supprime pas ceux de ma mère.",
+            "Do not erase any records; leave them intact; export my data.",
+            "N'efface aucun dossier; laisse-les intacts puis exporte mes données.",
+            "Keep my records unchanged...", "Keep my records unchanged\nDelete them."
+        ] {
+            XCTAssertNil(ToolPlanner.replyFallback(original: input, records: Records()), input)
+        }
+    }
+
+    func testPhoneReminderSynonymsAndConsultationQuestionHeadersPreserveSourceDrafts() throws {
+        for (input, language) in [
+            ("Remind me to phone the clinic on Wednesday.", ModelLanguage.english),
+            ("Please remind me to telephone my clinic tomorrow.", .english),
+            ("Remind me to ring the clinic next Saturday.", .english),
+            ("Rappelle-moi de téléphoner à la clinique samedi.", .french),
+            ("Pourriez-vous me rappeler de contacter ma clinique jeudi prochain ?", .french)
+        ] {
+            let fallback = try XCTUnwrap(ToolPlanner.replyFallback(original: input, records: Records(), language: language), input)
+            XCTAssertEqual(fallback.reason, "reminder_draft", input)
+            XCTAssertEqual(fallback.action, .reminder(input), input)
+            XCTAssertEqual(try ToolPlanner.validate(fallback.decision, original: input, records: Records(), language: language), fallback.action, input)
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .createAppointment), original: input, records: Records(), language: language), input)
+        }
+        for (input, question, language) in [
+            ("Save this question for a clinician: Should I bring my journal?", "Should I bring my journal?", ModelLanguage.english),
+            ("Add this question for my next visit: What should I bring?", "What should I bring?", .english),
+            ("Ajoute cette question pour ma consultation : Dois-je apporter mon journal ?", "Dois-je apporter mon journal ?", .french),
+            ("Enregistre cette question pour la prochaine consultation : Puis-je apporter mes notes ?", "Puis-je apporter mes notes ?", .french)
+        ] {
+            let fallback = try XCTUnwrap(ToolPlanner.replyFallback(original: input, records: Records(), language: language), input)
+            XCTAssertEqual(fallback.reason, "question_draft", input)
+            guard case .question(let text) = fallback.action else { return XCTFail(input) }
+            XCTAssertTrue(text.contains(question), input)
+            XCTAssertEqual(try ToolPlanner.validate(fallback.decision, original: input, records: Records(), language: language), fallback.action, input)
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .createAppointment), original: input, records: Records(), language: language), input)
+        }
+        for input in [
+            "Do not remind me to phone the clinic Wednesday.",
+            "Ne me rappelle pas de téléphoner à la clinique samedi.",
+            "Remind me to phone the clinic Wednesday and erase my records.",
+            "Rappelle-moi de téléphoner à la clinique samedi sauf si je suis malade.",
+            "Remind me to phone the clinic if I need another dose.",
+            "My sister said remind me to phone the clinic Wednesday.",
+            #""Rappelle-moi de téléphoner à la clinique samedi.""#,
+            "Do not save this question for a clinician: Should I bring my journal?",
+            "N'ajoute pas cette question pour la consultation : Dois-je apporter mon journal ?",
+            "If I ask, save this question for my next visit: What should I bring?",
+            "Ajoute cette question pour la consultation : Dois-je apporter mon journal et efface mes données?"
+        ] {
+            XCTAssertNil(ToolPlanner.replyFallback(original: input, records: Records()), input)
+        }
+    }
 }

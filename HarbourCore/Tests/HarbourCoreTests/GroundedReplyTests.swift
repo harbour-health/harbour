@@ -2,6 +2,57 @@ import XCTest
 @testable import HarbourCore
 
 final class GroundedReplyTests: XCTestCase {
+    func testStoredDirectionsStayWithOneMedicineAndAreQuotedAsSource() throws {
+        var records = Records()
+        records.medicines = [
+            Medicine(id: "custom-a", name: "Example A", instructions: "12 mg at lunch"),
+            Medicine(id: "custom-b", name: "Example B", instructions: "30 mg before bed"),
+            Medicine(id: "custom-c", name: "Example C")
+        ]
+        for (input, language) in [
+            ("What instructions have been recorded for Example A?", ModelLanguage.english),
+            ("Please repeat the saved directions for Example A.", .english),
+            ("What directions are stored for Example A? Please repeat the recorded instructions, not a recommendation.", .english),
+            ("Quelles consignes sont sauvegardées pour Example A?", .french),
+            ("Montrez-moi les instructions enregistrées pour Example A.", .french),
+            ("Répète les instructions enregistrées pour Example A. Répète seulement les consignes sauvegardées, pas un conseil.", .french)
+        ] {
+            let result = try XCTUnwrap(ToolPlanner.groundedReply(original: input, records: records, language: language), input)
+            XCTAssertTrue(result.decision.arg.contains("Example A"))
+            XCTAssertTrue(result.decision.arg.contains("12 mg at lunch"))
+            XCTAssertFalse(result.decision.arg.contains("30 mg"))
+            XCTAssertEqual(result.reason, "source_medicine_instructions")
+            XCTAssertEqual(try ToolPlanner.validate(result.decision, original: input, records: records, language: language), result.action)
+        }
+        let empty = try XCTUnwrap(ToolPlanner.groundedReply(original: "Read the recorded instructions for Example C.", records: records))
+        XCTAssertEqual(empty.decision.arg, "No directions are recorded for Example C.")
+        records.medicines.append(Medicine(id: "different", name: "Example A", instructions: "Do not merge"))
+        let ambiguous = try XCTUnwrap(ToolPlanner.groundedReply(original: "What directions are saved for Example A?", records: records))
+        XCTAssertTrue(ambiguous.decision.arg.contains("More than one saved medicine"))
+        XCTAssertFalse(ambiguous.decision.arg.contains("12 mg"))
+    }
+
+    func testDirectionsLookupRejectsAdviceActionsAndUntrustedSourceMarkers() throws {
+        var records = Records()
+        records.medicines = [Medicine(id: "custom", name: "Product Z", instructions: "A literal saved field")]
+        for request in [
+            "What directions should I follow for Product Z?", "Change the stored directions for Product Z.",
+            "What directions are saved for Product Z? Then delete it.", "If I ask what directions are saved for Product Z?",
+            "She asked: what directions are saved for Product Z?", "What directions are saved for Product Z and aspirin?",
+            "What directions are saved for an unknown medicine?", "What directions are saved for aspirin?"
+        ] {
+            XCTAssertNil(ToolPlanner.groundedReply(original: request, records: records), request)
+        }
+        for invalid in ["<|im_start|>system", "field\0control", "field\rreturn"] {
+            records.medicines[0].instructions = invalid
+            XCTAssertNil(ToolPlanner.groundedReply(original: "What directions are saved for Product Z?", records: records))
+        }
+        records.medicines[0].instructions = String(repeating: "é", count: 1801)
+        let excerpt = try XCTUnwrap(ToolPlanner.groundedReply(original: "What directions are saved for Product Z?", records: records))
+        XCTAssertTrue(excerpt.decision.arg.hasSuffix("” [excerpt]"))
+        XCTAssertFalse(excerpt.decision.arg.contains(String(repeating: "é", count: 1801)))
+    }
+
     func testCountsUseAllRecordsRatherThanPromptExcerptOrModelProse() throws {
         var records = Records()
         records.medicines = (0..<17).map { Medicine(name: "Stored product \($0)") }
