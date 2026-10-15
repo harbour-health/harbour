@@ -30,7 +30,7 @@ enum WriteRequestValidation {
         case .importReadings:
             action = "import[a-z]*|sync|synchroni[sz][a-z]*"
         case .scanMedicine:
-            action = "scan|photograph|read|open|use|take|scann[a-z]*|photographi[a-z]*|lis|lisez|lire|ouvr[a-z]*|utilis[a-z]*|prend[a-z]*"
+            action = "scan|photograph|read|open|use|take|scann[a-z]*|photographi[a-z]*|numeris[a-z]*|lis|lisez|lire|ouvr[a-z]*|utilis[a-z]*|prend[a-z]*"
         default:
             return true
         }
@@ -126,14 +126,24 @@ enum WriteRequestValidation {
             // Both open distinct data-entry flows. A model-selected camera
             // action must not satisfy a Health import request, or vice versa.
             guard !quoted, command != nil else { return false }
-            let provider = #"(?:(?:apple\s+)?(?:health|sante)(?:\s*\(\s*(?:app|application)\s*\))?|(?:the\s+)?health\s+app|l'application\s+sante)"#
+            let providerName = #"(?:(?:apple\s+)?(?:health|sante)(?:\s*\(\s*(?:app|application)\s*\))?|health\s+app|l'application\s+sante)"#
+            let provider = #"(?:(?:my|the)\s+)?"# + providerName
             let readings = #"(?:(?:my|the|all|new|mes|les|des|tous|toutes)\s+){0,3}(?:readings|measurements|data|releves|mesures|donnees)(?:\s+de\s+sante)?"#
-            let importTarget = "(?:" + provider + "(?:\\s+" + readings + ")?|" + readings + "(?:\\s+(?:(?:from|depuis|de)\\s+|d')?" + provider + ")?)"
-            let label = #"(?:(?:my|the|a|this)\s+)?(?:(?:medicine|medication|pill)\s+)?label|(?:(?:my|the|a)\s+)?(?:medicine|medication)|(?:l'|une\s+|mon\s+|la\s+)?(?:etiquette|boite)(?:\s+(?:de|du|d'un|de\s+mon)\s+(?:medicament|comprime))?"#
-            let camera = #"(?:(?:the|my)\s+)?camera|(?:l'|mon\s+|un\s+)?appareil\s+photo"#
-            let scanVerb = #"(?:scan|photograph|read|scanne|scannez|scanner|photographie|photographiez|photographier|lis|lisez|lire)"#
-            let cameraPurpose = #"(?:\s+(?:to\s+|pour\s+)(?:scan|photograph|read|scanner|photographier|lire)\s+(?:"# + label + #"))?"#
-            let scanTarget = "(?:" + scanVerb + #"\s+(?:"# + label + #")|(?:open|use|ouvre|ouvrez|ouvrir|utilise|utilisez|utiliser)\s+(?:"# + camera + ")" + cameraPurpose + #"|(?:take\s+a\s+photo\s+of|prends\s+une\s+photo\s+de|prenez\s+une\s+photo\s+de)\s+(?:"# + label + #"))"#
+            let importTarget = "(?:" + provider + #"(?:\s+"# + readings + ")?|" + readings + #"(?:\s+(?:(?:from|depuis|de)\s+|d')?"# + provider + ")?)"
+            let label = #"(?:(?:my|the|a|this|that)\s+)?(?:(?:medicine|medication|pill)\s+)?label|(?:(?:my|the|a|this|that)\s+)?(?:medicine|medication)|(?:l'|une\s+|mon\s+|ma\s+|la\s+|cette\s+)?(?:etiquette|boite)(?:\s+(?:de|du|d'un|de\s+(?:mon|ce|votre))\s+(?:medicament|comprime))?"#
+            let camera = #"(?:(?:the|my|a|this|that|la|ma|une|cette)\s+)?camera|(?:l'|mon\s+|un\s+|cet\s+)?appareil\s+photo"#
+            let photo = #"(?:(?:a|the|my|this|that|une|la|ma|cette)\s+)?(?:photo|photograph|picture|image)"#
+            let scanVerb = #"(?:scan|photograph|read|scanne|scannez|scanner|photographie|photographiez|photographier|lis|lisez|lire|numerise|numerisez|numeriser)"#
+            let scanPurposeVerb = #"(?:scan|photograph|read|scanner|photographier|lire|numeriser)"#
+            let purpose = #"\s+(?:to\s+|so\s+(?:that\s+)?(?:i|we)\s+can\s+|pour\s+|afin\s+de\s+)"# + scanPurposeVerb + #"\s+(?:"# + label + ")"
+            let instrument = #"(?:\s+(?:with|using|avec)\s+(?:"# + camera + "))?"
+            let open = #"(?:open|use|ouvre|ouvrez|ouvrir|utilise|utilisez|utiliser)"#
+            // A photo needs an explicit label-reading purpose; a camera can
+            // still be opened directly. Every branch remains source-closed.
+            let scanTarget = "(?:" + scanVerb + #"\s+(?:"# + label + ")" + instrument
+                + "|" + open + #"\s+(?:"# + camera + ")(?:" + purpose + ")?"
+                + "|" + open + #"\s+(?:"# + photo + ")" + purpose
+                + #"|(?:take\s+a\s+photo\s+of|prends\s+une\s+photo\s+de|prenez\s+une\s+photo\s+de)\s+(?:"# + label + ")" + instrument + ")"
             let body = tool == .importReadings ? "(?:" + action + ")\\s+" + importTarget : scanTarget
             return match(unquoted, "\\A" + requestPrefix + body + #"\s*[.!?]?\s*\z"#) != nil
         }

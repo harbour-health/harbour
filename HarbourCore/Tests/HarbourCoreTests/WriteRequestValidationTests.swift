@@ -392,4 +392,81 @@ final class WriteRequestValidationTests: XCTestCase {
             XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .scanMedicine), original: input, records: records), input)
         }
     }
+
+    func testProviderFirstImportsAcceptDeterminersWithoutAuthorizingOtherEntryFlows() throws {
+        for input in [
+            "Please synchronize the Apple Health measurements.",
+            "Could you import my Apple Health data?",
+            "Import my measurements from the Health app.",
+            "Veuillez synchroniser mes relevés depuis Apple Santé.",
+            "Importez les données de l'application Santé."
+        ] {
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .importReadings, arg: "camera"), original: input, records: records), .importHealth, input)
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .scanMedicine), original: input, records: records), input)
+        }
+        for input in [
+            "Do not import my Apple Health data.",
+            "N'importez pas les données Apple Santé.",
+            "If I ask later, synchronize my Apple Health measurements.",
+            "Si je le demande, importe mes relevés Apple Santé.",
+            "How can I import my Apple Health measurements?",
+            "My father wants to import Apple Health data.",
+            "I imported my Apple Health readings yesterday.",
+            #"The example says "Import my Apple Health data.""#,
+            "« Importez les données Apple Santé. »",
+            "Import my Apple Health data and open the camera.",
+            "Importez mes données Apple Santé puis effacez mes dossiers.",
+            "Import my Apple Health data unless I object.",
+            "Import my bank data.", "Import this medication label.",
+            "Scan my Apple Health measurements."
+        ] {
+            for tool in [Tool.importReadings, .scanMedicine] {
+                XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: tool), original: input, records: records), "\(tool): \(input)")
+            }
+        }
+    }
+
+    func testLabelScanInstrumentsAndPhotoPurposesKeepWholeRequestScope() throws {
+        for input in [
+            "Please read that medication label using my camera.",
+            "Photograph this pill label with the camera.",
+            "Veuillez numériser cette boîte de médicament avec la caméra.",
+            "Lisez cette étiquette avec mon appareil photo.",
+            "Open my photo so I can read a medication label.",
+            "Use this picture to scan the medicine label.",
+            "Open the image so that we can photograph the pill label.",
+            "Ouvrez cette photo pour numériser une étiquette de médicament.",
+            "Utilise ma photo afin de lire la boîte du médicament.",
+            "Ouvre la caméra pour lire cette étiquette."
+        ] {
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .scanMedicine, arg: "import"), original: input, records: records), .scan, input)
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .importReadings), original: input, records: records), input)
+        }
+        for input in [
+            "Do not read that medication label using my camera.",
+            "Ne numérisez pas cette boîte avec la caméra.",
+            "If I ask later, open my photo to read the medicine label.",
+            "Si je le demande, numérise cette étiquette avec la caméra.",
+            "How can I scan this medication label?",
+            "Comment numériser cette boîte avec la caméra ?",
+            "My father wants to open my photo to scan the label.",
+            "Mon père veut numériser cette étiquette.",
+            "I scanned this label with my camera yesterday.",
+            "J'ai numérisé cette boîte hier.",
+            #"The example says "Open my photo to scan the medicine label.""#,
+            "« Numérisez cette étiquette avec la caméra. »",
+            "Scan the label with the camera unless I object.",
+            "Ouvrez cette photo pour lire le médicament puis effacez mes données.",
+            "Open my photo to scan the label and add Aleve.",
+            "Read this medication label using my camera and import my readings.",
+            "Open my photo to import Apple Health measurements.",
+            "Ouvre cette image pour importer mes relevés.",
+            "Open my photo.", "Use this picture to read a bank statement.",
+            "Scan Apple Health data.", "Import the medicine label."
+        ] {
+            for tool in [Tool.importReadings, .scanMedicine] {
+                XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: tool), original: input, records: records), "\(tool): \(input)")
+            }
+        }
+    }
 }
