@@ -27,6 +27,12 @@ public enum ValidatedAction: Equatable, Sendable {
     case appointment(String), appointments
     case reply(String), symptom(String), add(Medicine, [DoseTime], MedicationFrequency?), remove(Medicine), medicines, interactions([Medicine]), reading(Reading), readings, importHealth, export, note, clear, reminder(String), reminders, schedule(Medicine, [DoseTime], MedicationFrequency?), dose(Medicine, DoseStatus), timeline(String), scan, question(String)
 }
+/// Fixed model-family compatibility policy; never selected from request content.
+public enum RoutingPromptProfile: String, Codable, CaseIterable, Sendable {
+    case current
+    case legacyQwen25 = "legacy_bf438dc_qwen25"
+}
+
 /// An application response after model routing; it is not a model prediction.
 public struct ReplyFallback: Equatable, Sendable {
     public let decision: ToolDecision
@@ -320,7 +326,7 @@ public enum ToolPlanner {
                     .joined(separator: "[.,]")
             }.joined(separator: #"\s*/\s*"#)
             let command = #"(?:save|record|log|enregistre|enregistrez|enregistrer|sauvegarde|sauvegardez|sauvegarder|note|notez|noter|consigne|consignez|consigner)\s+(?:(?:my|the|mon|ma|le|la)\s+)?"#
-            let measurement = label + #"(?:\s+(?:of|at|is|de|a|est))?\s*[:=]?\s*"# + value + #"(?:\s*"# + unit + #")?"#
+            let measurement = label + #"(?:\s+(?:of|at|as|is|de|a|comme|est))?\s*[:=]?\s*"# + value + #"(?:\s*"# + unit + #")?"#
             if matches(input, "^" + courtesy + command + measurement + #"[.!]?\s*$"#) {
                 return ReplyFallback(decision: .init(tool: .logReading), action: .reading(reading), reason: "reading_draft")
             }
@@ -358,7 +364,7 @@ public enum ToolPlanner {
         let names = Catalog.names(for: medicine).map { NSRegularExpression.escapedPattern(for: InputLanguage.folded($0)) }
         let name = "(?:" + names.joined(separator: "|") + ")"
         let englishMedicine = #"(?:(?:my|the)\s+)?(?:scheduled\s+)?(?:dose\s+of\s+)?"# + name + #"(?:\s+dose)?"#
-        let frenchMedicine = #"(?:(?:ma|la)\s+dose\s+(?:de\s+|d'))?"# + name
+        let frenchMedicine = #"(?:(?:ma|la)\s+dose\s+(?:de\s+|d')|(?:mon|ma|le|la)\s+|l')?"# + name
         let courtesy = #"(?:(?:please|svp|s'il\s+vous\s+plait|s'il\s+te\s+plait),?\s+)?"#
         let modal = #"(?:(?:(?:can|could|would|will)\s+you|(?:peux|pourrais|pouvez|pourriez)[ -](?:tu|vous))\s+)?"#
         let englishClock = #"(?:[0-9]{1,2}(?::[0-9]{2})?\s*(?:am|pm)|[0-9]{1,2}:[0-9]{2})"#
@@ -371,7 +377,11 @@ public enum ToolPlanner {
             let frenchCommand = #"(?:marque|marquez|marquer|enregistre|enregistrez|enregistrer|consigne|consignez|consigner)\s+"# + frenchMedicine + #"\s+(?:comme\s+)?"# + french
             let report = "(?:" + observed + englishMedicine + "|" + frenchObserved + frenchMedicine + ")"
             let command = modal + courtesy + "(?:" + englishCommand + "|" + frenchCommand + ")"
-            if matches(input, #"\A"# + courtesy + report + when + #"\s*[.!]?\s*\z"#)
+            // A recording clause can refer only to the one complete current
+            // report before it. It contributes no medicine, status or clock.
+            let recording = #"(?:log|record|note|save)\s+(?:it|(?:this|that)(?:\s+(?:dose|intake))?)|(?:note|notez|enregistre|enregistrez|consigne|consignez)\s+(?:cette|la)\s+(?:prise|dose)|(?:note|notez|enregistre|enregistrez|consigne|consignez)-la"#
+            let recordedReport = report + when + #"(?:\s*[;,.]\s*|\s+(?:and|et)\s+)"# + courtesy + "(?:" + recording + ")"
+            if matches(input, #"\A"# + courtesy + "(?:" + report + when + "|" + recordedReport + #")\s*[.!]?\s*\z"#)
                 || matches(input, #"\A"# + courtesy + command + when + #"\s*[.!?]?\s*\z"#) {
                 // A supplied clock must be valid; it never fabricates a schedule.
                 if matches(input, #"\s(?:at|a)\s+[0-9]"#), CareRules.times(in: original).count != 1 { return nil }
@@ -382,7 +392,8 @@ public enum ToolPlanner {
         return matches(input, #"\A"# + courtesy + later + #"[.!]?\s*\z"#) ? .later : nil
     }
 
-    public static func prompt(_ original: String, hint: String? = nil, records: Records? = nil, history: [ConversationTurn] = []) -> String {
+    public static func prompt(_ original: String, hint: String? = nil, records: Records? = nil, history: [ConversationTurn] = [], profile: RoutingPromptProfile = .current) -> String {
+        if profile == .legacyQwen25 { return legacyRoutingPrompt(original, hint: hint, records: records, history: history) }
         func escaped(_ text: String) -> String { text.replacingOccurrences(of: "<|", with: "< |") }
         func json<T: Encodable>(_ value: T) -> String {
             let encoder = JSONEncoder(); encoder.outputFormatting = .sortedKeys
@@ -436,6 +447,62 @@ public enum ToolPlanner {
         "Never register Aleve on my list." -> {"tool":"reply","arg":""}
         "Inscris Aleve sur ma liste." -> {"tool":"add_medication","arg":""}
         "N'inscris pas Aleve sur ma liste." -> {"tool":"reply","arg":""}
+        Saved records (a limited snapshot, not a complete history): \(escaped(context))
+        Optional topic (not an action): \(escaped(json(hint ?? "none")))
+        <|im_end|>
+        \(past)<|im_start|>user
+        \(escaped(original))
+        <|im_end|>
+        <|im_start|>assistant
+        """
+    }
+    // bf438dc routing builder retained verbatim for the Qwen2.5 family.
+    // Source validation remains the current shared validation after routing.
+    private static func legacyRoutingPrompt(_ original: String, hint: String? = nil, records: Records? = nil, history: [ConversationTurn] = []) -> String {
+        func escaped(_ text: String) -> String { text.replacingOccurrences(of: "<|", with: "< |") }
+        func json<T: Encodable>(_ value: T) -> String {
+            let encoder = JSONEncoder(); encoder.outputFormatting = .sortedKeys
+            return String(decoding: try! encoder.encode(value), as: UTF8.self)
+        }
+        let tools = availableTools.map(\.rawValue).joined(separator: ", ")
+        let context = records.map { records in
+            json([
+                "medicines": records.medicines.prefix(12).map { $0.name + ($0.instructions.isEmpty ? "" : ": " + String($0.instructions.prefix(100))) },
+                "readings": records.readings.prefix(6).map { $0.kind.rawValue + ": " + $0.value + " " + $0.kind.unit },
+                "symptoms": records.symptoms.prefix(4).map { String($0.text.prefix(150)) }
+            ])
+        } ?? "{}"
+        let past = history.suffix(6).map { turn in
+            "<|im_start|>" + (turn.isUser ? "user" : "assistant") + "\n" + escaped(String(turn.text.prefix(500))) + "\n<|im_end|>\n"
+        }.joined()
+        return """
+        <|im_start|>system
+        Choose the correct app action for the LAST user message, in English or French. Use conversation history to understand references. Default to reply for greetings, explanations, questions about concepts, and any request that is not an app action. Do not execute a negated request. A selected topic is only a hint. Output only {"tool":"TOOL_NAME","arg":""}.
+        Available tools: \(tools).
+        create_appointment: record an appointment, consultation, or follow-up visit. list_appointments: display saved appointments. Use copy_note only for preparing questions or notes, not booking an appointment.
+        reply: answer normally or ask for missing facts. capture_symptom: user wants to record a symptom. add_medication: put one named medicine on their list. remove_medication: remove one saved medicine. list_medications: display their medicine list. check_interactions: compare medicines for interactions. log_reading: user supplies a numeric heart rate, blood pressure, or temperature to record. list_readings: display measurements already saved, not add or import any. import_readings: synchronize Apple Health. export_data: export the records. copy_note: prepare notes for a doctor's appointment. clear_data: delete ALL records after confirmation. create_reminder: set a new reminder. list_reminders: display reminders already saved, not create one. schedule_medication: save an explicitly stated frequency or clock times for a saved medicine; frequency alone does not create clock reminders. log_dose: mark a saved medicine taken or skipped. search_timeline: find a record in health history. scan_medication: open a camera or photo to read a medicine label. save_question: save a question to ask a doctor.
+        A health question is not a request to record a symptom. Do not invent missing measurements, medicines, doses, or times. Do not select writes for quoted, hypothetical, or third-person reports. A missing fact needs reply. Record changes open review screens; the user confirms them.
+        add_medication, remove_medication, schedule_medication and log_dose require the LAST user message to identify one medicine by name. A saved medicine list cannot identify an unspecified pill or tablet. Do not guess its identity from saved records, symptoms or context. If the medicine name or another required source fact is missing, choose reply so the assistant can ask for it.
+        Setting a schedule for a medicine already in Saved records is an app action, not prescribing or changing its dose. If the user gives the medicine and an explicit frequency or clock times, choose schedule_medication; ordinary French expressions such as programmer, planifier, or horaire can ask for this same action. A French medicine name may refer to the equivalent saved name. Record frequency alone without inventing clock times. Do not require new dosage instructions to record explicit times or frequency. A request for advice about when to take a medicine, or one without explicit frequency or clock times, needs reply.
+        Examples of intent (not the current request):
+        "Tell me about your day" -> {"tool":"reply","arg":""}
+        "What is a pulse?" -> {"tool":"reply","arg":""}
+        "Leave my medicines unchanged" -> {"tool":"reply","arg":""}
+        "Never erase the information I saved" -> {"tool":"reply","arg":""}
+        "What makes grass green?" -> {"tool":"reply","arg":""}
+        "Show the measurements I recorded" -> {"tool":"list_readings","arg":""}
+        "Record pulse 68" -> {"tool":"log_reading","arg":""}
+        "Write down my aching shoulder" -> {"tool":"capture_symptom","arg":""}
+        "Put aspirin on my medicine list" -> {"tool":"add_medication","arg":""}
+        "Which pills are on my list?" -> {"tool":"list_medications","arg":""}
+        "Prepare notes for my next doctor visit" -> {"tool":"copy_note","arg":""}
+        "What reminders have I set?" -> {"tool":"list_reminders","arg":""}
+        "I swallowed my scheduled aspirin" -> {"tool":"log_dose","arg":""}
+        "Set my saved aspirin schedule for 7 am and 7 pm" -> {"tool":"schedule_medication","arg":""}
+        "Planifie les prises de mon aspirine enregistrée à 7 h et à 19 h" -> {"tool":"schedule_medication","arg":""}
+        "À quelle heure devrais-je prendre mon médicament ?" -> {"tool":"reply","arg":""}
+        "Save my optometrist appointment Friday at 10 am" -> {"tool":"create_appointment","arg":""}
+        "List my upcoming appointments" -> {"tool":"list_appointments","arg":""}
         Saved records (a limited snapshot, not a complete history): \(escaped(context))
         Optional topic (not an action): \(escaped(json(hint ?? "none")))
         <|im_end|>
@@ -597,6 +664,10 @@ public enum ToolPlanner {
             let frenchPrefix = "(?i)^(cherche|chercher|recherche|rechercher|trouve|trouver|affiche|afficher|montre|montrer)\\s+(?:(?:mon|le|la|l')\\s*)?(?:(?:historique|chronologie)(?: (?:de sante|de santé|medical|médical))?\\s*)?(?:(?:pour|sur|concernant)\\s+)?"
             var query = original.replacingOccurrences(of: englishPrefix, with: "", options: .regularExpression)
                 .replacingOccurrences(of: frenchPrefix, with: "", options: .regularExpression).trimmingCharacters(in: .whitespacesAndNewlines)
+            // A metalinguistic label describes the search target, rather than
+            // forming part of it. Quoted literals start with their delimiter
+            // and are left untouched, including any inner punctuation.
+            query = query.replacingOccurrences(of: #"(?i)\A(?:the\s+(?:word|phrase|term)|le\s+(?:mot|terme)|l'expression)\s+"#, with: "", options: .regularExpression)
             // Strip sentence punctuation only at the end of the request. A
             // closing quote stops this trim, preserving punctuation in literals.
             while let last = query.last, ".!?;".contains(last) {

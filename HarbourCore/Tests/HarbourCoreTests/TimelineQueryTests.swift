@@ -38,4 +38,26 @@ final class TimelineQueryTests: XCTestCase {
             XCTAssertEqual(HealthTimeline.entries(records: records, care: CareData(), visits: [], query: query).map(\.title), [saved], request)
         }
     }
+
+    func testSearchSeparatesMetalinguisticLabelsFromTheirLiteralTarget() throws {
+        for (input, target) in [
+            ("Search my timeline for the phrase evening walk.", "evening walk"),
+            ("Find my history for the term pottery.", "pottery"),
+            ("Cherche mon historique pour le mot lecture.", "lecture"),
+            ("Recherche la chronologie pour l'expression promenade du soir.", "promenade du soir")
+        ] {
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .searchTimeline), original: input, records: Records()), .timeline(target), input)
+        }
+    }
+
+    func testQuotedSearchContentAndOrdinaryWordPhrasesAreNotRewritten() throws {
+        for (input, target) in [
+            (#"Search my timeline for "the word pottery.""#, #""the word pottery.""#),
+            (#"Find my history for the phrase "Evening walk.""#, #""Evening walk.""#),
+            ("Search my timeline for word games.", "word games"),
+            ("Cherche mon historique pour mot de passe.", "mot de passe")
+        ] {
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .searchTimeline), original: input, records: Records()), .timeline(target), input)
+        }
+    }
 }

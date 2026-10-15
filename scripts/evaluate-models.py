@@ -13,6 +13,8 @@ from pathlib import Path
 import platform
 import subprocess
 import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from visit_stage_evidence import bind_visit_stages
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -39,11 +41,14 @@ def main():
     parser.add_argument("--grammar-checks", action="store_true")
     parser.add_argument("--diagnostics-only", action="store_true", help="Run only requested native grammar/context checks, without quality fixture inference.")
     parser.add_argument("--source-label", default="current-source", help="Report label, e.g. baseline-e8028af or final-PR.")
+    parser.add_argument("--single-visit", action="store_true", help="Explicit legacy single-call visit diagnostic; production uses staged extraction.")
     args = parser.parse_args()
     if len(set(args.models)) != len(args.models):
         parser.error("Each model must be selected at most once.")
     if args.baseline_prompts != (ROOT / "baseline-adapter.json").is_file():
         parser.error("Use --baseline-prompts only in the preserved workspace from prepare-eval-baseline.py; that workspace requires the flag.")
+    if args.single_visit and args.baseline_prompts:
+        parser.error("--single-visit is a current-source diagnostic; the preserved baseline adapter has its own visit path.")
     if args.diagnostics_only and not (args.grammar_checks or args.context_checks):
         parser.error("--diagnostics-only requires --grammar-checks or --context-checks.")
     if sys.platform != "linux":
@@ -66,7 +71,7 @@ def main():
     bin_path = subprocess.check_output(["swift", "build", "--package-path", str(ROOT / "HarbourRuntime"), "--configuration", "release", "--show-bin-path"], env=environment, text=True).strip()
     executable = Path(bin_path) / "model-eval"
     source_paths = sorted({"HarbourRuntime/Package.swift", "HarbourCore/Package.swift",
-        "scripts/evaluate-models.py", "scripts/prepare-linux-runtime.py", "scripts/cache-eval-models.py",
+        "scripts/evaluate-models.py", "scripts/visit_stage_evidence.py", "scripts/prepare-linux-runtime.py", "scripts/cache-eval-models.py",
         "scripts/model-eval/Dockerfile"} | {name for name in ["baseline-adapter.json", "baseline-workspace.json"] if (ROOT / name).is_file()} | {
         str(path.relative_to(ROOT)) for directory in [ROOT / "HarbourCore/Sources", ROOT / "HarbourRuntime/Sources"]
         for path in directory.rglob("*") if path.is_file() and path.suffix in {".swift", ".h", ".modulemap"}})
@@ -83,7 +88,9 @@ def main():
             "backend": "Linux CPU", "sampling": "production grammar sampler followed by greedy", "JSONStopping": "production JSONEnvelope",
             "efforts": args.efforts, "repeats": args.repeats, "repeatScope": "standard effort timingSubset only", "split": args.split,
             "tokenBudgets": {"routing": {"quick": 96, "standard": 160, "extended": 256}, "reply": {"quick": 256, "standard": 512, "extended": 768}, "title": {"en": 48, "fr-CA": 96}, "visit": 650},
-            "grammarPolicy": {"routing": "production available-tool empty-argument grammar", "prose": "none", "title": "French only" if args.baseline_prompts else "both languages", "visit": "none" if args.baseline_prompts else "source-grounded quote/action alternatives and bounded count; appointments category"},
+            "grammarPolicy": {"routing": "production available-tool empty-argument grammar", "prose": "none", "title": "French only" if args.baseline_prompts else "both languages", "visit": "none" if args.baseline_prompts else ("legacy source-grounded single call" if args.single_visit else "all-source-unit classifier then unbound per-selected-unit extraction; full-source validation")},
+            "visitBudgetScope": "650 per generation call; staged total is 650 times the recorded call count. Different pipeline work, not equal-total-compute model IQ.",
+            "singleVisitDiagnostic": args.single_visit,
             "ids": args.ids, "baselinePrompts": args.baseline_prompts, "contextChecks": args.context_checks, "grammarChecks": args.grammar_checks, "diagnosticsOnly": args.diagnostics_only},
         "commands": [], "promptSHA256": {}, "limits": "Production native CPU path; no physical iPhone/Metal or clinical validation."}
     metadata_file = output / "metadata.json"
@@ -99,6 +106,7 @@ def main():
             if args.context_checks: command += ["--context-checks"]
             if args.grammar_checks: command += ["--grammar-checks"]
             if args.diagnostics_only: command += ["--diagnostics-only"]
+            if args.single_visit: command += ["--single-visit"]
             metadata["commands"].append(command)
             metadata_file.write_text(json.dumps(metadata, indent=2) + "\n")
             print(f"Evaluating {name} sequentially through production Swift runtime", flush=True)
@@ -130,6 +138,12 @@ def main():
                 for row in rows if row.get("prompt")]
             metadata.setdefault("responseGrammarSHA256", {})[name] = [{"caseID": row["caseID"], "effort": row["effort"], "repeatIndex": row["repeatIndex"],
                 "sha256": hashlib.sha256(row["responseGrammar"].encode()).hexdigest() if row.get("responseGrammar") else None} for row in rows]
+            stage_bindings = [binding for row in rows if (binding := bind_visit_stages(row)) is not None]
+            if not args.baseline_prompts and not args.single_visit:
+                if len(stage_bindings) != sum(row.get("kind") == "visit" for row in rows):
+                    raise RuntimeError("A production visit row is missing its separately labelled stage evidence.")
+            metadata.setdefault("visitStageBindings", {})[name] = stage_bindings
+            metadata.setdefault("nativeVisitExtractionPipeline", {})[name] = summary.get("visitExtractionPipeline")
         metadata["complete"] = True
     finally:
         metadata["finishedUTC"] = datetime.datetime.now(datetime.timezone.utc).isoformat()

@@ -3,6 +3,11 @@ import HarbourCore
 import HarbourRuntime
 import llama
 
+// Map the runtime's family flag in this consumer, which depends on HarbourCore.
+private extension ModelPromptFormat {
+    var routingPromptProfile: RoutingPromptProfile { usesLegacyRoutingPrompt ? .legacyQwen25 : .current }
+}
+
 private struct EvalTurn: Decodable {
     let isUser: Bool
     let text: String
@@ -77,6 +82,9 @@ private struct EvalResult: Codable {
     var sampler = "greedy; grammar constraint when enabled"
     var routeOutput: String?
     var output = ""
+    var outputKind: String?
+    var routingPromptProfile: RoutingPromptProfile?
+    var visitExtractionTrace: VisitExtractionRun?
     var observedTool: String?
     var finalTool: String?
     var actionValidationSucceeded: Bool?
@@ -111,6 +119,7 @@ private struct Options {
     var contextChecks = false
     var grammarChecks = false
     var diagnosticsOnly = false
+    var singleVisit = false
     static func parse() throws -> Self {
         var result = Self(), arguments = Array(CommandLine.arguments.dropFirst())
         while !arguments.isEmpty {
@@ -119,6 +128,7 @@ private struct Options {
             if key == "--context-checks" { result.contextChecks = true; continue }
             if key == "--grammar-checks" { result.grammarChecks = true; continue }
             if key == "--diagnostics-only" { result.diagnosticsOnly = true; continue }
+            if key == "--single-visit" { result.singleVisit = true; continue }
             guard !arguments.isEmpty else { throw NSError(domain: "Options", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing value for \(key)"]) }
             let value = arguments.removeFirst()
             switch key {
@@ -138,7 +148,7 @@ private struct Options {
               (1...5).contains(result.repeats), ["all", "dev", "heldout"].contains(result.split),
               (!result.diagnosticsOnly || result.grammarChecks || result.contextChecks),
               !result.efforts.isEmpty, result.efforts.allSatisfy({ ["quick", "standard", "extended"].contains($0) }) else {
-            throw NSError(domain: "Options", code: 1, userInfo: [NSLocalizedDescriptionKey: "Usage: model-eval --model FILE --model-id small|balanced|qwen35 --suite JSON --output JSONL [--efforts quick,standard,extended] [--repeats 1...5] [--split all|dev|heldout] [--ids comma-separated IDs] [--baseline-prompts] [--context-checks] [--grammar-checks]"])
+            throw NSError(domain: "Options", code: 1, userInfo: [NSLocalizedDescriptionKey: "Usage: model-eval --model FILE --model-id small|balanced|qwen35 --suite JSON --output JSONL [--efforts quick,standard,extended] [--repeats 1...5] [--split all|dev|heldout] [--ids comma-separated IDs] [--baseline-prompts] [--single-visit] [--context-checks] [--grammar-checks]"])
         }
         return result
     }
@@ -214,7 +224,8 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                     do {
                         switch fixture.kind {
                         case "routing":
-                            prompt = ModelPrompts.localized(ToolPlanner.prompt(fixture.input, hint: fixture.hint, records: records, history: fixture.turns), language: fixture.language, purpose: .routing)
+                            result.routingPromptProfile = format.routingPromptProfile
+                            prompt = ModelPrompts.localized(ToolPlanner.prompt(fixture.input, hint: fixture.hint, records: records, history: fixture.turns, profile: format.routingPromptProfile), language: fixture.language, purpose: .routing)
                             result.budget = routingBudget
                             result.responseGrammar = try ToolOutputGrammar.make(allowedTools: ToolPlanner.availableTools.map(\.rawValue))
                             let routeStart = Date()
@@ -281,11 +292,33 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                             result.output = try await runtime.generate(file: model, prompt: prompt, maxTokens: result.budget, grammar: grammar, promptFormat: format)
                             if let title = ModelPrompts.parseTitle(result.output) { result.actionSummary = .init(type: "title", text: title); result.validationSucceeded = true }
                         case "visit":
-                            prompt = ModelPrompts.localized(try VisitReview.prompt(fixture.input, medicines: records.medicines, language: fixture.language), language: fixture.language, purpose: .visit)
                             result.budget = 650
-                            result.responseGrammar = options.baseline ? nil : VisitReview.outputGrammar(transcript: fixture.input, medicines: records.medicines)
-                            result.output = try await runtime.generate(file: model, prompt: prompt, maxTokens: 650, grammar: result.responseGrammar, promptFormat: format)
-                            let summary = try VisitReview.parse(result.output, transcript: fixture.input, medicines: records.medicines)
+                            let summary: VisitSummary
+                            if options.singleVisit || options.baseline {
+                                prompt = ModelPrompts.localized(try VisitReview.prompt(fixture.input, medicines: records.medicines, language: fixture.language), language: fixture.language, purpose: .visit)
+                                result.responseGrammar = options.baseline ? nil : VisitReview.outputGrammar(transcript: fixture.input, medicines: records.medicines)
+                                result.output = try await runtime.generate(file: model, prompt: prompt, maxTokens: 650, grammar: result.responseGrammar, promptFormat: format)
+                                result.outputKind = "single_model_generation"
+                                summary = try VisitReview.parse(result.output, transcript: fixture.input, medicines: records.medicines)
+                            } else {
+                                let trace = await VisitExtraction.run(transcript: fixture.input, medicines: records.medicines, language: fixture.language, modelID: options.modelID) { request in
+                                    let logical = ModelPrompts.localized(request.prompt, language: fixture.language, purpose: .visit)
+                                    let prepared = try format.prepare(logical)
+                                    var generation = VisitStageGeneration(output: "", preparedPrompt: prepared, modelID: options.modelID, configuration: ["context": "4096", "batch": "512", "threads": String(max(1, min(4, ProcessInfo.processInfo.processorCount - 2))), "effort": effort, "sampler": "greedy; grammar constraint", "stopAtJSON": "true"])
+                                    do { generation.output = try await runtime.generate(file: model, prompt: logical, maxTokens: request.maximumTokens, grammar: request.grammar, promptFormat: format) }
+                                    catch { generation.error = error is CancellationError ? "cancelled" : error.localizedDescription }
+                                    generation.promptTokens = try? await runtime.tokenCount(file: model, prompt: logical, promptFormat: format)
+                                    return generation
+                                }
+                                result.visitExtractionTrace = trace; result.outputKind = trace.outputOrigin; result.output = trace.assembledOutput
+                                result.actionOrigin = trace.outputOrigin
+                                if let first = trace.stages.first {
+                                    prompt = ModelPrompts.localized(first.request.prompt, language: fixture.language, purpose: .visit)
+                                    result.responseGrammar = first.request.grammar
+                                }
+                                guard trace.completed, let accepted = trace.acceptedSummary else { throw VisitReviewError.invalidOutput }
+                                summary = accepted
+                            }
                             result.actionSummary = .init(type: "visit", highlightQuotes: summary.highlights.map(\.quote), followUpQuotes: summary.followUps.map(\.quote), appointmentQuotes: (summary.appointments ?? []).map(\.quote), medicines: summary.medicines.map { .init(action: $0.action.rawValue, medicineID: $0.medicine.id, name: $0.medicine.name, instructions: $0.medicine.instructions, quote: $0.quote, frequency: $0.frequency.map { .init(count: $0.count, period: $0.period.rawValue) }, times: $0.times.map { String(format: "%02d:%02d", $0.hour, $0.minute) }) })
                             result.validationSucceeded = true
                         default: break
@@ -382,6 +415,15 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                 ("title.extra-key", TitleOutputGrammar.make(), #"{"title":"A short title","extra":true}"#, false)
             ]
             if !options.baseline {
+                let sourceUnits = VisitExtraction.sourceUnits("First source fact. Second source fact.")
+                let classifierGrammar = try VisitExtraction.classificationRequest(units: sourceUnits, language: .english).grammar
+                tests += [
+                    ("visit.classifier-complete-ids", classifierGrammar, #"{"units":[{"id":0,"kinds":["medicine"]},{"id":1,"kinds":["followUp","appointment"]}]}"#, true),
+                    ("visit.classifier-model-decline", classifierGrammar, #"{"units":[{"id":0,"kinds":["none"]},{"id":1,"kinds":["none"]}]}"#, true),
+                    ("visit.classifier-missing-id", classifierGrammar, #"{"units":[{"id":0,"kinds":["medicine"]}]}"#, false),
+                    ("visit.classifier-changed-id", classifierGrammar, #"{"units":[{"id":0,"kinds":["medicine"]},{"id":2,"kinds":["followUp"]}]}"#, false),
+                    ("visit.classifier-unknown-kind", classifierGrammar, #"{"units":[{"id":0,"kinds":["prescribe"]},{"id":1,"kinds":["none"]}]}"#, false)
+                ]
                 tests += [
                     ("visit.appointment-objects", VisitReview.outputGrammar(), #"{"highlights":[],"medicines":[],"followUps":[],"appointments":[{"quote":"Votre rendez-vous est mardi à 14 h."}]}"#, true),
                     ("visit.bare-appointments", VisitReview.outputGrammar(), #"{"highlights":[],"medicines":[],"followUps":[],"appointments":["Your appointment is Tuesday."]}"#, false),
@@ -467,7 +509,7 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                 result.seconds = Date().timeIntervalSince(started); rows += 1; try emit(result)
             }
         }
-        let summary: [String: Any] = ["suite": suite.id, "suiteVersion": suite.version, "model": options.modelID, "rows": rows, "complete": true, "baselinePrompts": options.baseline, "contextChecks": options.contextChecks, "diagnosticsOnly": options.diagnosticsOnly, "availableTools": ToolPlanner.availableTools.map(\.rawValue)]
+        let summary: [String: Any] = ["suite": suite.id, "suiteVersion": suite.version, "model": options.modelID, "rows": rows, "complete": true, "baselinePrompts": options.baseline, "contextChecks": options.contextChecks, "diagnosticsOnly": options.diagnosticsOnly, "availableTools": ToolPlanner.availableTools.map(\.rawValue), "singleVisit": options.singleVisit || options.baseline, "visitExtractionPipeline": ["protocolVersion": options.singleVisit || options.baseline ? "single-visit" : "staged-visit-v1", "classificationTokens": VisitExtraction.classificationTokens, "extractionTokens": VisitExtraction.extractionTokens, "maximumUnitsPerChunk": VisitExtraction.maximumUnits, "maximumChunkCharacters": VisitReview.chunkCharacters, "maximumRetainedContextCharacters": VisitExtraction.maximumRetainedContextCharacters]]
         FileHandle.standardOutput.write(try JSONSerialization.data(withJSONObject: summary, options: [.sortedKeys])); FileHandle.standardOutput.write(Data([10]))
     }
 }

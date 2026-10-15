@@ -3,6 +3,11 @@ import CryptoKit
 import HarbourRuntime
 import HarbourCore
 
+// Map the runtime's family flag in this consumer, which depends on HarbourCore.
+extension ModelPromptFormat {
+    var routingPromptProfile: RoutingPromptProfile { usesLegacyRoutingPrompt ? .legacyQwen25 : .current }
+}
+
 enum ModelChoice: String, CaseIterable, Identifiable, Codable {
     case automatic, small, balanced, qwen35
     static let defaultModel: ModelChoice = .automatic
@@ -163,18 +168,43 @@ private final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchec
         status = L10n.string("Ready"); return destination
     }
     func cancelDownload() { downloadCancelled = true; activeDownload?.cancel() }
-    func generate(_ prompt: String, maxTokens: Int? = nil, allowedTools: [String]? = nil, responseGrammar: String? = nil, stopAtJSON: Bool = true, purpose: ModelPromptPurpose = .prose) async throws -> String {
+    func generate(_ prompt: String, maxTokens: Int? = nil, allowedTools: [String]? = nil, responseGrammar: String? = nil, stopAtJSON: Bool = true, purpose: ModelPromptPurpose = .prose, model: ModelChoice? = nil) async throws -> String {
         guard !generating else { throw NSError(domain: "Inference", code: 1, userInfo: [NSLocalizedDescriptionKey: L10n.string("The model is already working on a request.")]) }
         generating = true
         defer { generating = false }
         guard allowedTools == nil || responseGrammar == nil else { throw ModelError.grammar }
         let grammar = try allowedTools.map { try ToolOutputGrammar.make(allowedTools: $0) } ?? responseGrammar
-        let chosen = resolved, url = try await ensure(chosen)
+        let chosen = model ?? resolved
+        guard chosen != .automatic else { throw ModelError.load }
+        let url = try await ensure(chosen)
         status = L10n.string("Thinking")
         return try await runtime.generate(file: url, prompt: ModelPrompts.localized(prompt, language: language, purpose: purpose), maxTokens: maxTokens ?? effort.tokens, grammar: grammar, stopAtJSON: stopAtJSON, promptFormat: chosen.promptFormat)
     }
+    /// The caller resolves Automatic once for the whole visit and supplies that
+    /// same model and language for every stage. Existing chat generation is unchanged.
+    func generateVisitStage(_ request: VisitStageRequest, model: ModelChoice, language: ModelLanguage) async throws -> VisitStageGeneration {
+        guard model != .automatic, !generating else { throw ModelError.load }
+        generating = true
+        defer { generating = false }
+        let logical = ModelPrompts.localized(request.prompt, language: language, purpose: .visit)
+        let prepared = try model.promptFormat.prepare(logical)
+        var generation = VisitStageGeneration(output: "", preparedPrompt: prepared, modelID: model.rawValue, configuration: [
+            "modelSHA256": model.hash, "promptFormat": model.promptFormat == .qwen35 ? "qwen35" : "qwen25",
+            "effort": effort.rawValue, "context": "4096", "batch": "512",
+            "threads": String(max(1, min(4, ProcessInfo.processInfo.processorCount - 2))),
+            "sampler": "greedy; grammar constraint", "stopAtJSON": "true"
+        ])
+        do {
+            let url = try await ensure(model)
+            status = L10n.string("Thinking")
+            generation.output = try await runtime.generate(file: url, prompt: logical, maxTokens: request.maximumTokens, grammar: request.grammar, promptFormat: model.promptFormat)
+        } catch { generation.error = error is CancellationError ? "cancelled" : error.localizedDescription }
+        return generation
+    }
+
     func chatDecision(_ input: String, hint: String? = nil, records: Records, history: [ConversationTurn] = []) async throws -> ToolDecision {
-        let output = try await generate(ToolPlanner.prompt(input, hint: hint, records: records, history: history), allowedTools: ToolPlanner.availableTools.map(\.rawValue), purpose: .routing)
+        let chosen = resolved
+        let output = try await generate(ToolPlanner.prompt(input, hint: hint, records: records, history: history, profile: chosen.promptFormat.routingPromptProfile), allowedTools: ToolPlanner.availableTools.map(\.rawValue), purpose: .routing, model: chosen)
         let decision = try ToolPlanner.parse(output)
         var rejectedAction = false
         if decision.tool != .reply {

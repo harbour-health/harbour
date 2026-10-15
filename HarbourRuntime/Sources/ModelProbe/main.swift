@@ -2,6 +2,11 @@ import Foundation
 import HarbourCore
 import HarbourRuntime
 
+// Map the runtime's family flag in this consumer, which depends on HarbourCore.
+private extension ModelPromptFormat {
+    var routingPromptProfile: RoutingPromptProfile { usesLegacyRoutingPrompt ? .legacyQwen25 : .current }
+}
+
 private struct ProbeAction: Codable {
     var type: String
     var medicineID: String?
@@ -53,6 +58,9 @@ private struct ProbeResult: Codable {
     var budget: Int
     var seconds: Double = 0
     var rawOutput = ""
+    var outputKind: String?
+    var routingPromptProfile: RoutingPromptProfile?
+    var visitExtractionTrace: VisitExtractionRun?
     var rawTool: String?
     var effectiveTool: String?
     var expectedTool: String?
@@ -77,10 +85,11 @@ private struct ProbeResult: Codable {
 @main struct Probe {
     static func main() async throws {
         let arguments = CommandLine.arguments
-        guard arguments.count > 1 else { print("Usage: model-probe /path/model.gguf [--cpu] [--transcripts-only] [--qwen35] [--report FILE.jsonl]"); return }
+        guard arguments.count > 1 else { print("Usage: model-probe /path/model.gguf [--cpu] [--transcripts-only] [--single-visit] [--qwen35] [--report FILE.jsonl]"); return }
         let file = URL(fileURLWithPath: arguments[1]), runtime = LocalModel(useGPU: !arguments.contains("--cpu"))
         let format: ModelPromptFormat = arguments.contains("--qwen35") ? .qwen35 : .qwen25
         let transcriptsOnly = arguments.contains("--transcripts-only")
+        let singleVisit = arguments.contains("--single-visit")
         var report: FileHandle?
         if let position = arguments.firstIndex(of: "--report") {
             guard position + 1 < arguments.count else { throw NSError(domain: "Probe", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing --report path."]) }
@@ -100,9 +109,10 @@ private struct ProbeResult: Codable {
         var passed = 0
         for (index, fixture) in cases.enumerated() {
             let (input, expected) = fixture, start = Date(), records = Evaluation.records
-            let routingPrompt = ModelPrompts.localized(ToolPlanner.prompt(input, records: records), language: .english, purpose: .routing)
+            let routingPrompt = ModelPrompts.localized(ToolPlanner.prompt(input, records: records, profile: format.routingPromptProfile), language: .english, purpose: .routing)
             let grammar = try ToolOutputGrammar.make(allowedTools: ToolPlanner.availableTools.map(\.rawValue))
             var result = ProbeResult(kind: "routing", caseID: "routing.\(index)", input: input, records: records, prompt: try format.prepare(routingPrompt), responseGrammar: grammar, budget: 160, expectedTool: expected.rawValue)
+            result.routingPromptProfile = format.routingPromptProfile
             var decision: ToolDecision?
             do {
                 result.rawOutput = try await runtime.generate(file: file, prompt: routingPrompt, grammar: grammar, promptFormat: format)
@@ -146,8 +156,31 @@ private struct ProbeResult: Codable {
             let grammar = VisitReview.outputGrammar(transcript: fixture.transcript, medicines: Evaluation.records.medicines)
             var result = ProbeResult(kind: "visit", caseID: fixture.name, input: fixture.transcript, records: records, prompt: try format.prepare(prompt), responseGrammar: grammar, budget: 650)
             do {
-                result.rawOutput = try await runtime.generate(file: file, prompt: prompt, maxTokens: 650, grammar: grammar, promptFormat: format)
-                let summary = try VisitReview.parse(result.rawOutput, transcript: fixture.transcript, medicines: records.medicines)
+                let summary: VisitSummary
+                if singleVisit {
+                    result.rawOutput = try await runtime.generate(file: file, prompt: prompt, maxTokens: 650, grammar: grammar, promptFormat: format)
+                    result.outputKind = "single_model_generation"
+                    summary = try VisitReview.parse(result.rawOutput, transcript: fixture.transcript, medicines: records.medicines)
+                } else {
+                    let trace = await VisitExtraction.run(transcript: fixture.transcript, medicines: records.medicines, language: language, modelID: file.lastPathComponent) { request in
+                        let logical = ModelPrompts.localized(request.prompt, language: language, purpose: .visit)
+                        let prepared = try format.prepare(logical)
+                        var generation = VisitStageGeneration(output: "", preparedPrompt: prepared, modelID: file.lastPathComponent, configuration: ["context": "4096", "batch": "512", "threads": String(max(1, min(4, ProcessInfo.processInfo.processorCount - 2))), "sampler": "greedy; grammar constraint", "stopAtJSON": "true"])
+                        do { generation.output = try await runtime.generate(file: file, prompt: logical, maxTokens: request.maximumTokens, grammar: request.grammar, promptFormat: format) }
+                        catch { generation.error = error is CancellationError ? "cancelled" : error.localizedDescription }
+                        generation.promptTokens = try? await runtime.tokenCount(file: file, prompt: logical, promptFormat: format)
+                        return generation
+                    }
+                    result.visitExtractionTrace = trace; result.outputKind = trace.outputOrigin; result.rawOutput = trace.assembledOutput
+                    result.actionOrigin = trace.outputOrigin
+                    if let first = trace.stages.first {
+                        if let prepared = first.generation?.preparedPrompt { result.prompt = prepared }
+                        else { result.prompt = try format.prepare(ModelPrompts.localized(first.request.prompt, language: language, purpose: .visit)) }
+                        result.responseGrammar = first.request.grammar
+                    }
+                    guard trace.completed, let accepted = trace.acceptedSummary else { throw VisitReviewError.invalidOutput }
+                    summary = accepted
+                }
                 result.acceptedSummary = summary; result.validationSucceeded = true
                 result.fixtureMatched = fixture.matches(result.rawOutput)
                 result.semanticFixtureMatched = fixture.matches(result.rawOutput, allowTerminalPeriodEquivalence: true)

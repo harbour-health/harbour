@@ -7,6 +7,9 @@ public enum ModelPromptFormat: Sendable {
     /// Qwen2.5 uses the compact conversational policy shared by Small and Balanced.
     public var usesCompactProsePolicy: Bool { self == .qwen25 }
 
+    /// Small and Balanced retain their established routing prompt; weights never choose by source content.
+    public var usesLegacyRoutingPrompt: Bool { self == .qwen25 }
+
     public func prepare(_ prompt: String) throws -> String {
         guard self == .qwen35 else { return prompt }
         let assistant = "<|im_start|>assistant"

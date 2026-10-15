@@ -597,3 +597,4 @@
 "Times" = "Heures";
 "Edit details" = "Modifier les détails";
 "Add medication" = "Ajouter un médicament";
+"Review the transcript before saving changes; some details could not be confirmed." = "Relisez la transcription avant d’enregistrer les modifications; certains détails n’ont pas pu être confirmés.";

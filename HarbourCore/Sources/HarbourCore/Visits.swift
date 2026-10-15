@@ -54,6 +54,8 @@ public struct DoctorVisit: Codable, Equatable, Sendable, Identifiable {
     public var transcriptionWarning: String?
     public var summary: VisitSummary?
     public var medicineBaseline: [Medicine]?
+    /// Optional for compatibility with visits saved before staged extraction.
+    public var extractionRuns: [VisitExtractionRun]?
     public var appliedChanges: [VisitMedicineChange]
     public init(id: UUID = UUID(), title: String = "Doctor visit", date: Date = .now, duration: TimeInterval = 0, transcript: String = "", audioFilename: String? = nil, interrupted: Bool = false) {
         self.id = id; self.title = title; self.date = date; self.duration = duration

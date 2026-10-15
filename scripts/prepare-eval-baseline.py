@@ -54,7 +54,7 @@ def main():
         for path in sorted((output / "HarbourCore").rglob("*")) if path.is_file()}
     shutil.copytree(ROOT / "HarbourRuntime", output / "HarbourRuntime",
         ignore=shutil.ignore_patterns(".build", "Vendor", ".swiftpm", "__pycache__"))
-    paths = ["scripts/evaluate-models.py", "scripts/prepare-linux-runtime.py", "scripts/cache-eval-models.py",
+    paths = ["scripts/evaluate-models.py", "scripts/visit_stage_evidence.py", "scripts/prepare-linux-runtime.py", "scripts/cache-eval-models.py",
         "scripts/prepare-eval-baseline.py", "scripts/collect-model-evidence.py", "scripts/capture-eval-host.py",
         "scripts/model-eval/Dockerfile", "evaluation/harbour-model-quality-v1.json",
         "evaluation/score.py", "evaluation/provenance.py", "evaluation/baseline/ModelPrompts.swift", "evaluation/baseline/ModelPrompts.json",

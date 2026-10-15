@@ -14,6 +14,8 @@ import platform
 import re
 import subprocess
 import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from visit_stage_evidence import bind_visit_stages
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -84,7 +86,7 @@ def main():
     subprocess.run(["swift", "build", "--package-path", str(ROOT / "HarbourRuntime"), "--configuration", "release", "--product", "model-probe", "--jobs", "4"], env=environment, check=True)
     bin_path = subprocess.check_output(["swift", "build", "--package-path", str(ROOT / "HarbourRuntime"), "--configuration", "release", "--show-bin-path"], env=environment, text=True).strip()
     executable = Path(bin_path) / "model-probe"
-    sources = sorted({"HarbourRuntime/Package.swift", "HarbourCore/Package.swift", "scripts/evaluate-model-probe.py", "scripts/prepare-linux-runtime.py", "scripts/cache-eval-models.py", "scripts/model-eval/Dockerfile"} | {
+    sources = sorted({"HarbourRuntime/Package.swift", "HarbourCore/Package.swift", "scripts/evaluate-model-probe.py", "scripts/visit_stage_evidence.py", "scripts/prepare-linux-runtime.py", "scripts/cache-eval-models.py", "scripts/model-eval/Dockerfile"} | {
         str(path.relative_to(ROOT)) for directory in [ROOT / "HarbourCore/Sources", ROOT / "HarbourRuntime/Sources"]
         for path in directory.rglob("*") if path.is_file() and path.suffix in {".swift", ".h", ".modulemap"}})
     specifications = json.loads((models / "model-provenance.json").read_text())
@@ -99,7 +101,8 @@ def main():
             "sampling": "production grammar sampler followed by greedy", "JSONStopping": "production JSONEnvelope",
             "tokenBudgets": {"routing": 160, "reply": 512, "visit": 650}, "repeats": 1, "modelsSequential": True,
             "language": "English app locale for routing/replies; French locale for French visit fixture",
-            "grammarPolicy": "production available-tool grammar; source-grounded visit grammar", "recordExecution": False},
+            "grammarPolicy": "production available-tool grammar; all-source-unit classifier and unbound per-selected-unit visit extraction", "recordExecution": False,
+            "visitBudgetScope": "650 per generation call; staged total is 650 times recorded calls, not equal-total-compute model IQ."},
         "commands": [], "summary": {}, "reportSHA256": {}, "stdoutSHA256": {}, "stderrSHA256": {}, "inputBindings": {}, "exitCodes": {},
         "qualityPolicy": "Exit1 is a completed legacy quality failure. Legacy fixture.matches verdict is preserved; semantic visit verdict permits only source-faithful nonempty instructions differing in terminal period. All other action/name/frequency/time/raw-recall guards remain unchanged. Raw recall, validator and fallback results remain separate; source safety requires review.",
         "limits": "Supplemental production catalog; no frozen-v1 appointment recall claim and no physical iPhone/Metal evaluation."}
@@ -134,6 +137,10 @@ def main():
                 "recordsSHA256": text_digest(json.dumps(row["records"], sort_keys=True, ensure_ascii=False, separators=(",", ":"))),
                 "promptSHA256": text_digest(row["prompt"]), "responseGrammarSHA256": text_digest(row["responseGrammar"]),
                 "replyPromptSHA256": text_digest(row["replyPrompt"]) if row.get("replyPrompt") else None} for row in rows]
+            stage_bindings = [binding for row in rows if (binding := bind_visit_stages(row, raw_output_field="rawOutput")) is not None]
+            if len(stage_bindings) != sum(row.get("kind") == "visit" for row in rows):
+                raise RuntimeError("A production visit row is missing its separately labelled stage evidence.")
+            metadata.setdefault("visitStageBindings", {})[name] = stage_bindings
             save()
             print(f"{name} supplemental complete: {json.dumps(metadata['summary'][name], sort_keys=True)}", flush=True)
         metadata["complete"] = True

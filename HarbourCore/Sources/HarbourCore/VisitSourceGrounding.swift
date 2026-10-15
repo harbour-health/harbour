@@ -23,10 +23,22 @@ enum VisitSourceGrounding {
         case .start:
             ("start|begin|add|prescribe", "commencer|commencez|commence|debuter|debutez|debute|ajouter|ajoutez|ajoute|prescrire|prescrivez")
         case .update:
-            ("increase|decrease|change|take|continue|reduce|switch|update", "augmenter|augmentez|augmente|diminuer|diminuez|diminue|modifier|modifiez|modifie|prendre|prenez|prends|continuer|continuez|continue|reduire|reduisez|reduit|changer|changez|change")
+            ("increase|decrease|change|take|continue|reduce|switch|update|replace", "remplacer|remplacez|remplace|augmenter|augmentez|augmente|diminuer|diminuez|diminue|modifier|modifiez|modifie|prendre|prenez|prends|continuer|continuez|continue|reduire|reduisez|reduit|changer|changez|change")
         case .stop:
             ("stop|discontinue", "arreter|arretez|arrete|cesser|cessez|cesse|suspendre|suspendez")
         }
+    }
+
+    // Replacement refers to directions for one named medicine, not swapping
+    // one medicine for another. Keep this object explicit in every source check.
+    private static let instructionObject = #"(?:(?:(?:the|your|my|our)\s+)?(?:instructions|directions)\s+(?:for|of)\s+|(?:(?:les|des|vos|tes)\s+)?(?:instructions|consignes)\s+(?:de\s+|du\s+|pour\s+|d')|(?:(?:la|votre|ta)\s+)?posologie\s+(?:de\s+|du\s+|pour\s+|d'))"#
+
+    private static func hasInstructionObject(_ tail: String) -> Bool {
+        tail.range(of: "^\\s+" + instructionObject, options: .regularExpression) != nil
+    }
+
+    private static func hasInstructionReplacementObject(verb: String, tail: String) -> Bool {
+        !["replace", "remplacer", "remplacez", "remplace"].contains(verb) || hasInstructionObject(tail)
     }
 
     private static func instructionRanges(_ foldedSource: String) -> [Range<String.Index>] {
@@ -35,6 +47,9 @@ enum VisitSourceGrounding {
         let matches = expression.matches(in: foldedSource, range: NSRange(foldedSource.startIndex..., in: foldedSource)).compactMap { Range($0.range, in: foldedSource) }
         var instructions: [Range<String.Index>] = []
         for range in matches {
+            let tail = String(foldedSource[range.upperBound...])
+            guard hasInstructionReplacementObject(verb: String(foldedSource[range]), tail: tail),
+                  !hasInstructionObject(tail) || !quotationRanges(foldedSource).contains(where: { $0.contains(range.lowerBound) }) else { continue }
             // An infinitive in "cessez de prendre" or "begin to take" belongs
             // to the outer instruction, rather than a separate dose update.
             if ["prendre", "take"].contains(String(foldedSource[range])), let outer = instructions.last {
@@ -200,7 +215,9 @@ enum VisitSourceGrounding {
         guard let expression = try? NSRegularExpression(pattern: "\\b[\\p{L}\\p{M}]+\\b") else { return [] }
         var result: [Range<String.Index>] = []
         for match in expression.matches(in: source, range: NSRange(source.startIndex..., in: source)) {
-            guard let range = Range(match.range, in: source), accepted.contains(InputLanguage.folded(String(source[range]))) else { continue }
+            guard let range = Range(match.range, in: source), accepted.contains(InputLanguage.folded(String(source[range]))),
+                  hasInstructionReplacementObject(verb: InputLanguage.folded(String(source[range])), tail: InputLanguage.folded(String(source[range.upperBound...]))),
+                  !hasInstructionObject(InputLanguage.folded(String(source[range.upperBound...]))) || !quotationRanges(source).contains(where: { $0.contains(range.lowerBound) }) else { continue }
             if ["take", "prendre"].contains(InputLanguage.folded(String(source[range]))), let outer = result.last {
                 let link = InputLanguage.folded(String(source[outer.upperBound..<range.lowerBound])).trimmingCharacters(in: .whitespaces)
                 if ["to", "a", "de"].contains(link) { continue }
@@ -257,7 +274,7 @@ enum VisitSourceGrounding {
         }
         func withoutConnector(_ text: String) -> String {
             var value = text
-            if let connector = value.range(of: "^(?:to|à|a)\\s+", options: [.regularExpression, .caseInsensitive]) { value.removeSubrange(connector) }
+            if let connector = value.range(of: "^(?::\\s*|(?:to|à|a)\\s+)", options: [.regularExpression, .caseInsensitive]) { value.removeSubrange(connector) }
             return value
         }
         let proposed = withoutConnector(directions(instructions))
@@ -297,7 +314,7 @@ enum VisitSourceGrounding {
             // An unlisted second name plus quantified dose is not this medicine's directions.
             let uncertainOther = "\\b(?:and|et)\\s+[\\p{L}\\p{M}][\\p{L}\\p{M}\\p{N}_'-]*(?:\\s+[\\p{L}\\p{M}]+){0,3}\\s+[0-9]+(?:[.,][0-9]+)?\\s*(?:mg|mcg|μg|µg|g|ml|units?|unites?|ui)\\b"
             guard InputLanguage.folded(required).range(of: uncertainOther, options: .regularExpression) == nil,
-                  complete, quote.contains(String(context[target]) + " " + sourceTail) else { continue }
+                  complete, quote.contains(directions(String(context[target.lowerBound..<end]))) else { continue }
             return true
         }
         return false
@@ -354,9 +371,10 @@ enum VisitSourceGrounding {
         let verbs = selectedVerbs.english, frenchVerbs = selectedVerbs.french
         let prefixes = "(?:(?:la|le|de|du|a|prendre|votre|dose de|traitement par|traitement avec)\\s+|l')*"
         let sourceName = name.map { NSRegularExpression.escapedPattern(for: InputLanguage.folded($0)) + "\\b" } ?? "[\\p{L}\\p{M}]"
-        let frenchInstruction = "\\b(?:" + frenchVerbs + ")\\s+" + prefixes + sourceName
+        let instructionPrefix = action == .update ? "(?:" + instructionObject + ")?" : ""
+        let frenchInstruction = "\\b(?:" + frenchVerbs + ")\\s+" + instructionPrefix + prefixes + sourceName
         let englishPrefixes = "(?:(?:the|your|my|our|dose of|dosage of|treatment with|treatment of|use of|take|taking|using|from|to)\\s+)*"
-        let englishInstruction = "\\b(?:" + verbs + ")\\s+" + englishPrefixes + sourceName
+        let englishInstruction = "\\b(?:" + verbs + ")\\s+" + instructionPrefix + englishPrefixes + sourceName
         let english = foldedQuote.range(of: englishInstruction, options: .regularExpression) != nil
         let french = foldedQuote.range(of: frenchInstruction, options: .regularExpression) != nil
         let selected = Set((verbs + "|" + frenchVerbs).split(separator: "|").map(String.init))
@@ -374,7 +392,7 @@ enum VisitSourceGrounding {
                 guard eligibleOccurrences.contains(range) else { continue }
                 let end = index + 1 < occurrences.count ? occurrences[index + 1].lowerBound : foldedContext.endIndex
                 let clause = String(foldedContext[range.upperBound..<end])
-                let listTarget = "(?:^\\s*|,\\s*(?:(?:and|et)\\s+)?|\\b(?:and|et|as well as|ainsi que)\\s+)" + targetPrefixes + escapedName
+                let listTarget = "(?:^\\s*|,\\s*(?:(?:and|et)\\s+)?|\\b(?:and|et|as well as|ainsi que)\\s+)" + instructionPrefix + targetPrefixes + escapedName
                 if clause.range(of: listTarget, options: .regularExpression) != nil,
                    instructions.map({ $0.isEmpty || clause.contains(InputLanguage.folded($0)) }) ?? true { conjoined = true; break }
             }
@@ -465,7 +483,8 @@ enum VisitSourceGrounding {
                 let next = candidate.quote[nameRange.upperBound]
                 if next.isLetter || next.isNumber || next == "_" { continue }
             }
-            let pattern = "^(?:(?:please|veuillez)\\s+)?(?:" + selected.english + "|" + selected.french + ")\\s+" + prefixes + "$"
+            let instructionPrefix = action == .update ? "(?:" + instructionObject + ")?" : ""
+            let pattern = "^(?:(?:please|veuillez)\\s+)?(?:" + selected.english + "|" + selected.french + ")\\s+" + instructionPrefix + prefixes + "$"
             let prefix = InputLanguage.folded(String(candidate.quote[..<nameRange.lowerBound]))
             guard prefix.range(of: pattern, options: .regularExpression) != nil else { continue }
             let copiedName = String(candidate.quote[nameRange])
@@ -483,7 +502,7 @@ enum VisitSourceGrounding {
                 guard InputLanguage.folded(tail).range(of: "^(?:today|now|aujourd'hui|maintenant)?$", options: .regularExpression) != nil else { return nil }
                 extracted = (copiedName, "")
             } else {
-                if let connector = tail.range(of: "^(?:to|à|a)\\s+", options: [.regularExpression, .caseInsensitive]) { tail.removeSubrange(connector) }
+                if let connector = tail.range(of: "^(?::\\s*|(?:to|à|a)\\s+)", options: [.regularExpression, .caseInsensitive]) { tail.removeSubrange(connector) }
                 // Requiring a quantified dose and explicit interpretable schedule
                 // leaves vague directions, free text and uncertain scopes optional.
                 let folded = InputLanguage.folded(tail)

@@ -204,10 +204,16 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
             catch { self.error = L10n.format("The visit was removed, but its audio couldn’t be deleted. %@", L10n.string(error.localizedDescription)) }
         }
     }
-    func saveVisitSummary(_ summary: VisitSummary, id: UUID, transcript: String, baseline: [Medicine]) {
+    func saveVisitSummary(_ summary: VisitSummary, id: UUID, transcript: String, baseline: [Medicine], extractionRuns: [VisitExtractionRun]? = nil) {
         guard var visit = visits.first(where: { $0.id == id }), visit.transcript == transcript else { return }
         visit.summary = summary; visit.medicineBaseline = baseline
+        visit.extractionRuns = extractionRuns
         saveVisit(visit)
+    }
+    func saveVisitExtractionRuns(_ runs: [VisitExtractionRun], id: UUID, transcript: String) {
+        guard var visit = visits.first(where: { $0.id == id }), visit.transcript == transcript else { return }
+        // Failed/cancelled attempts retain evidence without replacing a prior summary.
+        visit.extractionRuns = runs; saveVisit(visit)
     }
     func applyVisitChanges(id: UUID, selected: Set<UUID>) -> Bool {
         guard let visit = visits.first(where: { $0.id == id }) else { return false }

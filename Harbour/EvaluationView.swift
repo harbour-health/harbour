@@ -12,6 +12,9 @@ struct ModelRun: Codable, Identifiable {
     var rawOutput: String
     var elapsedSeconds: Double
     var passed: Bool
+    var outputKind: String?
+    var visitExtractionTrace: VisitExtractionRun?
+    var routingPromptProfile: RoutingPromptProfile?
 }
 struct EvaluationReport: Codable {
     var date = Date()
@@ -24,14 +27,13 @@ struct EvaluationReport: Codable {
 }
 @MainActor enum SimulatorEvaluation {
     static func evaluateVisit(_ fixture: VisitSummaryEvaluationCase, models: ModelManager) async -> ModelRun {
-        let start = Date(); var output = ""
-        do {
-            output = try await models.generate(VisitReview.prompt(fixture.transcript, medicines: Evaluation.records.medicines, language: L10n.isFrench ? .french : .english), maxTokens: 650, responseGrammar: VisitReview.outputGrammar(transcript: fixture.transcript, medicines: Evaluation.records.medicines), purpose: .visit)
-            let passed = fixture.matches(output)
-            return ModelRun(model: models.resolved.rawValue, effort: models.effort.rawValue, input: fixture.transcript, expected: fixture.expectedJSON, observed: passed ? "Matched transcript facts" : "Transcript mismatch", rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: passed)
-        } catch {
-            return ModelRun(model: models.resolved.rawValue, effort: models.effort.rawValue, input: fixture.transcript, expected: fixture.expectedJSON, observed: error.localizedDescription, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: false)
+        let start = Date(), chosen = models.resolved
+        let language: ModelLanguage = L10n.isFrench ? .french : .english
+        let run = await VisitExtraction.run(transcript: fixture.transcript, medicines: Evaluation.records.medicines, language: language, modelID: chosen.rawValue) { request in
+            try await models.generateVisitStage(request, model: chosen, language: language)
         }
+        let passed = run.completed && fixture.matches(run.assembledOutput)
+        return ModelRun(model: chosen.rawValue, effort: models.effort.rawValue, input: fixture.transcript, expected: fixture.expectedJSON, observed: run.completed ? (passed ? "Matched transcript facts" : "Transcript mismatch") : run.errors.joined(separator: "; "), rawOutput: run.assembledOutput, elapsedSeconds: Date().timeIntervalSince(start), passed: passed, outputKind: run.outputOrigin, visitExtractionTrace: run)
     }
     static func run(models: ModelManager, store: AppStore) async {
         let previousModel = models.selection
@@ -51,15 +53,15 @@ struct EvaluationReport: Codable {
         for effort in efforts {
         models.effort = effort
         for fixture in Evaluation.routingCases {
-            let start = Date()
+            let start = Date(), chosen = models.resolved
             var output = ""
             do {
-                output = try await models.generate(ToolPlanner.prompt(fixture.input, records: Evaluation.records), allowedTools: ToolPlanner.availableTools.map(\.rawValue), purpose: .routing)
+                output = try await models.generate(ToolPlanner.prompt(fixture.input, records: Evaluation.records, profile: chosen.promptFormat.routingPromptProfile), allowedTools: ToolPlanner.availableTools.map(\.rawValue), purpose: .routing, model: chosen)
                 var decision = try ToolPlanner.parse(output)
                 if decision.tool == .reply { decision.arg = try await models.generate(ToolPlanner.conversationPrompt(fixture.input, records: Evaluation.records, language: L10n.isFrench ? .french : .english, compactProsePolicy: models.resolved.promptFormat.usesCompactProsePolicy), maxTokens: effort.chatTokens, stopAtJSON: false); output += "\nReply: " + decision.arg }
                 _ = try ToolPlanner.validate(decision, original: fixture.input, records: Evaluation.records, language: L10n.isFrench ? .french : .english)
-                report.runs.append(ModelRun(model: models.resolved.rawValue, effort: models.effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: decision.tool.rawValue, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: decision.tool == fixture.tool))
-            } catch { report.runs.append(ModelRun(model: models.resolved.rawValue, effort: models.effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: error.localizedDescription, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: false)) }
+                report.runs.append(ModelRun(model: chosen.rawValue, effort: models.effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: decision.tool.rawValue, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: decision.tool == fixture.tool, routingPromptProfile: chosen.promptFormat.routingPromptProfile))
+            } catch { report.runs.append(ModelRun(model: chosen.rawValue, effort: models.effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: error.localizedDescription, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: false, routingPromptProfile: chosen.promptFormat.routingPromptProfile)) }
             checkpoint()
         }
         for fixture in Evaluation.visitSummaryCases {
@@ -115,12 +117,12 @@ struct EvaluationView: View {
                     let start = Date()
                     var output = ""
                     do {
-                        output = try await models.generate(ToolPlanner.prompt(fixture.input, records: Evaluation.records), allowedTools: ToolPlanner.availableTools.map(\.rawValue), purpose: .routing)
+                        output = try await models.generate(ToolPlanner.prompt(fixture.input, records: Evaluation.records, profile: selectedModel.promptFormat.routingPromptProfile), allowedTools: ToolPlanner.availableTools.map(\.rawValue), purpose: .routing, model: selectedModel)
                         var decision = try ToolPlanner.parse(output)
                         if decision.tool == .reply { decision.arg = try await models.generate(ToolPlanner.conversationPrompt(fixture.input, records: Evaluation.records, language: L10n.isFrench ? .french : .english, compactProsePolicy: models.resolved.promptFormat.usesCompactProsePolicy), maxTokens: effort.chatTokens, stopAtJSON: false); output += "\nReply: " + decision.arg }
                         _ = try ToolPlanner.validate(decision, original: fixture.input, records: Evaluation.records, language: L10n.isFrench ? .french : .english)
-                        report.runs.append(ModelRun(model: selectedModel.rawValue, effort: effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: decision.tool.rawValue, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: decision.tool == fixture.tool))
-                    } catch { if Task.isCancelled { return }; report.runs.append(ModelRun(model: selectedModel.rawValue, effort: effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: error.localizedDescription, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: false)) }
+                        report.runs.append(ModelRun(model: selectedModel.rawValue, effort: effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: decision.tool.rawValue, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: decision.tool == fixture.tool, routingPromptProfile: selectedModel.promptFormat.routingPromptProfile))
+                    } catch { if Task.isCancelled { return }; report.runs.append(ModelRun(model: selectedModel.rawValue, effort: effort.rawValue, input: fixture.input, expected: fixture.tool.rawValue, observed: error.localizedDescription, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: false, routingPromptProfile: selectedModel.promptFormat.routingPromptProfile)) }
                 }
                 for fixture in Evaluation.visitSummaryCases {
                     if Task.isCancelled { return }

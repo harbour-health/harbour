@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "kind": "harbour-v2-before-clinical-generation-routing-compatibility-amendment",
+  "createdUTC": "2026-10-15T02:02:52.894650+00:00",
+  "status": "REGISTERED_BEFORE_NEW_CANDIDATE_CLINICAL_INFERENCE",
+  "baselineCommit": "bf438dc25f9cba8c381938ff08a5585b24020f71",
+  "originalPreregistrationSHA256": "0902afa6e6c1fa310634b4b9eb8111d049320029df3f4bfe266b2ccf40e6eaf3",
+  "stagedAmendmentSHA256": "997d068d1fa7e98d3cbf8d2b6e3af64bef4215317521101d6e27843cda927639",
+  "policy": {
+    "models": {
+      "small": "Retain exact baseline ToolPlanner routing prompt builder, history, hint and snapshot rendering.",
+      "balanced": "Retain exact baseline ToolPlanner routing prompt builder, history, hint and snapshot rendering.",
+      "qwen35": "Use revised bilingual current routing prompt, with independent intent examples."
+    },
+    "selection": "Fixed actual chosen model/format, never fixture ID, source case, expected answer or model prediction.",
+    "actualWeights": "Resolve/fix actual model before selecting its prompt profile.",
+    "grammar": "All 21 production tools stay available for every model/case; no alternative is pruned.",
+    "shared": "New independent source validation, source-backed app replies, prose/title provenance policies and staged visit pipeline remain shared. No model-weight/default/sampling change."
+  },
+  "verification": "Compare actual new native prepared routing prompt hashes for Small/Balanced against preserved bf438dc rows across all paired DEV routing inputs/efforts; report every mismatch and raw route loss. Profile names alone do not establish parity.",
+  "limits": "Compatibility preserves a tested prompt path; it does not establish a quality or readiness pass. Raw routing/prose/extraction failures and every accepted-source safety loss remain failures under frozen criteria.",
+  "frozenInputs": [
+    {
+      "path": "evaluation/harbour-quality-v2-dev.json",
+      "sha256": "e883b339bebce6a85b97d362075ab1735f0ca93dda726411a73b8088e55d905a"
+    },
+    {
+      "path": "evaluation/harbour-quality-v2-heldout-commitment.json",
+      "sha256": "31d2741c69803e12956c500bf139b4b61a1015852428bcf94dead9891c8cfc8e"
+    },
+    {
+      "path": "evaluation/harbour-quality-v2-review-rubric.json",
+      "sha256": "8c620ead50245582a9326d74e0ca875d97e7a92d2fa977c65663f61cc137782f"
+    },
+    {
+      "path": "evaluation/score.py",
+      "sha256": "8cdfefb5b04e125ad44f331f668d59179594f09c422ee8e13b8484cc5124c70d"
+    }
+  ],
+  "heldout": "Acceptance remains sealed. All source/profile changes precede source freeze and any unseen acceptance generation.",
+  "training": false
+}

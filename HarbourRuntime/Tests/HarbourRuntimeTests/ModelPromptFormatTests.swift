@@ -3,6 +3,27 @@ import HarbourCore
 @testable import HarbourRuntime
 
 final class ModelPromptFormatTests: XCTestCase {
+    func testRoutingCompatibilityProfileFollowsFixedModelFamilyAndSharedLocalization() throws {
+        XCTAssertTrue(ModelPromptFormat.qwen25.usesLegacyRoutingPrompt)
+        XCTAssertFalse(ModelPromptFormat.qwen35.usesLegacyRoutingPrompt)
+        // Test/executable consumers may map this flag because they depend on Core.
+        func profile(_ format: ModelPromptFormat) -> RoutingPromptProfile {
+            format.usesLegacyRoutingPrompt ? .legacyQwen25 : .current
+        }
+        for language in [ModelLanguage.english, .french] {
+            let legacy = ToolPlanner.prompt("Display my saved readings.", profile: profile(.qwen25))
+            let current = ToolPlanner.prompt("Display my saved readings.", profile: profile(.qwen35))
+            let localizedLegacy = ModelPrompts.localized(legacy, language: language, purpose: .routing)
+            let localizedCurrent = ModelPrompts.localized(current, language: language, purpose: .routing)
+            XCTAssertEqual(try ModelPromptFormat.qwen25.prepare(localizedLegacy), localizedLegacy)
+            XCTAssertEqual(try ModelPromptFormat.qwen35.prepare(localizedCurrent), localizedCurrent + "\n<think>\n\n</think>\n\n")
+            XCTAssertNotEqual(localizedLegacy, localizedCurrent)
+            let languagePolicy = language == .french ? "Interprète les demandes en français et en anglais." : "Interpret English and French requests."
+            XCTAssertTrue(localizedLegacy.contains(languagePolicy))
+            XCTAssertTrue(localizedCurrent.contains(languagePolicy))
+        }
+    }
+
     func testQwen35DisablesThinkingForEveryGenerationPath() throws {
         let prompts = [
             ToolPlanner.prompt("Show my medicines", records: Evaluation.records),
