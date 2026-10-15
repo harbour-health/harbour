@@ -432,7 +432,7 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                     ("source.medicine-first-start", VisitReview.outputGrammar(transcript: start), medicineFirst([medicine(start, "start", "metformin", "500 mg daily")]), true),
                     ("source.medicine-first-saved-stop", VisitReview.outputGrammar(transcript: stop, medicines: Evaluation.records.medicines), medicineFirst([medicine(stop, "stop", "warfarin", "")]), true),
                     ("source.medicine-first-negated", VisitReview.outputGrammar(transcript: "Do not start metformin 500 mg daily."), medicineFirst([medicine("Do not start metformin 500 mg daily.", "start", "metformin", "500 mg daily")]), false),
-                    ("source.medicine-first-required-empty", VisitReview.outputGrammar(transcript: start), medicineFirst([]), false)
+                    ("source.medicine-first-required-empty", VisitReview.outputGrammar(transcript: "Start metformin 500 mg twice daily."), medicineFirst([]), false)
                 ]
                 // Exercise minimum cardinality in llama.cpp itself, including
                 // the saved-identity branch that an empty baseline cannot use.
