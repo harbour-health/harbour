@@ -157,7 +157,11 @@ final class WriteRequestValidationTests: XCTestCase {
         for original in [
             "Make an appointment note", "Create appointment notes for my doctor.",
             "Prepare notes for my appointment.", "Write a question about the appointment.",
+            "Create appointment summaries for the clinic.",
+            "Prepare consultation summaries for my physician.",
+            "Make a summary about my appointment.",
             "Crée une note pour mon rendez-vous.", "Prépare un compte rendu pour la consultation.",
+            "Prépare un résumé pour la consultation.",
             "Ajoute une question pour mon rendez-vous."
         ] {
             XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .createAppointment), original: original, records: records), original)
@@ -166,7 +170,8 @@ final class WriteRequestValidationTests: XCTestCase {
         for original in [
             "Add my dentist appointment Tuesday at 2 pm.",
             "Enregistre mon rendez-vous mardi à 14 h.",
-            "Add my appointment Tuesday; notes: bring my test results."
+            "Add my appointment Tuesday; notes: bring my test results.",
+            "Add my appointment Tuesday; summary: bring my test results."
         ] {
             XCTAssertEqual(try ToolPlanner.validate(.init(tool: .createAppointment), original: original, records: records), .appointment(original), original)
         }

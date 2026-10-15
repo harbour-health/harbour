@@ -93,7 +93,7 @@ enum WriteRequestValidation {
             // Preparing appointment notes or questions is a documentation
             // request, not authorization to add an appointment record.
             let appointment = "(?:appointment|consultation|rendez-vous)"
-            let note = "(?:notes?|questions?|memo|resume|compte[- ]rendu)"
+            let note = "(?:notes?|questions?|summar(?:y|ies)|memo|resume|compte[- ]rendu)"
             let appointmentNote = "\\b" + appointment + "[ -]+" + note + "\\b"
             let noteForAppointment = "\\b" + note + "\\s+(?:for|about|before|pour|sur|avant)\\s+(?:(?:my|the|an|a|mon|ma|le|la|un|une|prochain|prochaine)\\s+)*" + appointment + "\\b"
             if match(unquoted, appointmentNote) != nil || match(unquoted, noteForAppointment) != nil { return false }
