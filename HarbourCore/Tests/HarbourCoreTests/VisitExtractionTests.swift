@@ -11,6 +11,19 @@ final class VisitExtractionTests: XCTestCase {
         String(decoding: try JSONSerialization.data(withJSONObject: ["units": units.map { ["id": $0.id, "kinds": [kind]] as [String: Any] }]), as: UTF8.self)
     }
 
+    func testExtractionReadsSourceIndependentlyOfClassifierCategoryGuesses() throws {
+        for language in [ModelLanguage.english, .french] {
+            let source = language == .english ? "Return for a check in four months." : "Revenez pour un contrôle dans quatre mois."
+            let unit = try XCTUnwrap(VisitExtraction.sourceUnits(source).first)
+            let first = try VisitExtraction.extractionRequest(unit: unit, transcript: source, kinds: [.medicine], language: language)
+            let second = try VisitExtraction.extractionRequest(unit: unit, transcript: source, kinds: [.appointment, .uncertain], language: language)
+            XCTAssertEqual(first, second)
+            XCTAssertFalse(first.prompt.contains("modelClassifications"))
+            XCTAssertTrue(first.prompt.contains(source))
+            XCTAssertEqual(first.grammar, VisitReview.outputGrammar())
+        }
+    }
+
     func testClassificationAccountsForEveryUnitWithoutChoosingClinicalValues() throws {
         let source = "Increase amlodipine to 7.5 mg once daily. Return in three weeks."
         let units = VisitExtraction.sourceUnits(source)
@@ -25,6 +38,7 @@ final class VisitExtractionTests: XCTestCase {
             #"{"units":[{"id":0,"kinds":["medicine"]},{"id":0,"kinds":["medicine"]}]}"#,
             #"{"units":[{"id":1,"kinds":["medicine"]},{"id":0,"kinds":["medicine"]}]}"#,
             #"{"units":[{"id":0,"kinds":["none","medicine"]},{"id":1,"kinds":["none"]}]}"#,
+            #"{"units":[{"id":0,"kinds":["medicine","medicine"]},{"id":1,"kinds":["none"]}]}"#,
             #"{"units":[{"id":0,"kinds":[]},{"id":1,"kinds":["none"]}]}"#,
             #"{"units":[{"id":0,"kinds":["medicine"],"dose":"7.5"},{"id":1,"kinds":["none"]}]}"#
         ] { XCTAssertThrowsError(try VisitExtraction.parseClassification(invalid, units: units), invalid) }

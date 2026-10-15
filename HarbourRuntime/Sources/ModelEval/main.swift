@@ -422,8 +422,21 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                     ("visit.classifier-model-decline", classifierGrammar, #"{"units":[{"id":0,"kinds":["none"]},{"id":1,"kinds":["none"]}]}"#, true),
                     ("visit.classifier-missing-id", classifierGrammar, #"{"units":[{"id":0,"kinds":["medicine"]}]}"#, false),
                     ("visit.classifier-changed-id", classifierGrammar, #"{"units":[{"id":0,"kinds":["medicine"]},{"id":2,"kinds":["followUp"]}]}"#, false),
-                    ("visit.classifier-unknown-kind", classifierGrammar, #"{"units":[{"id":0,"kinds":["prescribe"]},{"id":1,"kinds":["none"]}]}"#, false)
+                    ("visit.classifier-unknown-kind", classifierGrammar, #"{"units":[{"id":0,"kinds":["prescribe"]},{"id":1,"kinds":["none"]}]}"#, false),
+                    ("visit.classifier-duplicate-kind", classifierGrammar, #"{"units":[{"id":0,"kinds":["medicine","medicine"]},{"id":1,"kinds":["none"]}]}"#, false),
+                    ("visit.classifier-none-with-kind", classifierGrammar, #"{"units":[{"id":0,"kinds":["medicine","none"]},{"id":1,"kinds":["none"]}]}"#, false),
+                    ("visit.classifier-empty-kinds", classifierGrammar, #"{"units":[{"id":0,"kinds":[]},{"id":1,"kinds":["none"]}]}"#, false)
                 ]
+                // Native decoding must retain every possible valid category
+                // set; these checks grant no clinical classification credit.
+                let categoryGrammar = try VisitExtraction.classificationRequest(units: Array(sourceUnits.prefix(1)), language: .english).grammar
+                let categories = ["medicine", "followUp", "appointment", "highlight", "uncertain"]
+                for mask in 0..<32 {
+                    let selected = mask == 0 ? ["none"] : categories.enumerated().compactMap { index, category in mask & (1 << index) == 0 ? nil : category }
+                    let array = String(decoding: try JSONEncoder().encode(selected), as: UTF8.self)
+                    let output = "{\"units\":[{\"id\":0,\"kinds\":" + array + "}]}"
+                    tests.append(("visit.classifier-category-set.\(mask)", categoryGrammar, output, true))
+                }
                 tests += [
                     ("visit.appointment-objects", VisitReview.outputGrammar(), #"{"highlights":[],"medicines":[],"followUps":[],"appointments":[{"quote":"Votre rendez-vous est mardi à 14 h."}]}"#, true),
                     ("visit.bare-appointments", VisitReview.outputGrammar(), #"{"highlights":[],"medicines":[],"followUps":[],"appointments":["Your appointment is Tuesday."]}"#, false),

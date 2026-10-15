@@ -90,6 +90,53 @@ import HarbourCore
 }
 
 @MainActor final class HarbourCareServiceTests: XCTestCase {
+    func testVisitExtractionEvidencePersistsWithSummaryAndRejectsStaleTranscript() async throws {
+        let store = temporaryStore(), source = "The patient reported a mild cough."
+        defer { try? FileManager.default.removeItem(at: store.file.deletingLastPathComponent()) }
+        let visit = DoctorVisit(transcript: source)
+        XCTAssertTrue(store.saveVisit(visit))
+        let run = await VisitExtraction.run(transcript: source, medicines: [], modelID: "storage-test") { request in
+            let output = request.id == "classify"
+                ? #"{"units":[{"id":0,"kinds":["highlight"]}]}"#
+                : #"{"highlights":[{"quote":"The patient reported a mild cough."}],"medicines":[],"followUps":[],"appointments":[]}"#
+            return .init(output: output, preparedPrompt: request.prompt, modelID: "storage-test")
+        }
+        XCTAssertTrue(run.completed)
+        let summary = try XCTUnwrap(run.acceptedSummary)
+        XCTAssertEqual(summary.highlights.map(\.quote), [source])
+        store.saveVisitSummary(summary, id: visit.id, transcript: source, baseline: [], extractionRuns: [run])
+        let restored = AppStore(folder: store.file.deletingLastPathComponent())
+        XCTAssertNil(restored.error)
+        XCTAssertEqual(restored.visits.first?.summary, summary)
+        XCTAssertEqual(restored.visits.first?.extractionRuns, [run])
+        XCTAssertEqual(restored.visits.first?.medicineBaseline, [])
+
+        let saved = restored.visits
+        restored.saveVisitSummary(VisitSummary(), id: visit.id, transcript: "A stale transcript.", baseline: [], extractionRuns: [])
+        restored.saveVisitExtractionRuns([], id: visit.id, transcript: "A stale transcript.")
+        XCTAssertEqual(restored.visits, saved)
+        XCTAssertEqual(AppStore(folder: store.file.deletingLastPathComponent()).visits, saved)
+    }
+
+    func testFailedAndCancelledVisitExtractionRetainPreviousSummaryAcrossRelaunch() throws {
+        let store = temporaryStore(), source = "The patient reported a mild cough."
+        defer { try? FileManager.default.removeItem(at: store.file.deletingLastPathComponent()) }
+        var visit = DoctorVisit(transcript: source)
+        visit.summary = try VisitReview.parse(#"{"highlights":[{"quote":"The patient reported a mild cough."}],"medicines":[],"followUps":[],"appointments":[]}"#, transcript: source, medicines: [])
+        visit.medicineBaseline = []
+        XCTAssertTrue(store.saveVisit(visit))
+        var failed = VisitExtractionRun(transcript: source, validationTranscript: source, language: .english, modelID: "storage-test")
+        failed.errors = ["generation_failed"]
+        var cancelled = failed
+        cancelled.errors = ["cancelled"]; cancelled.cancelled = true
+        store.saveVisitExtractionRuns([failed, cancelled], id: visit.id, transcript: source)
+        let restored = AppStore(folder: store.file.deletingLastPathComponent())
+        XCTAssertNil(restored.error)
+        XCTAssertEqual(restored.visits.first?.summary, visit.summary)
+        XCTAssertEqual(restored.visits.first?.medicineBaseline, visit.medicineBaseline)
+        XCTAssertEqual(restored.visits.first?.extractionRuns, [failed, cancelled])
+    }
+
     func testAppointmentPersistsExportsAndDetachesEditedSource() throws {
         let store = temporaryStore(), target = temporaryStore()
         defer { try? FileManager.default.removeItem(at: store.file.deletingLastPathComponent()); try? FileManager.default.removeItem(at: target.file.deletingLastPathComponent()) }

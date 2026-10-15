@@ -1,6 +1,22 @@
 # Evaluation
 
-## Comparative evaluation status — draft
+## Current follow-up — evaluation in progress
+
+Automatic remains the default and Qwen3.5-2B remains optional. The PR is draft; no fine-tuning or model-weight change is included. The latest materialized model source is `41b218aaad75554e3b81956a8c7da590e295a650bade2caea4e90cd4162d8030`. Fresh model comparisons and source/safety reviews remain required; local verification supplies no quality or readiness pass.
+
+Replies can now quote the actual saved directions of one unambiguous medicine, count complete record collections and quote attributed user-history turns. Shared English/French validation distinguishes dose reports from schedules, preserves negative record requests, recognizes literal reminders and keeps typed readings out of symptom drafts. Small and Balanced retain their previous routing prompts, with all 21 alternatives available.
+
+Visit extraction classifies every source unit, then independently extracts selected units from their original source and retained context. All 32 valid category sets remain selectable; repeated categories and `none` mixed with other categories cannot be decoded. The extractor does not receive the classifier's category guesses. That change is an engineering hypothesis to reduce cascading errors, not a demonstrated cure for under-extraction. Every raw stage and label remains in the trace. Each call has a 650-token maximum; total requested work is `650 × (1 + selected units)`. The primary visit output is a filtered application assembly. Reviews assess every raw stage, dropped proposal and accepted summary separately; application recovery earns no raw model-quality credit.
+
+Fresh source-specific verification passes all 249 Core tests, 22 Runtime tests, 66 Python tests, 599 localization keys and 291 native grammar/context controls. The native controls cover every valid category set on all three models. A fresh xtool arm64 iOS Release build passes in 90.19 seconds with 25 checked bundle files. This verifies compilation and resources; physical-iPhone execution and Metal speed, memory and thermal performance remain untested.
+
+The previous `0362931` [Standard simulator workflow](https://github.com/harbour-health/harbour/actions/runs/38670110520) passed 11 UI flows and 23 hosted tests with one notification skip; its [Native model workflow](https://github.com/harbour-health/harbour/actions/runs/38670110531) passed seven UI flows and 24 hosted tests with one skip. Those runs preceded the classifier correction and the two new app-storage tests. Fresh current-head simulator checks must cover summary/trace persistence, stale transcript rejection and preservation of a previous summary after a failed or cancelled attempt.
+
+The final CPU comparison will run all three models serially over 144 preregistered English/French DEV observations, 525 exposed original-suite observations and 120 production-catalog probes. Accepted app behavior and the separate raw-prose comparison will be reported against preserved baselines. Earlier failed development attempts remain intact, including the completed source09 DEV and its interrupted, zero-row original-suite start. The new sealed acceptance set remains unopened until required development, source-safety and application gates pass. Earlier completed blocked comparisons below retain their original identities and results.
+
+## Previous completed comparison — draft
+
+
 
 Latest status (October 13 Toronto / October 14 UTC, 2026): the complete three-model English/French evaluation is finished, and the PR remains draft. Automatic remains the default, with Qwen3.5-2B optional. The frozen candidate improves aggregate scores and prevents the baseline’s fixture-marked unsafe accepted actions, but ten protected Small/Balanced French or source-grounding regressions block optional-model readiness. These are fictional fixture results with qualitative AI reviews; composite passes include explicitly labelled application recovery.
 
