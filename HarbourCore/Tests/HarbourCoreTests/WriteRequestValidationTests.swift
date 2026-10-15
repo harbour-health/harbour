@@ -252,4 +252,117 @@ final class WriteRequestValidationTests: XCTestCase {
             XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .clearData), original: original, records: records), original)
         }
     }
+
+    func testNamedMedicineRegistrationCommandsGeneralizeWithoutAuthorizingReportsOrQuotes() throws {
+        let medicine = records.medicines[0]
+        for input in [
+            "Register Metformin on my medicine list.", "Please include Metformin in my saved medicines.",
+            "Inscris metformine dans ma liste.", "Inscrivez metformine dans mes médicaments enregistrés.",
+            "Pourriez-vous inscrire metformine dans ma liste de médicaments ?"
+        ] {
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .addMedicine, arg: "aspirin"), original: input, records: records), .add(medicine, [], nil), input)
+        }
+        for input in [
+            "Do not register Metformin.", "N'inscrivez pas metformine.",
+            "If I ask, include Metformin.", "Si je le demande, inscris metformine.",
+            "My doctor said to register Metformin.", "Mon frère a inscrit metformine.",
+            "I registered Metformin yesterday.", "J'ai inscrit metformine hier.",
+            #"The note says "Register Metformin.""#, "La note dit « Inscrivez metformine. »",
+            "Could I register Metformin?", "Devrais-je inscrire metformine ?",
+            "Inscrivez le comprimé sans nom.", "Inscris metformine et aspirine."
+        ] {
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .addMedicine), original: input, records: records), input)
+        }
+    }
+
+    func testHealthImportAndMedicineCameraRequestsCannotAuthorizeEachOthersFlows() throws {
+        let imports = [
+            "Import my readings from Apple Health.", "Could you sync Apple Health?",
+            "Synchronize my measurements.", "Synchronise Apple Santé",
+            "Importe mes relevés Apple Santé.", "Veuillez importer mes mesures depuis Apple Santé.",
+            "Sync Health.", "Importe mes données de Santé (app)."
+        ]
+        let scans = [
+            "Scan my medicine label.", "Read the medication label.", "Open the camera.",
+            "Take a photo of the medicine label.", "Scanne l'étiquette du médicament.",
+            "Photographiez la boîte de mon médicament.", "Ouvre l'appareil photo."
+        ]
+        for input in imports {
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .importReadings, arg: "camera"), original: input, records: records), .importHealth, input)
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .scanMedicine), original: input, records: records), input)
+        }
+        for input in scans {
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .scanMedicine, arg: "import"), original: input, records: records), .scan, input)
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .importReadings), original: input, records: records), input)
+        }
+        for input in [
+            "Do not scan my medicine label.", "Ne scanne pas l'étiquette du médicament.",
+            "Do not import my readings.", "N'importe pas mes mesures Apple Santé.",
+            "How do I scan a medicine label?", "Comment importer mes mesures ?",
+            "My sister wants to scan a medicine label.", "Mon père veut importer Apple Santé.",
+            "If I ask, open the camera.", "Si je le demande, importe mes mesures.",
+            #""Open the camera.""#, "« Importe Apple Santé. »",
+            "Import my readings and open the camera.", "Scanne l'étiquette puis importe mes mesures.",
+            "Import the medicine label.", "Scan Apple Health.",
+            "Import my bank data.", "Ouvre mes données Apple Santé."
+        ] {
+            for tool in [Tool.importReadings, .scanMedicine] {
+                XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: tool), original: input, records: records), "\(tool): \(input)")
+            }
+        }
+    }
+
+    func testCurrentDoseStatusesAndFutureSchedulesKeepDistinctSourceIntent() throws {
+        let medicine = records.medicines[0]
+        let doses: [(String, DoseStatus)] = [
+            ("I took my Metformin dose today at 7:15 am.", .taken),
+            ("I swallowed my scheduled Metformin.", .taken),
+            ("I've taken Metformin.", .taken),
+            ("I have skipped my dose of Metformin this morning.", .skipped),
+            ("Please mark Metformin as taken.", .taken),
+            ("Could you record my Metformin dose as skipped?", .skipped),
+            ("J'ai pris ma dose de metformine aujourd'hui à 7 h 15.", .taken),
+            ("J'ai avalé metformine.", .taken),
+            ("J’ai sauté ma dose de metformine ce matin.", .skipped),
+            ("Marquez ma dose de metformine comme prise.", .taken),
+            ("Pourriez-vous marquer metformine comme sautée ?", .skipped),
+            ("Snooze my Metformin dose.", .later),
+            ("Remind me later for Metformin.", .later),
+            ("Reporte ma dose de metformine.", .later),
+            ("Rappelle plus tard pour metformine", .later)
+        ]
+        for (input, status) in doses {
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .logDose, arg: "invented status"), original: input, records: records), .dose(medicine, status), input)
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .scheduleMedicine), original: input, records: records), input)
+        }
+        for input in [
+            "Set Metformin at 7:15 am and 7:15 pm.",
+            "Pourriez-vous programmer metformine à 7 h 15 et 19 h 15 ?"
+        ] {
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .scheduleMedicine, arg: "taken"), original: input, records: records), .schedule(medicine, [DoseTime(hour: 7, minute: 15), DoseTime(hour: 19, minute: 15)], MedicationFrequency(count: 2, period: .day)), input)
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .logDose), original: input, records: records), input)
+        }
+    }
+
+    func testDoseAndScheduleSourceCompatibilityRejectsHistoryQuotesConditionsAndMixedActions() {
+        for input in [
+            "I took Metformin yesterday at 7 am.", "Hier, j'ai pris metformine à 7 h.",
+            "My father took Metformin at 7 am.", "Mon père a pris metformine à 7 h.",
+            "If I took Metformin at 7 am, mark it taken.", "Si j'ai pris metformine, marque-la comme prise.",
+            "I did not take Metformin at 7 am.", "Je n'ai pas pris metformine à 7 h.",
+            "Did I take Metformin at 7 am?", "J'ai pris metformine ?",
+            #"The note says "I took Metformin at 7 am.""#, "« Programme metformine à 7 h. »",
+            "Schedule Metformin as taken at 7 am.", "Programme metformine comme prise à 7 h.",
+            "Mark Metformin taken tomorrow.", "Marque metformine comme prise demain.",
+            "I took Metformin at 27 am.", "J'ai pris metformine à 7 h 99.",
+            "I took and skipped Metformin.", "J'ai pris et sauté metformine.",
+            "Mark Metformin taken and delete my records.", "Marque metformine comme prise et efface mes données.",
+            "I took Metformin at 7 am. Schedule it daily.",
+            "J'ai pris metformine à 7 h. Programme-la deux fois par jour."
+        ] {
+            for tool in [Tool.logDose, .scheduleMedicine] {
+                XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: tool), original: input, records: records), "\(tool): \(input)")
+            }
+        }
+    }
 }

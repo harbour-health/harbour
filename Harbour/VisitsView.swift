@@ -270,7 +270,7 @@ struct VisitDetailView: View {
                 var combined = VisitSummary()
                 for (index, chunk) in chunks.enumerated() {
                     try Task.checkCancellation(); status = L10n.format("Preparing summary · %d of %d", index + 1, chunks.count)
-                    let output = try await models.generate(VisitReview.prompt(chunk, medicines: baseline), maxTokens: 650, responseGrammar: VisitReview.outputGrammar(transcript: chunk, medicines: baseline), purpose: .visit)
+                    let output = try await models.generate(VisitReview.prompt(chunk, medicines: baseline, language: L10n.isFrench ? .french : .english), maxTokens: 650, responseGrammar: VisitReview.outputGrammar(transcript: chunk, medicines: baseline), purpose: .visit)
                     try Task.checkCancellation()
                     combined.merge(try VisitReview.parse(output, transcript: chunk, medicines: baseline))
                 }

@@ -712,4 +712,42 @@ final class ReplyFallbackTests: XCTestCase {
         XCTAssertEqual(try ToolPlanner.validate(.init(tool: .reply, arg: "A relevant ordinary model reply."), original: content, records: Records()), .reply("A relevant ordinary model reply."))
         XCTAssertThrowsError(try ToolPlanner.parse("not a routing object"))
     }
+
+    func testOrganizationalReminderDaysStayLiteralAndCannotAbsorbAnotherAction() throws {
+        for (input, language) in [
+            ("Remind me to bring my papers on Thursday.", ModelLanguage.english),
+            ("Please remind me to prepare my notes next Sunday.", .english),
+            ("Remind me to call the clinic tomorrow.", .english),
+            ("Rappelez-moi d'apporter mes papiers mercredi.", .french),
+            ("Pourriez-vous me rappeler de préparer mes documents le samedi prochain ?", .french),
+            ("Rappelle-moi d'appeler la clinique demain.", .french),
+            (#"Remind me to "bring my documents on Tuesday"."#, .english)
+        ] {
+            let fallback = try XCTUnwrap(ToolPlanner.replyFallback(original: input, records: Records(), language: language), input)
+            XCTAssertEqual(fallback.reason, "reminder_draft", input)
+            XCTAssertEqual(fallback.decision, .init(tool: .createReminder), input)
+            XCTAssertEqual(fallback.action, .reminder(input), input)
+            XCTAssertEqual(try ToolPlanner.validate(fallback.decision, original: input, records: Records(), language: language), .reminder(input), input)
+            XCTAssertEqual(try ToolPlanner.validate(.init(tool: .reply, arg: "I cannot remind you."), original: input, records: Records(), language: language), .reminder(input), input)
+            XCTAssertThrowsError(try ToolPlanner.validate(.init(tool: .createAppointment), original: input, records: Records(), language: language), input)
+        }
+        for input in [
+            "Do not remind me to bring my papers on Thursday.", "Ne me rappelle pas d'apporter mes papiers mercredi.",
+            "Did I ask you to remind me to bring my papers on Thursday?",
+            "Hier, je t'ai demandé de me rappeler d'apporter mes papiers mercredi.",
+            "My brother wants you to remind me to bring my papers on Thursday.",
+            "Si je te le demande, rappelle-moi d'apporter mes papiers mercredi.",
+            "Remind me to bring my papers on Thursday if I have a fever.",
+            "Rappelle-moi d'apporter mes papiers mercredi sauf si j'ai mal au bras.",
+            "Remind me to bring my papers on Thursday and delete my records.",
+            "Rappelle-moi d'apporter mes papiers mercredi et ajoute aspirine.",
+            "Remind me to call the clinic tomorrow at 8 am.",
+            "Rappelle-moi d'appeler la clinique dans trois jours.",
+            "Remind me to take my medicine on Thursday.",
+            #""Remind me to bring my papers on Thursday.""#,
+            #"Remind me to "bring my papers on Thursday" and delete my records."#
+        ] {
+            XCTAssertNil(ToolPlanner.replyFallback(original: input, records: Records()), input)
+        }
+    }
 }

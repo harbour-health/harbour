@@ -88,6 +88,9 @@ private struct EvalResult: Codable {
     var actionOrigin: String?
     var applicationDecision: ToolDecision?
     var actionSummary: ActionSummary?
+    var modelActionSummary: ActionSummary?
+    var modelValidationSucceeded: Bool?
+    var modelValidationError: String?
     var records: Records?
     var baselinePrompts: Bool
     var expectedAcceptance: Bool?
@@ -228,7 +231,8 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                             if let action {
                                 result.finalTool = decision.tool.rawValue; result.output = raw; result.actionSummary = actionSummary(action)
                                 result.actionOrigin = "model"
-                            } else if let fallback = ToolPlanner.replyFallback(original: fixture.input, records: records, language: fixture.language, rejectedAction: rejectedAction) {
+                            } else if let fallback = ToolPlanner.groundedReply(original: fixture.input, records: records, history: fixture.turns, language: fixture.language)
+                                ?? ToolPlanner.replyFallback(original: fixture.input, records: records, language: fixture.language, rejectedAction: rejectedAction) {
                                 // Retain the raw model route. The effective action is application evidence,
                                 // not a corrected routing prediction or generated prose.
                                 result.output = raw; result.finalTool = fallback.decision.tool.rawValue
@@ -250,13 +254,24 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                             prompt = ModelPrompts.localized(ToolPlanner.conversationPrompt(fixture.input, records: records, history: fixture.turns, language: fixture.language, compactProsePolicy: format.usesCompactProsePolicy), language: fixture.language, purpose: .prose)
                             result.budget = replyBudget
                             result.output = try await runtime.generate(file: model, prompt: prompt, maxTokens: replyBudget, stopAtJSON: false, promptFormat: format)
-                            result.actionSummary = actionSummary(try ToolPlanner.validate(.init(tool: .reply, arg: result.output), original: fixture.input, records: records, language: fixture.language)); result.validationSucceeded = true
+                            result.modelActionSummary = .init(type: "reply", text: result.output)
+                            do {
+                                result.actionSummary = actionSummary(try ToolPlanner.validate(.init(tool: .reply, arg: result.output), original: fixture.input, records: records, language: fixture.language))
+                                result.validationSucceeded = true; result.modelValidationSucceeded = true
+                            } catch {
+                                result.modelValidationSucceeded = false; result.modelValidationError = error.localizedDescription
+                                result.validationError = error.localizedDescription
+                            }
                             result.finalTool = result.actionSummary?.type
                             result.actionOrigin = "model"
-                            if let fallback = ToolPlanner.replyFallback(original: fixture.input, records: records, language: fixture.language) {
+                            if let fallback = ToolPlanner.groundedReply(original: fixture.input, records: records, history: fixture.turns, language: fixture.language)
+                                ?? ToolPlanner.replyFallback(original: fixture.input, records: records, language: fixture.language) {
                                 // Prose-only cases retain even suppressed model prose for quality review.
                                 result.fallbackUsed = true; result.fallbackReason = fallback.reason
                                 result.actionOrigin = "application"; result.applicationDecision = fallback.decision
+                                result.actionSummary = actionSummary(fallback.action)
+                                result.finalTool = result.actionSummary?.type
+                                result.validationSucceeded = true; result.validationError = nil
                             }
                         case "title":
                             prompt = ModelPrompts.localized(try ModelPrompts.title(fixture.input, language: fixture.language), language: fixture.language, purpose: .title)
@@ -266,7 +281,7 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                             result.output = try await runtime.generate(file: model, prompt: prompt, maxTokens: result.budget, grammar: grammar, promptFormat: format)
                             if let title = ModelPrompts.parseTitle(result.output) { result.actionSummary = .init(type: "title", text: title); result.validationSucceeded = true }
                         case "visit":
-                            prompt = ModelPrompts.localized(try VisitReview.prompt(fixture.input, medicines: records.medicines), language: fixture.language, purpose: .visit)
+                            prompt = ModelPrompts.localized(try VisitReview.prompt(fixture.input, medicines: records.medicines, language: fixture.language), language: fixture.language, purpose: .visit)
                             result.budget = 650
                             result.responseGrammar = options.baseline ? nil : VisitReview.outputGrammar(transcript: fixture.input, medicines: records.medicines)
                             result.output = try await runtime.generate(file: model, prompt: prompt, maxTokens: 650, grammar: result.responseGrammar, promptFormat: format)
@@ -412,6 +427,13 @@ private func log(_ text: String) { FileHandle.standardError.write(Data((text + "
                     ("source.beyond-prompt-bound", String(repeating: "Background note without medication changes. ", count: 60) + start, summary([medicine(start, "start", "metformin", "500 mg daily")]), false)
                 ]
                 tests += sourceTests.map { ($0.0, VisitReview.outputGrammar(transcript: $0.1), $0.2, $0.3) }
+                func medicineFirst(_ changes: [String]) -> String { "{\"medicines\":[" + changes.joined(separator: ",") + "],\"followUps\":[],\"appointments\":[],\"highlights\":[]}" }
+                tests += [
+                    ("source.medicine-first-start", VisitReview.outputGrammar(transcript: start), medicineFirst([medicine(start, "start", "metformin", "500 mg daily")]), true),
+                    ("source.medicine-first-saved-stop", VisitReview.outputGrammar(transcript: stop, medicines: Evaluation.records.medicines), medicineFirst([medicine(stop, "stop", "warfarin", "")]), true),
+                    ("source.medicine-first-negated", VisitReview.outputGrammar(transcript: "Do not start metformin 500 mg daily."), medicineFirst([medicine("Do not start metformin 500 mg daily.", "start", "metformin", "500 mg daily")]), false),
+                    ("source.medicine-first-required-empty", VisitReview.outputGrammar(transcript: start), medicineFirst([]), false)
+                ]
                 // Exercise minimum cardinality in llama.cpp itself, including
                 // the saved-identity branch that an empty baseline cannot use.
                 let requiredStartSource = "Start metformin 500 mg twice daily."

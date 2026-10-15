@@ -12,7 +12,7 @@ enum WriteRequestValidation {
         case .captureSymptom, .logReading:
             action = "save|record|log|note|track|add|enregistr[a-z]*|sauvegard[a-z]*|noter|notez|note|ajout[a-z]*|consign[a-z]*"
         case .addMedicine:
-            action = "add|put|start|begin|ajout[a-z]*|commenc[a-z]*|debut[a-z]*|enregistr[a-z]*"
+            action = "add|put|start|begin|register|include|ajout[a-z]*|commenc[a-z]*|debut[a-z]*|enregistr[a-z]*|inscris|inscrivez|inscrire"
         case .removeMedicine:
             action = "remove|delete|stop|retir[a-z]*|supprim[a-z]*|effac[a-z]*|arret[a-z]*"
         case .clearData:
@@ -24,11 +24,13 @@ enum WriteRequestValidation {
         case .scheduleMedicine:
             action = "schedule|set|plan|program|programm[a-z]*|planifi[a-z]*|horaire"
         case .logDose:
-            action = "log|record|mark|take|taken|took|skip|skipped|enregistr[a-z]*|consign[a-z]*|pris|prise|prends|prendre|saute|sautee|omis|omise"
+            action = "log|record|mark|take|taken|took|skip|skipped|enregistr[a-z]*|consign[a-z]*|marqu[a-z]*|pris|prise|prends|prendre|saute|sautee|omis|omise"
         case .saveQuestion:
             action = "save|add|remember|keep|store|enregistr[a-z]*|sauv[a-z]*|ajout[a-z]*|gard[a-z]*|noter|note"
         case .importReadings:
-            action = "import|sync|synchronize|import[a-z]*|synchronis[a-z]*"
+            action = "import[a-z]*|sync|synchroni[sz][a-z]*"
+        case .scanMedicine:
+            action = "scan|photograph|read|open|use|take|scann[a-z]*|photographi[a-z]*|lis|lisez|lire|ouvr[a-z]*|utilis[a-z]*|prend[a-z]*"
         default:
             return true
         }
@@ -38,7 +40,7 @@ enum WriteRequestValidation {
         let outer = original.replacingOccurrences(of: quotes, with: " ", options: .regularExpression)
         let unquoted = InputLanguage.folded(outer)
         let quoted = outer != original
-        let polite = "(?:(?:please|svp|s'il vous plait|s'il te plait),?\\s+)?"
+        let polite = "(?:(?:please|svp|veuillez|s'il vous plait|s'il te plait),?\\s+)?"
         let request = "(?:(?:(?:can|could|would|will)\\s+you|(?:peux|pourrais|pouvez|pourriez)[ -](?:tu|vous)|est-ce que (?:tu (?:peux|pourrais)|vous (?:pouvez|pourriez)))\\s+|(?:i want to|i would like to|i'd like to|je veux|je souhaite|je voudrais)\\s+)?"
         let requestPrefix = "\\s*" + polite + request + polite + "(?:(?:me|nous)\\s+|m')?"
         let imperative = "(?:^|[.;:]\\s*)" + requestPrefix + "(?:" + action + ")\\b"
@@ -113,6 +115,26 @@ enum WriteRequestValidation {
         }
         let reported = "^\\s*(?:(?:my|his|her|their)\\s+(?:mother|father|brother|sister|partner|wife|husband|friend|doctor|patient)|he|she|they|(?:ma|mon|sa|son|leur)\\s+(?:mere|pere|frere|soeur|sœur|conjoint|conjointe|ami|amie|medecin|patient)|il|elle|ils|elles)\\b"
         if match(scope, reported) != nil { return false }
+        if tool == .scheduleMedicine {
+            // A time in a dose observation does not request a future schedule.
+            // Require a current outer scheduling command, not a quoted payload
+            // or a later clause in a report containing another clock.
+            guard !quoted, match(unquoted, "\\A" + requestPrefix + "(?:" + action + ")\\b") != nil,
+                  match(unquoted, "\\b(?:taken|took|swallowed|skipped|skip|pris|prise|avale|saute|sautee|omis|omise)\\b") == nil else { return false }
+        }
+        if tool == .importReadings || tool == .scanMedicine {
+            // Both open distinct data-entry flows. A model-selected camera
+            // action must not satisfy a Health import request, or vice versa.
+            guard !quoted, command != nil else { return false }
+            let provider = #"(?:(?:apple\s+)?(?:health|sante)(?:\s*\(\s*(?:app|application)\s*\))?|(?:the\s+)?health\s+app|l'application\s+sante)"#
+            let readings = #"(?:(?:my|the|all|new|mes|les|des|tous|toutes)\s+){0,3}(?:readings|measurements|data|releves|mesures|donnees)(?:\s+de\s+sante)?"#
+            let importTarget = "(?:" + provider + "(?:\\s+" + readings + ")?|" + readings + "(?:\\s+(?:(?:from|depuis|de)\\s+|d')?" + provider + ")?)"
+            let label = #"(?:(?:my|the|a|this)\s+)?(?:(?:medicine|medication|pill)\s+)?label|(?:(?:my|the|a)\s+)?(?:medicine|medication)|(?:l'|une\s+|mon\s+|la\s+)?(?:etiquette|boite)(?:\s+(?:de|du|d'un|de\s+mon)\s+(?:medicament|comprime))?"#
+            let camera = #"(?:(?:the|my)\s+)?camera|(?:l'|mon\s+|un\s+)?appareil\s+photo"#
+            let scanTarget = #"(?:(?:scan|photograph|read|scanne|scannez|scanner|photographie|photographiez|photographier|lis|lisez|lire)\s+(?:"# + label + #")|(?:open|use|ouvre|ouvrez|ouvrir|utilise|utilisez|utiliser)\s+(?:"# + camera + #")|(?:take\s+a\s+photo\s+of|prends\s+une\s+photo\s+de|prenez\s+une\s+photo\s+de)\s+(?:"# + label + #"))"#
+            let body = tool == .importReadings ? "(?:" + action + ")\\s+" + importTarget : scanTarget
+            return match(unquoted, "\\A" + requestPrefix + body + #"\s*[.!?]?\s*\z"#) != nil
+        }
         if tool == .logReading {
             // A negated numeric observation is not a measurement of that number.
             if match(input, "\\b(?:not|pas|jamais)\\s+(?:at|de|a|of)?\\s*[0-9]") != nil { return false }

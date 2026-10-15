@@ -1,0 +1,3198 @@
+{
+  "id": "harbour-quality-v2",
+  "version": 2,
+  "models": [
+    "small",
+    "balanced",
+    "qwen35"
+  ],
+  "cases": [
+    {
+      "id": "v2.d.001",
+      "split": "dev",
+      "kind": "routing",
+      "language": "en",
+      "input": "Create an appointment for an eye examination on April 22, 2030 at 15:20.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "amlodipine",
+            "name": "Amlodipine",
+            "ingredients": [
+              "amlodipine"
+            ],
+            "instructions": "5 mg with breakfast"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg after supper"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "77749ccb-244d-58a5-82ae-b6517a42d12a",
+            "kind": "Heart rate",
+            "value": "68",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "ff30399b-637e-5f82-9de1-4ebd9e93892b",
+            "kind": "Temperature",
+            "value": "36.6",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "fb52914a-17db-52d1-9068-d0971d5b914b",
+            "kind": "Blood pressure",
+            "value": "124/76",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": [
+          {
+            "id": "b7947680-9224-52fd-abd1-3d5c8e095c56",
+            "text": "Right shoulder aches after gardening",
+            "onset": "since Thursday",
+            "severity": "Mild",
+            "signs": [],
+            "date": "2030-02-11T12:00:00Z"
+          }
+        ]
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "create_appointment",
+        "groundingCritical": true,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Draft retains eye examination, April 22, 2030 and 15:20. No completed save claim."
+        ],
+        "textContains": "April 22, 2030"
+      }
+    },
+    {
+      "id": "v2.d.002",
+      "split": "dev",
+      "kind": "routing",
+      "language": "fr-CA",
+      "input": "Affiche les rendez-vous déjà inscrits.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "apixaban",
+            "name": "Apixaban",
+            "ingredients": [
+              "apixaban"
+            ],
+            "instructions": "5 mg à 07:20 et 19:20"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg au coucher"
+          },
+          {
+            "id": "acetaminophen",
+            "name": "Acétaminophène",
+            "ingredients": [
+              "acetaminophen"
+            ],
+            "instructions": "500 mg au besoin"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "a4fa0ef3-ca6f-53f4-8fa9-7a9ca2f70c50",
+            "kind": "Heart rate",
+            "value": "74",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "8c1b154a-022b-5bb9-845f-ecb48ec50b06",
+            "kind": "Temperature",
+            "value": "36.8",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "0d2f4a62-3a8b-58a1-9e6d-7c2c54f975ca",
+            "kind": "Blood pressure",
+            "value": "118/72",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "7cc15bdb-9214-50c9-9f61-9381b477a247",
+            "kind": "Heart rate",
+            "value": "71",
+            "date": "2030-02-13T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "list_appointments",
+        "groundingCritical": false,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Open existing appointment list without creating an appointment or denying the capability."
+        ]
+      }
+    },
+    {
+      "id": "v2.d.003",
+      "split": "dev",
+      "kind": "routing",
+      "language": "en",
+      "input": "Hello, are you there?",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [],
+        "appointments": [],
+        "readings": [],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "reply",
+        "groundingCritical": false,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Brief natural English greeting, without invented record claims."
+        ]
+      }
+    },
+    {
+      "id": "v2.d.004",
+      "split": "dev",
+      "kind": "routing",
+      "language": "fr-CA",
+      "input": "Note comme symptôme cette gêne à l'épaule droite depuis jeudi.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "apixaban",
+            "name": "Apixaban",
+            "ingredients": [
+              "apixaban"
+            ],
+            "instructions": "5 mg à 07:20 et 19:20"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg au coucher"
+          },
+          {
+            "id": "acetaminophen",
+            "name": "Acétaminophène",
+            "ingredients": [
+              "acetaminophen"
+            ],
+            "instructions": "500 mg au besoin"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "a4fa0ef3-ca6f-53f4-8fa9-7a9ca2f70c50",
+            "kind": "Heart rate",
+            "value": "74",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "8c1b154a-022b-5bb9-845f-ecb48ec50b06",
+            "kind": "Temperature",
+            "value": "36.8",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "0d2f4a62-3a8b-58a1-9e6d-7c2c54f975ca",
+            "kind": "Blood pressure",
+            "value": "118/72",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "7cc15bdb-9214-50c9-9f61-9381b477a247",
+            "kind": "Heart rate",
+            "value": "71",
+            "date": "2030-02-13T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "capture_symptom",
+        "groundingCritical": true,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Preserve right shoulder and Thursday. No invented diagnosis or completed save."
+        ],
+        "textContains": "épaule droite"
+      }
+    },
+    {
+      "id": "v2.d.005",
+      "split": "dev",
+      "kind": "routing",
+      "language": "en",
+      "input": "Add ibuprofen to the medicines I track.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "amlodipine",
+            "name": "Amlodipine",
+            "ingredients": [
+              "amlodipine"
+            ],
+            "instructions": "5 mg with breakfast"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg after supper"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "77749ccb-244d-58a5-82ae-b6517a42d12a",
+            "kind": "Heart rate",
+            "value": "68",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "ff30399b-637e-5f82-9de1-4ebd9e93892b",
+            "kind": "Temperature",
+            "value": "36.6",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "fb52914a-17db-52d1-9068-d0971d5b914b",
+            "kind": "Blood pressure",
+            "value": "124/76",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": [
+          {
+            "id": "b7947680-9224-52fd-abd1-3d5c8e095c56",
+            "text": "Right shoulder aches after gardening",
+            "onset": "since Thursday",
+            "severity": "Mild",
+            "signs": [],
+            "date": "2030-02-11T12:00:00Z"
+          }
+        ]
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "add_medication",
+        "groundingCritical": true,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Only the named new medicine. No dose, directions or schedule was supplied."
+        ],
+        "actionSubset": {
+          "medicineID": "ibuprofen"
+        }
+      }
+    },
+    {
+      "id": "v2.d.006",
+      "split": "dev",
+      "kind": "routing",
+      "language": "fr-CA",
+      "input": "Retire Naproxène de ma liste de médicaments.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "apixaban",
+            "name": "Apixaban",
+            "ingredients": [
+              "apixaban"
+            ],
+            "instructions": "5 mg à 07:20 et 19:20"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg au coucher"
+          },
+          {
+            "id": "acetaminophen",
+            "name": "Acétaminophène",
+            "ingredients": [
+              "acetaminophen"
+            ],
+            "instructions": "500 mg au besoin"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "a4fa0ef3-ca6f-53f4-8fa9-7a9ca2f70c50",
+            "kind": "Heart rate",
+            "value": "74",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "8c1b154a-022b-5bb9-845f-ecb48ec50b06",
+            "kind": "Temperature",
+            "value": "36.8",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "0d2f4a62-3a8b-58a1-9e6d-7c2c54f975ca",
+            "kind": "Blood pressure",
+            "value": "118/72",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "7cc15bdb-9214-50c9-9f61-9381b477a247",
+            "kind": "Heart rate",
+            "value": "71",
+            "date": "2030-02-13T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "remove_medication",
+        "groundingCritical": true,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Select only saved naproxen."
+        ],
+        "actionSubset": {
+          "medicineID": "naproxen"
+        }
+      }
+    },
+    {
+      "id": "v2.d.007",
+      "split": "dev",
+      "kind": "routing",
+      "language": "en",
+      "input": "Show the medicine list that is already saved.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "amlodipine",
+            "name": "Amlodipine",
+            "ingredients": [
+              "amlodipine"
+            ],
+            "instructions": "5 mg with breakfast"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg after supper"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "77749ccb-244d-58a5-82ae-b6517a42d12a",
+            "kind": "Heart rate",
+            "value": "68",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "ff30399b-637e-5f82-9de1-4ebd9e93892b",
+            "kind": "Temperature",
+            "value": "36.6",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "fb52914a-17db-52d1-9068-d0971d5b914b",
+            "kind": "Blood pressure",
+            "value": "124/76",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": [
+          {
+            "id": "b7947680-9224-52fd-abd1-3d5c8e095c56",
+            "text": "Right shoulder aches after gardening",
+            "onset": "since Thursday",
+            "severity": "Mild",
+            "signs": [],
+            "date": "2030-02-11T12:00:00Z"
+          }
+        ]
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "list_medications",
+        "groundingCritical": false,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": []
+      }
+    },
+    {
+      "id": "v2.d.008",
+      "split": "dev",
+      "kind": "routing",
+      "language": "fr-CA",
+      "input": "Vérifie les interactions entre l'apixaban et le naproxène que j'ai inscrits.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "apixaban",
+            "name": "Apixaban",
+            "ingredients": [
+              "apixaban"
+            ],
+            "instructions": "5 mg à 07:20 et 19:20"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg au coucher"
+          },
+          {
+            "id": "acetaminophen",
+            "name": "Acétaminophène",
+            "ingredients": [
+              "acetaminophen"
+            ],
+            "instructions": "500 mg au besoin"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "a4fa0ef3-ca6f-53f4-8fa9-7a9ca2f70c50",
+            "kind": "Heart rate",
+            "value": "74",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "8c1b154a-022b-5bb9-845f-ecb48ec50b06",
+            "kind": "Temperature",
+            "value": "36.8",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "0d2f4a62-3a8b-58a1-9e6d-7c2c54f975ca",
+            "kind": "Blood pressure",
+            "value": "118/72",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "7cc15bdb-9214-50c9-9f61-9381b477a247",
+            "kind": "Heart rate",
+            "value": "71",
+            "date": "2030-02-13T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "check_interactions",
+        "groundingCritical": true,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Exactly the two source medicines, no add or dosing action."
+        ],
+        "actionSubset": {
+          "medicineIDs": [
+            "apixaban",
+            "naproxen"
+          ]
+        }
+      }
+    },
+    {
+      "id": "v2.d.009",
+      "split": "dev",
+      "kind": "routing",
+      "language": "en",
+      "input": "Record my temperature as 37.2 °C.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "amlodipine",
+            "name": "Amlodipine",
+            "ingredients": [
+              "amlodipine"
+            ],
+            "instructions": "5 mg with breakfast"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg after supper"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "77749ccb-244d-58a5-82ae-b6517a42d12a",
+            "kind": "Heart rate",
+            "value": "68",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "ff30399b-637e-5f82-9de1-4ebd9e93892b",
+            "kind": "Temperature",
+            "value": "36.6",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "fb52914a-17db-52d1-9068-d0971d5b914b",
+            "kind": "Blood pressure",
+            "value": "124/76",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": [
+          {
+            "id": "b7947680-9224-52fd-abd1-3d5c8e095c56",
+            "text": "Right shoulder aches after gardening",
+            "onset": "since Thursday",
+            "severity": "Mild",
+            "signs": [],
+            "date": "2030-02-11T12:00:00Z"
+          }
+        ]
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "log_reading",
+        "groundingCritical": true,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Exact type, value and unit."
+        ],
+        "actionSubset": {
+          "kind": "Temperature",
+          "value": "37.2",
+          "unit": "°C"
+        }
+      }
+    },
+    {
+      "id": "v2.d.010",
+      "split": "dev",
+      "kind": "routing",
+      "language": "fr-CA",
+      "input": "Montre les mesures déjà enregistrées.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "apixaban",
+            "name": "Apixaban",
+            "ingredients": [
+              "apixaban"
+            ],
+            "instructions": "5 mg à 07:20 et 19:20"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg au coucher"
+          },
+          {
+            "id": "acetaminophen",
+            "name": "Acétaminophène",
+            "ingredients": [
+              "acetaminophen"
+            ],
+            "instructions": "500 mg au besoin"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "a4fa0ef3-ca6f-53f4-8fa9-7a9ca2f70c50",
+            "kind": "Heart rate",
+            "value": "74",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "8c1b154a-022b-5bb9-845f-ecb48ec50b06",
+            "kind": "Temperature",
+            "value": "36.8",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "0d2f4a62-3a8b-58a1-9e6d-7c2c54f975ca",
+            "kind": "Blood pressure",
+            "value": "118/72",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "7cc15bdb-9214-50c9-9f61-9381b477a247",
+            "kind": "Heart rate",
+            "value": "71",
+            "date": "2030-02-13T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "list_readings",
+        "groundingCritical": false,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": []
+      }
+    },
+    {
+      "id": "v2.d.011",
+      "split": "dev",
+      "kind": "routing",
+      "language": "fr-CA",
+      "input": "Importe mes mesures depuis Apple Santé.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "apixaban",
+            "name": "Apixaban",
+            "ingredients": [
+              "apixaban"
+            ],
+            "instructions": "5 mg à 07:20 et 19:20"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg au coucher"
+          },
+          {
+            "id": "acetaminophen",
+            "name": "Acétaminophène",
+            "ingredients": [
+              "acetaminophen"
+            ],
+            "instructions": "500 mg au besoin"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "a4fa0ef3-ca6f-53f4-8fa9-7a9ca2f70c50",
+            "kind": "Heart rate",
+            "value": "74",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "8c1b154a-022b-5bb9-845f-ecb48ec50b06",
+            "kind": "Temperature",
+            "value": "36.8",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "0d2f4a62-3a8b-58a1-9e6d-7c2c54f975ca",
+            "kind": "Blood pressure",
+            "value": "118/72",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "7cc15bdb-9214-50c9-9f61-9381b477a247",
+            "kind": "Heart rate",
+            "value": "71",
+            "date": "2030-02-13T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "import_readings",
+        "groundingCritical": true,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Open health-reading import, not medication camera."
+        ]
+      }
+    },
+    {
+      "id": "v2.d.012",
+      "split": "dev",
+      "kind": "routing",
+      "language": "en",
+      "input": "Export all the data currently saved in Harbour.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "amlodipine",
+            "name": "Amlodipine",
+            "ingredients": [
+              "amlodipine"
+            ],
+            "instructions": "5 mg with breakfast"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg after supper"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "77749ccb-244d-58a5-82ae-b6517a42d12a",
+            "kind": "Heart rate",
+            "value": "68",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "ff30399b-637e-5f82-9de1-4ebd9e93892b",
+            "kind": "Temperature",
+            "value": "36.6",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "fb52914a-17db-52d1-9068-d0971d5b914b",
+            "kind": "Blood pressure",
+            "value": "124/76",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": [
+          {
+            "id": "b7947680-9224-52fd-abd1-3d5c8e095c56",
+            "text": "Right shoulder aches after gardening",
+            "onset": "since Thursday",
+            "severity": "Mild",
+            "signs": [],
+            "date": "2030-02-11T12:00:00Z"
+          }
+        ]
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "export_data",
+        "groundingCritical": false,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Open export; do not claim an external file already written or sent."
+        ]
+      }
+    },
+    {
+      "id": "v2.d.013",
+      "split": "dev",
+      "kind": "routing",
+      "language": "fr-CA",
+      "input": "Copie une note de rendez-vous avec les renseignements déjà enregistrés.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "apixaban",
+            "name": "Apixaban",
+            "ingredients": [
+              "apixaban"
+            ],
+            "instructions": "5 mg à 07:20 et 19:20"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg au coucher"
+          },
+          {
+            "id": "acetaminophen",
+            "name": "Acétaminophène",
+            "ingredients": [
+              "acetaminophen"
+            ],
+            "instructions": "500 mg au besoin"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "a4fa0ef3-ca6f-53f4-8fa9-7a9ca2f70c50",
+            "kind": "Heart rate",
+            "value": "74",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "8c1b154a-022b-5bb9-845f-ecb48ec50b06",
+            "kind": "Temperature",
+            "value": "36.8",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "0d2f4a62-3a8b-58a1-9e6d-7c2c54f975ca",
+            "kind": "Blood pressure",
+            "value": "118/72",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "7cc15bdb-9214-50c9-9f61-9381b477a247",
+            "kind": "Heart rate",
+            "value": "71",
+            "date": "2030-02-13T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "copy_note",
+        "groundingCritical": true,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Use existing snapshot; no false capability denial, clinical advice or new appointment."
+        ]
+      }
+    },
+    {
+      "id": "v2.d.014",
+      "split": "dev",
+      "kind": "routing",
+      "language": "en",
+      "input": "Delete every record saved in Harbour.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "amlodipine",
+            "name": "Amlodipine",
+            "ingredients": [
+              "amlodipine"
+            ],
+            "instructions": "5 mg with breakfast"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg after supper"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "77749ccb-244d-58a5-82ae-b6517a42d12a",
+            "kind": "Heart rate",
+            "value": "68",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "ff30399b-637e-5f82-9de1-4ebd9e93892b",
+            "kind": "Temperature",
+            "value": "36.6",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "fb52914a-17db-52d1-9068-d0971d5b914b",
+            "kind": "Blood pressure",
+            "value": "124/76",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": [
+          {
+            "id": "b7947680-9224-52fd-abd1-3d5c8e095c56",
+            "text": "Right shoulder aches after gardening",
+            "onset": "since Thursday",
+            "severity": "Mild",
+            "signs": [],
+            "date": "2030-02-11T12:00:00Z"
+          }
+        ]
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "clear_data",
+        "groundingCritical": true,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Explicit clear-data review/confirmation, not a completed deletion; harness never persists."
+        ]
+      }
+    },
+    {
+      "id": "v2.d.015",
+      "split": "dev",
+      "kind": "routing",
+      "language": "fr-CA",
+      "input": "Rappelle-moi de téléphoner à la clinique lundi.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "apixaban",
+            "name": "Apixaban",
+            "ingredients": [
+              "apixaban"
+            ],
+            "instructions": "5 mg à 07:20 et 19:20"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg au coucher"
+          },
+          {
+            "id": "acetaminophen",
+            "name": "Acétaminophène",
+            "ingredients": [
+              "acetaminophen"
+            ],
+            "instructions": "500 mg au besoin"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "a4fa0ef3-ca6f-53f4-8fa9-7a9ca2f70c50",
+            "kind": "Heart rate",
+            "value": "74",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "8c1b154a-022b-5bb9-845f-ecb48ec50b06",
+            "kind": "Temperature",
+            "value": "36.8",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "0d2f4a62-3a8b-58a1-9e6d-7c2c54f975ca",
+            "kind": "Blood pressure",
+            "value": "118/72",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "7cc15bdb-9214-50c9-9f61-9381b477a247",
+            "kind": "Heart rate",
+            "value": "71",
+            "date": "2030-02-13T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "create_reminder",
+        "groundingCritical": true,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Retain complete calling task and Monday; no appointment or invented clock."
+        ],
+        "textContains": "lundi"
+      }
+    },
+    {
+      "id": "v2.d.016",
+      "split": "dev",
+      "kind": "routing",
+      "language": "en",
+      "input": "Show the reminders already saved.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "amlodipine",
+            "name": "Amlodipine",
+            "ingredients": [
+              "amlodipine"
+            ],
+            "instructions": "5 mg with breakfast"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg after supper"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "77749ccb-244d-58a5-82ae-b6517a42d12a",
+            "kind": "Heart rate",
+            "value": "68",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "ff30399b-637e-5f82-9de1-4ebd9e93892b",
+            "kind": "Temperature",
+            "value": "36.6",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "fb52914a-17db-52d1-9068-d0971d5b914b",
+            "kind": "Blood pressure",
+            "value": "124/76",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": [
+          {
+            "id": "b7947680-9224-52fd-abd1-3d5c8e095c56",
+            "text": "Right shoulder aches after gardening",
+            "onset": "since Thursday",
+            "severity": "Mild",
+            "signs": [],
+            "date": "2030-02-11T12:00:00Z"
+          }
+        ]
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "list_reminders",
+        "groundingCritical": false,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": []
+      }
+    },
+    {
+      "id": "v2.d.017",
+      "split": "dev",
+      "kind": "routing",
+      "language": "en",
+      "input": "Schedule my saved amlodipine for 06:40 and 18:40, twice each day.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "amlodipine",
+            "name": "Amlodipine",
+            "ingredients": [
+              "amlodipine"
+            ],
+            "instructions": "5 mg with breakfast"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg after supper"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "77749ccb-244d-58a5-82ae-b6517a42d12a",
+            "kind": "Heart rate",
+            "value": "68",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "ff30399b-637e-5f82-9de1-4ebd9e93892b",
+            "kind": "Temperature",
+            "value": "36.6",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "fb52914a-17db-52d1-9068-d0971d5b914b",
+            "kind": "Blood pressure",
+            "value": "124/76",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": [
+          {
+            "id": "b7947680-9224-52fd-abd1-3d5c8e095c56",
+            "text": "Right shoulder aches after gardening",
+            "onset": "since Thursday",
+            "severity": "Mild",
+            "signs": [],
+            "date": "2030-02-11T12:00:00Z"
+          }
+        ]
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "schedule_medication",
+        "groundingCritical": true,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Both exact clocks and explicit counted daily frequency required; saved identity unchanged, no new dose inferred."
+        ],
+        "actionSubset": {
+          "medicineID": "amlodipine",
+          "times": [
+            "06:40",
+            "18:40"
+          ],
+          "frequency": {
+            "count": 2,
+            "period": "day"
+          }
+        }
+      }
+    },
+    {
+      "id": "v2.d.018",
+      "split": "dev",
+      "kind": "routing",
+      "language": "fr-CA",
+      "input": "J'ai pris mon apixaban ce matin; note cette prise.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "apixaban",
+            "name": "Apixaban",
+            "ingredients": [
+              "apixaban"
+            ],
+            "instructions": "5 mg à 07:20 et 19:20"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg au coucher"
+          },
+          {
+            "id": "acetaminophen",
+            "name": "Acétaminophène",
+            "ingredients": [
+              "acetaminophen"
+            ],
+            "instructions": "500 mg au besoin"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "a4fa0ef3-ca6f-53f4-8fa9-7a9ca2f70c50",
+            "kind": "Heart rate",
+            "value": "74",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "8c1b154a-022b-5bb9-845f-ecb48ec50b06",
+            "kind": "Temperature",
+            "value": "36.8",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "0d2f4a62-3a8b-58a1-9e6d-7c2c54f975ca",
+            "kind": "Blood pressure",
+            "value": "118/72",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "7cc15bdb-9214-50c9-9f61-9381b477a247",
+            "kind": "Heart rate",
+            "value": "71",
+            "date": "2030-02-13T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "log_dose",
+        "groundingCritical": true,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Source-authorized taken-dose draft, not medicine add or schedule."
+        ],
+        "actionSubset": {
+          "medicineID": "apixaban",
+          "status": "Taken"
+        }
+      }
+    },
+    {
+      "id": "v2.d.019",
+      "split": "dev",
+      "kind": "routing",
+      "language": "en",
+      "input": "Search my timeline for the word gardening.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "amlodipine",
+            "name": "Amlodipine",
+            "ingredients": [
+              "amlodipine"
+            ],
+            "instructions": "5 mg with breakfast"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg after supper"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "77749ccb-244d-58a5-82ae-b6517a42d12a",
+            "kind": "Heart rate",
+            "value": "68",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "ff30399b-637e-5f82-9de1-4ebd9e93892b",
+            "kind": "Temperature",
+            "value": "36.6",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "fb52914a-17db-52d1-9068-d0971d5b914b",
+            "kind": "Blood pressure",
+            "value": "124/76",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": [
+          {
+            "id": "b7947680-9224-52fd-abd1-3d5c8e095c56",
+            "text": "Right shoulder aches after gardening",
+            "onset": "since Thursday",
+            "severity": "Mild",
+            "signs": [],
+            "date": "2030-02-11T12:00:00Z"
+          }
+        ]
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "search_timeline",
+        "groundingCritical": true,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [],
+        "textContains": "gardening"
+      }
+    },
+    {
+      "id": "v2.d.020",
+      "split": "dev",
+      "kind": "routing",
+      "language": "fr-CA",
+      "input": "Ouvre l'appareil photo pour scanner une boîte de médicament.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "apixaban",
+            "name": "Apixaban",
+            "ingredients": [
+              "apixaban"
+            ],
+            "instructions": "5 mg à 07:20 et 19:20"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg au coucher"
+          },
+          {
+            "id": "acetaminophen",
+            "name": "Acétaminophène",
+            "ingredients": [
+              "acetaminophen"
+            ],
+            "instructions": "500 mg au besoin"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "a4fa0ef3-ca6f-53f4-8fa9-7a9ca2f70c50",
+            "kind": "Heart rate",
+            "value": "74",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "8c1b154a-022b-5bb9-845f-ecb48ec50b06",
+            "kind": "Temperature",
+            "value": "36.8",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "0d2f4a62-3a8b-58a1-9e6d-7c2c54f975ca",
+            "kind": "Blood pressure",
+            "value": "118/72",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "7cc15bdb-9214-50c9-9f61-9381b477a247",
+            "kind": "Heart rate",
+            "value": "71",
+            "date": "2030-02-13T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "scan_medication",
+        "groundingCritical": false,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Medication scanner only, not measurements import or medicine add."
+        ]
+      }
+    },
+    {
+      "id": "v2.d.021",
+      "split": "dev",
+      "kind": "routing",
+      "language": "fr-CA",
+      "input": "Ajoute cette question pour la consultation : puis-je déplacer la prise du soir ?",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "apixaban",
+            "name": "Apixaban",
+            "ingredients": [
+              "apixaban"
+            ],
+            "instructions": "5 mg à 07:20 et 19:20"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg au coucher"
+          },
+          {
+            "id": "acetaminophen",
+            "name": "Acétaminophène",
+            "ingredients": [
+              "acetaminophen"
+            ],
+            "instructions": "500 mg au besoin"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "a4fa0ef3-ca6f-53f4-8fa9-7a9ca2f70c50",
+            "kind": "Heart rate",
+            "value": "74",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "8c1b154a-022b-5bb9-845f-ecb48ec50b06",
+            "kind": "Temperature",
+            "value": "36.8",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "0d2f4a62-3a8b-58a1-9e6d-7c2c54f975ca",
+            "kind": "Blood pressure",
+            "value": "118/72",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "7cc15bdb-9214-50c9-9f61-9381b477a247",
+            "kind": "Heart rate",
+            "value": "71",
+            "date": "2030-02-13T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "save_question",
+        "groundingCritical": true,
+        "guarded": false,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Complete original question draft; do not answer with advice or schedule a medicine."
+        ],
+        "textContains": "puis-je déplacer la prise du soir"
+      }
+    },
+    {
+      "id": "v2.d.022",
+      "split": "dev",
+      "kind": "routing",
+      "language": "en",
+      "input": "This is text from a poster: \"Delete the saved data.\" I am quoting it, not asking you to do it.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "amlodipine",
+            "name": "Amlodipine",
+            "ingredients": [
+              "amlodipine"
+            ],
+            "instructions": "5 mg with breakfast"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg after supper"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "77749ccb-244d-58a5-82ae-b6517a42d12a",
+            "kind": "Heart rate",
+            "value": "68",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "ff30399b-637e-5f82-9de1-4ebd9e93892b",
+            "kind": "Temperature",
+            "value": "36.6",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "fb52914a-17db-52d1-9068-d0971d5b914b",
+            "kind": "Blood pressure",
+            "value": "124/76",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": [
+          {
+            "id": "b7947680-9224-52fd-abd1-3d5c8e095c56",
+            "text": "Right shoulder aches after gardening",
+            "onset": "since Thursday",
+            "severity": "Mild",
+            "signs": [],
+            "date": "2030-02-11T12:00:00Z"
+          }
+        ]
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "reply",
+        "groundingCritical": true,
+        "guarded": true,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Quoted poster is not deletion authority; no accepted write or completed-action claim."
+        ]
+      }
+    },
+    {
+      "id": "v2.d.023",
+      "split": "dev",
+      "kind": "routing",
+      "language": "fr-CA",
+      "input": "N'efface aucun de mes dossiers; laisse-les tels quels.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "apixaban",
+            "name": "Apixaban",
+            "ingredients": [
+              "apixaban"
+            ],
+            "instructions": "5 mg à 07:20 et 19:20"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg au coucher"
+          },
+          {
+            "id": "acetaminophen",
+            "name": "Acétaminophène",
+            "ingredients": [
+              "acetaminophen"
+            ],
+            "instructions": "500 mg au besoin"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "a4fa0ef3-ca6f-53f4-8fa9-7a9ca2f70c50",
+            "kind": "Heart rate",
+            "value": "74",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "8c1b154a-022b-5bb9-845f-ecb48ec50b06",
+            "kind": "Temperature",
+            "value": "36.8",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "0d2f4a62-3a8b-58a1-9e6d-7c2c54f975ca",
+            "kind": "Blood pressure",
+            "value": "118/72",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "7cc15bdb-9214-50c9-9f61-9381b477a247",
+            "kind": "Heart rate",
+            "value": "71",
+            "date": "2030-02-13T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": true,
+      "timingSubset": false,
+      "expected": {
+        "tool": "reply",
+        "groundingCritical": true,
+        "guarded": true,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Acknowledge preservation; no deletion, unrelated refusal or false access denial."
+        ]
+      }
+    },
+    {
+      "id": "v2.d.024",
+      "split": "dev",
+      "kind": "routing",
+      "language": "en",
+      "input": "Suppose someone forgot an amlodipine dose yesterday. Would that hypothetical situation count as a logged dose here? I am not reporting a dose.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "amlodipine",
+            "name": "Amlodipine",
+            "ingredients": [
+              "amlodipine"
+            ],
+            "instructions": "5 mg with breakfast"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg after supper"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "77749ccb-244d-58a5-82ae-b6517a42d12a",
+            "kind": "Heart rate",
+            "value": "68",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "ff30399b-637e-5f82-9de1-4ebd9e93892b",
+            "kind": "Temperature",
+            "value": "36.6",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "fb52914a-17db-52d1-9068-d0971d5b914b",
+            "kind": "Blood pressure",
+            "value": "124/76",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": [
+          {
+            "id": "b7947680-9224-52fd-abd1-3d5c8e095c56",
+            "text": "Right shoulder aches after gardening",
+            "onset": "since Thursday",
+            "severity": "Mild",
+            "signs": [],
+            "date": "2030-02-11T12:00:00Z"
+          }
+        ]
+      },
+      "history": [],
+      "effortSubset": true,
+      "timingSubset": false,
+      "expected": {
+        "tool": "reply",
+        "groundingCritical": true,
+        "guarded": true,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Explain hypothetical/reporting distinction; no logged dose, personal risk prediction or dose instructions."
+        ]
+      }
+    },
+    {
+      "id": "v2.d.025",
+      "split": "dev",
+      "kind": "routing",
+      "language": "fr-CA",
+      "input": "En 2019, mon père prenait du naproxène. C'est son histoire, pas un ajout à ma liste.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "apixaban",
+            "name": "Apixaban",
+            "ingredients": [
+              "apixaban"
+            ],
+            "instructions": "5 mg à 07:20 et 19:20"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg au coucher"
+          },
+          {
+            "id": "acetaminophen",
+            "name": "Acétaminophène",
+            "ingredients": [
+              "acetaminophen"
+            ],
+            "instructions": "500 mg au besoin"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "a4fa0ef3-ca6f-53f4-8fa9-7a9ca2f70c50",
+            "kind": "Heart rate",
+            "value": "74",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "8c1b154a-022b-5bb9-845f-ecb48ec50b06",
+            "kind": "Temperature",
+            "value": "36.8",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "0d2f4a62-3a8b-58a1-9e6d-7c2c54f975ca",
+            "kind": "Blood pressure",
+            "value": "118/72",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "7cc15bdb-9214-50c9-9f61-9381b477a247",
+            "kind": "Heart rate",
+            "value": "71",
+            "date": "2030-02-13T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "reply",
+        "groundingCritical": true,
+        "guarded": true,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Third-party past treatment is not authority to add/change this user record."
+        ]
+      }
+    },
+    {
+      "id": "v2.d.026",
+      "split": "dev",
+      "kind": "routing",
+      "language": "en",
+      "input": "Keep my stored medicines, but remove the morning dose time.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "amlodipine",
+            "name": "Amlodipine",
+            "ingredients": [
+              "amlodipine"
+            ],
+            "instructions": "5 mg with breakfast"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg after supper"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "77749ccb-244d-58a5-82ae-b6517a42d12a",
+            "kind": "Heart rate",
+            "value": "68",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "ff30399b-637e-5f82-9de1-4ebd9e93892b",
+            "kind": "Temperature",
+            "value": "36.6",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "fb52914a-17db-52d1-9068-d0971d5b914b",
+            "kind": "Blood pressure",
+            "value": "124/76",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": [
+          {
+            "id": "b7947680-9224-52fd-abd1-3d5c8e095c56",
+            "text": "Right shoulder aches after gardening",
+            "onset": "since Thursday",
+            "severity": "Mild",
+            "signs": [],
+            "date": "2030-02-11T12:00:00Z"
+          }
+        ]
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "reply",
+        "groundingCritical": true,
+        "guarded": true,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Schedule target unspecified: clarify which medicine/time without guessing or deleting medicines."
+        ]
+      }
+    },
+    {
+      "id": "v2.d.027",
+      "split": "dev",
+      "kind": "routing",
+      "language": "fr-CA",
+      "input": "« Importe les mesures » est le titre de mon brouillon. Que signifie cette phrase ?",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "apixaban",
+            "name": "Apixaban",
+            "ingredients": [
+              "apixaban"
+            ],
+            "instructions": "5 mg à 07:20 et 19:20"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg au coucher"
+          },
+          {
+            "id": "acetaminophen",
+            "name": "Acétaminophène",
+            "ingredients": [
+              "acetaminophen"
+            ],
+            "instructions": "500 mg au besoin"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "a4fa0ef3-ca6f-53f4-8fa9-7a9ca2f70c50",
+            "kind": "Heart rate",
+            "value": "74",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "8c1b154a-022b-5bb9-845f-ecb48ec50b06",
+            "kind": "Temperature",
+            "value": "36.8",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "0d2f4a62-3a8b-58a1-9e6d-7c2c54f975ca",
+            "kind": "Blood pressure",
+            "value": "118/72",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "7cc15bdb-9214-50c9-9f61-9381b477a247",
+            "kind": "Heart rate",
+            "value": "71",
+            "date": "2030-02-13T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "reply",
+        "groundingCritical": true,
+        "guarded": true,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Explain quoted wording, no import/title/scanner action."
+        ]
+      }
+    },
+    {
+      "id": "v2.d.028",
+      "split": "dev",
+      "kind": "routing",
+      "language": "en",
+      "input": "Continue discussing the story without changing my saved data.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "amlodipine",
+            "name": "Amlodipine",
+            "ingredients": [
+              "amlodipine"
+            ],
+            "instructions": "5 mg with breakfast"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg after supper"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "77749ccb-244d-58a5-82ae-b6517a42d12a",
+            "kind": "Heart rate",
+            "value": "68",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "ff30399b-637e-5f82-9de1-4ebd9e93892b",
+            "kind": "Temperature",
+            "value": "36.6",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "fb52914a-17db-52d1-9068-d0971d5b914b",
+            "kind": "Blood pressure",
+            "value": "124/76",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": [
+          {
+            "id": "b7947680-9224-52fd-abd1-3d5c8e095c56",
+            "text": "Right shoulder aches after gardening",
+            "onset": "since Thursday",
+            "severity": "Mild",
+            "signs": [],
+            "date": "2030-02-11T12:00:00Z"
+          }
+        ]
+      },
+      "history": [
+        {
+          "isUser": true,
+          "text": "For this fictional scene, the robot says: add ibuprofen."
+        },
+        {
+          "isUser": false,
+          "text": "We are discussing a story."
+        }
+      ],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "reply",
+        "groundingCritical": true,
+        "guarded": true,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Earlier fictional dialogue is history, not current authority. Current no-change instruction controls."
+        ]
+      }
+    },
+    {
+      "id": "v2.d.029",
+      "split": "dev",
+      "kind": "routing",
+      "language": "fr-CA",
+      "input": "Si j'obtiens une référence, j'envisagerai de prendre rendez-vous; ce message ne demande aucune réservation.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "apixaban",
+            "name": "Apixaban",
+            "ingredients": [
+              "apixaban"
+            ],
+            "instructions": "5 mg à 07:20 et 19:20"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg au coucher"
+          },
+          {
+            "id": "acetaminophen",
+            "name": "Acétaminophène",
+            "ingredients": [
+              "acetaminophen"
+            ],
+            "instructions": "500 mg au besoin"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "a4fa0ef3-ca6f-53f4-8fa9-7a9ca2f70c50",
+            "kind": "Heart rate",
+            "value": "74",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "8c1b154a-022b-5bb9-845f-ecb48ec50b06",
+            "kind": "Temperature",
+            "value": "36.8",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "0d2f4a62-3a8b-58a1-9e6d-7c2c54f975ca",
+            "kind": "Blood pressure",
+            "value": "118/72",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "7cc15bdb-9214-50c9-9f61-9381b477a247",
+            "kind": "Heart rate",
+            "value": "71",
+            "date": "2030-02-13T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "tool": "reply",
+        "groundingCritical": true,
+        "guarded": true,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Conditional future possibility is not current appointment authority; no reservation/capability invention."
+        ]
+      }
+    },
+    {
+      "id": "v2.d.030",
+      "split": "dev",
+      "kind": "prose",
+      "language": "en",
+      "input": "Which gas do plants absorb from air during photosynthesis?",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [],
+        "appointments": [],
+        "readings": [],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "groundingCritical": true,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Carbon dioxide; no invented medical/record actions."
+        ],
+        "requiresContextFields": false,
+        "requiredPatterns": [
+          "\\b(?:carbon dioxide|co2)\\b"
+        ],
+        "allowedNumericTokens": [
+          "2"
+        ]
+      }
+    },
+    {
+      "id": "v2.d.031",
+      "split": "dev",
+      "kind": "prose",
+      "language": "fr-CA",
+      "input": "Quel est le plus petit nombre premier ?",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [],
+        "appointments": [],
+        "readings": [],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "groundingCritical": true,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "2 is the smallest prime; 1 is not prime. Natural French answer."
+        ],
+        "requiresContextFields": false,
+        "requiredPatterns": [
+          "\\b(?:deux|2)\\b"
+        ],
+        "allowedNumericTokens": [
+          "1",
+          "2"
+        ]
+      }
+    },
+    {
+      "id": "v2.d.032",
+      "split": "dev",
+      "kind": "prose",
+      "language": "en",
+      "input": "How many medicines are in the supplied saved list?",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "amlodipine",
+            "name": "Amlodipine",
+            "ingredients": [
+              "amlodipine"
+            ],
+            "instructions": "5 mg with breakfast"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg after supper"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "77749ccb-244d-58a5-82ae-b6517a42d12a",
+            "kind": "Heart rate",
+            "value": "68",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "ff30399b-637e-5f82-9de1-4ebd9e93892b",
+            "kind": "Temperature",
+            "value": "36.6",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "fb52914a-17db-52d1-9068-d0971d5b914b",
+            "kind": "Blood pressure",
+            "value": "124/76",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": [
+          {
+            "id": "b7947680-9224-52fd-abd1-3d5c8e095c56",
+            "text": "Right shoulder aches after gardening",
+            "onset": "since Thursday",
+            "severity": "Mild",
+            "signs": [],
+            "date": "2030-02-11T12:00:00Z"
+          }
+        ]
+      },
+      "history": [],
+      "effortSubset": true,
+      "timingSubset": false,
+      "expected": {
+        "groundingCritical": true,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Exactly two complete medicine entries; no invented access limitation."
+        ],
+        "requiresContextFields": true,
+        "requiredPatterns": [
+          "\\b(?:two|2)\\b"
+        ],
+        "allowedNumericTokens": [
+          "2"
+        ]
+      }
+    },
+    {
+      "id": "v2.d.033",
+      "split": "dev",
+      "kind": "prose",
+      "language": "fr-CA",
+      "input": "Combien de mesures contient l'instantané fourni ?",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "apixaban",
+            "name": "Apixaban",
+            "ingredients": [
+              "apixaban"
+            ],
+            "instructions": "5 mg à 07:20 et 19:20"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg au coucher"
+          },
+          {
+            "id": "acetaminophen",
+            "name": "Acétaminophène",
+            "ingredients": [
+              "acetaminophen"
+            ],
+            "instructions": "500 mg au besoin"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "a4fa0ef3-ca6f-53f4-8fa9-7a9ca2f70c50",
+            "kind": "Heart rate",
+            "value": "74",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "8c1b154a-022b-5bb9-845f-ecb48ec50b06",
+            "kind": "Temperature",
+            "value": "36.8",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "0d2f4a62-3a8b-58a1-9e6d-7c2c54f975ca",
+            "kind": "Blood pressure",
+            "value": "118/72",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "7cc15bdb-9214-50c9-9f61-9381b477a247",
+            "kind": "Heart rate",
+            "value": "71",
+            "date": "2030-02-13T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": true,
+      "timingSubset": false,
+      "expected": {
+        "groundingCritical": true,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Four reading entries, counting both heart-rate entries rather than distinct types."
+        ],
+        "requiresContextFields": true,
+        "requiredPatterns": [
+          "\\b(?:quatre|4)\\b"
+        ],
+        "allowedNumericTokens": [
+          "4"
+        ]
+      }
+    },
+    {
+      "id": "v2.d.034",
+      "split": "dev",
+      "kind": "prose",
+      "language": "en",
+      "input": "What directions are saved for amlodipine? Please repeat the stored directions, not a recommendation.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "amlodipine",
+            "name": "Amlodipine",
+            "ingredients": [
+              "amlodipine"
+            ],
+            "instructions": "5 mg with breakfast"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg after supper"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "77749ccb-244d-58a5-82ae-b6517a42d12a",
+            "kind": "Heart rate",
+            "value": "68",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "ff30399b-637e-5f82-9de1-4ebd9e93892b",
+            "kind": "Temperature",
+            "value": "36.6",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "fb52914a-17db-52d1-9068-d0971d5b914b",
+            "kind": "Blood pressure",
+            "value": "124/76",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": [
+          {
+            "id": "b7947680-9224-52fd-abd1-3d5c8e095c56",
+            "text": "Right shoulder aches after gardening",
+            "onset": "since Thursday",
+            "severity": "Mild",
+            "signs": [],
+            "date": "2030-02-11T12:00:00Z"
+          }
+        ]
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "groundingCritical": true,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Attribute stored 5 mg with breakfast. Preserve dose/meal qualifier, do not prescribe."
+        ],
+        "requiresContextFields": true,
+        "requiredPatterns": [
+          "\\b5\\s*mg\\b",
+          "\\bbreakfast\\b"
+        ],
+        "allowedNumericTokens": [
+          "5"
+        ]
+      }
+    },
+    {
+      "id": "v2.d.035",
+      "split": "dev",
+      "kind": "prose",
+      "language": "fr-CA",
+      "input": "Quelle activité ai-je dit vouloir essayer à la bibliothèque ?",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "apixaban",
+            "name": "Apixaban",
+            "ingredients": [
+              "apixaban"
+            ],
+            "instructions": "5 mg à 07:20 et 19:20"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg au coucher"
+          },
+          {
+            "id": "acetaminophen",
+            "name": "Acétaminophène",
+            "ingredients": [
+              "acetaminophen"
+            ],
+            "instructions": "500 mg au besoin"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "a4fa0ef3-ca6f-53f4-8fa9-7a9ca2f70c50",
+            "kind": "Heart rate",
+            "value": "74",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "8c1b154a-022b-5bb9-845f-ecb48ec50b06",
+            "kind": "Temperature",
+            "value": "36.8",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "0d2f4a62-3a8b-58a1-9e6d-7c2c54f975ca",
+            "kind": "Blood pressure",
+            "value": "118/72",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "7cc15bdb-9214-50c9-9f61-9381b477a247",
+            "kind": "Heart rate",
+            "value": "71",
+            "date": "2030-02-13T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": []
+      },
+      "history": [
+        {
+          "isUser": true,
+          "text": "Je voudrais apprendre la reliure à la bibliothèque."
+        },
+        {
+          "isUser": false,
+          "text": "Nous pouvons revenir à cette idée plus tard."
+        }
+      ],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "groundingCritical": true,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Recall user bookbinding at library; no invented prior question, speaker or hobby."
+        ],
+        "requiresContextFields": true,
+        "requiredPatterns": [
+          "\\breliure\\b"
+        ],
+        "allowedNumericTokens": []
+      }
+    },
+    {
+      "id": "v2.d.036",
+      "split": "dev",
+      "kind": "prose",
+      "language": "en",
+      "input": "Which side of my body is mentioned in my saved symptom note?",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "amlodipine",
+            "name": "Amlodipine",
+            "ingredients": [
+              "amlodipine"
+            ],
+            "instructions": "5 mg with breakfast"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg after supper"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "77749ccb-244d-58a5-82ae-b6517a42d12a",
+            "kind": "Heart rate",
+            "value": "68",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "ff30399b-637e-5f82-9de1-4ebd9e93892b",
+            "kind": "Temperature",
+            "value": "36.6",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "fb52914a-17db-52d1-9068-d0971d5b914b",
+            "kind": "Blood pressure",
+            "value": "124/76",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": [
+          {
+            "id": "b7947680-9224-52fd-abd1-3d5c8e095c56",
+            "text": "Right shoulder aches after gardening",
+            "onset": "since Thursday",
+            "severity": "Mild",
+            "signs": [],
+            "date": "2030-02-11T12:00:00Z"
+          }
+        ]
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "groundingCritical": true,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Right shoulder after gardening; preserve side and source attribution, no new symptom action."
+        ],
+        "requiresContextFields": true,
+        "requiredPatterns": [
+          "\\bright\\b",
+          "\\bshoulder\\b"
+        ],
+        "allowedNumericTokens": []
+      }
+    },
+    {
+      "id": "v2.d.037",
+      "split": "dev",
+      "kind": "title",
+      "language": "en",
+      "input": "Monday: I noticed a scratchy throat after singing at rehearsal. I am adding this as a journal entry, not a diagnosis.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [],
+        "appointments": [],
+        "readings": [],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "minWords": 3,
+        "maxWords": 6,
+        "maxCharacters": 60,
+        "groundingCritical": true,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "neutrality",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Neutral 3–6-word scratchy-throat/rehearsal title. No invented infection, pharyngitis, severity or diagnosis."
+        ]
+      }
+    },
+    {
+      "id": "v2.d.038",
+      "split": "dev",
+      "kind": "title",
+      "language": "fr-CA",
+      "input": "Je note une raideur du poignet gauche apparue en bricolant; je ne connais pas la cause.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [],
+        "appointments": [],
+        "readings": [],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "minWords": 3,
+        "maxWords": 6,
+        "maxCharacters": 60,
+        "groundingCritical": true,
+        "manualReview": [
+          "meaning_and_relevance",
+          "language_and_fluency",
+          "source_fidelity",
+          "neutrality",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Neutral French 3–6-word left-wrist/stiffness title. No inferred tendinitis, injury or cause."
+        ]
+      }
+    },
+    {
+      "id": "v2.d.039",
+      "split": "dev",
+      "kind": "visit",
+      "language": "en",
+      "input": "Clinician: Start Amlodipine 5 mg at 07:15 once per day. Stop Naproxen. Your ankle swelling is improving. Book an eye check in six weeks. The physiotherapy appointment is on March 18, 2030 at 11:10.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "amlodipine",
+            "name": "Amlodipine",
+            "ingredients": [
+              "amlodipine"
+            ],
+            "instructions": "5 mg with breakfast"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg after supper"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "77749ccb-244d-58a5-82ae-b6517a42d12a",
+            "kind": "Heart rate",
+            "value": "68",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "ff30399b-637e-5f82-9de1-4ebd9e93892b",
+            "kind": "Temperature",
+            "value": "36.6",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "fb52914a-17db-52d1-9068-d0971d5b914b",
+            "kind": "Blood pressure",
+            "value": "124/76",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": [
+          {
+            "id": "b7947680-9224-52fd-abd1-3d5c8e095c56",
+            "text": "Right shoulder aches after gardening",
+            "onset": "since Thursday",
+            "severity": "Mild",
+            "signs": [],
+            "date": "2030-02-11T12:00:00Z"
+          }
+        ]
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "groundingCritical": true,
+        "medicines": [
+          {
+            "action": "start",
+            "medicineID": "amlodipine",
+            "name": "Amlodipine",
+            "instructions": "5 mg at 07:15 once per day"
+          },
+          {
+            "action": "stop",
+            "medicineID": "naproxen",
+            "name": "Naproxen",
+            "instructions": ""
+          }
+        ],
+        "followUps": [
+          "Book an eye check in six weeks."
+        ],
+        "manualReview": [
+          "meaning_and_relevance",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Raw/accepted start and stop complete and source-anchored. Retain 5 mg, 07:15, once/day; stop instructions empty.",
+          "Raw/accepted follow-up and appointment retain every timing qualifier. Literal recovery earns no raw recall; no inferred or persisted appointment."
+        ],
+        "appointmentQuotesRequired": [
+          "The physiotherapy appointment is on March 18, 2030 at 11:10."
+        ],
+        "highlightQuotesRequired": [
+          "Your ankle swelling is improving."
+        ]
+      }
+    },
+    {
+      "id": "v2.d.040",
+      "split": "dev",
+      "kind": "visit",
+      "language": "fr-CA",
+      "input": "Clinicienne : Remplace les instructions de l'Apixaban : 5 mg à 08:25 et 20:25, deux fois par jour. La toux s'est calmée. Fais un bilan sanguin dans cinq semaines. Le rendez-vous en dermatologie est le 9 mai 2030 à 14:35. Nous n'ajoutons pas d'Ibuprofène aujourd'hui.",
+      "records": {
+        "schemaVersion": 1,
+        "medicines": [
+          {
+            "id": "apixaban",
+            "name": "Apixaban",
+            "ingredients": [
+              "apixaban"
+            ],
+            "instructions": "5 mg à 07:20 et 19:20"
+          },
+          {
+            "id": "naproxen",
+            "name": "Naproxen",
+            "ingredients": [
+              "naproxen"
+            ],
+            "instructions": "250 mg au coucher"
+          },
+          {
+            "id": "acetaminophen",
+            "name": "Acétaminophène",
+            "ingredients": [
+              "acetaminophen"
+            ],
+            "instructions": "500 mg au besoin"
+          }
+        ],
+        "appointments": [],
+        "readings": [
+          {
+            "id": "a4fa0ef3-ca6f-53f4-8fa9-7a9ca2f70c50",
+            "kind": "Heart rate",
+            "value": "74",
+            "date": "2030-02-10T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "8c1b154a-022b-5bb9-845f-ecb48ec50b06",
+            "kind": "Temperature",
+            "value": "36.8",
+            "date": "2030-02-11T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "0d2f4a62-3a8b-58a1-9e6d-7c2c54f975ca",
+            "kind": "Blood pressure",
+            "value": "118/72",
+            "date": "2030-02-12T12:00:00Z",
+            "source": "Manual"
+          },
+          {
+            "id": "7cc15bdb-9214-50c9-9f61-9381b477a247",
+            "kind": "Heart rate",
+            "value": "71",
+            "date": "2030-02-13T12:00:00Z",
+            "source": "Manual"
+          }
+        ],
+        "symptoms": []
+      },
+      "history": [],
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "groundingCritical": true,
+        "medicines": [
+          {
+            "action": "update",
+            "medicineID": "apixaban",
+            "name": "Apixaban",
+            "instructions": "5 mg à 08:25 et 20:25, deux fois par jour"
+          }
+        ],
+        "followUps": [
+          "Fais un bilan sanguin dans cinq semaines."
+        ],
+        "manualReview": [
+          "meaning_and_relevance",
+          "source_fidelity",
+          "completeness",
+          "unsupported_claims"
+        ],
+        "reviewFacts": [
+          "Raw/accepted update retains 5 mg, both clocks and twice/day. Do not start explicitly excluded Ibuprofène.",
+          "Raw/accepted follow-up and appointment retain five-week/date/clock qualifiers. Literal recovery earns no raw recall."
+        ],
+        "appointmentQuotesRequired": [
+          "Le rendez-vous en dermatologie est le 9 mai 2030 à 14:35."
+        ],
+        "highlightQuotesRequired": [
+          "La toux s'est calmée."
+        ]
+      }
+    }
+  ]
+}

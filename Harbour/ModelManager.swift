@@ -183,7 +183,8 @@ private final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchec
                 return decision
             } catch { rejectedAction = true }
         }
-        if let fallback = ToolPlanner.replyFallback(original: input, records: records, language: language, rejectedAction: rejectedAction) { return fallback.decision }
+        if let fallback = ToolPlanner.groundedReply(original: input, records: records, history: history, language: language)
+            ?? ToolPlanner.replyFallback(original: input, records: records, language: language, rejectedAction: rejectedAction) { return fallback.decision }
         // An ordinary reply route retains the model's conversation path.
         try Task.checkCancellation()
         let answer = try await generate(ToolPlanner.conversationPrompt(input, records: records, history: history, language: language, compactProsePolicy: resolved.promptFormat.usesCompactProsePolicy), maxTokens: effort.chatTokens, stopAtJSON: false)

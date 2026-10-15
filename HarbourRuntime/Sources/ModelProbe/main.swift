@@ -113,7 +113,8 @@ private struct ProbeResult: Codable {
                     do { action = try ToolPlanner.validate(decision, original: input, records: records); result.actionValidationSucceeded = true }
                     catch { rejectedAction = true; result.actionValidationSucceeded = false; result.validationError = error.localizedDescription; result.fallbackUsed = true; result.fallbackReason = "invalid_action" }
                 }
-                if action == nil, let fallback = ToolPlanner.replyFallback(original: input, records: records, language: .english, rejectedAction: rejectedAction) {
+                if action == nil, let fallback = ToolPlanner.groundedReply(original: input, records: records, language: .english)
+                    ?? ToolPlanner.replyFallback(original: input, records: records, language: .english, rejectedAction: rejectedAction) {
                     action = fallback.action; result.fallbackUsed = true; result.fallbackReason = fallback.reason
                     result.actionOrigin = "application"; result.applicationDecision = fallback.decision
                 } else if action == nil {
@@ -141,7 +142,7 @@ private struct ProbeResult: Codable {
         for fixture in Evaluation.visitSummaryCases {
             let start = Date(), records = Evaluation.records
             let language: ModelLanguage = fixture.name.contains("French") ? .french : .english
-            let prompt = ModelPrompts.localized(try VisitReview.prompt(fixture.transcript, medicines: records.medicines), language: language, purpose: .visit)
+            let prompt = ModelPrompts.localized(try VisitReview.prompt(fixture.transcript, medicines: records.medicines, language: language), language: language, purpose: .visit)
             let grammar = VisitReview.outputGrammar(transcript: fixture.transcript, medicines: Evaluation.records.medicines)
             var result = ProbeResult(kind: "visit", caseID: fixture.name, input: fixture.transcript, records: records, prompt: try format.prepare(prompt), responseGrammar: grammar, budget: 650)
             do {

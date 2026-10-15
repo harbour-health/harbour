@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "kind": "pre-tuning-commitment-to-blind-harbour-v2-acceptance",
+  "createdUTC": "2026-10-15T00:46:07.979983+00:00",
+  "plaintextSuiteSHA256": "69cc0f6ea3f56e3240f720986da5228974cff1cd924efe7b7bb9a4a9d512bd0f",
+  "plaintextBytes": 88466,
+  "ciphertext": {
+    "path": "build/model-quality/round2-sealed/harbour-quality-v2-heldout.aesgcm",
+    "bytes": 88494,
+    "sha256": "c7b5857ab5b3fbf3107ac6eb3d0959fd6ac6533f0f959e01ebaaf35c010ee1ac"
+  },
+  "encryption": "AES-256-GCM; first 12 file bytes nonce; authenticated data harbour-quality-v2-heldout-2026-10-14",
+  "keyStoredOutsideWorkingTree": "C:\\Users\\togoo\\.codex\\eval-seals\\harbour-quality-v2-e46a08377d2d4285a11c7b149b76e8ee.key",
+  "keyContentsDisclosed": false,
+  "plaintextJSONSuitePersisted": false,
+  "caseCounts": {
+    "total": 40,
+    "en": 20,
+    "fr-CA": 20,
+    "routing": 29,
+    "prose": 7,
+    "title": 2,
+    "visit": 2,
+    "all21IntentsCovered": true,
+    "effortSubset": 4,
+    "timingSubset": 0
+  },
+  "accessPolicy": "Do not decrypt, render, open prompts/answers, run or disclose acceptance cases to Root/implementers until Root seals candidate commit/configuration and explicitly issues separate blind acceptance GO. Preserve exact plaintext SHA/sealed bytes at unseal. Logical blindness with encryption against accidental inspection, not an OS access-control boundary.",
+  "unsealOwner": "/root/english_balanced_review",
+  "runOrModelOutputsExist": false
+}
