@@ -1,0 +1,150 @@
+{
+  "commit": "cb3809e5f8662b9dbc342c147faa05efe0fa0c53",
+  "startedUTC": "2026-10-16T04:50:02.602959+00:00",
+  "sourceIdentitySHA256": "501a8df9c2343f45ffe6db932f342f8604d51b4090bc54e9a236159579644765",
+  "image": "ghcr.io/xtool-org/xtool:1.21.0@sha256:032d20a18c8015e49fa99fddfc4ba236795731fd8543d69971ff76d388e8430f",
+  "sdk": "Apple SDK 27",
+  "argv": [
+    "/usr/bin/python3",
+    "/tmp/harbour-evals.00JDAq/application-fixes-cb3809e5f866/scripts/xtool-build.py",
+    "--configuration",
+    "release",
+    "--xtool",
+    "/tmp/harbour-evals.00JDAq/application-fixes-cb3809e5f866-xtool/xtool-container.sh"
+  ],
+  "complete": true,
+  "noDeviceExecution": true,
+  "sourceBytesVerifiedBefore": true,
+  "exitCode": 0,
+  "seconds": 92.96944554615766,
+  "logSHA256": "cc8bc379ac948b8794c3c9f2f60b071b342a92ce58a1a48c7bffe88962f999dc",
+  "finishedUTC": "2026-10-16T04:51:35.572712+00:00",
+  "sourceBytesVerifiedAfter": true,
+  "bundleFiles": [
+    {
+      "path": "AppIcon.png",
+      "bytes": 40639,
+      "sha256": "93bdb702169abb3291002b8b936192b30aa80a76e40ac2c30a9864fed9e0f247"
+    },
+    {
+      "path": "Frameworks/llama.framework/Headers/ggml-alloc.h",
+      "bytes": 3753,
+      "sha256": "94e4cd069b9313b2ceb35dacec901981e0bb478d8bb31035b7126be091998c23"
+    },
+    {
+      "path": "Frameworks/llama.framework/Headers/ggml-backend.h",
+      "bytes": 25374,
+      "sha256": "46d84cb998105f871240864fd0f55446939a2fe86c5c281afa63a010fb1f65a2"
+    },
+    {
+      "path": "Frameworks/llama.framework/Headers/ggml-blas.h",
+      "bytes": 586,
+      "sha256": "e76cb8594dc9866d99e7d63191b9fff6ab8b50244b4a28ce3af0f962964a6b5b"
+    },
+    {
+      "path": "Frameworks/llama.framework/Headers/ggml-cpu.h",
+      "bytes": 7753,
+      "sha256": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e"
+    },
+    {
+      "path": "Frameworks/llama.framework/Headers/ggml-metal.h",
+      "bytes": 2141,
+      "sha256": "322f36cd30f3e9e7aad7b5b9bc63078012fd0b7706ac4e24f5721b604f3d8980"
+    },
+    {
+      "path": "Frameworks/llama.framework/Headers/ggml-opt.h",
+      "bytes": 14040,
+      "sha256": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2"
+    },
+    {
+      "path": "Frameworks/llama.framework/Headers/ggml.h",
+      "bytes": 112592,
+      "sha256": "6fe9b62d3ea48c2de82cce6e9e06d3ae4f0de34f4b5831399c49c099badefb09"
+    },
+    {
+      "path": "Frameworks/llama.framework/Headers/gguf.h",
+      "bytes": 11355,
+      "sha256": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4"
+    },
+    {
+      "path": "Frameworks/llama.framework/Headers/llama.h",
+      "bytes": 84256,
+      "sha256": "1fbcba4003cfc089fa9681973acb3d9e24e465f32c3506ceb0ec7fa29952bdae"
+    },
+    {
+      "path": "Frameworks/llama.framework/Headers/mtmd-helper.h",
+      "bytes": 12418,
+      "sha256": "69d9f831f299fbc772dc439b51884b168d3654028f16371dfaa2e7041d0b4d79"
+    },
+    {
+      "path": "Frameworks/llama.framework/Headers/mtmd.h",
+      "bytes": 21493,
+      "sha256": "07133fe5dafbcd9a4a705b5d9386fe80f600d06cbea2819d82f70cf7cf4246db"
+    },
+    {
+      "path": "Frameworks/llama.framework/Info.plist",
+      "bytes": 1081,
+      "sha256": "d0100019d260cc910a6032801ec3b4c9e402c6a49d8fdf48c82a5c12004b1740"
+    },
+    {
+      "path": "Frameworks/llama.framework/Modules/module.modulemap",
+      "bytes": 171,
+      "sha256": "b5651903a342dc59fb4fe16ff9cc82ba4d08fdb142458aeacf516e7c31c15f15"
+    },
+    {
+      "path": "Frameworks/llama.framework/PrivacyInfo.xcprivacy",
+      "bytes": 599,
+      "sha256": "37f23fa7aabe84ee3c9a1f162c2c036612e5142aa6e3ce1dfc711161572d3131"
+    },
+    {
+      "path": "Frameworks/llama.framework/_CodeSignature/CodeResources",
+      "bytes": 5640,
+      "sha256": "26e01fae9a613bb849763ec07e046d7458ab5a315024cfdcfdbb45f3134f3e20"
+    },
+    {
+      "path": "Frameworks/llama.framework/llama",
+      "bytes": 6643568,
+      "sha256": "3e34481ae19c03b8a9dbaabd7d0ef4964acabe0eaf90f24b0eb2dbefdaa257ce"
+    },
+    {
+      "path": "Harbour",
+      "bytes": 7922720,
+      "sha256": "7dab58b401301f9f9de7f841e862661c4fb768105ece0a5f14469a49f4ad38cd"
+    },
+    {
+      "path": "Info.plist",
+      "bytes": 2845,
+      "sha256": "e666503822aef79d4060543a703f50de68f680d64f597d0e6f169c389994f1f2"
+    },
+    {
+      "path": "PrivacyInfo.xcprivacy",
+      "bytes": 590,
+      "sha256": "6a7b5e0f1cc319e385cd0aea83741f2e550fb6229bc53ddaa34f93cff0119cc2"
+    },
+    {
+      "path": "_CodeSignature/CodeResources",
+      "bytes": 9640,
+      "sha256": "46980b15a8195314e749adf9cb262b92b3f5502c2a9d9b54b37df81f141f2e21"
+    },
+    {
+      "path": "en.lproj/InfoPlist.strings",
+      "bytes": 753,
+      "sha256": "a7e8ee8bd30a044324f6d3b1dcf170ec5cb1cdf5b7d446ebe7aeb45a8eba4f7a"
+    },
+    {
+      "path": "en.lproj/Localizable.strings",
+      "bytes": 36424,
+      "sha256": "02950407b741c9310dfbd71cbe07f1b0827065832c1917d8bfa8499af81b5d46"
+    },
+    {
+      "path": "fr-CA.lproj/InfoPlist.strings",
+      "bytes": 943,
+      "sha256": "b4b2a92d38767614a43b4f683007490b38cede8802c79d6bbb10a2514956d6b8"
+    },
+    {
+      "path": "fr-CA.lproj/Localizable.strings",
+      "bytes": 41493,
+      "sha256": "b11bb1aa68dd4e94ac3bdff99416f7db86e9b14c0822d0d452ad4e038b1683c1"
+    }
+  ]
+}

@@ -191,6 +191,17 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
         let visit = DoctorVisit(title: title, transcript: transcript)
         if saveVisit(visit) { saveVisitSummary(summary, id: visit.id, transcript: transcript, baseline: records.medicines) }
     }
+    func prepareAppointmentSummaryFixture() {
+        let title = "Appointment summary regression"
+        for visit in visits where visit.title == title { deleteVisit(visit) }
+        let transcript = L10n.isFrench ? "Rendez-vous demain à 15 h." : "Appointment tomorrow at 3 pm."
+        let output = #"{"highlights":[],"medicines":[],"followUps":[]}"#
+        guard let summary = try? VisitReview.parse(output, transcript: transcript, medicines: records.medicines),
+              summary.appointments?.count == 1, summary.highlights.isEmpty,
+              summary.medicines.isEmpty, summary.followUps.isEmpty else { return }
+        let visit = DoctorVisit(title: title, transcript: transcript)
+        if saveVisit(visit) { saveVisitSummary(summary, id: visit.id, transcript: transcript, baseline: records.medicines) }
+    }
     #endif
     func deleteVisit(_ visit: DoctorVisit) {
         if update({ value in
@@ -204,10 +215,16 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
             catch { self.error = L10n.format("The visit was removed, but its audio couldn’t be deleted. %@", L10n.string(error.localizedDescription)) }
         }
     }
-    func saveVisitSummary(_ summary: VisitSummary, id: UUID, transcript: String, baseline: [Medicine]) {
+    func saveVisitSummary(_ summary: VisitSummary, id: UUID, transcript: String, baseline: [Medicine], extractionRuns: [VisitExtractionRun]? = nil) {
         guard var visit = visits.first(where: { $0.id == id }), visit.transcript == transcript else { return }
         visit.summary = summary; visit.medicineBaseline = baseline
+        visit.extractionRuns = extractionRuns
         saveVisit(visit)
+    }
+    func saveVisitExtractionRuns(_ runs: [VisitExtractionRun], id: UUID, transcript: String) {
+        guard var visit = visits.first(where: { $0.id == id }), visit.transcript == transcript else { return }
+        // Failed/cancelled attempts retain evidence without replacing a prior summary.
+        visit.extractionRuns = runs; saveVisit(visit)
     }
     func applyVisitChanges(id: UUID, selected: Set<UUID>) -> Bool {
         guard let visit = visits.first(where: { $0.id == id }) else { return false }

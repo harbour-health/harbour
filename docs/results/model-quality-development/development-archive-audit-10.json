@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "auditedUTC": "2026-10-13T05:11:39.852962+00:00",
+  "archiveAuditPassed": true,
+  "archiveSHA256": "ad796f1d76199ad8dd613bbb1f36d4ed05cc2178483d4e1dd23375f506de31f7",
+  "archiveBytes": 3091201,
+  "summarySHA256": "72bd496d79fd5a52b13452f0e90ba80d7709ee9649fdf3e57e83087fd37daa89",
+  "evidenceFiles": 393,
+  "members": 394,
+  "CRCValidated": true,
+  "everyMemberLengthAndSHA256Verified": true,
+  "everySelectionSourceByteMatches": true,
+  "sourceArchiveScopes": {
+    "working05": 129,
+    "committed063": 129,
+    "xtool063": 126
+  },
+  "nativeDiagnostics": {
+    "working05": 159,
+    "committed063": 159,
+    "scope": "51 grammar plus2 context cases per model, no quality or app-execution credit"
+  },
+  "committed063": {
+    "Core": 196,
+    "Runtime": 21,
+    "Python": 60,
+    "localizationKeys": 598
+  },
+  "appCI063": {
+    "standardUI": "10 passed,1 failed",
+    "nativeUI": "5 passed,2 failed",
+    "nativeHosted": "24 passed,1 notification skip",
+    "allFourQwenUIControlsPassed": true,
+    "SmallReadingFailure": "Completed unsupported saved-state claim and context echo; draft absent, raw routing unlogged, later symptom stage unreached"
+  },
+  "partialDEV063": {
+    "rows": 56,
+    "quick": 15,
+    "standard": 41,
+    "complete": false,
+    "modelsCompleted": [],
+    "heldoutOrSupplementalStarted": false
+  },
+  "xtool063": {
+    "freshReleaseBuildPassed": true,
+    "CoreRuntimeImportedNotRerun": true,
+    "identicalPackageSources": 48,
+    "bundleFiles": 25,
+    "deviceExecutionEstablished": false
+  },
+  "subsequentChanges": {
+    "UIOnlyB874Bound": true,
+    "readingPlanOnly": true,
+    "Core198OrReadingImplementationClaimed": false,
+    "later5bFailureSeparate": true
+  },
+  "excludedAssetsAndCompiledPayloads": true,
+  "previousArchivesUnchanged": {
+    "01": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091",
+    "02": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a",
+    "03": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e",
+    "04": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9",
+    "05": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571",
+    "06": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da",
+    "07": "b36dd12db0892e89f8d8c1f2672462d9212a71f016076b9beeca0a51a22c6529",
+    "08": "8997676469921003a6e4a112e3c120317382cc562cc5150f3646d4869b524a10",
+    "09": "7da96637ba2b134a309905cb97e908427408125c3d7bf13704503eabd7e4f688"
+  },
+  "releaseEvidence": false,
+  "auditorSHA256": "6fd74fa31f464cc828034f19e350c137f4600f93d9a3efe142f797b0ea6b8506"
+}

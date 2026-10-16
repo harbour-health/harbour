@@ -1,0 +1,20 @@
+{
+  "output": "Je ne peux pas supprimer vos dossiers ou vos données personnelles.\n\nEn tant qu'assistant, je ne peux pas accéder à vos informations privées, même si vous me les avez fournies dans le passé. Chaque nouvelle conversation est indépendante et je ne conserve aucune trace de vos données personnelles.\n\nSi vous avez besoin d'aide pour réorganiser vos dossiers ou pour comprendre comment gérer vos données, je peux vous expliquer les options disponibles dans votre application ou vous guider sur la manière de sauvegarder manuellement vos informations importantes.\n\nAvez-vous besoin d'aide pour réorganiser vos dossiers ou pour comprendre comment sauvegarder manuellement vos informations importantes ?",
+  "seconds": 13.69,
+  "timings": {
+    "cache_n": 0,
+    "prompt_n": 236,
+    "prompt_ms": 2058.213,
+    "prompt_per_token_ms": 8.72124152542373,
+    "prompt_per_second": 114.66257379581218,
+    "predicted_n": 135,
+    "predicted_ms": 11570.139,
+    "predicted_per_token_ms": 86.34432089552239,
+    "predicted_per_second": 11.581537611605187
+  },
+  "stop_type": "eos",
+  "kind": "prose",
+  "input": "Ne supprime pas mes dossiers",
+  "french": true,
+  "passed": true
+}

@@ -219,12 +219,15 @@ struct VisitDetailView: View {
                                 }
                             }
                         }
-                        if summary.highlights.isEmpty && summary.followUps.isEmpty && summary.medicines.isEmpty { Text("No details extracted. Review the transcript.").font(.title3) }
+                        if summary.isEmpty { Text("No details extracted. Review the transcript.").font(.title3).accessibilityIdentifier("visitEmptySummary") }
                     } else {
                         VStack(alignment: .leading, spacing: 20) {
                             Text(L10n.string(visit.transcript.isEmpty ? "Add a transcript to prepare a summary" : "Ready to summarise")).font(.system(.title2, design: .rounded, weight: .bold))
                             if visit.transcript.isEmpty { Button("Add notes") { editing = true }.font(.title3.weight(.semibold)).accessibilityIdentifier("editVisitTranscript") }
                         }.padding(.vertical, 24)
+                    }
+                    if visit.extractionRuns?.contains(where: \.requiresTranscriptReview) == true {
+                        Text("Review the transcript before saving changes; some details could not be confirmed.").font(.body).foregroundStyle(Palette.coral)
                     }
                     if busy {
                         HStack(spacing: 12) { HarbourMark(size: AppLayout.loadingMarkSize, spinning: true).foregroundStyle(Palette.blue); Text(status).font(.body); Spacer(); Button("Cancel") { task?.cancel(); models.cancelDownload() } }
@@ -263,20 +266,26 @@ struct VisitDetailView: View {
     private func summarise(_ visit: DoctorVisit) {
         busy = true; status = L10n.string("Preparing summary"); playback.stop()
         let baseline = store.records.medicines
+        let chosen = models.resolved, language: ModelLanguage = L10n.isFrench ? .french : .english
         task = Task { @MainActor in
             defer { busy = false }
+            var runs: [VisitExtractionRun] = []
             do {
                 let chunks = VisitReview.chunks(visit.transcript)
                 var combined = VisitSummary()
                 for (index, chunk) in chunks.enumerated() {
                     try Task.checkCancellation(); status = L10n.format("Preparing summary · %d of %d", index + 1, chunks.count)
-                    let output = try await models.generate(VisitReview.prompt(chunk, medicines: baseline), maxTokens: 650, responseGrammar: VisitSummaryOutputGrammar.make())
+                    let run = await VisitExtraction.run(transcript: chunk, fullTranscript: visit.transcript, medicines: baseline, language: language, modelID: chosen.rawValue) { request in
+                        try await models.generateVisitStage(request, model: chosen, language: language)
+                    }
+                    runs.append(run)
                     try Task.checkCancellation()
-                    combined.merge(try VisitReview.parse(output, transcript: chunk, medicines: baseline))
+                    guard run.completed, let summary = run.acceptedSummary else { throw VisitReviewError.invalidOutput }
+                    combined.merge(summary)
                 }
-                store.saveVisitSummary(combined, id: id, transcript: visit.transcript, baseline: baseline)
-            } catch is CancellationError { }
-            catch { self.error = L10n.string(error.localizedDescription) }
+                store.saveVisitSummary(combined, id: id, transcript: visit.transcript, baseline: baseline, extractionRuns: runs)
+            } catch is CancellationError { store.saveVisitExtractionRuns(runs, id: id, transcript: visit.transcript) }
+            catch { store.saveVisitExtractionRuns(runs, id: id, transcript: visit.transcript); self.error = L10n.string(error.localizedDescription) }
         }
     }
     private func transcribe(_ visit: DoctorVisit) {
@@ -287,7 +296,7 @@ struct VisitDetailView: View {
                 let text = try await VisitTranscription.transcribe(url) { status = $0 }; try Task.checkCancellation()
                 guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw NSError(domain: "Visit", code: 5, userInfo: [NSLocalizedDescriptionKey: L10n.string("No speech was recognised. The saved transcript and audio have been kept.")]) }
                 guard var current = store.visits.first(where: { $0.id == id }), current.transcript == visit.transcript else { return }
-                current.transcript = text; current.transcriptionWarning = nil; current.summary = nil; current.medicineBaseline = nil; store.saveVisit(current)
+                current.transcript = text; current.transcriptionWarning = nil; current.summary = nil; current.medicineBaseline = nil; current.extractionRuns = nil; store.saveVisit(current)
             } catch is CancellationError { }
             catch { self.error = L10n.string(error.localizedDescription) }
         }
@@ -317,7 +326,7 @@ struct VisitTranscriptEditor: View {
                     guard isNew || store.visits.contains(where: { $0.id == visit.id }) else { dismiss(); return }
                     var current = store.visits.first(where: { $0.id == visit.id }) ?? visit
                     current.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
-                    if current.transcript != transcript { current.transcript = transcript; current.summary = nil; current.medicineBaseline = nil }
+                    if current.transcript != transcript { current.transcript = transcript; current.summary = nil; current.medicineBaseline = nil; current.extractionRuns = nil }
                     if store.saveVisit(current) { dismiss(); onSave?(current.id) }
                 }.disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || transcript.count > 200_000 || (isNew && transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)).accessibilityIdentifier("saveVisitTranscript") }
                 ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil) } }

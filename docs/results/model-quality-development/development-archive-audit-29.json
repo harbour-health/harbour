@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "recordedUTC": "2026-10-13T17:05:34.171220+00:00",
+  "passed": true,
+  "archiveSHA256": "4bb7b86e78d737603349a9feed782df9420323fd58d7a4c0cd302a7c46ce844b",
+  "manifestSHA256": "f79efc49baa5232cfe027f7b0e02ba8743d3d98d3d298a7063253345d7e03fde",
+  "evidenceFiles": 67,
+  "membersIncludingManifest": 68,
+  "allMemberBytesEqualLocalOriginals": true,
+  "priorArchives01Through28Unchanged": true,
+  "optionalGate": "BLOCKED",
+  "scope": "Independent ZIP integrity and original/consistent reviewed-cohort binding. No source15 test, model/scorer execution, freeze, heldout or Ready credit.",
+  "auditorSHA256": "4f048d63475441e2666f2792ce2fe4bbb2c67836b15c8c5d68312cec47a56408"
+}

@@ -1,0 +1,845 @@
+{
+  "schemaVersion": 1,
+  "kind": "completed-publication-evidence38-integrity-and-offline-reproduction",
+  "createdUTC": "2026-10-15T06:53:08.425429+00:00",
+  "status": "INTEGRITY_AND_OFFLINE_REPRODUCTION_PASS_QUALITY_BLOCKED",
+  "publishedFiles": [
+    {
+      "path": "docs/results/model-quality-development/development-evidence-38.zip",
+      "bytes": 19747212,
+      "sha256": "0f645f2d562810889b2bd3e052c189933ce2b02ce225db8933c0067749b7fd41"
+    },
+    {
+      "path": "docs/results/model-quality-development/summary-38.json",
+      "bytes": 1990,
+      "sha256": "8b509435d87d643e8e9036bda4119ba6ced569ddb0158a7355a06d6806798664"
+    },
+    {
+      "path": "docs/results/model-quality-development/round2-source11-report.md",
+      "bytes": 35766,
+      "sha256": "f5dce1795a92e8141561217b061c5d3d2aefe236eb991d5fb7e9db5ca07a1f7e"
+    }
+  ],
+  "builderOriginalSummary": {
+    "archiveBytes": 19747212,
+    "archiveSHA256": "0f645f2d562810889b2bd3e052c189933ce2b02ce225db8933c0067749b7fd41",
+    "files": 940,
+    "label": "completed-source11-model789-and-current-source13-bounded-application-fix",
+    "manifestSHA256": "9b378a827d533fa14a86965d26134dfb3e35677fa880fc7438b163ad93cdf486",
+    "members": 943,
+    "noQualityOrReadinessGrant": true,
+    "noUpload": true,
+    "schemaVersion": 1,
+    "scopeSHA256": "f2428ca45eb083b170bfaad2f41e44e1fa97e00aca0080ad0b887936f87dbdc2",
+    "selectionSHA256": "978ecc3d88bbb8e74f15d3dee73258ae93d73e0bcc4d3ca8c773d5895dc53a4b",
+    "status": "BUILT_EXACT_EXPLICIT_PUBLIC_EVIDENCE"
+  },
+  "independentActualArchiveAudit": {
+    "original": {
+      "path": "build/model-quality/round2-public-evidence-38-built-independent-byte-and-scope-audit.json",
+      "bytes": 3826,
+      "sha256": "e1c889a82a9c6d03f3f0b58875ef5b0919c029ceb5eaee3fe3022bd4032abe2a"
+    },
+    "evidence": {
+      "schemaVersion": 1,
+      "kind": "independent-actual-public-evidence38-zip-member-byte-and-scope-audit",
+      "createdUTC": "2026-10-15T06:52:28.275126+00:00",
+      "integrityPassed": true,
+      "artifacts": [
+        {
+          "path": "build/model-quality/round2-public-evidence-38-built/evidence.zip",
+          "bytes": 19747212,
+          "sha256": "0f645f2d562810889b2bd3e052c189933ce2b02ce225db8933c0067749b7fd41"
+        },
+        {
+          "path": "build/model-quality/round2-public-evidence-38-built/summary.json",
+          "bytes": 632,
+          "sha256": "3a6bb9ff94a3a79158dfd382b0e76bc21e23c3e9b97387782237169aa600283a"
+        },
+        {
+          "path": "build/model-quality/round2-public-evidence-38-built/selection-original.json",
+          "bytes": 563361,
+          "sha256": "978ecc3d88bbb8e74f15d3dee73258ae93d73e0bcc4d3ca8c773d5895dc53a4b"
+        },
+        {
+          "path": "build/model-quality/round2-public-evidence-38-approved-selection.json",
+          "bytes": 563361,
+          "sha256": "978ecc3d88bbb8e74f15d3dee73258ae93d73e0bcc4d3ca8c773d5895dc53a4b"
+        },
+        {
+          "path": "build/model-quality/round2-final-public-selection-06/selection-final-content-candidate.json",
+          "bytes": 562992,
+          "sha256": "d0edbff21742f8a3f26a69d8a27f9b6a8ea1d7a9ae6bf53285140e68b29f65ea"
+        },
+        {
+          "path": "build/model-quality/round2-final-public-selection-06-independent-exact-privacy-and-scope-review.json",
+          "bytes": 4663,
+          "sha256": "71ad19e19e09991b1724f6d0cc7ab334914391d80998e1d4405a3ddd93f58567"
+        },
+        {
+          "path": "build/model-quality/round2-public-evidence-38-independent-auditor-approval-scope-assumption.json",
+          "bytes": 425,
+          "sha256": "5cff9a7295328f2771de9495f5a120eb2b6d98eac54d4408ba553ba75d0dede8"
+        }
+      ],
+      "archiveChecks": {
+        "members": 943,
+        "selectedPayloadMembers": 940,
+        "generatedMembers": [
+          "MANIFEST.json",
+          "SCOPE.json",
+          "REPRODUCE.py"
+        ],
+        "allUniqueSortedNamesExactApprovedSet": true,
+        "allCRCsPassed": true,
+        "all940MembersByteExactApprovedOriginals": true,
+        "all940LengthsSHA256MatchApprovedAndManifest": true,
+        "selectedPayloadBytes": 234809773,
+        "expandedZipMemberBytesIncludingGeneratedMetadata": 235231303,
+        "capBytes": 256000000,
+        "manifestSHA256": "9b378a827d533fa14a86965d26134dfb3e35677fa880fc7438b163ad93cdf486",
+        "scopeSHA256": "f2428ca45eb083b170bfaad2f41e44e1fa97e00aca0080ad0b887936f87dbdc2",
+        "embeddedBuilderSHA256": "8b23eda40fe29e8e80b821af31a75283168b65665eea6ba75a360e32d04cdc95",
+        "finalReportSHA256": "f5dce1795a92e8141561217b061c5d3d2aefe236eb991d5fb7e9db5ca07a1f7e"
+      },
+      "scopeChecks": [
+        "Root approval retains exactly all940candidate06 files,58externalreferences and finalreport. Onlykind,reviewer,approvalmetadata and removal of the now-satisfied pending-review condition differ. Initial auditor literal-limitations-equality assumption was preserved and corrected;no archive or evidence change.",
+        "All12 required primary roles and original-versus-derived labels survive actualMANIFEST. Source11model789 and separate source13_33/currentapplication cohorts remain distinct.",
+        "The exact embedded builder retains one manually reviewed public100.64.0.0/10 CGNAT network-detector range,not a secret endpoint. No broadprivacy exception. All940 actualpayloads already passed independent privacy checks.",
+        "Excluded binaries,weights,SDK,fullCIarchives,XCResults,privatecredentials and blindcipher/key/cases remain outsideZIP. No excluded artifact was read.",
+        "Packaging integrity PASS grants no clinical/model quality acceptance. Existing qualityBLOCKED/PRDraft/Automaticdefault/2Boptional/blindNO-GO remain. Auditor ran no builder,scorer,model,test,source edit or upload.",
+        "Frozen offline score reproduction is a distinct Root postbuild operation;this audit does not claim its outcome."
+      ]
+    }
+  },
+  "independentSelectionPrivacyReview": {
+    "original": {
+      "path": "build/model-quality/round2-final-public-selection-06-independent-exact-privacy-and-scope-review.json",
+      "bytes": 4663,
+      "sha256": "71ad19e19e09991b1724f6d0cc7ab334914391d80998e1d4405a3ddd93f58567"
+    },
+    "evidence": {
+      "schemaVersion": 1,
+      "kind": "independent-final940-exact-public-allowlist-privacy-and-scope-review",
+      "createdUTC": "2026-10-15T06:50:21.897096+00:00",
+      "reviewPassed": true,
+      "selection": {
+        "path": "build/model-quality/round2-final-public-selection-06/selection-final-content-candidate.json",
+        "bytes": 562992,
+        "sha256": "d0edbff21742f8a3f26a69d8a27f9b6a8ea1d7a9ae6bf53285140e68b29f65ea"
+      },
+      "actualBytePrivacyPass": {
+        "path": "build/model-quality/round2-final-public-selection-06-independent-byte-privacy-pass.json",
+        "bytes": 441,
+        "sha256": "05c7f478fc9084a454278564617dbf6ce3e53c2dbac8bd851bb25791fe07e8a7"
+      },
+      "builder": {
+        "path": "build/model-quality/build-round2-public-evidence-archive-04.py",
+        "bytes": 8473,
+        "sha256": "8b23eda40fe29e8e80b821af31a75283168b65665eea6ba75a360e32d04cdc95"
+      },
+      "filesChecked": 940,
+      "actualPayloadBytes": 234809773,
+      "externalDigestMetadataChecked": 58,
+      "primaryRoles": {
+        "current-ci-proof": 55,
+        "retained-failure-provenance": 241,
+        "dev-generation-review-and-paired-proof": 135,
+        "source-code-binding": 167,
+        "local-proof": 74,
+        "exposed-v1-generation-review-and-two-baseline-proof": 90,
+        "catalog-generation-review-and-source-safety-proof": 50,
+        "old-v1-reuse-proof": 47,
+        "all-stages-raw-versus-accepted-proof": 21,
+        "frozen-protocol-and-scorer": 23,
+        "final-report": 4,
+        "raw-prose-projection-proof": 33
+      },
+      "finalReport": {
+        "path": "build/model-quality/round2-source11-source13-final-report-01.md",
+        "bytes": 35766,
+        "sha256": "f5dce1795a92e8141561217b061c5d3d2aefe236eb991d5fb7e9db5ca07a1f7e"
+      },
+      "labelledDerivative": {
+        "path": "build/model-quality/round2-source11-partial-public-selection-02/privacy-derivatives/c6c682cf9f9f-build-round2-public-evidence-archive-02.py",
+        "originalBinding": {
+          "path": "build/model-quality/build-round2-public-evidence-archive-02.py",
+          "bytes": 8472,
+          "sha256": "581753f501582aa1c9e8f578850349369fef6516af02bd375ced3e721e96b359"
+        },
+        "exactLineDiff": "--- \n\n+++ \n\n@@ -37 +37 @@\n\n-        assert not (addr.is_private or addr.is_loopback or addr.is_link_local or addr in ipaddress.ip_network('100.64.0.0/10')), ('private host address requires labelled privacy derivative',label)\n+        assert not (addr.is_private or addr.is_loopback or addr.is_link_local or addr in ipaddress.ip_network('<private-host-redacted>/10')), ('private host address requires labelled privacy derivative',label)",
+        "description": "Documentary public carrier-grade NAT detector constant replaced only to avoid the narrow address scanner false positive; no actual private endpoint or clinical/source/grade byte was edited."
+      },
+      "manualPublicConstantAcceptance": {
+        "autoEmbeddedReproduceSHA256": "8b23eda40fe29e8e80b821af31a75283168b65665eea6ba75a360e32d04cdc95",
+        "literal": "100.64.0.0/10",
+        "meaning": "Public CGNAT network-detector range declaration;not a secret/private endpoint. Accept only this exact reviewed builder constant in autoembedded REPRODUCE.py; allother builder text passes the same pinned scanner after isolating that literal. No broad privacy exception."
+      },
+      "scopeReview": [
+        "Exact940 selected files were reread and hashed;allpayloads,candidate and58external-reference metadata pass the pinned privacy check. No excluded artifact was opened to follow an external digest.",
+        "All12 required roles are actual primary file roles,not roleMembership-only claims. Selected paths exclude binary/weight/SDK/fullCIarchive/XCResult/privateSSHcredentials/blindcipher/key/case payloads. Nonsecret historical experiment authorizations are preserved as experiment evidence,not transport credentials.",
+        "The one labelled historical builder derivative changes only the public CGNAT detector constant,not clinical/source/grade evidence. Its original digest and exact delta remain explicit.",
+        "Final measured report preserves all789source11 results,33separate13observations,Eval/Probe cohorts,strict04baseline,source/app credit separation,fullrawstages,timing correlations and all old failures. No fullsource13qualitymatrix,physicaldevice,Ready/default/blind grant.",
+        "Current3documentation files and laterpublicationdelta are separate from frozen153source13;originalmodel6aab/41b and testedapp096f/359d identities retained.",
+        "Root may stamp a NEW exact builder allowlist from this sealed reviewed candidate. Candidate remains unmodified/nonbuildable. Actual ZIP/member/manifest/overhead and offline report reproduction remain separate required checks."
+      ],
+      "noBuilderArchiveScorerModelOrSourceMutationInvoked": true
+    }
+  },
+  "independentCapOnlyBuilderReview": {
+    "original": {
+      "path": "build/model-quality/round2-public-archive-builder-04-independent-cap-only-static-review.json",
+      "bytes": 2040,
+      "sha256": "883a9785d17a2ee4c2ac18ea4e1fcaa042acc5e2595907e64cf1e3df21d43415"
+    },
+    "evidence": {
+      "schemaVersion": 1,
+      "kind": "independent-exact-cap-only-builder04-static-review",
+      "createdUTC": "2026-10-15T06:44:43.582987+00:00",
+      "staticPassed": true,
+      "artifacts": [
+        {
+          "path": "build/model-quality/build-round2-public-evidence-archive-03.py",
+          "bytes": 8473,
+          "sha256": "fe5f88a7216c8302a1f64644f3aa74194834b7bb08d36f627b21b4b6469a2ae9"
+        },
+        {
+          "path": "build/model-quality/build-round2-public-evidence-archive-04.py",
+          "bytes": 8473,
+          "sha256": "8b23eda40fe29e8e80b821af31a75283168b65665eea6ba75a360e32d04cdc95"
+        },
+        {
+          "path": "build/model-quality/round2-public-archive-builder-04-measured-cap-only-derivation.json",
+          "bytes": 1414,
+          "sha256": "ad87c7da6b05e1b2b06981b3c23030c795d34f2f1e4b04d78eba36774ad1c03f"
+        },
+        {
+          "path": "build/model-quality/round2-final-public-selection-05/selection-final-content-candidate.json",
+          "bytes": 556848,
+          "sha256": "24dff94b45523ea12bcf5495e967f3ba87847120ba210aecd2ef80080d8f704e"
+        }
+      ],
+      "checks": {
+        "oneLiteralOnly": "180_000_000 -> 256_000_000",
+        "reverseFullFileBytesExact": true,
+        "allPrivacyAndRoleSourceAndHashLogicUnchanged": true,
+        "syntaxBothParses": true,
+        "measuredSelectionFiles": 934,
+        "measuredPayloadBytes": 234114303,
+        "capBoundaryPredicate": [
+          {
+            "bytes": 234114303,
+            "accepted": true
+          },
+          {
+            "bytes": 256000000,
+            "accepted": true
+          },
+          {
+            "bytes": 256000001,
+            "accepted": false
+          }
+        ]
+      },
+      "scope": [
+        "Root conditionally authorized the cap increase after actual selected payload exceeded180MB. This verifies only that bounded derivative and selected declared-byte arithmetic.",
+        "No builderCLI/archive/scorer/model was invoked; no final per-file privacy authorization,archive integrity or quality acceptance is granted.",
+        "All original builders and selector failure history remain unchanged. Final actual selector/payload/overhead/privacy review remains required."
+      ]
+    }
+  },
+  "retainedFinalAuditorAssumptionCorrection": {
+    "original": {
+      "path": "build/model-quality/round2-public-evidence-38-independent-auditor-approval-scope-assumption.json",
+      "bytes": 425,
+      "sha256": "5cff9a7295328f2771de9495f5a120eb2b6d98eac54d4408ba553ba75d0dede8"
+    },
+    "evidence": {
+      "kind": "auditor-only-pre-output-approval-metadata-assumption",
+      "failure": "Initial ZIP-audit assertion expected approved limitations list byte-identical to candidate. Root approval correctly removes only the now-satisfied pending-review/nonbuildable condition. All940files,58externalrefs and finalreport exact unchanged. No archive issue or data/grade mutation.",
+      "preservedOriginalAuditOutputWritten": false
+    }
+  },
+  "offlineReproduction": {
+    "completionOriginal": {
+      "path": "build/model-quality/round2-evidence38-offline-extracted/build/model-quality/offline-recomputed-38/completion.json",
+      "bytes": 2145,
+      "sha256": "bd00973ffc95e387dccef445dac0078585cefa6f570227ac00e52790402b77ca"
+    },
+    "completion": {
+      "kind": "postbuild-frozen-output-offline-rescore-complete",
+      "createdUTC": "2026-10-15T06:50:30.162837+00:00",
+      "archiveManifestSHA256": "9b378a827d533fa14a86965d26134dfb3e35677fa880fc7438b163ad93cdf486",
+      "configSHA256": "d0c092bb7f93907d6e10db309d8d03c41218cf8081ec52bf024d65bf1106bbb1",
+      "phases": [
+        {
+          "phase": "dev",
+          "comparison": {
+            "path": "build/model-quality/offline-recomputed-38/dev/comparison.json",
+            "bytes": 2927,
+            "sha256": "471d125ef7c981936e60b5c36fd6add34f4f1c96de1a6dbcd6cc8f195d566c54"
+          },
+          "execution": {
+            "path": "build/model-quality/offline-recomputed-38/dev/execution.json",
+            "bytes": 1545,
+            "sha256": "a172ca83cfea66f061d6215bc5e12b946cec0f702b05ef643e318f4c67897faf"
+          }
+        },
+        {
+          "phase": "v1-current-pr",
+          "comparison": {
+            "path": "build/model-quality/offline-recomputed-38/v1-current-pr/comparison.json",
+            "bytes": 2997,
+            "sha256": "310d92d5a7579e6bee7b0f791817cf9fc991f9637757c1156a4e6c8b26b759bc"
+          },
+          "execution": {
+            "path": "build/model-quality/offline-recomputed-38/v1-current-pr/execution.json",
+            "bytes": 1597,
+            "sha256": "dce2bd4a82bec5bdbe62e5b58c814bfd82ef9e56aadf7c686715dc9ca315deef"
+          }
+        },
+        {
+          "phase": "v1-original477",
+          "comparison": {
+            "path": "build/model-quality/offline-recomputed-38/v1-original477/comparison.json",
+            "bytes": 3002,
+            "sha256": "af7f5c11c32b79aca5a7c191c7c9bb239442b187261024dd166a415e9be3b3c2"
+          },
+          "execution": {
+            "path": "build/model-quality/offline-recomputed-38/v1-original477/execution.json",
+            "bytes": 1358,
+            "sha256": "8bc25ccb238d70c33f5b32a8af2e4c33ff1da976d5d38caef167fee9faf78dad"
+          }
+        }
+      ],
+      "noNewInferenceReviewsTrainingSourceChangesOrBlindUnseal": true,
+      "comparisonLimit": "Recomputes frozen scorer reports only. Separately published source-safety judgments/gates remain exact frozen evidence, not new clinical validation. New provenance path manifest verifies unchanged originals; it does not attest another native model execution."
+    },
+    "phases": [
+      {
+        "phase": "dev",
+        "comparisonEvidence": {
+          "path": "build/model-quality/round2-evidence38-offline-extracted/build/model-quality/offline-recomputed-38/dev/comparison.json",
+          "bytes": 2927,
+          "sha256": "471d125ef7c981936e60b5c36fd6add34f4f1c96de1a6dbcd6cc8f195d566c54"
+        },
+        "comparison": {
+          "phase": "dev",
+          "reports": [
+            {
+              "original": {
+                "path": "build/model-quality/round2-candidate-dev-reviewed-score-11/accepted-score.json",
+                "bytes": 2179400,
+                "sha256": "d30dbe40b04b5eb5faf66217d5b79f1c929e7135965d923c64ae91a01c3a712d"
+              },
+              "recomputed": {
+                "path": "build/model-quality/offline-recomputed-38/dev/recomputed/accepted-score.json",
+                "bytes": 2179448,
+                "sha256": "661213d2d581c0238b86248a8cc1fb868c2227d62bfd1b3d9802df70428d09f4"
+              },
+              "declaredOnlyRelocations": [
+                {
+                  "field": "provenance.streams[0].rows",
+                  "before": "..\\round2-candidate-dev-11\\raw\\qwen35.jsonl",
+                  "after": "..\\..\\..\\round2-candidate-dev-11\\raw\\qwen35.jsonl"
+                },
+                {
+                  "field": "provenance.streams[0].metadata",
+                  "before": "..\\round2-candidate-dev-11\\raw\\metadata.json",
+                  "after": "..\\..\\..\\round2-candidate-dev-11\\raw\\metadata.json"
+                },
+                {
+                  "field": "provenance.streams[1].rows",
+                  "before": "..\\round2-candidate-dev-11\\raw\\small.jsonl",
+                  "after": "..\\..\\..\\round2-candidate-dev-11\\raw\\small.jsonl"
+                },
+                {
+                  "field": "provenance.streams[1].metadata",
+                  "before": "..\\round2-candidate-dev-11\\raw\\metadata.json",
+                  "after": "..\\..\\..\\round2-candidate-dev-11\\raw\\metadata.json"
+                },
+                {
+                  "field": "provenance.streams[2].rows",
+                  "before": "..\\round2-candidate-dev-11\\raw\\balanced.jsonl",
+                  "after": "..\\..\\..\\round2-candidate-dev-11\\raw\\balanced.jsonl"
+                },
+                {
+                  "field": "provenance.streams[2].metadata",
+                  "before": "..\\round2-candidate-dev-11\\raw\\metadata.json",
+                  "after": "..\\..\\..\\round2-candidate-dev-11\\raw\\metadata.json"
+                },
+                {
+                  "field": "provenance.manifestSHA256",
+                  "before": "c92b213cd538706d7864105ee37f3422fe0b47b1403bc028fe3f1749ebf5e2b8",
+                  "after": "3713b6d2b58ccd3387eb7d437843a009375ed885c84608c83632fc26738ca3f2",
+                  "basis": "Actual relocated three-stream collection bytes, independently hashed"
+                }
+              ],
+              "allOtherParsedObjectsExact": true
+            },
+            {
+              "original": {
+                "path": "build/model-quality/round2-candidate-dev-reviewed-score-11/raw-prose-score.json",
+                "bytes": 2166969,
+                "sha256": "766dbaa76f855b78d7976ee64fc3048b20f614db5b173649fb95d7925c553aad"
+              },
+              "recomputed": {
+                "path": "build/model-quality/offline-recomputed-38/dev/recomputed/raw-prose-score.json",
+                "bytes": 2166969,
+                "sha256": "766dbaa76f855b78d7976ee64fc3048b20f614db5b173649fb95d7925c553aad"
+              },
+              "declaredOnlyRelocations": [],
+              "allOtherParsedObjectsExact": true
+            }
+          ],
+          "requiredCountsAndAllResultsCriteriaGatesSettingsModelsAssetsSourceIdentityUnchanged": true
+        },
+        "actualExecutionExitCode": 0,
+        "executionOriginalDigest": {
+          "path": "build/model-quality/round2-evidence38-offline-extracted/build/model-quality/offline-recomputed-38/dev/execution.json",
+          "bytes": 1545,
+          "sha256": "a172ca83cfea66f061d6215bc5e12b946cec0f702b05ef643e318f4c67897faf"
+        },
+        "stdout": {
+          "path": "build/model-quality/round2-evidence38-offline-extracted/build/model-quality/offline-recomputed-38/dev/stdout.log",
+          "bytes": 1175,
+          "sha256": "752e89b53a72c7e997048eeafdabb7e81d85cff7340418aeb5af7fd9bfeb9294"
+        },
+        "stderr": {
+          "path": "build/model-quality/round2-evidence38-offline-extracted/build/model-quality/offline-recomputed-38/dev/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "phase": "v1-current-pr",
+        "comparisonEvidence": {
+          "path": "build/model-quality/round2-evidence38-offline-extracted/build/model-quality/offline-recomputed-38/v1-current-pr/comparison.json",
+          "bytes": 2997,
+          "sha256": "310d92d5a7579e6bee7b0f791817cf9fc991f9637757c1156a4e6c8b26b759bc"
+        },
+        "comparison": {
+          "phase": "v1-current-pr",
+          "reports": [
+            {
+              "original": {
+                "path": "build/model-quality/round2-final11-v1-reviewed-score-01/current-pr-score/accepted-score.json",
+                "bytes": 5699850,
+                "sha256": "9fa3bc85422bc1202b73d102538fa9f1b9a88f96a30999b01e2a5aeb25536eed"
+              },
+              "recomputed": {
+                "path": "build/model-quality/offline-recomputed-38/v1-current-pr/recomputed/accepted-score.json",
+                "bytes": 5699874,
+                "sha256": "807c1da4fb86df0849a02a81cd94586bbc3f5f84abe435ef1ae4b9e8ee7c7151"
+              },
+              "declaredOnlyRelocations": [
+                {
+                  "field": "provenance.streams[0].rows",
+                  "before": "..\\..\\round2-candidate-v1-11\\raw\\qwen35.jsonl",
+                  "after": "..\\..\\..\\round2-candidate-v1-11\\raw\\qwen35.jsonl"
+                },
+                {
+                  "field": "provenance.streams[0].metadata",
+                  "before": "..\\..\\round2-candidate-v1-11\\raw\\metadata.json",
+                  "after": "..\\..\\..\\round2-candidate-v1-11\\raw\\metadata.json"
+                },
+                {
+                  "field": "provenance.streams[1].rows",
+                  "before": "..\\..\\round2-candidate-v1-11\\raw\\small.jsonl",
+                  "after": "..\\..\\..\\round2-candidate-v1-11\\raw\\small.jsonl"
+                },
+                {
+                  "field": "provenance.streams[1].metadata",
+                  "before": "..\\..\\round2-candidate-v1-11\\raw\\metadata.json",
+                  "after": "..\\..\\..\\round2-candidate-v1-11\\raw\\metadata.json"
+                },
+                {
+                  "field": "provenance.streams[2].rows",
+                  "before": "..\\..\\round2-candidate-v1-11\\raw\\balanced.jsonl",
+                  "after": "..\\..\\..\\round2-candidate-v1-11\\raw\\balanced.jsonl"
+                },
+                {
+                  "field": "provenance.streams[2].metadata",
+                  "before": "..\\..\\round2-candidate-v1-11\\raw\\metadata.json",
+                  "after": "..\\..\\..\\round2-candidate-v1-11\\raw\\metadata.json"
+                },
+                {
+                  "field": "provenance.manifestSHA256",
+                  "before": "9b452f67edf9cb9cf64e23e6fefa945486d948f3da481a387e590cacf513fbc4",
+                  "after": "f8ed50b308df6268d4e3f499c41abb4ea7aada12cd7ed249b6681ed778c1c5c7",
+                  "basis": "Actual relocated three-stream collection bytes, independently hashed"
+                }
+              ],
+              "allOtherParsedObjectsExact": true
+            },
+            {
+              "original": {
+                "path": "build/model-quality/round2-final11-v1-reviewed-score-01/current-pr-score/raw-prose-score.json",
+                "bytes": 5687398,
+                "sha256": "a7cb911eb02716c8e39d1d548b42093278812c7f9fa7c05f94e20d5033be4423"
+              },
+              "recomputed": {
+                "path": "build/model-quality/offline-recomputed-38/v1-current-pr/recomputed/raw-prose-score.json",
+                "bytes": 5687398,
+                "sha256": "a7cb911eb02716c8e39d1d548b42093278812c7f9fa7c05f94e20d5033be4423"
+              },
+              "declaredOnlyRelocations": [],
+              "allOtherParsedObjectsExact": true
+            }
+          ],
+          "requiredCountsAndAllResultsCriteriaGatesSettingsModelsAssetsSourceIdentityUnchanged": true
+        },
+        "actualExecutionExitCode": 0,
+        "executionOriginalDigest": {
+          "path": "build/model-quality/round2-evidence38-offline-extracted/build/model-quality/offline-recomputed-38/v1-current-pr/execution.json",
+          "bytes": 1597,
+          "sha256": "dce2bd4a82bec5bdbe62e5b58c814bfd82ef9e56aadf7c686715dc9ca315deef"
+        },
+        "stdout": {
+          "path": "build/model-quality/round2-evidence38-offline-extracted/build/model-quality/offline-recomputed-38/v1-current-pr/stdout.log",
+          "bytes": 1239,
+          "sha256": "dc8dc05ac30832b598c04261ae20c62f3bfecf959d95857644e5732f5db304c3"
+        },
+        "stderr": {
+          "path": "build/model-quality/round2-evidence38-offline-extracted/build/model-quality/offline-recomputed-38/v1-current-pr/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "phase": "v1-original477",
+        "comparisonEvidence": {
+          "path": "build/model-quality/round2-evidence38-offline-extracted/build/model-quality/offline-recomputed-38/v1-original477/comparison.json",
+          "bytes": 3002,
+          "sha256": "af7f5c11c32b79aca5a7c191c7c9bb239442b187261024dd166a415e9be3b3c2"
+        },
+        "comparison": {
+          "phase": "v1-original477",
+          "reports": [
+            {
+              "original": {
+                "path": "build/model-quality/round2-final11-v1-reviewed-score-01/original477-score/accepted-score.json",
+                "bytes": 5698650,
+                "sha256": "289c7763377b1d060024eafceaa785a576ba4446255289538195f5f7399f2123"
+              },
+              "recomputed": {
+                "path": "build/model-quality/offline-recomputed-38/v1-original477/recomputed/accepted-score.json",
+                "bytes": 5698674,
+                "sha256": "25f47e009a6919d79545f6d9549dce80e5e9f296c397364fdb333fedaee91108"
+              },
+              "declaredOnlyRelocations": [
+                {
+                  "field": "provenance.streams[0].rows",
+                  "before": "..\\..\\round2-candidate-v1-11\\raw\\qwen35.jsonl",
+                  "after": "..\\..\\..\\round2-candidate-v1-11\\raw\\qwen35.jsonl"
+                },
+                {
+                  "field": "provenance.streams[0].metadata",
+                  "before": "..\\..\\round2-candidate-v1-11\\raw\\metadata.json",
+                  "after": "..\\..\\..\\round2-candidate-v1-11\\raw\\metadata.json"
+                },
+                {
+                  "field": "provenance.streams[1].rows",
+                  "before": "..\\..\\round2-candidate-v1-11\\raw\\small.jsonl",
+                  "after": "..\\..\\..\\round2-candidate-v1-11\\raw\\small.jsonl"
+                },
+                {
+                  "field": "provenance.streams[1].metadata",
+                  "before": "..\\..\\round2-candidate-v1-11\\raw\\metadata.json",
+                  "after": "..\\..\\..\\round2-candidate-v1-11\\raw\\metadata.json"
+                },
+                {
+                  "field": "provenance.streams[2].rows",
+                  "before": "..\\..\\round2-candidate-v1-11\\raw\\balanced.jsonl",
+                  "after": "..\\..\\..\\round2-candidate-v1-11\\raw\\balanced.jsonl"
+                },
+                {
+                  "field": "provenance.streams[2].metadata",
+                  "before": "..\\..\\round2-candidate-v1-11\\raw\\metadata.json",
+                  "after": "..\\..\\..\\round2-candidate-v1-11\\raw\\metadata.json"
+                },
+                {
+                  "field": "provenance.manifestSHA256",
+                  "before": "9b452f67edf9cb9cf64e23e6fefa945486d948f3da481a387e590cacf513fbc4",
+                  "after": "f8ed50b308df6268d4e3f499c41abb4ea7aada12cd7ed249b6681ed778c1c5c7",
+                  "basis": "Actual relocated three-stream collection bytes, independently hashed"
+                }
+              ],
+              "allOtherParsedObjectsExact": true
+            },
+            {
+              "original": {
+                "path": "build/model-quality/round2-final11-v1-reviewed-score-01/original477-score/raw-prose-score.json",
+                "bytes": 5680419,
+                "sha256": "3a9d4b556d7b431296e7d43365d2e8c23c938ac0fac171b13e468be9e98fdef8"
+              },
+              "recomputed": {
+                "path": "build/model-quality/offline-recomputed-38/v1-original477/recomputed/raw-prose-score.json",
+                "bytes": 5680419,
+                "sha256": "3a9d4b556d7b431296e7d43365d2e8c23c938ac0fac171b13e468be9e98fdef8"
+              },
+              "declaredOnlyRelocations": [],
+              "allOtherParsedObjectsExact": true
+            }
+          ],
+          "requiredCountsAndAllResultsCriteriaGatesSettingsModelsAssetsSourceIdentityUnchanged": true
+        },
+        "actualExecutionExitCode": 0,
+        "executionOriginalDigest": {
+          "path": "build/model-quality/round2-evidence38-offline-extracted/build/model-quality/offline-recomputed-38/v1-original477/execution.json",
+          "bytes": 1358,
+          "sha256": "8bc25ccb238d70c33f5b32a8af2e4c33ff1da976d5d38caef167fee9faf78dad"
+        },
+        "stdout": {
+          "path": "build/model-quality/round2-evidence38-offline-extracted/build/model-quality/offline-recomputed-38/v1-original477/stdout.log",
+          "bytes": 1196,
+          "sha256": "bad1d3ca365fbb08e37178305acb91c3cfdbecf4943feed652f491908dfaa79b"
+        },
+        "stderr": {
+          "path": "build/model-quality/round2-evidence38-offline-extracted/build/model-quality/offline-recomputed-38/v1-original477/stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    ],
+    "allSixScoreReportsReproducedWithOnlyDeclaredAcceptedProvenanceRelocations": true,
+    "noNewInferenceJudgmentsOrThresholdChanges": true
+  },
+  "unchangedEarlierArchives": [
+    {
+      "path": "docs/results/model-quality-development/development-evidence-01.zip",
+      "bytes": 1891797,
+      "sha256": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-02.zip",
+      "bytes": 398010,
+      "sha256": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-03.zip",
+      "bytes": 312383,
+      "sha256": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-04.zip",
+      "bytes": 212837,
+      "sha256": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-05.zip",
+      "bytes": 674661,
+      "sha256": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-06.zip",
+      "bytes": 208198,
+      "sha256": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-07.zip",
+      "bytes": 721498,
+      "sha256": "b36dd12db0892e89f8d8c1f2672462d9212a71f016076b9beeca0a51a22c6529"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-08.zip",
+      "bytes": 2646556,
+      "sha256": "8997676469921003a6e4a112e3c120317382cc562cc5150f3646d4869b524a10"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-09.zip",
+      "bytes": 4058303,
+      "sha256": "7da96637ba2b134a309905cb97e908427408125c3d7bf13704503eabd7e4f688"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-10.zip",
+      "bytes": 3091201,
+      "sha256": "ad796f1d76199ad8dd613bbb1f36d4ed05cc2178483d4e1dd23375f506de31f7"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-11.zip",
+      "bytes": 1952260,
+      "sha256": "7ef4c58f54f264df70b1b1ddd0e42baa108a16d1a0862e9c5a14e5666bf23108"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-12.zip",
+      "bytes": 4164289,
+      "sha256": "e1f44ecd97238f68a6f3e9a3929230059082ae1fdaf69f13d24aa6feb7d64269"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-13.zip",
+      "bytes": 13937360,
+      "sha256": "ed487a3e47a7a5ef31c9b21ec72dd3580c157bd25835bc517e26382c3c325810"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-14.zip",
+      "bytes": 1698443,
+      "sha256": "41710bf12bf2b1854fb7ec16114c2bbc1b76c7104b350db114b9bd89d89c2796"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-15.zip",
+      "bytes": 1058260,
+      "sha256": "ca624ec881a7328f0de79d60f65938887e00e008f15f2af996173cc0377372da"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-16.zip",
+      "bytes": 14034752,
+      "sha256": "458aec2324ebc5b6e4ee5ad60e9d3d77ef9377325dc29e409e90d3f024480497"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-17.zip",
+      "bytes": 2036289,
+      "sha256": "d6893ec122d0da780a963db896c7cd608f079c95bbd6eaecbd7cfdfa5fca0a9e"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-18.zip",
+      "bytes": 931212,
+      "sha256": "34655ede26a5241d2a37b94f37085c9f966888bcb632a3c988b016022fe84a6a"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-19.zip",
+      "bytes": 445859,
+      "sha256": "77c44c435552002131873a750b610e58a4f0f1fe1130c125b2f960e030539d1a"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-20.zip",
+      "bytes": 1226824,
+      "sha256": "6f1390b63d1a40ca44fbe4fe86134f3e1310bf85c95db5acdf9cc380a7b40801"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-21.zip",
+      "bytes": 13727885,
+      "sha256": "1441d450a17e33dba68a38e8accaa754e682316fddaa39016351fac50f9819d6"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-22.zip",
+      "bytes": 14246973,
+      "sha256": "13194bcb992e6873c3e429793349398e4b499efe0987b6434671e5f5d29f6306"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-23.zip",
+      "bytes": 2300885,
+      "sha256": "95bab53815524211fd6b96645b7461fef6dac1361ab0aef0201dbfef8648300c"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-24.zip",
+      "bytes": 1301316,
+      "sha256": "18ef4d9308e94a94c0c085b8271bc27adaceaf749595412224f20efd584aaa3f"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-25.zip",
+      "bytes": 673195,
+      "sha256": "093a0a617d4c90e2d4c5a6b01e7752ddea409ed6a7309295b786a4a39fed431a"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-26.zip",
+      "bytes": 15088938,
+      "sha256": "253c106cfe011bfef2fd92e98c50d7b229e1e1c922c20754af2a60a3cdc5733a"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-27.zip",
+      "bytes": 1998739,
+      "sha256": "d58ca437f61740a9662a2c7fb4897c34187f44aaa6061b515c3d9eb01ab52ec9"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-28.zip",
+      "bytes": 193515,
+      "sha256": "bea68243601f8501bd20eefd42ce55d7089c5e8532b7f5212ef6468716bbf85d"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-29.zip",
+      "bytes": 1011524,
+      "sha256": "4bb7b86e78d737603349a9feed782df9420323fd58d7a4c0cd302a7c46ce844b"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-30.zip",
+      "bytes": 3287229,
+      "sha256": "9256a1b05980ecca73de810848a2bbf854bbac2c6264c26d10506df71732608c"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-31.zip",
+      "bytes": 14864510,
+      "sha256": "1d8560fdc093f7265af02ef9010db8c6c130d0ebbe5603eebb03de7a78cf724a"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-32.zip",
+      "bytes": 3523792,
+      "sha256": "f333c074f74dbcf49a4d462c91a745d921f281d68911cd0c8d15cd9401c31725"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-33.zip",
+      "bytes": 963630,
+      "sha256": "ea2cf0156ff3d7e4d1041c21285361b952694e5670d204acae14f775cbb618b9"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-34.zip",
+      "bytes": 4412187,
+      "sha256": "a43ae9d6c143e01643789f0aae667c21f77680f8bce7979bfd88175b2637c5ca"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-35.zip",
+      "bytes": 2024406,
+      "sha256": "50c46d244b3e6176a22f8787ceb4c92373b5c1748b9b5c6c67b7f8963bcb5184"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-36.zip",
+      "bytes": 5278095,
+      "sha256": "642ae13b931087644fb491562d06ccb9d2ecc1f088cc4423ada3b1d0f44ec031"
+    },
+    {
+      "path": "docs/results/model-quality-development/development-evidence-37.zip",
+      "bytes": 116781,
+      "sha256": "6656648a56ecde06ffae9393482f260f73b8496d2268e55d9f62fc418c393cef"
+    }
+  ],
+  "publicationDocumentationDelta": {
+    "createdUTC": "2026-10-15T06:41:41.349757+00:00",
+    "kind": "actual-publication-documentation-only-delta-from-tested-source13",
+    "baseTestedCodeCommit": "096f41d1fb785329d670a6df5b09a20311398d2c",
+    "baseTestedMaterializedSourceIdentitySHA256": "359d9eeef072ee6d754ea6d9c4c68da0291721facbaadcd499c61f4c61c4541c",
+    "baseManifestSHA256": "c04f3124f79f3e48def5a7fd28391a06634f76721c03d46289cffae830395f5a",
+    "workingDocumentationCaptureIdentitySHA256": "0667b2512d2954a951df8934c6beb7712eee026813364e982746efb24fd88923",
+    "capturedChanges": [
+      {
+        "path": "evaluation/README.md",
+        "beforeSHA256": "0344ae4eeb6046155d5dae08a7b60dff0a8cdf2101513103ba9f7759f2e30583",
+        "afterSHA256": "ba988840f825ac3e4795da290d6b16daf72dbcfb2b296e4d2a7dc837ade061c9"
+      }
+    ],
+    "other152CapturedFilesByteExact": true,
+    "trackedChanges": [
+      {
+        "path": "docs/doctor-visits.md",
+        "bytes": 9835,
+        "sha256": "37ed362fc22ec510a8451976c2b2e4d7e9b78b405218342e00c885486fc0678e"
+      },
+      {
+        "path": "docs/evaluation.md",
+        "bytes": 118732,
+        "sha256": "1cbb1ac573e3ec085cfdb954ab8323c9f0b160cf67952cfc0ca92b65de510e1a"
+      },
+      {
+        "path": "evaluation/README.md",
+        "bytes": 26677,
+        "sha256": "ba988840f825ac3e4795da290d6b16daf72dbcfb2b296e4d2a7dc837ade061c9"
+      }
+    ],
+    "historicalEvaluationSectionCanonicalBytesExactTo096f": true,
+    "productionPackagesRuntimeSourcesTestsWorkflowsFixturesScorerRubricAndModelConfigurationUnchanged": true,
+    "nativeInferenceRunOnNewDocumentationIdentity": false,
+    "noCodeTestOrFullQualityResultsRelabelled": true,
+    "scope": "The three tracked edits contain method/result prose only, after completed native789/source11 and33/source13. New published evidence artifacts are separate docs/results files. Actual publication commit is not created yet and must contain only these three docs plus the explicitly reviewed evidence files. This does not assert whole current153bytes equal source13;onlyREADME differs. No obsolete6aab documentation-only equivalence is used."
+  },
+  "decision": {
+    "quality": "BLOCKED",
+    "pullRequest": "Draft",
+    "default": "Automatic",
+    "qwen35": "optional",
+    "fineTuningPerformed": false,
+    "weightsChanged": false,
+    "blindV2": "sealed and unrun",
+    "fullSource13QualityMatrixPerformed": false,
+    "physicalIPhonePerformanceMeasured": false
+  },
+  "scope": "The published report exactly equals its selected archive member. Original 789 source11 observations and separate 33 source13 diagnostics remain distinct. Offline score evidence is outside the ZIP to avoid a self-referential manifest. Absolute local execution argv and private transport remain excluded; their scoped postbuild execution digests are retained. This audit does not contain its own digest or a future publication commit identity."
+}

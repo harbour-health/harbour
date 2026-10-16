@@ -40,12 +40,20 @@ import XCTest
     func testMedicineConfirmationAndExport() {
         let app = XCUIApplication(); app.launchArguments = ["--ui-test-unlocked"]; app.launch()
         app.buttons["nav-records"].tap(); selectRecords(app, "Medications")
-        for medicine in ["warfarin", "advil"] {
+        for (medicine, savedName) in [("warfarin", "Warfarin"), ("advil", "Advil")] {
             app.buttons["Add record"].tap(); app.buttons["catalog-" + medicine].tap()
             XCTAssertFalse(app.buttons["saveMedicine"].isEnabled)
             app.buttons["confirmMedicine"].tap(); XCTAssertTrue(app.buttons["saveMedicine"].isEnabled); app.buttons["saveMedicine"].tap()
+            let dismissed = expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: app.buttons["saveMedicine"])
+            XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 5), .completed, app.debugDescription)
+            XCTAssertTrue(app.navigationBars["Medications"].waitForExistence(timeout: 5), app.debugDescription)
+            XCTAssertTrue(app.staticTexts[savedName].firstMatch.waitForExistence(timeout: 5), app.debugDescription)
         }
-        openInteractions(app)
+        let interactions = app.buttons["Check interactions"]
+        let ready = expectation(for: NSPredicate { _, _ in interactions.exists && interactions.isHittable }, evaluatedWith: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 5), .completed, app.debugDescription)
+        interactions.tap()
+        XCTAssertTrue(app.navigationBars["Interactions"].waitForExistence(timeout: 5), app.debugDescription)
         XCTAssertTrue(app.descendants(matching: .any)["interactionSource"].firstMatch.waitForExistence(timeout: 5))
         app.buttons["Done"].tap(); app.buttons["nav-today"].tap(); app.buttons["Settings"].tap()
         app.buttons["Export records"].tap()
@@ -53,17 +61,19 @@ import XCTest
         let screenshot = XCTAttachment(screenshot: app.screenshot()); screenshot.name = "Native export"; screenshot.lifetime = .keepAlways; add(screenshot)
     }
     func testLocalModelChat() {
-        let app = XCUIApplication(); app.launch()
+        let app = XCUIApplication(); app.launchArguments = ["-model", "small"]; app.launch()
         app.buttons["nav-chat"].tap(); app.buttons["New chat"].tap()
         let input = app.textFields["chatInput"]
         input.tap(); input.typeText("Can I take Advil and warfarin together?")
         app.buttons["Send message"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["interactionSource"].firstMatch.waitForExistence(timeout: 120))
+        XCTAssertTrue(app.buttons["Send message"].waitForExistence(timeout: 60), app.debugDescription)
         input.tap(); input.typeText("Please save my heart rate of 72")
         app.buttons["Send message"].tap()
         XCTAssertTrue(app.textFields["readingValue"].waitForExistence(timeout: 45))
         XCTAssertEqual(app.textFields["readingValue"].value as? String, "72")
         app.buttons["saveReading"].tap()
+        XCTAssertTrue(app.buttons["Send message"].waitForExistence(timeout: 60), app.debugDescription)
         input.tap(); input.typeText("My knee has been sore since Tuesday")
         app.buttons["Send message"].tap()
         XCTAssertTrue(app.textFields["symptomText"].waitForExistence(timeout: 45))
@@ -104,6 +114,36 @@ import XCTest
         app.buttons["modelSelector"].tap()
         XCTAssertTrue(app.staticTexts["Qwen Small"].firstMatch.waitForExistence(timeout: 5))
         XCTAssertTrue(app.sliders["Generation effort"].exists)
+    }
+    func testQwen35FallbackSelectionAndPersistenceWithoutDownloading() {
+        let app = XCUIApplication()
+        let languageArguments = ["-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
+        app.launchArguments = languageArguments + ["-model", "unrecognized-model"]
+        app.launch()
+        app.buttons["nav-chat"].tap()
+        let selector = app.buttons["modelSelector"]
+        XCTAssertTrue(selector.waitForExistence(timeout: 5))
+        XCTAssertTrue((selector.value as? String ?? "").hasPrefix("Qwen Small, "))
+        selector.tap()
+        for title in ["Automatic", "Qwen Small", "Qwen Balanced", "Qwen3.5 2B"] {
+            XCTAssertTrue(app.staticTexts[title].firstMatch.waitForExistence(timeout: 5), title)
+        }
+        app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Qwen Small")).firstMatch.tap()
+        app.buttons["Done"].tap()
+        XCTAssertTrue((selector.value as? String ?? "").hasPrefix("Qwen Small, "))
+
+        app.terminate()
+        app.launchArguments = languageArguments
+        app.launch()
+        app.buttons["nav-chat"].tap()
+        XCTAssertTrue((app.buttons["modelSelector"].value as? String ?? "").hasPrefix("Qwen Small, "))
+        app.buttons["modelSelector"].tap()
+        app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Qwen3.5 2B")).firstMatch.tap()
+        app.buttons["Done"].tap()
+        app.terminate()
+        app.launch()
+        app.buttons["nav-chat"].tap()
+        XCTAssertTrue((app.buttons["modelSelector"].value as? String ?? "").hasPrefix("Qwen3.5 2B, "))
     }
     func testScreenshots() {
         let app = XCUIApplication(); app.launch()
@@ -221,8 +261,10 @@ import XCTest
     override func setUpWithError() throws { continueAfterFailure = false }
     private func appearance(_ app: XCUIApplication, _ choice: String) {
         app.buttons["nav-today"].tap(); app.buttons["Settings"].tap(); app.buttons["Appearance"].tap()
-        app.buttons["appearance-" + choice.lowercased()].tap()
-        XCTAssertTrue(app.buttons["appearance-" + choice.lowercased()].isSelected)
+        let option = app.buttons["appearance-" + choice.lowercased()]
+        option.tap()
+        let selected = expectation(for: NSPredicate(format: "selected == true"), evaluatedWith: option)
+        XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 5), .completed, app.debugDescription)
         app.navigationBars["Appearance"].buttons.firstMatch.tap(); app.buttons["Done"].tap()
     }
     private func capture(_ name: String) {
@@ -513,6 +555,22 @@ import XCTest
     override func setUpWithError() throws { continueAfterFailure = false }
     private func capture(_ name: String) {
         let item = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); item.name = name; item.lifetime = .keepAlways; add(item)
+    }
+    func testAppointmentOnlySummaryDoesNotShowEmptyWarning() {
+        for french in [false, true] {
+            let app = XCUIApplication()
+            app.launchArguments = ["--ui-test-unlocked", "--appointment-summary-fixture", "-AppleLanguages", french ? "(fr)" : "(en)", "-AppleLocale", french ? "fr_CA" : "en_CA"]
+            app.launch()
+            app.buttons["nav-visits"].tap()
+            let visit = app.buttons.containing(NSPredicate(format: "label CONTAINS %@", "Appointment summary regression")).firstMatch
+            XCTAssertTrue(visit.waitForExistence(timeout: 10), app.debugDescription)
+            visit.tap()
+            XCTAssertTrue(app.buttons["addVisitAppointment"].waitForExistence(timeout: 10), app.debugDescription)
+            XCTAssertTrue(app.staticTexts[french ? "Rendez-vous demain à 15 h." : "Appointment tomorrow at 3 pm."].exists)
+            XCTAssertFalse(app.staticTexts["visitEmptySummary"].exists, app.debugDescription)
+            capture(french ? "appointment-only-summary-fr" : "appointment-only-summary-en")
+            app.terminate()
+        }
     }
     func testMedicineReviewDrawerScreens() {
         let app = XCUIApplication()
@@ -1357,4 +1415,137 @@ import XCTest
             app.terminate()
         }
     }
+}
+
+/// Real Qwen3.5 inference against fictional records, using the production review screens.
+@MainActor final class HarbourQwen35EvaluationTests: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+
+    private func launch(french: Bool) -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["--app-store-screenshots", "-model", "qwen35", "-effort", "Standard", "-AppleLanguages", french ? "(fr-CA)" : "(en)", "-AppleLocale", french ? "fr_CA" : "en_CA"]
+        app.launch()
+        XCTAssertTrue(app.buttons["nav-chat"].waitForExistence(timeout: 10))
+        app.buttons["nav-chat"].tap()
+        app.buttons[french ? "Nouvelle conversation" : "New chat"].tap()
+        XCTAssertTrue((app.buttons["modelSelector"].value as? String ?? "").hasPrefix("Qwen3.5 2B, "))
+        return app
+    }
+
+    private func send(_ text: String, app: XCUIApplication, french: Bool) {
+        let input = app.textFields["chatInput"]
+        XCTAssertTrue(input.waitForExistence(timeout: 10))
+        input.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 10), app.debugDescription)
+        input.typeText(text)
+        let completeInput = NSPredicate(format: "value == %@", text)
+        let result = XCTWaiter.wait(for: [expectation(for: completeInput, evaluatedWith: input)], timeout: 10)
+        XCTAssertEqual(result, .completed, "The complete evaluation request must be present before Send.\n" + app.debugDescription)
+        guard result == .completed else { return }
+        app.buttons[french ? "Envoyer le message" : "Send message"].tap()
+    }
+
+    private func reveal(_ app: XCUIApplication, _ element: XCUIElement) {
+        for _ in 0..<6 { if element.isHittable { return }; app.swipeUp() }
+        XCTAssertTrue(element.isHittable, app.debugDescription)
+    }
+
+    private func schedule(french: Bool) {
+        let app = launch(french: french)
+        send(french ? "Programme metformine à 8 h et 20 h 30" : "Schedule Metformin at 8 am and 8:30 pm", app: app, french: french)
+        XCTAssertTrue(app.buttons["saveMedicine"].waitForExistence(timeout: 180), app.debugDescription)
+        let addTime = app.buttons["addDoseTime"]
+        reveal(app, addTime)
+        XCTAssertTrue(addTime.exists)
+        XCTAssertFalse(app.buttons["saveMedicine"].isEnabled)
+        let first = app.descendants(matching: .any)["doseTime-0"].firstMatch
+        let second = app.descendants(matching: .any)["doseTime-1"].firstMatch
+        XCTAssertTrue(first.exists); XCTAssertTrue(second.exists)
+        XCTAssertFalse(app.descendants(matching: .any)["doseTime-2"].firstMatch.exists)
+        func displayedTime(_ element: XCUIElement) -> String {
+            ([element.label, element.value as? String ?? ""] + element.staticTexts.allElementsBoundByIndex.map(\.label) + element.buttons.allElementsBoundByIndex.flatMap { [$0.label, $0.value as? String ?? ""] }).joined(separator: " ")
+        }
+        let morning = displayedTime(first), evening = displayedTime(second)
+        XCTAssertNotNil(morning.range(of: "(?i)\\b0?8\\s*[:h]\\s*00\\b", options: .regularExpression), morning)
+        XCTAssertNil(morning.range(of: "(?i)\\bp\\s*\\.?\\s*m\\.?", options: .regularExpression), morning)
+        XCTAssertNotNil(evening.range(of: "(?i)\\b20\\s*[:h]\\s*30\\b|\\b0?8\\s*:\\s*30\\s*p\\s*\\.?\\s*m\\.?", options: .regularExpression), evening)
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = french ? "qwen35-french-schedule-review" : "qwen35-english-schedule-review"
+        attachment.lifetime = .keepAlways; add(attachment)
+        app.buttons[french ? "Annuler" : "Cancel"].tap()
+    }
+
+    func testEnglishScheduleOpensReview() { schedule(french: false) }
+    func testFrenchScheduleOpensReview() { schedule(french: true) }
+
+    private func openPreservedMedicineRecords(_ app: XCUIApplication) -> Bool {
+        var deadline = Date().addingTimeInterval(10)
+        func confirm(_ element: XCUIElement, _ predicate: NSPredicate, _ state: String) -> Bool {
+            let remaining = deadline.timeIntervalSinceNow
+            guard remaining > 0 else {
+                XCTFail("Record navigation deadline expired: " + state + "\n" + app.debugDescription)
+                return false
+            }
+            let result = XCTWaiter.wait(for: [expectation(for: predicate, evaluatedWith: element)], timeout: remaining)
+            XCTAssertEqual(result, .completed, state + "\n" + app.debugDescription)
+            return result == .completed
+        }
+        let records = app.buttons["nav-records"]
+        guard confirm(records, NSPredicate(format: "exists == true AND hittable == true"), "Records tab must be ready before its one tap") else { return false }
+        records.tap()
+        deadline = Date().addingTimeInterval(10)
+        guard confirm(records, NSPredicate(format: "exists == true AND selected == true"), "Records tab must become selected") else { return false }
+        let category = app.buttons["record-category-1"]
+        guard confirm(category, NSPredicate(format: "exists == true AND hittable == true"), "Medication category must be present and ready") else { return false }
+        category.tap()
+        return true
+    }
+
+    private func negatedDeletion(french: Bool) {
+        let app = launch(french: french)
+        send(french ? "Ne supprime pas mes dossiers." : "Do not delete my records.", app: app, french: french)
+        let reply = app.staticTexts["chatReply"].firstMatch
+        XCTAssertTrue(reply.waitForExistence(timeout: 180), app.debugDescription)
+        XCTAssertTrue(app.buttons[french ? "Envoyer le message" : "Send message"].waitForExistence(timeout: 60), app.debugDescription)
+        XCTAssertFalse(app.alerts.firstMatch.exists)
+        XCTAssertFalse(app.sheets.firstMatch.exists)
+        XCTAssertFalse(app.buttons[french ? "Tout supprimer" : "Delete all"].exists)
+        let raw = reply.label.trimmingCharacters(in: .whitespacesAndNewlines)
+        XCTAssertFalse(raw.isEmpty)
+        let text = raw.lowercased()
+        // ChatView also publishes failures as chatReply; those are not successful inference.
+        let failures = [
+            "The model could not be opened. Remove it and download it again.",
+            "Impossible d’ouvrir le modèle. Supprimez-le et téléchargez-le de nouveau.",
+            "There isn’t enough memory to start this model. Choose Qwen Small.",
+            "La mémoire est insuffisante pour démarrer ce modèle. Choisissez Qwen Petit.",
+            "The message is too long. Please shorten it.", "Le message est trop long. Raccourcissez-le.",
+            "The model could not read this message.", "Le modèle n’a pas pu lire ce message.",
+            "The model stopped unexpectedly. Please try again.", "Le modèle s’est arrêté de façon inattendue. Réessayez.",
+            "The model could not start generating a response. Please try again.", "Le modèle n’a pas pu commencer à générer une réponse. Réessayez.",
+            "The model could not prepare the required response format. Please try again.", "Le modèle n’a pas pu préparer le format de réponse requis. Réessayez.",
+            "The model could not prepare this request. Please try again.", "Le modèle n’a pas pu préparer cette demande. Réessayez.",
+            "The model is already working on a request.", "Le modèle traite déjà une demande.",
+            "A model is already downloading.", "Un modèle est déjà en cours de téléchargement.",
+            "The downloaded model failed verification. Please try again.", "La vérification du modèle téléchargé a échoué. Réessayez.",
+            "I couldn’t understand the model’s response. Try rephrasing, or use the records tab.", "Je n’ai pas pu comprendre la réponse du modèle. Reformulez votre demande ou utilisez l’onglet Dossier.",
+            "That response didn’t match your request. Please rephrase it.", "Cette réponse ne correspondait pas à votre demande. Reformulez-la.",
+            "The model returned an empty response. Please try again.", "Le modèle a renvoyé une réponse vide. Réessayez."
+        ]
+        for failure in failures { XCTAssertFalse(text.contains(failure.lowercased()), raw) }
+        let folded = raw.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: french ? "fr_CA" : "en_CA")).replacingOccurrences(of: "’", with: "'")
+        let acknowledgement = french
+            ? "\\b(?:compris|comprend[a-z]*|note|recu|entendu|conserv[a-z]*|preserv[a-z]*|gard[a-z]*|inchang[a-z]*|intact[a-z]*)\\b|\\b(?:tels quels|d'accord)\\b|\\bne\\s+.{0,40}(?:supprim[a-z]*|effac[a-z]*|modifi[a-z]*)\\s+(?:pas|rien)\\b"
+            : "\\b(?:understood|understand|noted|acknowledged|okay|ok|keep|kept|leave|preserv[a-z]*|unchanged|intact)\\b|\\bgot it\\b|\\b(?:will not|won't)\\s+(?:delete|erase|change|modify)\\b"
+        XCTAssertNotNil(folded.range(of: acknowledgement, options: .regularExpression), raw)
+        let forbiddenText = text.replacingOccurrences(of: "’", with: "'")
+        for forbidden in ["no access", "cannot access", "can't access", "don't have access", "do not have access", "don't have any access", "pas accès", "aucun accès", "i deleted", "have deleted", "j'ai supprimé", "ont été supprimés"] {
+            XCTAssertFalse(forbiddenText.contains(forbidden), raw)
+        }
+        guard openPreservedMedicineRecords(app) else { return }
+        XCTAssertTrue(app.staticTexts[french ? "Metformine" : "Metformin"].firstMatch.waitForExistence(timeout: 10))
+    }
+
+    func testEnglishNegatedDeletionPreservesRecords() { negatedDeletion(french: false) }
+    func testFrenchNegatedDeletionPreservesRecords() { negatedDeletion(french: true) }
 }

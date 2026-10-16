@@ -1,0 +1,94 @@
+{
+  "id": "harbour-independent-factual-controls-v1",
+  "version": 1,
+  "preregisteredUTC": "2026-10-12T22:41:27Z",
+  "purpose": "Four independent development controls for ordinary causal explanations after generic prompt revisions. Separate from frozen model-quality-v1 and its heldout split.",
+  "reviewPolicy": "Judge whether the principal mechanism is correct and relevant, whether material additional claims are true, and whether the response uses the requested language. Equivalent plain explanations are accepted; named jargon, exact phrasing and exhaustive detail are not required. Explanations and references below are scoring metadata and must never enter model prompts.",
+  "cases": [
+    {
+      "id": "control.soap_grease.en",
+      "split": "dev",
+      "kind": "prose",
+      "language": "en",
+      "input": "Why does soap help rinse grease off a plate?",
+      "recordsProfile": "empty",
+      "history": [],
+      "hint": null,
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "principalProcess": "Soap interacts with both grease and water, helping detach and disperse greasy material so rinsing water can carry it away. Its water-friendly and oil-friendly parts explain this action.",
+        "acceptableOptionalDetail": "Surfactants, emulsification or micelles; reduced surface tension can help wetting but should not replace the grease-water interaction as the entire explanation.",
+        "criticalErrors": ["Soap chemically destroys all grease as the main cleaning mechanism.", "Soap's grease-friendly part attracts water while its water-friendly part attracts grease.", "Air bubbles alone account for grease removal without explaining dispersal or interaction with grease and water."],
+        "manualReview": ["principal_mechanism", "material_additional_claims", "language_and_relevance"],
+        "primaryReferences": [
+          {"title": "ACS: The Science of Getting Things Clean", "url": "https://www.acs.org/content/dam/acsorg/education/outreach/celebrating-chemistry/2014-cced-celebrating-chemistry-english.pdf"},
+          {"title": "American Cleaning Institute: The Chemistry of Cleaning", "url": "https://www.cleaninginstitute.org/understanding-products/science-soap/chemistry-cleaning"}
+        ]
+      }
+    },
+    {
+      "id": "control.zipper.fr-CA",
+      "split": "dev",
+      "kind": "prose",
+      "language": "fr-CA",
+      "input": "Comment la glissière d'une fermeture éclair réunit-elle ses deux côtés?",
+      "recordsProfile": "empty",
+      "history": [],
+      "hint": null,
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "principalProcess": "The moving slider guides the opposing rows of teeth or elements together so their shapes interlock, joining the zipper sides. Moving the slider the other way separates them.",
+        "acceptableOptionalDetail": "The slider's internal Y-shaped channel guides engagement and separation; precise element shape matters. French synonyms for slider, teeth and interlocking are accepted.",
+        "criticalErrors": ["The two sides are primarily held together by magnetism, glue, melting, or an electrical attraction.", "The slider fuses or permanently changes the teeth rather than mechanically engaging them.", "The slider closes the zipper by keeping its opposing teeth apart."],
+        "manualReview": ["principal_mechanism", "material_additional_claims", "language_and_relevance"],
+        "primaryReferences": [
+          {"title": "YKK: To begin with, what's the structure of a zipper?", "url": "https://www.ykk.com/english/ykk/tech/01.html"}
+        ]
+      }
+    },
+    {
+      "id": "control.frost.en",
+      "split": "dev",
+      "kind": "prose",
+      "language": "en",
+      "input": "How can frost form on a cold surface when there is no liquid water on it?",
+      "recordsProfile": "empty",
+      "history": [],
+      "hint": null,
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "principalProcess": "Water vapor from the air can become ice crystals directly on a sufficiently cold surface, without an intervening liquid layer. This gas-to-solid process is deposition.",
+        "acceptableOptionalDetail": "The surface must be cold enough, normally below freezing and at or below its frost point, with available moisture. Frozen dew is a different pathway and may be mentioned if distinguished from the question's no-liquid pathway.",
+        "criticalErrors": ["Existing liquid water must freeze for the stated no-liquid frost formation to occur.", "Ordinary frost is made principally from nitrogen, oxygen, or carbon dioxide freezing.", "Solid ice changes into water vapor as the process creating frost."],
+        "manualReview": ["principal_mechanism", "material_additional_claims", "language_and_relevance"],
+        "primaryReferences": [
+          {"title": "National Weather Service Charleston: Frost-Freeze Climatology/Information", "url": "https://www.weather.gov/rlx/frost-freeze-information"}
+        ]
+      }
+    },
+    {
+      "id": "control.sugar_dissolving.fr-CA",
+      "split": "dev",
+      "kind": "prose",
+      "language": "fr-CA",
+      "input": "Pourquoi le sucre se dissout-il dans l'eau à température ambiante?",
+      "recordsProfile": "empty",
+      "history": [],
+      "hint": null,
+      "effortSubset": false,
+      "timingSubset": false,
+      "expected": {
+        "principalProcess": "Water molecules attract and interact with sugar molecules, separating intact sugar molecules from the crystal and dispersing them through the water. The sugar remains present in solution.",
+        "acceptableOptionalDetail": "Polar regions or hydrogen bonding explain the attraction. An accurate simple account of water surrounding and dispersing sugar molecules is sufficient; atomic formulas are unnecessary.",
+        "criticalErrors": ["Dissolving ordinary table sugar principally breaks its molecules into individual atoms or into ions like table salt.", "The sugar must melt from heat, be destroyed, or react into a different substance to dissolve in room-temperature water.", "Sugar molecules vanish from the solution or water cannot interact with sugar molecules."],
+        "manualReview": ["principal_mechanism", "material_additional_claims", "language_and_relevance"],
+        "primaryReferences": [
+          {"title": "ACS Lesson5.4: Why Does Water Dissolve Sugar?", "url": "https://www.acs.org/middleschoolchemistry/lessonplans/chapter5/lesson4.html"}
+        ]
+      }
+    }
+  ]
+}

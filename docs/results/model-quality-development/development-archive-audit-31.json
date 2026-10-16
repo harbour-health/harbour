@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "recordedUTC": "2026-10-13T22:36:41.235785+00:00",
+  "passed": true,
+  "archiveSHA256": "1d8560fdc093f7265af02ef9010db8c6c130d0ebbe5603eebb03de7a78cf724a",
+  "manifestSHA256": "2c542bc85cc8963a157e531febfbf9218bd62926aa484745506c1f0b9e9ccd08",
+  "evidenceFiles": 293,
+  "membersIncludingManifest": 294,
+  "allSelectedBytesEqualLocalOriginals": true,
+  "priorArchives01Through30Unchanged": true,
+  "current3ee4AppCohort": "PASS_STANDARD11_NATIVE7",
+  "scope": "Independent current3ee4 app ZIP integrity/count/terminal and exact component-equivalence binding. No source15 model quality, freeze, heldout or Ready credit.",
+  "auditorSHA256": "7dc4a132a23052f7d1123744dd862e4f6afe810d56c4e8859e85d8d00cec79e7"
+}

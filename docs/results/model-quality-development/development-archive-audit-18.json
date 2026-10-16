@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "auditedUTC": "2026-10-13T11:22:47.225364+00:00",
+  "auditor": "Codex Root independent of Archive18 builder",
+  "passed": true,
+  "archiveSHA256": "34655ede26a5241d2a37b94f37085c9f966888bcb632a3c988b016022fe84a6a",
+  "memberCount": 84,
+  "evidenceFiles": 83,
+  "allMemberCRCBytesHashesAndLocalFilesMatch": true,
+  "rows": 120,
+  "originalReviewObjects": 120,
+  "manualPending": 0,
+  "manualPasses": [
+    33,
+    26,
+    32
+  ],
+  "acceptedActionReplyFailures": [
+    0,
+    2,
+    2
+  ],
+  "acceptedSummaryFailures": [
+    0,
+    3,
+    0
+  ],
+  "actualSupplementalRepeats": 1,
+  "nativeModelQualityExits": [
+    1,
+    1,
+    1
+  ],
+  "wrapperExit": 0,
+  "materializedSource11MembersVerified": 12,
+  "prior17ArchivesUnchanged": true,
+  "originalBalanced38JudgmentsEqualSchemaDerivative": true,
+  "failuresRemainBlockers": true,
+  "source12FreezeHeldoutOrReadyClaimed": false,
+  "CPUCompilerScorerModelOrTestsInvoked": false,
+  "auditorSHA256": "40668565de0e32281c8b0185dab4fb269fd72f01044e19c7e333e3ff7e03e030"
+}

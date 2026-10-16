@@ -2,7 +2,7 @@ import Foundation
 import llama
 
 public enum ModelError: LocalizedError {
-    case load, context, promptTooLong, tokenize, decode, sampler, grammar
+    case load, context, promptTooLong, tokenize, decode, sampler, grammar, promptFormat
     public var errorDescription: String? {
         switch self {
         case .load: "The model could not be opened. Remove it and download it again."
@@ -12,6 +12,7 @@ public enum ModelError: LocalizedError {
         case .decode: "The model stopped unexpectedly. Please try again."
         case .sampler: "The model could not start generating a response. Please try again."
         case .grammar: "The model could not prepare the required response format. Please try again."
+        case .promptFormat: "The model could not prepare this request. Please try again."
         }
     }
 }
@@ -39,6 +40,10 @@ public actor LocalModel {
         if !backendStarted { llama_backend_init(); backendStarted = true }
         var mp = llama_model_default_params()
         #if targetEnvironment(simulator)
+        // Use ordinary CPU weight buffers for Simulator inference.
+        mp.use_extra_bufts = false
+        #endif
+        #if targetEnvironment(simulator) || os(Linux)
         mp.n_gpu_layers = 0
         #else
         mp.n_gpu_layers = useGPU ? 99 : 0
@@ -51,8 +56,23 @@ public actor LocalModel {
         guard let ctx = llama_init_from_model(loaded, cp) else { llama_model_free(loaded); throw ModelError.context }
         model = loaded; context = ctx; path = file.path
     }
-    public func generate(file: URL, prompt: String, maxTokens: Int = 160, grammar: String? = nil, stopAtJSON: Bool = true) throws -> String {
+    /// Evaluation diagnostics use the production vocabulary and tokenization options.
+    /// This does not decode, sample, or alter the inference memory.
+    public func tokenCount(file: URL, prompt: String, promptFormat: ModelPromptFormat = .qwen25) throws -> Int {
+        let prompt = try promptFormat.prepare(prompt)
+        try load(file)
+        guard let model else { throw ModelError.load }
+        let vocab = llama_model_get_vocab(model)
+        var tokens = [llama_token](repeating: 0, count: prompt.utf8.count + 16)
+        let count = tokens.withUnsafeMutableBufferPointer { buffer in
+            llama_tokenize(vocab, prompt, Int32(prompt.utf8.count), buffer.baseAddress, Int32(buffer.count), false, true)
+        }
+        guard count > 0 else { throw ModelError.tokenize }
+        return Int(count)
+    }
+    public func generate(file: URL, prompt: String, maxTokens: Int = 160, grammar: String? = nil, stopAtJSON: Bool = true, promptFormat: ModelPromptFormat = .qwen25) throws -> String {
         try Task.checkCancellation()
+        let prompt = try promptFormat.prepare(prompt)
         if let grammar, grammar.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || grammar.contains("\0") {
             throw ModelError.grammar
         }

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "createdUTC": "2026-10-13T09:05:22.824563+00:00",
+  "archive": "development-evidence-14.zip",
+  "archiveSHA256": "41710bf12bf2b1854fb7ec16114c2bbc1b76c7104b350db114b9bd89d89c2796",
+  "archiveBytes": 1698443,
+  "manifestSHA256": "52c8b24b192d54726f95d210cae7fe5e875d645a8751fb2f758a76142bbb09bd",
+  "evidenceFiles": 196,
+  "memberCount": 197,
+  "releaseEvidence": false,
+  "scope": "Completed source545 DEV, historical baseline calibration, preserved interrupted preparation and compact-policy diagnostic. New production-family implementation is not a quality pass.",
+  "preflight": {
+    "schemaVersion": 1,
+    "allowlistSHA256": "b5b7a99df8df396d6a845dc7a5c42ed0580ef2adf5c55ac024da3e7ebebef0fa",
+    "fileCount": 196,
+    "totalUncompressedBytes": 12861244,
+    "previousArchivesSHA256": {
+      "01": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091",
+      "02": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a",
+      "03": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e",
+      "04": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9",
+      "05": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571",
+      "06": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da",
+      "07": "b36dd12db0892e89f8d8c1f2672462d9212a71f016076b9beeca0a51a22c6529",
+      "08": "8997676469921003a6e4a112e3c120317382cc562cc5150f3646d4869b524a10",
+      "09": "7da96637ba2b134a309905cb97e908427408125c3d7bf13704503eabd7e4f688",
+      "10": "ad796f1d76199ad8dd613bbb1f36d4ed05cc2178483d4e1dd23375f506de31f7",
+      "11": "7ef4c58f54f264df70b1b1ddd0e42baa108a16d1a0862e9c5a14e5666bf23108",
+      "12": "e1f44ecd97238f68a6f3e9a3929230059082ae1fdaf69f13d24aa6feb7d64269",
+      "13": "ed487a3e47a7a5ef31c9b21ec72dd3580c157bd25835bc517e26382c3c325810"
+    },
+    "noInferenceBuildScorerOrPublication": true
+  },
+  "limits": [
+    "DEV and diagnostic evidence only; no heldout output, source freeze or readiness.",
+    "Composite app behavior and source recovery are separate from raw model accuracy.",
+    "54 diagnostic observations include declared repeated controls and do not represent 54 independent cases.",
+    "The global compact candidate is rejected for a new Qwen3.5 French grounding failure.",
+    "Qwen2.5-only use requires fresh production tests and complete quality comparisons.",
+    "Public sanitized derivatives are individually labelled and bound to original local digests; they are not byte-identical originals.",
+    "Qualitative AI reviews use fictional cases; physical iPhone performance remains unmeasured."
+  ]
+}

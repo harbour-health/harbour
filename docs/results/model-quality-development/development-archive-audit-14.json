@@ -1,0 +1,101 @@
+{
+  "formatVersion": 1,
+  "auditedUTC": "2026-10-13T09:16:44.270064+00:00",
+  "auditor": "Codex /root/merged_review; independent of the parent ZIP builder",
+  "status": "BYTE_INTEGRITY_PASS_WITH_EXPLICIT_ORIGINAL_NARRATIVE_CAVEAT_AND_REQUIRED_CORRECTION",
+  "archive": {
+    "path": "docs/results/model-quality-development/development-evidence-14.zip",
+    "bytes": 1698443,
+    "sha256": "41710bf12bf2b1854fb7ec16114c2bbc1b76c7104b350db114b9bd89d89c2796"
+  },
+  "summary": {
+    "path": "docs/results/model-quality-development/summary-14.json",
+    "bytes": 2687,
+    "sha256": "0939fe6c907be56b4aa95a70d45a5472ca91685e132049a209618188e2e537e8"
+  },
+  "manifestSHA256": "52c8b24b192d54726f95d210cae7fe5e875d645a8751fb2f758a76142bbb09bd",
+  "memberCount": 197,
+  "evidenceFiles": 196,
+  "allowlistedFiles": 194,
+  "CRCAllPass": true,
+  "allManifestPathsHashesBytesEqualRetainedFiles": true,
+  "sourceMemberSetExact": true,
+  "uncompressedEvidenceBytes": 12861244,
+  "allMembersUnder8MiB": true,
+  "totalUnder64MiB": true,
+  "completedDEV": {
+    "rows": 291,
+    "primaryRows": 267,
+    "timingRows": 24,
+    "models": 3,
+    "requiredReviews": 127,
+    "manualPending": 0,
+    "rawReviewReportHashesMatch": true,
+    "primarySemanticCountsFromExistingReport": {
+      "qwen35": 82,
+      "small": 61,
+      "balanced": 76
+    }
+  },
+  "historicalBaseline": {
+    "rows": 267,
+    "requiredReviews": 150,
+    "exactRecordedCalibrationChanges": 6,
+    "unchangedReviews": 144,
+    "derivedSemanticCounts": {
+      "qwen35": 57,
+      "small": 47,
+      "balanced": 57
+    },
+    "automaticOutcomeTimingValuesUnchanged": true,
+    "strictSixOnlyObjectInvarianceFailureRetained": true,
+    "originalBlockedGateUnchanged": true,
+    "incompleteB43B38ReportsAreHistoricalExcludedReferences": true
+  },
+  "interruptedAttempt01": {
+    "retainedRows": 16,
+    "complete": false,
+    "noQualityVerdict": true
+  },
+  "compactDiagnostic": {
+    "streams": 9,
+    "observations": 54,
+    "uniqueCasesPerModel": 14,
+    "repeatedControlsPerModel": 4,
+    "rawPromptReviewHashesMatch": true,
+    "generationErrors": 0,
+    "recordedProsePasses": 49,
+    "recordedProseFailures": 5,
+    "globallyRejectedSharedPolicy": true,
+    "familyOnlyNextStepIsPlanOnly": true
+  },
+  "originalDecisionNarrativeCaveat": {
+    "originalDecisionSHA256": "c993d6d36eb3bd174b25fe549c564ea6f39e4908a2b1881d7875bff1694eb7a5",
+    "originalNarrativeCorrect": false,
+    "error": "Original reason misassigned the false empty-medicine claim to sky. Both false empty-medicine claim and symptom prerequisite occur in the one unnamed-tablet case; sky is a capability refusal already graded fail.",
+    "requiredExternalCorrection": {
+      "path": "docs/results/model-quality-development/archive14-decision-correction.json",
+      "bytes": 4647,
+      "sha256": "1382d58a54b24426ec80f286030e0bdb4478128e091e966ec697f4b9a010e566"
+    },
+    "newRegressionCaseCountCorrectedTo": 1,
+    "newGradesOrGateChanges": false,
+    "originalZIPAndRawReviewBytesPreserved": true
+  },
+  "privacy": {
+    "privateConnectedHostAddressAbsentFromAllZIPAndNestedSourceMembers": true,
+    "fiveNewPublicDerivativesExactToDeclaredSanitization": true,
+    "existingPublicLaunchDerivativeMatchesOriginalFieldsApartFromAddress": true,
+    "exactPrivateOriginalsRemainLocalUnchanged": true
+  },
+  "priorArchives01Through13HashesUnchanged": true,
+  "excludedSource11CodeUnfinishedProofWeightsSDKAppBinariesFullXCResults": true,
+  "heldoutOutputsReadOrGenerated": false,
+  "scorerCompilerTestsOrModelRerun": false,
+  "newQualitativeReviewOrProductionReadinessClaim": false,
+  "limits": [
+    "This audit verifies stored artifact integrity, row association and declared cohort boundaries; it does not regrade prose or attest remote hardware/binaries.",
+    "Archive14 original decision contains a narrative error; publication must accompany the separately bound correction rather than overwrite the ZIP.",
+    "The 54 diagnostic observations include repeated controls and cannot be treated as independent cases. Family-only code/tests are outside this archive."
+  ]
+}

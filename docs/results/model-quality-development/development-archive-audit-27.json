@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "auditedUTC": "2026-10-13T16:21:20.581292+00:00",
+  "result": "PASS_ARCHIVE_OF_SOURCE14_COMPLETE_REVIEWED_DEV_AND_RETAINED_REGRESSIONS",
+  "sourceCommit": "ba6f96e87dd2bd5623487a212c13f8e3315f77b5",
+  "archiveSHA256": "d58ca437f61740a9662a2c7fb4897c34187f44aaa6061b515c3d9eb01ab52ec9",
+  "members": 187,
+  "evidenceFiles": 186,
+  "CRCAndAllMemberOriginalLocalBytesVerified": true,
+  "rows": 291,
+  "primaryRows": 267,
+  "timingRows": 24,
+  "requiredReviews": 128,
+  "pending": 0,
+  "semanticPasses": {
+    "qwen35": 82,
+    "small": 64,
+    "balanced": 76
+  },
+  "rawRoutingRegressions": 6,
+  "overallRegressions": 3,
+  "protectedDEVMetricConditionOnly": "PASS",
+  "rawAndApplicationAttributionRetained": true,
+  "rootNotesOnlySchemaDisclosed": true,
+  "fourApplicationOnlyRejectedActionFixesVerified": true,
+  "onlyNonexecutedHelperPrivacyDerivatives": 1,
+  "priorArchives01Through26Unchanged": true,
+  "noNewProbeAppSupplementalHeldoutFreezeReadyCredit": true,
+  "helperSHA256": "d2e35d980ea2266208ba8af7b02dc4c42313a3992fd39e353bd77a3261de8e42"
+}

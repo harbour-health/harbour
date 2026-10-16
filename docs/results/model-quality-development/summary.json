@@ -1,0 +1,170 @@
+{
+  "formatVersion": 1,
+  "evidenceArchive": "development-evidence-01.zip",
+  "archiveSHA256": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091",
+  "bytes": 1891797,
+  "files": 245,
+  "historicalRuns": [
+    "baseline-dev-267-01",
+    "final-dev-267-01",
+    "final-dev-267-02",
+    "dev-merged-targeted81-01",
+    "grammar-source-153-01",
+    "dev-final-pre-politeness-01",
+    "dev-final-111-targeted-01",
+    "dev-final-111-visit-contrast-01",
+    "dev-final-122-source-grammar-01",
+    "grammar-source-118-01",
+    "grammar-source-122-01",
+    "grammar-source-124-01",
+    "grammar-source-127-01"
+  ],
+  "releaseStatus": "blocked",
+  "heldoutUnopened": true,
+  "limits": [
+    "Synthetic DEV regression evidence with Codex AI qualitative review",
+    "Focused merged run Standard-only versus three-effort baseline mismatch retained",
+    "CPU timing not physical iPhone Metal performance",
+    "Older snapshots and incomplete runs are explicitly retained"
+  ],
+  "reviewedComparisons": {
+    "baseline-dev-267-01": {
+      "scoreFile": "baseline-dev-267-01/score-dev-reviewed.json",
+      "scoreSHA256": "902d9e645f1fe84733e7ff9587dacd3b3d188626b29e63491543d4f05e26921e",
+      "matrix": {
+        "scope": "dev",
+        "models": [
+          "small",
+          "balanced",
+          "qwen35"
+        ],
+        "efforts": [
+          "quick",
+          "standard",
+          "extended"
+        ],
+        "repeats": 1,
+        "expectedRuns": 267,
+        "observedRuns": 267,
+        "missingCount": 0
+      },
+      "releaseGate": {
+        "status": "blocked",
+        "reasons": [
+          "paired_baseline_not_supplied",
+          "partial_suite_scope",
+          "qwen35_critical_guard_or_schedule_failure",
+          "qwen35_grounding_or_extraction_checks_not_passed",
+          "qwen35_raw_routing_below_95_percent",
+          "qwen35_required_manual_review_failed"
+        ],
+        "meaning": "Fixture regression and review gate only. CPU evaluation does not establish device speed, clinical safety, or end-to-end iOS behavior."
+      },
+      "modelCounts": {
+        "qwen35": {
+          "observed": 89,
+          "semanticPasses": 57
+        },
+        "small": {
+          "observed": 89,
+          "semanticPasses": 44
+        },
+        "balanced": {
+          "observed": 89,
+          "semanticPasses": 54
+        }
+      }
+    },
+    "final-dev-267-02": {
+      "scoreFile": "final-dev-267-02/score-v9-dev-complete-reviewed.json",
+      "scoreSHA256": "98c21250b631e00f29898e70b98e570648460a2bcb49d03ed5b58ce1388ea02c",
+      "matrix": {
+        "scope": "dev",
+        "models": [
+          "small",
+          "balanced",
+          "qwen35"
+        ],
+        "efforts": [
+          "quick",
+          "standard",
+          "extended"
+        ],
+        "repeats": 1,
+        "expectedRuns": 267,
+        "observedRuns": 267,
+        "missingCount": 0
+      },
+      "releaseGate": {
+        "status": "blocked",
+        "reasons": [
+          "french_or_grounding_regression",
+          "partial_suite_scope",
+          "qwen35_critical_guard_or_schedule_failure",
+          "qwen35_grounding_or_extraction_checks_not_passed",
+          "qwen35_required_manual_review_failed"
+        ],
+        "meaning": "Fixture regression and review gate only. CPU evaluation does not establish device speed, clinical safety, or end-to-end iOS behavior."
+      },
+      "modelCounts": {
+        "qwen35": {
+          "observed": 89,
+          "semanticPasses": 81
+        },
+        "small": {
+          "observed": 89,
+          "semanticPasses": 51
+        },
+        "balanced": {
+          "observed": 89,
+          "semanticPasses": 65
+        }
+      }
+    },
+    "dev-merged-targeted81-01": {
+      "scoreFile": "dev-merged-targeted81-01/score-focused-complete-reviewed.json",
+      "scoreSHA256": "30f0996110b8a5f75d215c574bea8d5baed837c74825438bddb613ab48343c33",
+      "matrix": {
+        "scope": "dev",
+        "models": [
+          "qwen35",
+          "small",
+          "balanced"
+        ],
+        "efforts": [
+          "standard"
+        ],
+        "repeats": 1,
+        "expectedRuns": 177,
+        "observedRuns": 81,
+        "missingCount": 96
+      },
+      "releaseGate": {
+        "status": "blocked",
+        "reasons": [
+          "french_or_grounding_regression",
+          "incomplete_or_mismatched_matrix",
+          "paired_execution_identity_mismatch",
+          "partial_suite_scope",
+          "qwen35_grounding_or_extraction_checks_not_passed",
+          "qwen35_required_manual_review_failed"
+        ],
+        "meaning": "Fixture regression and review gate only. CPU evaluation does not establish device speed, clinical safety, or end-to-end iOS behavior."
+      },
+      "modelCounts": {
+        "qwen35": {
+          "observed": 27,
+          "semanticPasses": 25
+        },
+        "small": {
+          "observed": 27,
+          "semanticPasses": 16
+        },
+        "balanced": {
+          "observed": 27,
+          "semanticPasses": 17
+        }
+      }
+    }
+  }
+}

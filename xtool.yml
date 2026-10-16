@@ -1,0 +1,11 @@
+version: 1
+bundleID: com.matteopolak.harbour
+product: Harbour
+infoPath: build/xtool/Info.plist
+entitlementsPath: Harbour/Harbour.entitlements
+iconPath: Harbour/Assets.xcassets/AppIcon.appiconset/AppIcon.png
+resources:
+  - Harbour/en.lproj
+  - Harbour/fr-CA.lproj
+  - Harbour/PrivacyInfo.xcprivacy
+skipLSP: true

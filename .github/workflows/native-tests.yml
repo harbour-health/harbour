@@ -1,0 +1,85 @@
+name: Native tests
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  simulator:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Record environment
+        run: |
+          mkdir -p build/ci
+          xcodebuild -version | tee build/ci/xcode.txt
+          swift --version | tee build/ci/swift.txt
+          system_profiler SPHardwareDataType > build/ci/runner-hardware.txt
+          xcrun simctl list devices available --json > build/ci/simulators.json
+          echo "XCODE_BUILD=$(xcodebuild -version | tail -n 1 | tr ' ' '-')" >> "$GITHUB_ENV"
+      - name: Core tests
+        run: swift test --package-path HarbourCore
+      - name: Restore pinned native runtime
+        id: runtime-cache
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: HarbourRuntime/Vendor/llama.xcframework
+          key: llama-b10549-${{ runner.os }}-${{ runner.arch }}-${{ env.XCODE_BUILD }}-${{ hashFiles('scripts/prepare-runtime.sh', 'scripts/runtime-privacy.py') }}
+      - name: Prepare native runtime
+        run: bash scripts/prepare-runtime.sh
+      - name: Cache verified native runtime
+        if: steps.runtime-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: HarbourRuntime/Vendor/llama.xcframework
+          key: ${{ steps.runtime-cache.outputs.cache-primary-key }}
+      - name: Runtime tests
+        run: swift test --package-path HarbourRuntime
+      - name: Select simulator
+        run: |
+          simulator_id=$(python3 -c 'import json; d=json.load(open("build/ci/simulators.json")); print(next(x["udid"] for values in d["devices"].values() for x in values if x["isAvailable"] and x["name"].startswith("iPhone")))')
+          echo "SIMULATOR_ID=$simulator_id" >> "$GITHUB_ENV"
+          xcrun simctl boot "$simulator_id"
+          xcrun simctl bootstatus "$simulator_id" -b
+      - name: Build app and tests
+        run: |
+          set -o pipefail
+          xcodebuild -project Harbour.xcodeproj -scheme Harbour -destination "platform=iOS Simulator,id=$SIMULATOR_ID" -derivedDataPath build/ci/DerivedData build-for-testing | tee build/ci/build.log
+      - name: Preload verified evaluation models
+        run: |
+          python3 scripts/cache-eval-models.py --directory build/ci/models --models small qwen35 --verification-markers
+          xcrun simctl install "$SIMULATOR_ID" build/ci/DerivedData/Build/Products/Debug-iphonesimulator/Harbour.app
+          app_data=$(xcrun simctl get_app_container "$SIMULATOR_ID" com.matteopolak.harbour data)
+          mkdir -p "$app_data/Library/Application Support/Models"
+          cp build/ci/models/*.gguf build/ci/models/*.verified "$app_data/Library/Application Support/Models/"
+      - name: Hosted and focused UI tests
+        run: |
+          set -o pipefail
+          xcodebuild -project Harbour.xcodeproj -scheme Harbour -destination "platform=iOS Simulator,id=$SIMULATOR_ID" -derivedDataPath build/ci/DerivedData -resultBundlePath build/ci/NativeTests.xcresult -parallel-testing-enabled NO -maximum-concurrent-test-simulator-destinations 1 test-without-building \
+            -only-testing:HarbourTests \
+            -only-testing:HarbourUITests/HarbourUITests/testQwen35FallbackSelectionAndPersistenceWithoutDownloading \
+            -only-testing:HarbourUITests/HarbourUITests/testLocalModelChat \
+            -only-testing:HarbourUITests/HarbourUITests/testChatHintPreservesDraftAndModelSelector \
+            -only-testing:HarbourUITests/HarbourVisitTests/testAppointmentOnlySummaryDoesNotShowEmptyWarning \
+            -only-testing:HarbourUITests/HarbourQwen35EvaluationTests | tee build/ci/test.log
+      - name: Collect simulator runtime diagnostics
+        if: always() && env.SIMULATOR_ID != ''
+        run: xcrun simctl spawn "$SIMULATOR_ID" log show --last 45m --style compact --predicate 'process == "Harbour"' > build/ci/simulator-runtime.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: native-test-results
+          path: |
+            build/ci/*.txt
+            build/ci/*.json
+            build/ci/*.log
+            build/ci/*.xcresult
+          retention-days: 14

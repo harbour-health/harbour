@@ -1,0 +1,36 @@
+{
+  "formatVersion": 1,
+  "kind": "optional-model-source-question-scope-amendment",
+  "createdUTC": "2026-10-13",
+  "authorization": "The user requested proper Small/Balanced evaluations and English/French failures fixed before PR readiness. The parent reviewed and approved this bounded source-question recovery after preserving the original failed supplemental outputs. Automatic stays the default and Qwen3.5 2B remains optional.",
+  "testedFailingSourceCommit": "7a4181264af9c5443811796aacd6d64c13a76339",
+  "scope": {
+    "stage": "After full model routing, on reply or a nonreply action that fails source validation. Never before routing or instead of its complete21-tool alternatives.",
+    "positiveOuterRequest": "One current affirmative English save/add/remember/keep/store or finite French enregistre/sauvegarde/ajoute/garde/note request, with optional existing courtesy/modal prefixes, a literal singular question target, optional finite doctor/appointment recipient, a colon and one nonempty interrogative payload.",
+    "boundaries": "Whole-source match; at most1000 characters, one line, no control characters or model-control token opener. Question payload starts with a finite EN/FR interrogative prefix and ends in ?. It contains one sentence, except numeric decimal/time punctuation. Optional complete balanced double/curly-double/guillemet/single/curly-single quotation is preserved. Unbalanced or partially consumed quotes are rejected.",
+    "excludedOuterForms": ["negated save request", "historical/report wrapper", "hypothetical request", "third-party request", "quoted whole request", "unknown recipient", "two outer requests or appended action", "empty/noninterrogative/multisentence payload", "multiline/oversized/control-token input"],
+    "quotedPayloadMeaning": "Medical negation, conditions and other people's circumstances inside the question are content to retain, not instructions to execute. Coordinated unquoted direct write tails are rejected. No patient fact, treatment decision or question answer is inferred.",
+    "sourcePreservation": "Matching may fold case/diacritics, but validation receives the entire original source unchanged. The draft is exactly CareRules.question(from:original), preserving the existing extraction contract, question punctuation, quotes and Unicode. Unsupported courtesy/modal extraction prefixes stay visible rather than being guessed away.",
+    "validation": "WriteRequestValidation.permits(original,tool:saveQuestion) and production validation of the recovered saveQuestion decision must both pass. A source-closed question cannot authorize a model-selected captureSymptom draft; rejection enables the same post-routing question recovery. Existing typed-reading rejection is preserved.",
+    "action": "Open the existing question review draft with reason question_draft. No save, reminder date, medical answer or new advice is produced. Existing manual Review/Save remains required.",
+    "priority": "A nonreply already valid for the actual source retains current priority. No model-answer keyword classifier, new routing restriction or recursive reply validation is introduced.",
+    "attribution": "Raw routing and any generated/suppressed prose stay separately recorded. Recovery earns only application disposition credit, never raw routing, model prose, clinical-answer or independent recall credit."
+  },
+  "preservedTriggeringFailure": {
+    "phase": "supplemental-120-source7a41812-01",
+    "model": "small",
+    "caseID": "routing.30",
+    "streamSHA256": "a674d8d8f7c4a3579be8026e7485a8fb57a7e815b62cd26faea2855b1762d87c",
+    "rowSHA256": "2c3bdc78692f9950432d5c9ecaf235fd05b86d1f127ea4e27117bc6ebaa17479",
+    "rawOutputSHA256": "827a7f7a2bb23255176c326dea626fded3c848df48e7d113290c034c5c7f2ae3",
+    "replyOutputSHA256": "b51c5250fbef82ddd09044a56fcbb23ac55c80cc1c614330d3cbdfc5d1c5cfeb",
+    "input": "Save question for my doctor: Should I repeat my blood test?",
+    "rawTool": "create_reminder",
+    "invalidAction": true,
+    "generatedReply": "For your blood test, I recommend you repeat it.",
+    "failureRetained": "Wrong raw intent, missed source-question draft and an unsupported unrequested recommendation. New application recovery cannot relabel this preserved output or change its grade."
+  },
+  "unchanged": ["Automatic default", "Qwen3.5 full prose policy", "Qwen2.5 compact prose policy", "all21 routing alternatives and prompts", "fixtures/scorer/thresholds", "original default-promotion gate", "snapshot/history/model/token budgets/sampler", "existing draft manual confirmation", "original raw rows/reviews/failed runs"],
+  "requiredBeforeReadiness": ["independent source review", "fresh source-bound correctness/build and complete native app checks", "fresh complete DEV and supplemental generation/reviews", "paired held-out evaluation after source freeze"],
+  "currentStatus": "Working-source implementation awaiting fresh QA; no source freeze, held-out generation/read, promotion, final gate or Ready approval. Original source11 results remain immutable."
+}

@@ -1,0 +1,29 @@
+{
+  "formatVersion": 1,
+  "sourceSHA256": "af2a4d725c7f346be9957873d140338687688a30f62c91ae855c6baaf5b9d3a9",
+  "sourcePath": "HarbourRuntime/Sources/ModelEval/main.swift",
+  "origin": "Exact baseline-v5 evaluator used for completed baseline-dev-267-01",
+  "baselineCoreCommit": "e8028afd7a27e3238835de818408b3c11d8747a5",
+  "compatibility": "Preserves original action associated values and three-field visit summaries; expected metadata is not read by the evaluator.",
+  "availableTools": [
+    "reply",
+    "capture_symptom",
+    "add_medication",
+    "remove_medication",
+    "list_medications",
+    "check_interactions",
+    "log_reading",
+    "list_readings",
+    "import_readings",
+    "export_data",
+    "copy_note",
+    "clear_data",
+    "create_reminder",
+    "list_reminders",
+    "schedule_medication",
+    "log_dose",
+    "search_timeline",
+    "scan_medication",
+    "save_question"
+  ]
+}

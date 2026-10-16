@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "archiveVersion": "18",
+  "createdUTC": "2026-10-13T11:17:43.642828+00:00",
+  "archive": "development-evidence-18.zip",
+  "archiveSHA256": "34655ede26a5241d2a37b94f37085c9f966888bcb632a3c988b016022fe84a6a",
+  "archiveBytes": 931212,
+  "manifestSHA256": "7beaf3e4ef37abcab8396a9014684cbfd65291be07e7d164b0c9370ff0cfa19a",
+  "evidenceFiles": 83,
+  "memberCount": 84,
+  "allowlistSHA256": "8d2c23a5ce5649e505b75bc8b516d78572bb51ae0dfe1288bb6343852d1095a1",
+  "preflightSHA256": "a470ee6a0392bc88644279896a5c4c2ab07a883ca056b31eb6ab29bafd3df471",
+  "builderSHA256": "4c6f10785cc7e7f506443afe39fc150057469f3bd6d5ecf1fd55f948502f3bb7",
+  "scope": "Completed source11 supplemental120, all120 AI source/action reviews and original failures. Four unsafe accepted action/reply observations and three unsafe accepted summaries remain source blockers. No source12 implementation, validation, release/promotion waiver, final freeze or held-out evidence.",
+  "reviewCounts": {
+    "qwen35": {
+      "requiredReviews": 40,
+      "reviewed": 40,
+      "manualPass": 33,
+      "rawModelBehaviorPass": 33,
+      "unsafeAcceptedActions": 0,
+      "unsafeAcceptedSummaries": 0,
+      "incompleteRawVisits": 4
+    },
+    "small": {
+      "requiredReviews": 40,
+      "reviewed": 40,
+      "manualPass": 26,
+      "rawModelBehaviorPass": 26,
+      "unsafeAcceptedActions": 2,
+      "unsafeAcceptedSummaries": 3,
+      "incompleteRawVisits": 4
+    },
+    "balanced": {
+      "requiredReviews": 40,
+      "reviewed": 40,
+      "manualPass": 32,
+      "rawModelBehaviorPass": 32,
+      "unsafeAcceptedActions": 2,
+      "unsafeAcceptedSummaries": 0,
+      "incompleteRawVisits": 3
+    }
+  },
+  "releaseEvidence": false,
+  "CRCAndAllMemberHashesVerified": true,
+  "priorArchivesUnchanged": true,
+  "previousArchivesUnchangedSHA256": {
+    "01": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091",
+    "02": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a",
+    "03": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e",
+    "04": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9",
+    "05": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571",
+    "06": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da",
+    "07": "b36dd12db0892e89f8d8c1f2672462d9212a71f016076b9beeca0a51a22c6529",
+    "08": "8997676469921003a6e4a112e3c120317382cc562cc5150f3646d4869b524a10",
+    "09": "7da96637ba2b134a309905cb97e908427408125c3d7bf13704503eabd7e4f688",
+    "10": "ad796f1d76199ad8dd613bbb1f36d4ed05cc2178483d4e1dd23375f506de31f7",
+    "11": "7ef4c58f54f264df70b1b1ddd0e42baa108a16d1a0862e9c5a14e5666bf23108",
+    "12": "e1f44ecd97238f68a6f3e9a3929230059082ae1fdaf69f13d24aa6feb7d64269",
+    "13": "ed487a3e47a7a5ef31c9b21ec72dd3580c157bd25835bc517e26382c3c325810",
+    "14": "41710bf12bf2b1854fb7ec16114c2bbc1b76c7104b350db114b9bd89d89c2796",
+    "15": "ca624ec881a7328f0de79d60f65938887e00e008f15f2af996173cc0377372da",
+    "16": "458aec2324ebc5b6e4ee5ad60e9d3d77ef9377325dc29e409e90d3f024480497",
+    "17": "d6893ec122d0da780a963db896c7cd608f079c95bbd6eaecbd7cfdfa5fca0a9e"
+  },
+  "modelLegacyQualityExitCodes": {
+    "qwen35": 1,
+    "small": 1,
+    "balanced": 1
+  },
+  "wrapperExecutionExitCode": 0,
+  "supplementalRepeats": 1,
+  "primaryRows": 120,
+  "reviewed": 120,
+  "pending": 0
+}

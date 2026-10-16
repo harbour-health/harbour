@@ -1,0 +1,674 @@
+Building for production...
+[Pre-planning 1 / 124]
+[Planning deferred tasks]
+[Starting]
+[28 / 48] HarbourCore
+[30 / 49] HarbourCore
+[37 / 50] HarbourCore-product
+[37 / 50] HarbourCoreTests-product
+/evalcache/application-fixes-8e9def558ccd/HarbourCore/Tests/HarbourCoreTests/ChatRequestLifecycleTests.swift:183:18: [1;33mwarning: [1;39mweak variable 'releasedOwner' was never mutated; consider changing to 'let' constant[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/variable-never-mutated\VariableNeverMutated]8;;\::]8;;https://docs.swift.org/compiler/documentation/diagnostics/weak-mutability\WeakMutability]8;;\]
+[0;36m181 |[0;0m     func testTaskOwnershipIsReleasedAfterCancellationDrains() async throws {
+[0;36m182 |[0;0m         var owner: ChatRequestLifecycle? = ChatRequestLifecycle()
+[0;36m183 |[0;0m         weak var releasedOwner = owner
+    [0;36m|[0;0m                  `- [1;33mwarning: [1;39mweak variable 'releasedOwner' was never mutated; consider changing to 'let' constant[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/variable-never-mutated\VariableNeverMutated]8;;\::]8;;https://docs.swift.org/compiler/documentation/diagnostics/weak-mutability\WeakMutability]8;;\]
+[0;36m184 |[0;0m         let work = RequestBarrier(), drained = RequestSignal()
+[0;36m185 |[0;0m         owner?.start(operation: { _ in await work.wait() }, onCompletion: { _ in drained.signal() })
+
+[#VariableNeverMutated]: <https://docs.swift.org/compiler/documentation/diagnostics/variable-never-mutated>
+[#WeakMutability]: <https://docs.swift.org/compiler/documentation/diagnostics/weak-mutability>
+[39 / 51] HarbourCoreTests-product
+[44 / 51] HarbourCoreTests-product
+[48 / 53] HarbourCoreTests-test-runner
+[53 / 53] HarbourCoreTests-test-runner
+Build complete! (58.77 secs)
+Test Suite 'All tests' started at 2026-10-16 04:47:13.357
+Test Suite 'Release-linux-x86_64.xctest' started at 2026-10-16 04:47:13.358
+Test Suite 'AppointmentAndRemovalIntentTests' started at 2026-10-16 04:47:13.358
+Test Case 'AppointmentAndRemovalIntentTests.testAppointmentDocumentationWithOfDeAndQualifiedTargetsCannotCreateAppointments' started at 2026-10-16 04:47:13.358
+Test Case 'AppointmentAndRemovalIntentTests.testAppointmentDocumentationWithOfDeAndQualifiedTargetsCannotCreateAppointments' passed (0.004 seconds)
+Test Case 'AppointmentAndRemovalIntentTests.testDirectRemovalStillRequiresOneSavedMedicineAndKeepsCourtesy' started at 2026-10-16 04:47:13.361
+Test Case 'AppointmentAndRemovalIntentTests.testDirectRemovalStillRequiresOneSavedMedicineAndKeepsCourtesy' passed (0.121 seconds)
+Test Case 'AppointmentAndRemovalIntentTests.testGenuineAppointmentRequestsKeepTheirOwnTrailingNotes' started at 2026-10-16 04:47:13.482
+Test Case 'AppointmentAndRemovalIntentTests.testGenuineAppointmentRequestsKeepTheirOwnTrailingNotes' passed (0.114 seconds)
+Test Case 'AppointmentAndRemovalIntentTests.testPoliteAppointmentCommandsPrepareDraftsButAreNotTranscriptFacts' started at 2026-10-16 04:47:13.596
+Test Case 'AppointmentAndRemovalIntentTests.testPoliteAppointmentCommandsPrepareDraftsButAreNotTranscriptFacts' passed (0.171 seconds)
+Test Case 'AppointmentAndRemovalIntentTests.testPoliteWrapperCannotAuthorizeSpeculationDocumentationOrAdditionalActions' started at 2026-10-16 04:47:13.767
+Test Case 'AppointmentAndRemovalIntentTests.testPoliteWrapperCannotAuthorizeSpeculationDocumentationOrAdditionalActions' passed (0.312 seconds)
+Test Case 'AppointmentAndRemovalIntentTests.testRemovalCannotDiscardAnApprovalConditionWhereverItAppears' started at 2026-10-16 04:47:14.079
+Test Case 'AppointmentAndRemovalIntentTests.testRemovalCannotDiscardAnApprovalConditionWhereverItAppears' passed (0.001 seconds)
+Test Suite 'AppointmentAndRemovalIntentTests' passed at 2026-10-16 04:47:14.080
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.722 (0.722) seconds
+Test Suite 'AppointmentTests' started at 2026-10-16 04:47:14.080
+Test Case 'AppointmentTests.testAbbreviationsKeepFullQuoteAndFrenchHedgesAreRejected' started at 2026-10-16 04:47:14.080
+Test Case 'AppointmentTests.testAbbreviationsKeepFullQuoteAndFrenchHedgesAreRejected' passed (0.001 seconds)
+Test Case 'AppointmentTests.testAgentAppointmentArgumentsAreGroundedInOriginalInput' started at 2026-10-16 04:47:14.081
+Test Case 'AppointmentTests.testAgentAppointmentArgumentsAreGroundedInOriginalInput' passed (0.034 seconds)
+Test Case 'AppointmentTests.testAppointmentSourceRevalidatedBeforeSaving' started at 2026-10-16 04:47:14.115
+Test Case 'AppointmentTests.testAppointmentSourceRevalidatedBeforeSaving' passed (0.003 seconds)
+Test Case 'AppointmentTests.testGroundedAppointmentDraftDoesNotInventTimeOrLocation' started at 2026-10-16 04:47:14.118
+Test Case 'AppointmentTests.testGroundedAppointmentDraftDoesNotInventTimeOrLocation' passed (0.003 seconds)
+Test Case 'AppointmentTests.testInvalidAppointmentAndDuplicateIDsRejectedOnImport' started at 2026-10-16 04:47:14.121
+Test Case 'AppointmentTests.testInvalidAppointmentAndDuplicateIDsRejectedOnImport' passed (0.0 seconds)
+Test Case 'AppointmentTests.testLegacyRecordsDecodeAndCanonicalExportRoundTrip' started at 2026-10-16 04:47:14.121
+Test Case 'AppointmentTests.testLegacyRecordsDecodeAndCanonicalExportRoundTrip' passed (0.0 seconds)
+Test Case 'AppointmentTests.testLiteralAndRelativeAppointmentDatesUseReferenceDate' started at 2026-10-16 04:47:14.121
+Test Case 'AppointmentTests.testLiteralAndRelativeAppointmentDatesUseReferenceDate' passed (0.0 seconds)
+Test Case 'AppointmentTests.testNegatedHypotheticalAndInventedAppointmentsRejected' started at 2026-10-16 04:47:14.122
+Test Case 'AppointmentTests.testNegatedHypotheticalAndInventedAppointmentsRejected' passed (0.006 seconds)
+Test Case 'AppointmentTests.testTranscriptFixturesAndRejectedHallucinations' started at 2026-10-16 04:47:14.128
+Test Case 'AppointmentTests.testTranscriptFixturesAndRejectedHallucinations' passed (0.003 seconds)
+Test Suite 'AppointmentTests' passed at 2026-10-16 04:47:14.131
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.051 (0.051) seconds
+Test Suite 'CareTests' started at 2026-10-16 04:47:14.131
+Test Case 'CareTests.testAddingMedicationKeepsExplicitDoseText' started at 2026-10-16 04:47:14.131
+Test Case 'CareTests.testAddingMedicationKeepsExplicitDoseText' passed (0.023 seconds)
+Test Case 'CareTests.testAgentNewToolsRemainGrounded' started at 2026-10-16 04:47:14.154
+Test Case 'CareTests.testAgentNewToolsRemainGrounded' passed (0.159 seconds)
+Test Case 'CareTests.testAllToolsRemainAvailableWhileMissingSourceFactsAreRejected' started at 2026-10-16 04:47:14.312
+Test Case 'CareTests.testAllToolsRemainAvailableWhileMissingSourceFactsAreRejected' passed (0.031 seconds)
+Test Case 'CareTests.testDSTHasOneSlotPerDose' started at 2026-10-16 04:47:14.343
+Test Case 'CareTests.testDSTHasOneSlotPerDose' passed (1.681 seconds)
+Test Case 'CareTests.testDoseMustMatchSavedTimeAndCannotBeFuture' started at 2026-10-16 04:47:16.024
+Test Case 'CareTests.testDoseMustMatchSavedTimeAndCannotBeFuture' passed (0.0 seconds)
+Test Case 'CareTests.testFiniteDoseDatesFailWithoutIntegerTrap' started at 2026-10-16 04:47:16.024
+Test Case 'CareTests.testFiniteDoseDatesFailWithoutIntegerTrap' passed (0.0 seconds)
+Test Case 'CareTests.testFrequencyIsStructuredAndNeverCreatesClockSlots' started at 2026-10-16 04:47:16.025
+Test Case 'CareTests.testFrequencyIsStructuredAndNeverCreatesClockSlots' passed (0.014 seconds)
+Test Case 'CareTests.testHistoricalDoseSurvivesChangedScheduleRemovalAndTimeZone' started at 2026-10-16 04:47:16.039
+Test Case 'CareTests.testHistoricalDoseSurvivesChangedScheduleRemovalAndTimeZone' passed (0.002 seconds)
+Test Case 'CareTests.testImportRejectsDuplicateIDsAcrossAllRecordCollections' started at 2026-10-16 04:47:16.041
+Test Case 'CareTests.testImportRejectsDuplicateIDsAcrossAllRecordCollections' passed (0.0 seconds)
+Test Case 'CareTests.testImportRejectsMedicineIDCollisionWithoutOverwrite' started at 2026-10-16 04:47:16.041
+Test Case 'CareTests.testImportRejectsMedicineIDCollisionWithoutOverwrite' passed (0.0 seconds)
+Test Case 'CareTests.testImportRejectsUnsourcedOrMalformedHistoricalDose' started at 2026-10-16 04:47:16.041
+Test Case 'CareTests.testImportRejectsUnsourcedOrMalformedHistoricalDose' passed (0.0 seconds)
+Test Case 'CareTests.testImportRejectsVisitCollisionWithStaleReminderSource' started at 2026-10-16 04:47:16.042
+Test Case 'CareTests.testImportRejectsVisitCollisionWithStaleReminderSource' passed (0.0 seconds)
+Test Case 'CareTests.testImportRemapsMedicineCareAndPreservesSavedInstructions' started at 2026-10-16 04:47:16.042
+Test Case 'CareTests.testImportRemapsMedicineCareAndPreservesSavedInstructions' passed (0.0 seconds)
+Test Case 'CareTests.testLegacySchedulesDecodeWithoutFrequency' started at 2026-10-16 04:47:16.042
+Test Case 'CareTests.testLegacySchedulesDecodeWithoutFrequency' passed (0.0 seconds)
+Test Case 'CareTests.testNormalizedVisitQuoteAndRemovedFollowUpValidation' started at 2026-10-16 04:47:16.042
+Test Case 'CareTests.testNormalizedVisitQuoteAndRemovedFollowUpValidation' passed (0.0 seconds)
+Test Case 'CareTests.testNotificationIDsAreStableAndCancellationOmitsCompletedSnooze' started at 2026-10-16 04:47:16.042
+Test Case 'CareTests.testNotificationIDsAreStableAndCancellationOmitsCompletedSnooze' passed (0.0 seconds)
+Test Case 'CareTests.testNotificationsExcludePastCompletedOrphanAndCapAt60' started at 2026-10-16 04:47:16.043
+Test Case 'CareTests.testNotificationsExcludePastCompletedOrphanAndCapAt60' passed (0.001 seconds)
+Test Case 'CareTests.testOCRCatalogDoesNotInventIngredients' started at 2026-10-16 04:47:16.044
+Test Case 'CareTests.testOCRCatalogDoesNotInventIngredients' passed (0.051 seconds)
+Test Case 'CareTests.testQuestionAndBackupRoundTrip' started at 2026-10-16 04:47:16.094
+Test Case 'CareTests.testQuestionAndBackupRoundTrip' passed (0.001 seconds)
+Test Case 'CareTests.testReAddingSavedMedicationPreservesOrReplacesOnlySourcedInstructions' started at 2026-10-16 04:47:16.095
+Test Case 'CareTests.testReAddingSavedMedicationPreservesOrReplacesOnlySourcedInstructions' passed (0.049 seconds)
+Test Case 'CareTests.testScheduleRejectsDuplicatesOutOfRangeAndMissingMedicine' started at 2026-10-16 04:47:16.144
+Test Case 'CareTests.testScheduleRejectsDuplicatesOutOfRangeAndMissingMedicine' passed (0.0 seconds)
+Test Case 'CareTests.testTimelineSearchesVisitTranscriptAndRealDates' started at 2026-10-16 04:47:16.144
+Test Case 'CareTests.testTimelineSearchesVisitTranscriptAndRealDates' passed (0.0 seconds)
+Test Case 'CareTests.testTimesAreLiteralNotPrescribed' started at 2026-10-16 04:47:16.144
+Test Case 'CareTests.testTimesAreLiteralNotPrescribed' passed (0.0 seconds)
+Test Case 'CareTests.testVisitSourceMustStillExist' started at 2026-10-16 04:47:16.145
+Test Case 'CareTests.testVisitSourceMustStillExist' passed (0.0 seconds)
+Test Case 'CareTests.testVoicePartialFinalDedupAndCancellation' started at 2026-10-16 04:47:16.145
+Test Case 'CareTests.testVoicePartialFinalDedupAndCancellation' passed (0.0 seconds)
+Test Suite 'CareTests' passed at 2026-10-16 04:47:16.145
+	 Executed 25 tests, with 0 failures (0 unexpected) in 2.014 (2.014) seconds
+Test Suite 'ChatReplyTests' started at 2026-10-16 04:47:16.145
+Test Case 'ChatReplyTests.testBothPromptsKeepOnlyTheLastSixBoundedMessages' started at 2026-10-16 04:47:16.145
+Test Case 'ChatReplyTests.testBothPromptsKeepOnlyTheLastSixBoundedMessages' passed (0.001 seconds)
+Test Case 'ChatReplyTests.testBothPromptsPreserveTheWholeCurrentRequestAndSanitizeRecords' started at 2026-10-16 04:47:16.146
+Test Case 'ChatReplyTests.testBothPromptsPreserveTheWholeCurrentRequestAndSanitizeRecords' passed (0.001 seconds)
+Test Case 'ChatReplyTests.testConversationPromptUsesNormalChatWithSafeHistory' started at 2026-10-16 04:47:16.148
+Test Case 'ChatReplyTests.testConversationPromptUsesNormalChatWithSafeHistory' passed (0.0 seconds)
+Test Case 'ChatReplyTests.testConversationSnapshotCountsAndTruncationDistinguishOmittedFacts' started at 2026-10-16 04:47:16.148
+Test Case 'ChatReplyTests.testConversationSnapshotCountsAndTruncationDistinguishOmittedFacts' passed (0.002 seconds)
+Test Case 'ChatReplyTests.testConversationSnapshotIncludesOnlyStoredInstructionsAndEscapesRecordControlTokens' started at 2026-10-16 04:47:16.150
+Test Case 'ChatReplyTests.testConversationSnapshotIncludesOnlyStoredInstructionsAndEscapesRecordControlTokens' passed (0.0 seconds)
+Test Case 'ChatReplyTests.testConversationSnapshotLocalizesHeadingsWithoutTranslatingOrChangingStoredData' started at 2026-10-16 04:47:16.150
+Test Case 'ChatReplyTests.testConversationSnapshotLocalizesHeadingsWithoutTranslatingOrChangingStoredData' passed (0.006 seconds)
+Test Case 'ChatReplyTests.testEmptyRepliesAreRejected' started at 2026-10-16 04:47:16.156
+Test Case 'ChatReplyTests.testEmptyRepliesAreRejected' passed (0.0 seconds)
+Test Case 'ChatReplyTests.testGeneratedEnglishAndFrenchRepliesAreDisplayed' started at 2026-10-16 04:47:16.156
+Test Case 'ChatReplyTests.testGeneratedEnglishAndFrenchRepliesAreDisplayed' passed (0.067 seconds)
+Test Case 'ChatReplyTests.testMalformedAndSurroundedRouterOutputIsRejected' started at 2026-10-16 04:47:16.224
+Test Case 'ChatReplyTests.testMalformedAndSurroundedRouterOutputIsRejected' passed (0.1 seconds)
+Test Case 'ChatReplyTests.testNegatedMutationCannotProceedEvenWhenModelSelectsIt' started at 2026-10-16 04:47:16.324
+Test Case 'ChatReplyTests.testNegatedMutationCannotProceedEvenWhenModelSelectsIt' passed (0.001 seconds)
+Test Case 'ChatReplyTests.testReadAndSymptomToolsRemainAvailableWhileMedicineAddsRequireRequests' started at 2026-10-16 04:47:16.325
+Test Case 'ChatReplyTests.testReadAndSymptomToolsRemainAvailableWhileMedicineAddsRequireRequests' passed (0.041 seconds)
+Test Case 'ChatReplyTests.testReadingMeasurementKeepsEachSourceTypeValueAndUnitTogetherInBothLanguages' started at 2026-10-16 04:47:16.365
+Test Case 'ChatReplyTests.testReadingMeasurementKeepsEachSourceTypeValueAndUnitTogetherInBothLanguages' passed (0.102 seconds)
+Test Case 'ChatReplyTests.testReadingMeasurementPreservesEscapedSourceAndExplicitTruncationWithoutInventingValues' started at 2026-10-16 04:47:16.467
+Test Case 'ChatReplyTests.testReadingMeasurementPreservesEscapedSourceAndExplicitTruncationWithoutInventingValues' passed (0.001 seconds)
+Test Case 'ChatReplyTests.testRecentHistoryAndCurrentUserContentAreEscaped' started at 2026-10-16 04:47:16.468
+Test Case 'ChatReplyTests.testRecentHistoryAndCurrentUserContentAreEscaped' passed (0.001 seconds)
+Test Case 'ChatReplyTests.testReplyCannotInjectModelControlTokens' started at 2026-10-16 04:47:16.469
+Test Case 'ChatReplyTests.testReplyCannotInjectModelControlTokens' passed (0.0 seconds)
+Test Case 'ChatReplyTests.testReplyLengthBoundPreservesLongResponses' started at 2026-10-16 04:47:16.469
+Test Case 'ChatReplyTests.testReplyLengthBoundPreservesLongResponses' passed (0.019 seconds)
+Test Case 'ChatReplyTests.testReplyPreservesQuotesNewlinesAndUnicode' started at 2026-10-16 04:47:16.489
+Test Case 'ChatReplyTests.testReplyPreservesQuotesNewlinesAndUnicode' passed (0.117 seconds)
+Test Case 'ChatReplyTests.testTopicReplyPathRetainsSourceSymptomDraftsAndAllToolAlternatives' started at 2026-10-16 04:47:16.605
+Test Case 'ChatReplyTests.testTopicReplyPathRetainsSourceSymptomDraftsAndAllToolAlternatives' passed (0.252 seconds)
+Test Suite 'ChatReplyTests' passed at 2026-10-16 04:47:16.857
+	 Executed 18 tests, with 0 failures (0 unexpected) in 0.712 (0.712) seconds
+Test Suite 'ChatRequestLifecycleTests' started at 2026-10-16 04:47:16.857
+Test Case 'ChatRequestLifecycleTests.testCancellationBlocksNewAdmissionAndEffectsUntilOutstandingWorkReturns' started at 2026-10-16 04:47:16.857
+Test Case 'ChatRequestLifecycleTests.testCancellationBlocksNewAdmissionAndEffectsUntilOutstandingWorkReturns' passed (0.0 seconds)
+Test Case 'ChatRequestLifecycleTests.testCancelledTokenCannotApplyAfterNewChatAndNextRequest' started at 2026-10-16 04:47:16.858
+Test Case 'ChatRequestLifecycleTests.testCancelledTokenCannotApplyAfterNewChatAndNextRequest' passed (0.0 seconds)
+Test Case 'ChatRequestLifecycleTests.testCompletionCanStartNextRequestWithoutOldCleanupClearingIt' started at 2026-10-16 04:47:16.858
+Test Case 'ChatRequestLifecycleTests.testCompletionCanStartNextRequestWithoutOldCleanupClearingIt' passed (0.0 seconds)
+Test Case 'ChatRequestLifecycleTests.testHandledGenerationErrorStillDrainsAndAllowsNextRequest' started at 2026-10-16 04:47:16.858
+Test Case 'ChatRequestLifecycleTests.testHandledGenerationErrorStillDrainsAndAllowsNextRequest' passed (0.0 seconds)
+Test Case 'ChatRequestLifecycleTests.testNormalCompletionPublishesReadinessAndAllowsRetry' started at 2026-10-16 04:47:16.858
+Test Case 'ChatRequestLifecycleTests.testNormalCompletionPublishesReadinessAndAllowsRetry' passed (0.0 seconds)
+Test Case 'ChatRequestLifecycleTests.testRepeatedStopBackgroundAndDisappearCancellationIsIdempotent' started at 2026-10-16 04:47:16.859
+Test Case 'ChatRequestLifecycleTests.testRepeatedStopBackgroundAndDisappearCancellationIsIdempotent' passed (0.0 seconds)
+Test Case 'ChatRequestLifecycleTests.testSharedOwnerBlocksReplacementViewAdmissionAndPublishesDrain' started at 2026-10-16 04:47:16.859
+Test Case 'ChatRequestLifecycleTests.testSharedOwnerBlocksReplacementViewAdmissionAndPublishesDrain' passed (0.0 seconds)
+Test Case 'ChatRequestLifecycleTests.testStopBeforeScheduledTaskStartsSkipsStartupButWaitsForTaskCleanup' started at 2026-10-16 04:47:16.859
+Test Case 'ChatRequestLifecycleTests.testStopBeforeScheduledTaskStartsSkipsStartupButWaitsForTaskCleanup' passed (0.0 seconds)
+Test Case 'ChatRequestLifecycleTests.testSynchronousStateObserverCanCancelBeforeStartup' started at 2026-10-16 04:47:16.859
+Test Case 'ChatRequestLifecycleTests.testSynchronousStateObserverCanCancelBeforeStartup' passed (0.0 seconds)
+Test Case 'ChatRequestLifecycleTests.testTaskOwnershipIsReleasedAfterCancellationDrains' started at 2026-10-16 04:47:16.859
+Test Case 'ChatRequestLifecycleTests.testTaskOwnershipIsReleasedAfterCancellationDrains' passed (0.0 seconds)
+Test Suite 'ChatRequestLifecycleTests' passed at 2026-10-16 04:47:16.860
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.002 (0.002) seconds
+Test Suite 'DoseReportRecordingClauseTests' started at 2026-10-16 04:47:16.860
+Test Case 'DoseReportRecordingClauseTests.testCurrentNamedDoseReportsCanRequestRecordingOfThatSameEvent' started at 2026-10-16 04:47:16.860
+Test Case 'DoseReportRecordingClauseTests.testCurrentNamedDoseReportsCanRequestRecordingOfThatSameEvent' passed (0.268 seconds)
+Test Case 'DoseReportRecordingClauseTests.testRecordingPronounsCannotSupplyMissingOrConflictingDoseAuthority' started at 2026-10-16 04:47:17.128
+Test Case 'DoseReportRecordingClauseTests.testRecordingPronounsCannotSupplyMissingOrConflictingDoseAuthority' passed (0.424 seconds)
+Test Suite 'DoseReportRecordingClauseTests' passed at 2026-10-16 04:47:17.552
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.692 (0.692) seconds
+Test Suite 'FrenchInputTests' started at 2026-10-16 04:47:17.552
+Test Case 'FrenchInputTests.testFrenchDoseStatusesRequireOneSavedMedicineAndOneAffirmativeStatus' started at 2026-10-16 04:47:17.552
+Test Case 'FrenchInputTests.testFrenchDoseStatusesRequireOneSavedMedicineAndOneAffirmativeStatus' passed (0.127 seconds)
+Test Case 'FrenchInputTests.testFrenchEmergencyExamplesAndAccentInsensitiveMatching' started at 2026-10-16 04:47:17.679
+Test Case 'FrenchInputTests.testFrenchEmergencyExamplesAndAccentInsensitiveMatching' passed (0.003 seconds)
+Test Case 'FrenchInputTests.testFrenchLocalNegationAndLaterAffirmativeCue' started at 2026-10-16 04:47:17.682
+Test Case 'FrenchInputTests.testFrenchLocalNegationAndLaterAffirmativeCue' passed (0.002 seconds)
+Test Case 'FrenchInputTests.testFrenchReadingListIntentCannotInventAMeasurement' started at 2026-10-16 04:47:17.684
+Test Case 'FrenchInputTests.testFrenchReadingListIntentCannotInventAMeasurement' passed (0.005 seconds)
+Test Case 'FrenchInputTests.testFrenchRequestsKeepAllToolsAndOriginalSearchQuestionText' started at 2026-10-16 04:47:17.689
+Test Case 'FrenchInputTests.testFrenchRequestsKeepAllToolsAndOriginalSearchQuestionText' passed (0.103 seconds)
+Test Case 'FrenchInputTests.testFrenchSourceTextWinsOverGeneratedMedicineAndSymptomArguments' started at 2026-10-16 04:47:17.793
+Test Case 'FrenchInputTests.testFrenchSourceTextWinsOverGeneratedMedicineAndSymptomArguments' passed (0.173 seconds)
+Test Case 'FrenchInputTests.testFrenchTimesAndInstructionsAreLiteral' started at 2026-10-16 04:47:17.966
+Test Case 'FrenchInputTests.testFrenchTimesAndInstructionsAreLiteral' passed (0.038 seconds)
+Test Case 'FrenchInputTests.testFrenchVisitMedicineProposalStaysGroundedThroughConfirmation' started at 2026-10-16 04:47:18.004
+Test Case 'FrenchInputTests.testFrenchVisitMedicineProposalStaysGroundedThroughConfirmation' passed (0.021 seconds)
+Test Case 'FrenchInputTests.testFrenchVisitNegationHypothesesHistoryAndThirdPersonCannotCreateChanges' started at 2026-10-16 04:47:18.025
+Test Case 'FrenchInputTests.testFrenchVisitNegationHypothesesHistoryAndThirdPersonCannotCreateChanges' passed (0.012 seconds)
+Test Case 'FrenchInputTests.testFrenchVisitRejectsInventedInstructionsNamesAndWrongActions' started at 2026-10-16 04:47:18.037
+Test Case 'FrenchInputTests.testFrenchVisitRejectsInventedInstructionsNamesAndWrongActions' passed (0.013 seconds)
+Test Case 'FrenchInputTests.testHistoryAndThirdPersonEmergencyMentionsRetainConditionalGuidance' started at 2026-10-16 04:47:18.050
+Test Case 'FrenchInputTests.testHistoryAndThirdPersonEmergencyMentionsRetainConditionalGuidance' passed (0.001 seconds)
+Test Suite 'FrenchInputTests' passed at 2026-10-16 04:47:18.050
+	 Executed 11 tests, with 0 failures (0 unexpected) in 0.498 (0.498) seconds
+Test Suite 'FrenchRecordsTests' started at 2026-10-16 04:47:18.050
+Test Case 'FrenchRecordsTests.testAliasesRemainBoundedAndSavedFactsTakePrecedence' started at 2026-10-16 04:47:18.050
+Test Case 'FrenchRecordsTests.testAliasesRemainBoundedAndSavedFactsTakePrecedence' passed (0.09 seconds)
+Test Case 'FrenchRecordsTests.testFrenchAliasesResolveToCanonicalFacts' started at 2026-10-16 04:47:18.140
+Test Case 'FrenchRecordsTests.testFrenchAliasesResolveToCanonicalFacts' passed (0.237 seconds)
+Test Case 'FrenchRecordsTests.testFrenchInputKeepsExistingReadingBounds' started at 2026-10-16 04:47:18.377
+Test Case 'FrenchRecordsTests.testFrenchInputKeepsExistingReadingBounds' passed (0.006 seconds)
+Test Case 'FrenchRecordsTests.testFrenchInputsDoNotChangeCodableRawValues' started at 2026-10-16 04:47:18.383
+Test Case 'FrenchRecordsTests.testFrenchInputsDoNotChangeCodableRawValues' passed (0.001 seconds)
+Test Case 'FrenchRecordsTests.testFrenchReadingLabelsAndDecimalComma' started at 2026-10-16 04:47:18.384
+Test Case 'FrenchRecordsTests.testFrenchReadingLabelsAndDecimalComma' passed (0.004 seconds)
+Test Suite 'FrenchRecordsTests' passed at 2026-10-16 04:47:18.388
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.338 (0.338) seconds
+Test Suite 'GroundedReplyTests' started at 2026-10-16 04:47:18.388
+Test Case 'GroundedReplyTests.testCountsUseAllRecordsRatherThanPromptExcerptOrModelProse' started at 2026-10-16 04:47:18.388
+Test Case 'GroundedReplyTests.testCountsUseAllRecordsRatherThanPromptExcerptOrModelProse' passed (0.174 seconds)
+Test Case 'GroundedReplyTests.testDirectionsLookupRejectsAdviceActionsAndUntrustedSourceMarkers' started at 2026-10-16 04:47:18.563
+Test Case 'GroundedReplyTests.testDirectionsLookupRejectsAdviceActionsAndUntrustedSourceMarkers' passed (0.047 seconds)
+Test Case 'GroundedReplyTests.testRecallQuotesOnlyAvailableUserTurnsAndLabelsExcerpts' started at 2026-10-16 04:47:18.610
+Test Case 'GroundedReplyTests.testRecallQuotesOnlyAvailableUserTurnsAndLabelsExcerpts' passed (0.039 seconds)
+Test Case 'GroundedReplyTests.testRetrievalCannotAuthorizeActionsOrAnswerUnsupportedQuestions' started at 2026-10-16 04:47:18.649
+Test Case 'GroundedReplyTests.testRetrievalCannotAuthorizeActionsOrAnswerUnsupportedQuestions' passed (0.001 seconds)
+Test Case 'GroundedReplyTests.testStoredDirectionsStayWithOneMedicineAndAreQuotedAsSource' started at 2026-10-16 04:47:18.650
+Test Case 'GroundedReplyTests.testStoredDirectionsStayWithOneMedicineAndAreQuotedAsSource' passed (0.111 seconds)
+Test Suite 'GroundedReplyTests' passed at 2026-10-16 04:47:18.761
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.373 (0.373) seconds
+Test Suite 'HarbourCoreTests' started at 2026-10-16 04:47:18.761
+Test Case 'HarbourCoreTests.testAmbiguousMedicineAddRequiresClarification' started at 2026-10-16 04:47:18.761
+Test Case 'HarbourCoreTests.testAmbiguousMedicineAddRequiresClarification' passed (0.013 seconds)
+Test Case 'HarbourCoreTests.testClinicalAndValidationFixtures' started at 2026-10-16 04:47:18.774
+Test Case 'HarbourCoreTests.testClinicalAndValidationFixtures' passed (0.076 seconds)
+Test Case 'HarbourCoreTests.testComparisonDoesNotMutateRecords' started at 2026-10-16 04:47:18.850
+Test Case 'HarbourCoreTests.testComparisonDoesNotMutateRecords' passed (0.042 seconds)
+Test Case 'HarbourCoreTests.testEveryListedPairBothOrders' started at 2026-10-16 04:47:18.892
+Test Case 'HarbourCoreTests.testEveryListedPairBothOrders' passed (0.0 seconds)
+Test Case 'HarbourCoreTests.testEveryRoutingFixtureGetsTheFullToolSet' started at 2026-10-16 04:47:18.892
+Test Case 'HarbourCoreTests.testEveryRoutingFixtureGetsTheFullToolSet' passed (0.005 seconds)
+Test Case 'HarbourCoreTests.testEveryToolHasARoutingEvaluation' started at 2026-10-16 04:47:18.897
+Test Case 'HarbourCoreTests.testEveryToolHasARoutingEvaluation' passed (0.0 seconds)
+Test Case 'HarbourCoreTests.testExactNameMatching' started at 2026-10-16 04:47:18.897
+Test Case 'HarbourCoreTests.testExactNameMatching' passed (0.129 seconds)
+Test Case 'HarbourCoreTests.testHintDoesNotRestrictOrExecuteTool' started at 2026-10-16 04:47:19.026
+Test Case 'HarbourCoreTests.testHintDoesNotRestrictOrExecuteTool' passed (0.0 seconds)
+Test Case 'HarbourCoreTests.testKnownAliasWithObjectArgument' started at 2026-10-16 04:47:19.026
+Test Case 'HarbourCoreTests.testKnownAliasWithObjectArgument' passed (0.0 seconds)
+Test Case 'HarbourCoreTests.testMedicineCannotBeInvented' started at 2026-10-16 04:47:19.026
+Test Case 'HarbourCoreTests.testMedicineCannotBeInvented' passed (0.024 seconds)
+Test Case 'HarbourCoreTests.testMissingMeasurementNotSuppliedByModel' started at 2026-10-16 04:47:19.050
+Test Case 'HarbourCoreTests.testMissingMeasurementNotSuppliedByModel' passed (0.001 seconds)
+Test Case 'HarbourCoreTests.testMixedCoverageAndDuplicatePairs' started at 2026-10-16 04:47:19.051
+Test Case 'HarbourCoreTests.testMixedCoverageAndDuplicatePairs' passed (0.0 seconds)
+Test Case 'HarbourCoreTests.testNoteReflectsConfirmedFacts' started at 2026-10-16 04:47:19.051
+Test Case 'HarbourCoreTests.testNoteReflectsConfirmedFacts' passed (0.0 seconds)
+Test Case 'HarbourCoreTests.testPersistenceRoundTrip' started at 2026-10-16 04:47:19.051
+Test Case 'HarbourCoreTests.testPersistenceRoundTrip' passed (0.0 seconds)
+Test Case 'HarbourCoreTests.testReadingUsesOriginalNumber' started at 2026-10-16 04:47:19.052
+Test Case 'HarbourCoreTests.testReadingUsesOriginalNumber' passed (0.001 seconds)
+Test Case 'HarbourCoreTests.testRemovingUnlistedMedicineRejected' started at 2026-10-16 04:47:19.053
+Test Case 'HarbourCoreTests.testRemovingUnlistedMedicineRejected' passed (0.014 seconds)
+Test Case 'HarbourCoreTests.testSymptomUsesOriginalText' started at 2026-10-16 04:47:19.067
+Test Case 'HarbourCoreTests.testSymptomUsesOriginalText' passed (0.017 seconds)
+Test Case 'HarbourCoreTests.testUnrelatedNumberNotCaptured' started at 2026-10-16 04:47:19.084
+Test Case 'HarbourCoreTests.testUnrelatedNumberNotCaptured' passed (0.001 seconds)
+Test Case 'HarbourCoreTests.testUnsupportedActionsFailClosed' started at 2026-10-16 04:47:19.084
+Test Case 'HarbourCoreTests.testUnsupportedActionsFailClosed' passed (0.0 seconds)
+Test Suite 'HarbourCoreTests' passed at 2026-10-16 04:47:19.084
+	 Executed 19 tests, with 0 failures (0 unexpected) in 0.323 (0.323) seconds
+Test Suite 'ModelPromptsTests' started at 2026-10-16 04:47:19.085
+Test Case 'ModelPromptsTests.testConversationContractStatesReadAccessReplyStateAndNegationInBothLanguages' started at 2026-10-16 04:47:19.085
+Test Case 'ModelPromptsTests.testConversationContractStatesReadAccessReplyStateAndNegationInBothLanguages' passed (0.001 seconds)
+Test Case 'ModelPromptsTests.testGeneralFactualRepliesRequestOnlyNecessaryCausalExplanation' started at 2026-10-16 04:47:19.086
+Test Case 'ModelPromptsTests.testGeneralFactualRepliesRequestOnlyNecessaryCausalExplanation' passed (0.001 seconds)
+Test Case 'ModelPromptsTests.testMachineOutputLocalizationDoesNotRequestConversationalProse' started at 2026-10-16 04:47:19.086
+Test Case 'ModelPromptsTests.testMachineOutputLocalizationDoesNotRequestConversationalProse' passed (0.0 seconds)
+Test Case 'ModelPromptsTests.testMissingMedicineNameNeedsClarificationDespiteAProvidedSavedList' started at 2026-10-16 04:47:19.087
+Test Case 'ModelPromptsTests.testMissingMedicineNameNeedsClarificationDespiteAProvidedSavedList' passed (0.091 seconds)
+Test Case 'ModelPromptsTests.testProductionTitleValidationRejectsUnsafeAndUnboundedResults' started at 2026-10-16 04:47:19.178
+Test Case 'ModelPromptsTests.testProductionTitleValidationRejectsUnsafeAndUnboundedResults' passed (0.0 seconds)
+Test Case 'ModelPromptsTests.testPurposeLocalizationChangesOnlyTheSystemMessage' started at 2026-10-16 04:47:19.178
+Test Case 'ModelPromptsTests.testPurposeLocalizationChangesOnlyTheSystemMessage' passed (0.001 seconds)
+Test Case 'ModelPromptsTests.testTitleBuilderBoundsAndEscapesSourceMessage' started at 2026-10-16 04:47:19.179
+Test Case 'ModelPromptsTests.testTitleBuilderBoundsAndEscapesSourceMessage' passed (0.0 seconds)
+Test Case 'ModelPromptsTests.testVisitContractDocumentsEvidenceAndCopiesMedicineQuoteFirst' started at 2026-10-16 04:47:19.179
+Test Case 'ModelPromptsTests.testVisitContractDocumentsEvidenceAndCopiesMedicineQuoteFirst' passed (0.007 seconds)
+Test Case 'ModelPromptsTests.testVisitGenerationUsesSourceSpellingBeforeSavedIdentityLookup' started at 2026-10-16 04:47:19.186
+Test Case 'ModelPromptsTests.testVisitGenerationUsesSourceSpellingBeforeSavedIdentityLookup' passed (0.005 seconds)
+Test Case 'ModelPromptsTests.testVisitLocalizationAppendsTheLocaleContractAndPreservesSourcePayloadBytes' started at 2026-10-16 04:47:19.191
+Test Case 'ModelPromptsTests.testVisitLocalizationAppendsTheLocaleContractAndPreservesSourcePayloadBytes' passed (0.001 seconds)
+Test Suite 'ModelPromptsTests' passed at 2026-10-16 04:47:19.192
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.107 (0.107) seconds
+Test Suite 'ReadingParserTests' started at 2026-10-16 04:47:19.192
+Test Case 'ReadingParserTests.testSentencePunctuationDoesNotRelaxNumericBoundsOrUnits' started at 2026-10-16 04:47:19.192
+Test Case 'ReadingParserTests.testSentencePunctuationDoesNotRelaxNumericBoundsOrUnits' passed (0.007 seconds)
+Test Case 'ReadingParserTests.testTypedMeasurementsAllowSentencePunctuationAndFrenchDecimals' started at 2026-10-16 04:47:19.198
+Test Case 'ReadingParserTests.testTypedMeasurementsAllowSentencePunctuationAndFrenchDecimals' passed (0.005 seconds)
+Test Suite 'ReadingParserTests' passed at 2026-10-16 04:47:19.203
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.011 (0.011) seconds
+Test Suite 'ReplyFallbackTests' started at 2026-10-16 04:47:19.203
+Test Case 'ReplyFallbackTests.testAffirmativeAppointmentNoteRequestsWithoutContentReceiveLocalizedClarificationOnly' started at 2026-10-16 04:47:19.203
+Test Case 'ReplyFallbackTests.testAffirmativeAppointmentNoteRequestsWithoutContentReceiveLocalizedClarificationOnly' passed (0.822 seconds)
+Test Case 'ReplyFallbackTests.testAppointmentNoteContentClarificationRejectsQuestionsReportsQuotesAndSuppliedOrMixedContent' started at 2026-10-16 04:47:20.025
+Test Case 'ReplyFallbackTests.testAppointmentNoteContentClarificationRejectsQuestionsReportsQuotesAndSuppliedOrMixedContent' passed (0.544 seconds)
+Test Case 'ReplyFallbackTests.testCorrelatedPreservationClausesBindTheirPronounsToExplicitRecordTargets' started at 2026-10-16 04:47:20.568
+Test Case 'ReplyFallbackTests.testCorrelatedPreservationClausesBindTheirPronounsToExplicitRecordTargets' passed (0.503 seconds)
+Test Case 'ReplyFallbackTests.testCurrentFirstPersonSymptomReportsAndRequestsOpenExactSourceDrafts' started at 2026-10-16 04:47:21.071
+Test Case 'ReplyFallbackTests.testCurrentFirstPersonSymptomReportsAndRequestsOpenExactSourceDrafts' passed (1.145 seconds)
+Test Case 'ReplyFallbackTests.testDirectNegativeAppointmentRequestsReceiveLocalizedApplicationAcknowledgement' started at 2026-10-16 04:47:22.217
+Test Case 'ReplyFallbackTests.testDirectNegativeAppointmentRequestsReceiveLocalizedApplicationAcknowledgement' passed (1.146 seconds)
+Test Case 'ReplyFallbackTests.testDirectPreservationRequestsReceiveLocalizedAcknowledgementWithoutMutation' started at 2026-10-16 04:47:23.363
+Test Case 'ReplyFallbackTests.testDirectPreservationRequestsReceiveLocalizedAcknowledgementWithoutMutation' passed (0.102 seconds)
+Test Case 'ReplyFallbackTests.testExplicitCombinationQuestionsUseOnlyNamedSourceMedicinesIncludingFrenchAliases' started at 2026-10-16 04:47:23.465
+Test Case 'ReplyFallbackTests.testExplicitCombinationQuestionsUseOnlyNamedSourceMedicinesIncludingFrenchAliases' passed (0.631 seconds)
+Test Case 'ReplyFallbackTests.testExplicitSavedCustomProductsRemainUnresolved' started at 2026-10-16 04:47:24.096
+Test Case 'ReplyFallbackTests.testExplicitSavedCustomProductsRemainUnresolved' passed (0.048 seconds)
+Test Case 'ReplyFallbackTests.testExplicitSavedQuestionsOpenExactSourceDraftsAfterRouting' started at 2026-10-16 04:47:24.144
+Test Case 'ReplyFallbackTests.testExplicitSavedQuestionsOpenExactSourceDraftsAfterRouting' passed (0.58 seconds)
+Test Case 'ReplyFallbackTests.testFallbackDoesNotAcceptEmptyMalformedOrOversizedModelReplies' started at 2026-10-16 04:47:24.723
+Test Case 'ReplyFallbackTests.testFallbackDoesNotAcceptEmptyMalformedOrOversizedModelReplies' passed (0.101 seconds)
+Test Case 'ReplyFallbackTests.testFallbackDoesNotChangeModelAlternativesOrNonReplyValidation' started at 2026-10-16 04:47:24.824
+Test Case 'ReplyFallbackTests.testFallbackDoesNotChangeModelAlternativesOrNonReplyValidation' passed (0.302 seconds)
+Test Case 'ReplyFallbackTests.testIncompleteCompanionRequiresNamesWithoutInferringSavedMedicines' started at 2026-10-16 04:47:25.126
+Test Case 'ReplyFallbackTests.testIncompleteCompanionRequiresNamesWithoutInferringSavedMedicines' passed (1.041 seconds)
+Test Case 'ReplyFallbackTests.testNegativeAppointmentAcknowledgementDoesNotAbsorbOtherSourceTasksOrQualifiers' started at 2026-10-16 04:47:26.167
+Test Case 'ReplyFallbackTests.testNegativeAppointmentAcknowledgementDoesNotAbsorbOtherSourceTasksOrQualifiers' passed (0.664 seconds)
+Test Case 'ReplyFallbackTests.testOrganizationalReminderDaysStayLiteralAndCannotAbsorbAnotherAction' started at 2026-10-16 04:47:26.831
+Test Case 'ReplyFallbackTests.testOrganizationalReminderDaysStayLiteralAndCannotAbsorbAnotherAction' passed (0.272 seconds)
+Test Case 'ReplyFallbackTests.testOrganizationalReminderRecoveryPreservesTheWholeSourceAndDraftReview' started at 2026-10-16 04:47:27.103
+Test Case 'ReplyFallbackTests.testOrganizationalReminderRecoveryPreservesTheWholeSourceAndDraftReview' passed (0.119 seconds)
+Test Case 'ReplyFallbackTests.testPhoneReminderSynonymsAndConsultationQuestionHeadersPreserveSourceDrafts' started at 2026-10-16 04:47:27.222
+Test Case 'ReplyFallbackTests.testPhoneReminderSynonymsAndConsultationQuestionHeadersPreserveSourceDrafts' passed (0.209 seconds)
+Test Case 'ReplyFallbackTests.testPreservationCorrelationRejectsUnboundPronounsQualificationsAndMixedActionAuthority' started at 2026-10-16 04:47:27.431
+Test Case 'ReplyFallbackTests.testPreservationCorrelationRejectsUnboundPronounsQualificationsAndMixedActionAuthority' passed (0.447 seconds)
+Test Case 'ReplyFallbackTests.testPreservationFallbackExcludesQuestionsConditionsReportsQuotedPayloadsAndOtherActions' started at 2026-10-16 04:47:27.878
+Test Case 'ReplyFallbackTests.testPreservationFallbackExcludesQuestionsConditionsReportsQuotedPayloadsAndOtherActions' passed (0.224 seconds)
+Test Case 'ReplyFallbackTests.testQuestionRecoveryRejectsUnsupportedOuterFormsAndTails' started at 2026-10-16 04:47:28.103
+Test Case 'ReplyFallbackTests.testQuestionRecoveryRejectsUnsupportedOuterFormsAndTails' passed (0.364 seconds)
+Test Case 'ReplyFallbackTests.testQuotedHistoryAndOrdinaryRecordQuestionsDoNotBecomeComparisons' started at 2026-10-16 04:47:28.467
+Test Case 'ReplyFallbackTests.testQuotedHistoryAndOrdinaryRecordQuestionsDoNotBecomeComparisons' passed (0.158 seconds)
+Test Case 'ReplyFallbackTests.testReadingDraftFallbackRejectsIncompleteUnsafeAndCompoundSourceWithoutBypassingReplyFormatChecks' started at 2026-10-16 04:47:28.625
+Test Case 'ReplyFallbackTests.testReadingDraftFallbackRejectsIncompleteUnsafeAndCompoundSourceWithoutBypassingReplyFormatChecks' passed (1.708 seconds)
+Test Case 'ReplyFallbackTests.testRejectedActionClarificationKeepsSourceRecoveryPriorityAndOrdinaryReplyContracts' started at 2026-10-16 04:47:30.334
+Test Case 'ReplyFallbackTests.testRejectedActionClarificationKeepsSourceRecoveryPriorityAndOrdinaryReplyContracts' passed (0.642 seconds)
+Test Case 'ReplyFallbackTests.testRejectedNonreplyActionsGetApplicationClarificationWithoutSourceOrModelFacts' started at 2026-10-16 04:47:30.976
+Test Case 'ReplyFallbackTests.testRejectedNonreplyActionsGetApplicationClarificationWithoutSourceOrModelFacts' passed (0.842 seconds)
+Test Case 'ReplyFallbackTests.testReminderRecoveryRejectsClinicalTasksAndUnsupportedOuterForms' started at 2026-10-16 04:47:31.818
+Test Case 'ReplyFallbackTests.testReminderRecoveryRejectsClinicalTasksAndUnsupportedOuterForms' passed (0.435 seconds)
+Test Case 'ReplyFallbackTests.testSingleExplicitReadingRequestsOpenSourceBoundDraftsInsteadOfModelReceipts' started at 2026-10-16 04:47:32.253
+Test Case 'ReplyFallbackTests.testSingleExplicitReadingRequestsOpenSourceBoundDraftsInsteadOfModelReceipts' passed (0.44 seconds)
+Test Case 'ReplyFallbackTests.testSymptomReplyDispositionExcludesNonCurrentQuestionsAndCompoundSource' started at 2026-10-16 04:47:32.693
+Test Case 'ReplyFallbackTests.testSymptomReplyDispositionExcludesNonCurrentQuestionsAndCompoundSource' passed (1.757 seconds)
+Test Case 'ReplyFallbackTests.testUnlistedPairRemainsUnassessedInsteadOfApprovingItsSafety' started at 2026-10-16 04:47:34.451
+Test Case 'ReplyFallbackTests.testUnlistedPairRemainsUnassessedInsteadOfApprovingItsSafety' passed (0.041 seconds)
+Test Case 'ReplyFallbackTests.testValidationSuppressesArbitraryInjectedCombinationApprovalAfterFormatChecks' started at 2026-10-16 04:47:34.491
+Test Case 'ReplyFallbackTests.testValidationSuppressesArbitraryInjectedCombinationApprovalAfterFormatChecks' passed (0.071 seconds)
+Test Suite 'ReplyFallbackTests' passed at 2026-10-16 04:47:34.562
+	 Executed 28 tests, with 0 failures (0 unexpected) in 15.359 (15.359) seconds
+Test Suite 'RoutingPromptProfileTests' started at 2026-10-16 04:47:34.562
+Test Case 'RoutingPromptProfileTests.testBothProfilesKeepLastMessageHistoryLimitsAndUntrustedContextBoundaries' started at 2026-10-16 04:47:34.562
+Test Case 'RoutingPromptProfileTests.testBothProfilesKeepLastMessageHistoryLimitsAndUntrustedContextBoundaries' passed (0.003 seconds)
+Test Case 'RoutingPromptProfileTests.testFixedProfilesPreserveEveryRoutingAlternativeAndCurrentValidation' started at 2026-10-16 04:47:34.565
+Test Case 'RoutingPromptProfileTests.testFixedProfilesPreserveEveryRoutingAlternativeAndCurrentValidation' passed (0.031 seconds)
+Test Suite 'RoutingPromptProfileTests' passed at 2026-10-16 04:47:34.596
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.033 (0.033) seconds
+Test Suite 'SpeechVoiceSelectionTests' started at 2026-10-16 04:47:34.596
+Test Case 'SpeechVoiceSelectionTests.testCanadianVoiceWinsQualityTieAndOrderingIsStable' started at 2026-10-16 04:47:34.596
+Test Case 'SpeechVoiceSelectionTests.testCanadianVoiceWinsQualityTieAndOrderingIsStable' passed (0.0 seconds)
+Test Case 'SpeechVoiceSelectionTests.testExplicitChoiceIsRespectedAndRemovedVoiceFallsBackWithinLanguage' started at 2026-10-16 04:47:34.596
+Test Case 'SpeechVoiceSelectionTests.testExplicitChoiceIsRespectedAndRemovedVoiceFallsBackWithinLanguage' passed (0.1 seconds)
+Test Case 'SpeechVoiceSelectionTests.testPremiumSameLanguageBeatsCompactCanadianVoice' started at 2026-10-16 04:47:34.696
+Test Case 'SpeechVoiceSelectionTests.testPremiumSameLanguageBeatsCompactCanadianVoice' passed (0.0 seconds)
+Test Case 'SpeechVoiceSelectionTests.testSpeedDefaultsAndInvalidSavedValuesAreBounded' started at 2026-10-16 04:47:34.696
+Test Case 'SpeechVoiceSelectionTests.testSpeedDefaultsAndInvalidSavedValuesAreBounded' passed (0.1 seconds)
+Test Suite 'SpeechVoiceSelectionTests' passed at 2026-10-16 04:47:34.796
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.201 (0.201) seconds
+Test Suite 'TimelineQueryTests' started at 2026-10-16 04:47:34.796
+Test Case 'TimelineQueryTests.testQuotedSearchContentAndOrdinaryWordPhrasesAreNotRewritten' started at 2026-10-16 04:47:34.796
+Test Case 'TimelineQueryTests.testQuotedSearchContentAndOrdinaryWordPhrasesAreNotRewritten' passed (0.001 seconds)
+Test Case 'TimelineQueryTests.testSearchKeepsLeadingInternalDecimalAndQuotedLiteralPunctuation' started at 2026-10-16 04:47:34.797
+Test Case 'TimelineQueryTests.testSearchKeepsLeadingInternalDecimalAndQuotedLiteralPunctuation' passed (0.002 seconds)
+Test Case 'TimelineQueryTests.testSearchSeparatesMetalinguisticLabelsFromTheirLiteralTarget' started at 2026-10-16 04:47:34.799
+Test Case 'TimelineQueryTests.testSearchSeparatesMetalinguisticLabelsFromTheirLiteralTarget' passed (0.001 seconds)
+Test Case 'TimelineQueryTests.testSentencePunctuationDoesNotPreventEnglishOrFrenchHistoryMatches' started at 2026-10-16 04:47:34.800
+Test Case 'TimelineQueryTests.testSentencePunctuationDoesNotPreventEnglishOrFrenchHistoryMatches' passed (0.001 seconds)
+Test Suite 'TimelineQueryTests' passed at 2026-10-16 04:47:34.801
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.004 (0.004) seconds
+Test Suite 'TypedReadingConnectorTests' started at 2026-10-16 04:47:34.801
+Test Case 'TypedReadingConnectorTests.testConnectorDoesNotAuthorizeQuotedConditionalOrCompoundMeasurements' started at 2026-10-16 04:47:34.801
+Test Case 'TypedReadingConnectorTests.testConnectorDoesNotAuthorizeQuotedConditionalOrCompoundMeasurements' passed (0.132 seconds)
+Test Case 'TypedReadingConnectorTests.testExplicitTypedMeasurementConnectorsCannotBecomeSymptomDrafts' started at 2026-10-16 04:47:34.933
+Test Case 'TypedReadingConnectorTests.testExplicitTypedMeasurementConnectorsCannotBecomeSymptomDrafts' passed (0.298 seconds)
+Test Suite 'TypedReadingConnectorTests' passed at 2026-10-16 04:47:35.231
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.43 (0.43) seconds
+Test Suite 'VisitEvaluationComparisonTests' started at 2026-10-16 04:47:35.231
+Test Case 'VisitEvaluationComparisonTests.testOptionalSentencePeriodComparisonKeepsTheOriginalVerdictAndSourceGrounding' started at 2026-10-16 04:47:35.231
+Test Case 'VisitEvaluationComparisonTests.testOptionalSentencePeriodComparisonKeepsTheOriginalVerdictAndSourceGrounding' passed (0.108 seconds)
+Test Case 'VisitEvaluationComparisonTests.testPeriodEquivalencePreservesOtherPunctuationWordingAndStructuredFields' started at 2026-10-16 04:47:35.339
+Test Case 'VisitEvaluationComparisonTests.testPeriodEquivalencePreservesOtherPunctuationWordingAndStructuredFields' passed (0.071 seconds)
+Test Suite 'VisitEvaluationComparisonTests' passed at 2026-10-16 04:47:35.409
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.178 (0.178) seconds
+Test Suite 'VisitExtractionPromptTests' started at 2026-10-16 04:47:35.409
+Test Case 'VisitExtractionPromptTests.testMedicineFirstOutputKeepsIndependentChangesAndFollowUpSourceInBothLanguages' started at 2026-10-16 04:47:35.409
+Test Case 'VisitExtractionPromptTests.testMedicineFirstOutputKeepsIndependentChangesAndFollowUpSourceInBothLanguages' passed (0.073 seconds)
+Test Case 'VisitExtractionPromptTests.testMedicineFirstShapeCannotBypassQualifiedSourceOrStoredDirectionRevalidation' started at 2026-10-16 04:47:35.483
+Test Case 'VisitExtractionPromptTests.testMedicineFirstShapeCannotBypassQualifiedSourceOrStoredDirectionRevalidation' passed (0.023 seconds)
+Test Suite 'VisitExtractionPromptTests' passed at 2026-10-16 04:47:35.506
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.097 (0.097) seconds
+Test Suite 'VisitExtractionTests' started at 2026-10-16 04:47:35.506
+Test Case 'VisitExtractionTests.testClassificationAccountsForEveryUnitWithoutChoosingClinicalValues' started at 2026-10-16 04:47:35.506
+Test Case 'VisitExtractionTests.testClassificationAccountsForEveryUnitWithoutChoosingClinicalValues' passed (0.107 seconds)
+Test Case 'VisitExtractionTests.testExtractionReadsSourceIndependentlyOfClassifierCategoryGuesses' started at 2026-10-16 04:47:35.614
+Test Case 'VisitExtractionTests.testExtractionReadsSourceIndependentlyOfClassifierCategoryGuesses' passed (0.001 seconds)
+Test Case 'VisitExtractionTests.testFailuresAndChangedModelRetainEvidenceAndAbortAcceptance' started at 2026-10-16 04:47:35.615
+Test Case 'VisitExtractionTests.testFailuresAndChangedModelRetainEvidenceAndAbortAcceptance' passed (0.002 seconds)
+Test Case 'VisitExtractionTests.testFullHistoricalAndNegativeContextSurvivesChunkExtraction' started at 2026-10-16 04:47:35.616
+Test Case 'VisitExtractionTests.testFullHistoricalAndNegativeContextSurvivesChunkExtraction' passed (0.026 seconds)
+Test Case 'VisitExtractionTests.testModelNoneAndDeclinedUnitNeverForceAClinicalProposal' started at 2026-10-16 04:47:35.642
+Test Case 'VisitExtractionTests.testModelNoneAndDeclinedUnitNeverForceAClinicalProposal' passed (0.048 seconds)
+Test Case 'VisitExtractionTests.testStagesRetainModelDecisionsPromptsAndFullValidatedChangesInBothLanguages' started at 2026-10-16 04:47:35.690
+Test Case 'VisitExtractionTests.testStagesRetainModelDecisionsPromptsAndFullValidatedChangesInBothLanguages' passed (0.168 seconds)
+Test Case 'VisitExtractionTests.testUnrelatedUnitOutputIsNotMergedAndContextBoundsFailClosed' started at 2026-10-16 04:47:35.858
+Test Case 'VisitExtractionTests.testUnrelatedUnitOutputIsNotMergedAndContextBoundsFailClosed' passed (0.085 seconds)
+Test Suite 'VisitExtractionTests' passed at 2026-10-16 04:47:35.943
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.437 (0.437) seconds
+Test Suite 'VisitHistoryGroundingTests' started at 2026-10-16 04:47:35.943
+Test Case 'VisitHistoryGroundingTests.testCurrentContinuedDirectionsCanReferToWhenTreatmentBegan' started at 2026-10-16 04:47:35.943
+Test Case 'VisitHistoryGroundingTests.testCurrentContinuedDirectionsCanReferToWhenTreatmentBegan' passed (0.24 seconds)
+Test Case 'VisitHistoryGroundingTests.testDuplicateHistoricalDirectiveDoesNotHideAValidCurrentSection' started at 2026-10-16 04:47:36.183
+Test Case 'VisitHistoryGroundingTests.testDuplicateHistoricalDirectiveDoesNotHideAValidCurrentSection' passed (0.087 seconds)
+Test Case 'VisitHistoryGroundingTests.testExplicitHistoricalHeadersScopeFollowingInstructionsUntilCurrentPlan' started at 2026-10-16 04:47:36.271
+Test Case 'VisitHistoryGroundingTests.testExplicitHistoricalHeadersScopeFollowingInstructionsUntilCurrentPlan' passed (0.022 seconds)
+Test Case 'VisitHistoryGroundingTests.testPastReportsInBothLanguagesCannotCreateOrApplyMedicineChanges' started at 2026-10-16 04:47:36.292
+Test Case 'VisitHistoryGroundingTests.testPastReportsInBothLanguagesCannotCreateOrApplyMedicineChanges' passed (0.099 seconds)
+Test Case 'VisitHistoryGroundingTests.testPastSymptomsAndCurrentQuotedPrescriptionsRemainEligible' started at 2026-10-16 04:47:36.391
+Test Case 'VisitHistoryGroundingTests.testPastSymptomsAndCurrentQuotedPrescriptionsRemainEligible' passed (0.282 seconds)
+Test Case 'VisitHistoryGroundingTests.testShortenedQuotesCannotDiscardPastReportingContext' started at 2026-10-16 04:47:36.673
+Test Case 'VisitHistoryGroundingTests.testShortenedQuotesCannotDiscardPastReportingContext' passed (0.03 seconds)
+Test Suite 'VisitHistoryGroundingTests' passed at 2026-10-16 04:47:36.703
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.76 (0.76) seconds
+Test Suite 'VisitInstructionReplacementTests' started at 2026-10-16 04:47:36.703
+Test Case 'VisitInstructionReplacementTests.testExplicitInstructionObjectsUpdateOnlyTheirSavedMedicineWithCompleteDirections' started at 2026-10-16 04:47:36.703
+Test Case 'VisitInstructionReplacementTests.testExplicitInstructionObjectsUpdateOnlyTheirSavedMedicineWithCompleteDirections' passed (0.216 seconds)
+Test Case 'VisitInstructionReplacementTests.testInstructionReplacementCannotLoseSourceAuthorityOrBorrowOtherActionDirections' started at 2026-10-16 04:47:36.919
+Test Case 'VisitInstructionReplacementTests.testInstructionReplacementCannotLoseSourceAuthorityOrBorrowOtherActionDirections' passed (0.087 seconds)
+Test Suite 'VisitInstructionReplacementTests' passed at 2026-10-16 04:47:37.006
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.303 (0.303) seconds
+Test Suite 'VisitMinimumGroundingTests' started at 2026-10-16 04:47:37.006
+Test Case 'VisitMinimumGroundingTests.testAccentedOuterVerbsPreserveOriginalUnicodeSourceAndApostrophes' started at 2026-10-16 04:47:37.006
+Test Case 'VisitMinimumGroundingTests.testAccentedOuterVerbsPreserveOriginalUnicodeSourceAndApostrophes' passed (0.462 seconds)
+Test Case 'VisitMinimumGroundingTests.testCopiedFieldsDoNotMakeChangedDirectionsOrCanonicalizedNamesValid' started at 2026-10-16 04:47:37.468
+Test Case 'VisitMinimumGroundingTests.testCopiedFieldsDoNotMakeChangedDirectionsOrCanonicalizedNamesValid' passed (0.061 seconds)
+Test Case 'VisitMinimumGroundingTests.testDirectDoseUpdateRequiresSavedIdentityAndConsistentLiteralSchedule' started at 2026-10-16 04:47:37.529
+Test Case 'VisitMinimumGroundingTests.testDirectDoseUpdateRequiresSavedIdentityAndConsistentLiteralSchedule' passed (0.318 seconds)
+Test Case 'VisitMinimumGroundingTests.testKnownDirectStartRequiresOneOnlyAfterSourceParseAndScheduleValidation' started at 2026-10-16 04:47:37.847
+Test Case 'VisitMinimumGroundingTests.testKnownDirectStartRequiresOneOnlyAfterSourceParseAndScheduleValidation' passed (0.233 seconds)
+Test Case 'VisitMinimumGroundingTests.testKnownDirectStopRequiresSavedIdentityAndStillValidatesAtApplying' started at 2026-10-16 04:47:38.080
+Test Case 'VisitMinimumGroundingTests.testKnownDirectStopRequiresSavedIdentityAndStillValidatesAtApplying' passed (0.408 seconds)
+Test Case 'VisitMinimumGroundingTests.testLongSourcesAndHistoricalDuplicateScopesStayOptional' started at 2026-10-16 04:47:38.487
+Test Case 'VisitMinimumGroundingTests.testLongSourcesAndHistoricalDuplicateScopesStayOptional' passed (2.177 seconds)
+Test Case 'VisitMinimumGroundingTests.testMissingAmbiguousOrInvalidDirectionsRemainOptional' started at 2026-10-16 04:47:40.664
+Test Case 'VisitMinimumGroundingTests.testMissingAmbiguousOrInvalidDirectionsRemainOptional' passed (1.465 seconds)
+Test Case 'VisitMinimumGroundingTests.testOptionalSourcesRetainFreeFieldRulesRatherThanSourceFieldLiterals' started at 2026-10-16 04:47:42.129
+Test Case 'VisitMinimumGroundingTests.testOptionalSourcesRetainFreeFieldRulesRatherThanSourceFieldLiterals' passed (0.219 seconds)
+Test Case 'VisitMinimumGroundingTests.testRequiredDecoderBindsSourceFieldsWithoutRelaxingFinalValidation' started at 2026-10-16 04:47:42.349
+Test Case 'VisitMinimumGroundingTests.testRequiredDecoderBindsSourceFieldsWithoutRelaxingFinalValidation' passed (0.151 seconds)
+Test Case 'VisitMinimumGroundingTests.testRequiredSourceFieldsKeepFrenchAliasesCaseAndMultiwordSpelling' started at 2026-10-16 04:47:42.500
+Test Case 'VisitMinimumGroundingTests.testRequiredSourceFieldsKeepFrenchAliasesCaseAndMultiwordSpelling' passed (0.346 seconds)
+Test Case 'VisitMinimumGroundingTests.testRequiredStopAndUpdateUseSavedIdentityButNeverItsCanonicalSpellingOrOldDirections' started at 2026-10-16 04:47:42.846
+Test Case 'VisitMinimumGroundingTests.testRequiredStopAndUpdateUseSavedIdentityButNeverItsCanonicalSpellingOrOldDirections' passed (0.167 seconds)
+Test Case 'VisitMinimumGroundingTests.testUncertainNameResolutionAndSavedIdentityNeverRequireAnEntry' started at 2026-10-16 04:47:43.012
+Test Case 'VisitMinimumGroundingTests.testUncertainNameResolutionAndSavedIdentityNeverRequireAnEntry' passed (0.296 seconds)
+Test Case 'VisitMinimumGroundingTests.testUncertainSourcesRemainOptionalEvenWhenTheyHaveAnEligibleCandidate' started at 2026-10-16 04:47:43.309
+Test Case 'VisitMinimumGroundingTests.testUncertainSourcesRemainOptionalEvenWhenTheyHaveAnEligibleCandidate' passed (0.41 seconds)
+Test Suite 'VisitMinimumGroundingTests' passed at 2026-10-16 04:47:43.719
+	 Executed 13 tests, with 0 failures (0 unexpected) in 6.713 (6.713) seconds
+Test Suite 'VisitScheduleScopeTests' started at 2026-10-16 04:47:43.719
+Test Case 'VisitScheduleScopeTests.testCalendarAndCourseRestrictionsLeaveTheMedicineMinimumOptional' started at 2026-10-16 04:47:43.719
+Test Case 'VisitScheduleScopeTests.testCalendarAndCourseRestrictionsLeaveTheMedicineMinimumOptional' passed (2.461 seconds)
+Test Case 'VisitScheduleScopeTests.testOrdinaryExplicitSchedulesKeepExactRequiredSourceFieldsAndCanApply' started at 2026-10-16 04:47:46.181
+Test Case 'VisitScheduleScopeTests.testOrdinaryExplicitSchedulesKeepExactRequiredSourceFieldsAndCanApply' passed (0.136 seconds)
+Test Case 'VisitScheduleScopeTests.testRestrictedSourceDirectionsArePreservedWithoutAnUnconditionalMedicineProposal' started at 2026-10-16 04:47:46.316
+Test Case 'VisitScheduleScopeTests.testRestrictedSourceDirectionsArePreservedWithoutAnUnconditionalMedicineProposal' passed (0.112 seconds)
+Test Case 'VisitScheduleScopeTests.testSeparateDatedFollowUpDoesNotDisableAnOrdinaryMedicineSchedule' started at 2026-10-16 04:47:46.428
+Test Case 'VisitScheduleScopeTests.testSeparateDatedFollowUpDoesNotDisableAnOrdinaryMedicineSchedule' passed (0.197 seconds)
+Test Case 'VisitScheduleScopeTests.testShortenedQuoteCannotDiscardTheCompleteSourceRestriction' started at 2026-10-16 04:47:46.626
+Test Case 'VisitScheduleScopeTests.testShortenedQuoteCannotDiscardTheCompleteSourceRestriction' passed (0.01 seconds)
+Test Case 'VisitScheduleScopeTests.testStandaloneMedicineActionsRejectUnsupportedSourceScheduleScopes' started at 2026-10-16 04:47:46.636
+Test Case 'VisitScheduleScopeTests.testStandaloneMedicineActionsRejectUnsupportedSourceScheduleScopes' passed (3.45 seconds)
+Test Case 'VisitScheduleScopeTests.testStandaloneOrdinaryMedicineSchedulesKeepExactTimesFrequencyAndSourceDirections' started at 2026-10-16 04:47:50.086
+Test Case 'VisitScheduleScopeTests.testStandaloneOrdinaryMedicineSchedulesKeepExactTimesFrequencyAndSourceDirections' passed (0.434 seconds)
+Test Case 'VisitScheduleScopeTests.testTamperedStoredSummaryCannotApplyADailyScheduleWithADiscardedRestriction' started at 2026-10-16 04:47:50.520
+Test Case 'VisitScheduleScopeTests.testTamperedStoredSummaryCannotApplyADailyScheduleWithADiscardedRestriction' passed (0.082 seconds)
+Test Suite 'VisitScheduleScopeTests' passed at 2026-10-16 04:47:50.602
+	 Executed 8 tests, with 0 failures (0 unexpected) in 6.883 (6.883) seconds
+Test Suite 'VisitSourceGroundingTests' started at 2026-10-16 04:47:50.602
+Test Case 'VisitSourceGroundingTests.testActionsBindToTheirMedicineWithinCompoundSourceSentences' started at 2026-10-16 04:47:50.602
+Test Case 'VisitSourceGroundingTests.testActionsBindToTheirMedicineWithinCompoundSourceSentences' passed (0.01 seconds)
+Test Case 'VisitSourceGroundingTests.testCandidatesBoundSourceLengthQuoteLengthAndCountWithoutInventingData' started at 2026-10-16 04:47:50.612
+Test Case 'VisitSourceGroundingTests.testCandidatesBoundSourceLengthQuoteLengthAndCountWithoutInventingData' passed (0.223 seconds)
+Test Case 'VisitSourceGroundingTests.testCandidatesKeepDecimalDosesAndExcludeUnchangedOrFollowUpFacts' started at 2026-10-16 04:47:50.836
+Test Case 'VisitSourceGroundingTests.testCandidatesKeepDecimalDosesAndExcludeUnchangedOrFollowUpFacts' passed (0.08 seconds)
+Test Case 'VisitSourceGroundingTests.testCompleteDecimalSentencePreventsTruncatedNegationBypass' started at 2026-10-16 04:47:50.916
+Test Case 'VisitSourceGroundingTests.testCompleteDecimalSentencePreventsTruncatedNegationBypass' passed (0.001 seconds)
+Test Case 'VisitSourceGroundingTests.testCompoundSourceCanSupplyDistinctStopAndStartProposals' started at 2026-10-16 04:47:50.918
+Test Case 'VisitSourceGroundingTests.testCompoundSourceCanSupplyDistinctStopAndStartProposals' passed (0.159 seconds)
+Test Case 'VisitSourceGroundingTests.testConjoinedSameVerbMedicinesStayWithinTheInstructionClause' started at 2026-10-16 04:47:51.076
+Test Case 'VisitSourceGroundingTests.testConjoinedSameVerbMedicinesStayWithinTheInstructionClause' passed (0.066 seconds)
+Test Case 'VisitSourceGroundingTests.testDisplayedQuotesPreserveNegationHistoryConditionsExceptionsAndCourseContext' started at 2026-10-16 04:47:51.142
+Test Case 'VisitSourceGroundingTests.testDisplayedQuotesPreserveNegationHistoryConditionsExceptionsAndCourseContext' passed (0.241 seconds)
+Test Case 'VisitSourceGroundingTests.testDistinctSameActionInstructionsHaveCapacityForBothChanges' started at 2026-10-16 04:47:51.383
+Test Case 'VisitSourceGroundingTests.testDistinctSameActionInstructionsHaveCapacityForBothChanges' passed (0.111 seconds)
+Test Case 'VisitSourceGroundingTests.testDynamicCandidatesAndParserShareSourceIntentRejections' started at 2026-10-16 04:47:51.495
+Test Case 'VisitSourceGroundingTests.testDynamicCandidatesAndParserShareSourceIntentRejections' passed (0.043 seconds)
+Test Case 'VisitSourceGroundingTests.testLegacyMultiSentenceMedicineQuotesRemainValidThroughApplying' started at 2026-10-16 04:47:51.538
+Test Case 'VisitSourceGroundingTests.testLegacyMultiSentenceMedicineQuotesRemainValidThroughApplying' passed (0.117 seconds)
+Test Case 'VisitSourceGroundingTests.testMedicineDirectionsKeepEverySourceDoseFrequencyClockAndQualifierForTheirOwnMedicine' started at 2026-10-16 04:47:51.655
+Test Case 'VisitSourceGroundingTests.testMedicineDirectionsKeepEverySourceDoseFrequencyClockAndQualifierForTheirOwnMedicine' passed (0.523 seconds)
+Test Case 'VisitSourceGroundingTests.testMultiSentenceQuotedSpanRetainsCompleteFirstAndLastSourceSentences' started at 2026-10-16 04:47:52.178
+Test Case 'VisitSourceGroundingTests.testMultiSentenceQuotedSpanRetainsCompleteFirstAndLastSourceSentences' passed (0.003 seconds)
+Test Case 'VisitSourceGroundingTests.testReportedEnglishRegimenDoesNotBecomeAClinicianInstruction' started at 2026-10-16 04:47:52.181
+Test Case 'VisitSourceGroundingTests.testReportedEnglishRegimenDoesNotBecomeAClinicianInstruction' passed (0.128 seconds)
+Test Case 'VisitSourceGroundingTests.testStartTakingChainsDoNotBecomeInnerDoseUpdates' started at 2026-10-16 04:47:52.308
+Test Case 'VisitSourceGroundingTests.testStartTakingChainsDoNotBecomeInnerDoseUpdates' passed (0.124 seconds)
+Test Case 'VisitSourceGroundingTests.testStopTakingChainsKeepTheOuterStopActionInBothLanguages' started at 2026-10-16 04:47:52.433
+Test Case 'VisitSourceGroundingTests.testStopTakingChainsKeepTheOuterStopActionInBothLanguages' passed (0.133 seconds)
+Test Case 'VisitSourceGroundingTests.testStoredMedicineDraftTamperingCannotDiscardDoseOrClockDirectionsAndStopsStayEmpty' started at 2026-10-16 04:47:52.566
+Test Case 'VisitSourceGroundingTests.testStoredMedicineDraftTamperingCannotDiscardDoseOrClockDirectionsAndStopsStayEmpty' passed (0.099 seconds)
+Test Case 'VisitSourceGroundingTests.testTakingChainsPreserveIndependentActionsAndTheirDoseClauses' started at 2026-10-16 04:47:52.665
+Test Case 'VisitSourceGroundingTests.testTakingChainsPreserveIndependentActionsAndTheirDoseClauses' passed (0.12 seconds)
+Test Suite 'VisitSourceGroundingTests' passed at 2026-10-16 04:47:52.785
+	 Executed 17 tests, with 0 failures (0 unexpected) in 2.183 (2.183) seconds
+Test Suite 'VisitStagedSummaryRegressionTests' started at 2026-10-16 04:47:52.785
+Test Case 'VisitStagedSummaryRegressionTests.testCompleteHistoricalContextQuotesSurviveUnitExtractionInBothLanguages' started at 2026-10-16 04:47:52.785
+Test Case 'VisitStagedSummaryRegressionTests.testCompleteHistoricalContextQuotesSurviveUnitExtractionInBothLanguages' passed (0.024 seconds)
+Test Case 'VisitStagedSummaryRegressionTests.testContextExpansionRejectsUnrelatedParagraphsAndDoesNotExpandMedicineOwnership' started at 2026-10-16 04:47:52.809
+/evalcache/application-fixes-8e9def558ccd/HarbourCore/Tests/HarbourCoreTests/VisitStagedSummaryRegressionTests.swift:140: error: VisitStagedSummaryRegressionTests.testContextExpansionRejectsUnrelatedParagraphsAndDoesNotExpandMedicineOwnership : XCTAssertTrue failed - 
+/evalcache/application-fixes-8e9def558ccd/HarbourCore/Tests/HarbourCoreTests/VisitStagedSummaryRegressionTests.swift:141: error: VisitStagedSummaryRegressionTests.testContextExpansionRejectsUnrelatedParagraphsAndDoesNotExpandMedicineOwnership : XCTAssertTrue failed - 
+/evalcache/application-fixes-8e9def558ccd/HarbourCore/Tests/HarbourCoreTests/VisitStagedSummaryRegressionTests.swift:140: error: VisitStagedSummaryRegressionTests.testContextExpansionRejectsUnrelatedParagraphsAndDoesNotExpandMedicineOwnership : XCTAssertTrue failed - 
+/evalcache/application-fixes-8e9def558ccd/HarbourCore/Tests/HarbourCoreTests/VisitStagedSummaryRegressionTests.swift:141: error: VisitStagedSummaryRegressionTests.testContextExpansionRejectsUnrelatedParagraphsAndDoesNotExpandMedicineOwnership : XCTAssertTrue failed - 
+Test Case 'VisitStagedSummaryRegressionTests.testContextExpansionRejectsUnrelatedParagraphsAndDoesNotExpandMedicineOwnership' failed (0.043 seconds)
+Test Case 'VisitStagedSummaryRegressionTests.testContextExpansionStillRejectsOversizedRetainedContextBeforeGeneration' started at 2026-10-16 04:47:52.852
+Test Case 'VisitStagedSummaryRegressionTests.testContextExpansionStillRejectsOversizedRetainedContextBeforeGeneration' passed (0.36 seconds)
+Test Case 'VisitStagedSummaryRegressionTests.testEachExtractionStageStillRejectsThirteenItems' started at 2026-10-16 04:47:53.212
+Test Case 'VisitStagedSummaryRegressionTests.testEachExtractionStageStillRejectsThirteenItems' passed (0.005 seconds)
+Test Case 'VisitStagedSummaryRegressionTests.testStagedHighlightsRetainTwelveThirteenAndTwentyFourItemsInBothLanguages' started at 2026-10-16 04:47:53.217
+Test Case 'VisitStagedSummaryRegressionTests.testStagedHighlightsRetainTwelveThirteenAndTwentyFourItemsInBothLanguages' passed (1.335 seconds)
+Test Case 'VisitStagedSummaryRegressionTests.testStagedParserRejectsForgedBoundsAndKeepsAggregateCap' started at 2026-10-16 04:47:54.552
+Test Case 'VisitStagedSummaryRegressionTests.testStagedParserRejectsForgedBoundsAndKeepsAggregateCap' passed (0.199 seconds)
+Test Case 'VisitStagedSummaryRegressionTests.testSummaryIsEmptyIncludesParserProducedAppointmentsAndAllOtherCategories' started at 2026-10-16 04:47:54.750
+Test Case 'VisitStagedSummaryRegressionTests.testSummaryIsEmptyIncludesParserProducedAppointmentsAndAllOtherCategories' passed (0.017 seconds)
+Test Suite 'VisitStagedSummaryRegressionTests' failed at 2026-10-16 04:47:54.767
+	 Executed 7 tests, with 4 failures (0 unexpected) in 1.982 (1.982) seconds
+Test Suite 'VisitTests' started at 2026-10-16 04:47:54.767
+Test Case 'VisitTests.testConflictsStaleBaselineAndRepeatedApplicationAreRejected' started at 2026-10-16 04:47:54.767
+Test Case 'VisitTests.testConflictsStaleBaselineAndRepeatedApplicationAreRejected' passed (0.11 seconds)
+Test Case 'VisitTests.testFrenchQuoteObjectsRemainVerbatimAndBareStringsFail' started at 2026-10-16 04:47:54.877
+Test Case 'VisitTests.testFrenchQuoteObjectsRemainVerbatimAndBareStringsFail' passed (0.016 seconds)
+Test Case 'VisitTests.testGroundingAndExplicitReview' started at 2026-10-16 04:47:54.892
+Test Case 'VisitTests.testGroundingAndExplicitReview' passed (0.018 seconds)
+Test Case 'VisitTests.testInventedDoseQuoteAndMedicineAreRejected' started at 2026-10-16 04:47:54.911
+Test Case 'VisitTests.testInventedDoseQuoteAndMedicineAreRejected' passed (0.021 seconds)
+Test Case 'VisitTests.testLegacyVisitChangeWithFrequencyTextStillAppliesWithoutStoredSchedule' started at 2026-10-16 04:47:54.932
+Test Case 'VisitTests.testLegacyVisitChangeWithFrequencyTextStillAppliesWithoutStoredSchedule' passed (0.006 seconds)
+Test Case 'VisitTests.testLegacyVisitMedicineChangeDecodesWithoutScheduleFields' started at 2026-10-16 04:47:54.937
+Test Case 'VisitTests.testLegacyVisitMedicineChangeDecodesWithoutScheduleFields' passed (0.0 seconds)
+Test Case 'VisitTests.testModelOmittedFollowUpIsPreservedFromSource' started at 2026-10-16 04:47:54.937
+Test Case 'VisitTests.testModelOmittedFollowUpIsPreservedFromSource' passed (0.008 seconds)
+Test Case 'VisitTests.testSharedQuoteDoesNotLendFrequencyOrTimesAcrossMedicines' started at 2026-10-16 04:47:54.946
+Test Case 'VisitTests.testSharedQuoteDoesNotLendFrequencyOrTimesAcrossMedicines' passed (0.027 seconds)
+Test Case 'VisitTests.testSpeculationNegationAndQuestionsAreRejected' started at 2026-10-16 04:47:54.973
+Test Case 'VisitTests.testSpeculationNegationAndQuestionsAreRejected' passed (0.108 seconds)
+Test Case 'VisitTests.testTranscriptEditsInvalidateMutation' started at 2026-10-16 04:47:55.081
+Test Case 'VisitTests.testTranscriptEditsInvalidateMutation' passed (0.011 seconds)
+Test Case 'VisitTests.testTruncatedNegationCannotBypassValidation' started at 2026-10-16 04:47:55.092
+Test Case 'VisitTests.testTruncatedNegationCannotBypassValidation' passed (0.002 seconds)
+Test Case 'VisitTests.testVisitFrequencyAndExplicitTimesStayStructured' started at 2026-10-16 04:47:55.094
+Test Case 'VisitTests.testVisitFrequencyAndExplicitTimesStayStructured' passed (0.017 seconds)
+Test Case 'VisitTests.testVisitRoundTripAndBoundedChunking' started at 2026-10-16 04:47:55.111
+Test Case 'VisitTests.testVisitRoundTripAndBoundedChunking' passed (0.011 seconds)
+Test Case 'VisitTests.testVisitSummaryEvaluationFixturesMatchExpectedOutputs' started at 2026-10-16 04:47:55.122
+Test Case 'VisitTests.testVisitSummaryEvaluationFixturesMatchExpectedOutputs' passed (0.035 seconds)
+Test Case 'VisitTests.testWellFormedVisitObjectsStillRequireSourceGrounding' started at 2026-10-16 04:47:55.157
+Test Case 'VisitTests.testWellFormedVisitObjectsStillRequireSourceGrounding' passed (0.101 seconds)
+Test Suite 'VisitTests' passed at 2026-10-16 04:47:55.258
+	 Executed 15 tests, with 0 failures (0 unexpected) in 0.491 (0.491) seconds
+Test Suite 'VoiceTurnTests' started at 2026-10-16 04:47:55.258
+Test Case 'VoiceTurnTests.testBeginningAfterCompletedTurnResetsTextAndCompletion' started at 2026-10-16 04:47:55.258
+Test Case 'VoiceTurnTests.testBeginningAfterCompletedTurnResetsTextAndCompletion' passed (0.0 seconds)
+Test Case 'VoiceTurnTests.testCancellationRejectsLatePartialAndCompletion' started at 2026-10-16 04:47:55.258
+Test Case 'VoiceTurnTests.testCancellationRejectsLatePartialAndCompletion' passed (0.0 seconds)
+Test Case 'VoiceTurnTests.testEmptyFinalizationClosesTurnWithoutAUserMessage' started at 2026-10-16 04:47:55.259
+Test Case 'VoiceTurnTests.testEmptyFinalizationClosesTurnWithoutAUserMessage' passed (0.0 seconds)
+Test Case 'VoiceTurnTests.testEmptyRecognitionCorrectionCannotSendPreviousText' started at 2026-10-16 04:47:55.259
+Test Case 'VoiceTurnTests.testEmptyRecognitionCorrectionCannotSendPreviousText' passed (0.0 seconds)
+Test Case 'VoiceTurnTests.testOldTurnCannotCompleteOrOverwriteNewTurn' started at 2026-10-16 04:47:55.259
+Test Case 'VoiceTurnTests.testOldTurnCannotCompleteOrOverwriteNewTurn' passed (0.0 seconds)
+Test Case 'VoiceTurnTests.testRepeatedPartialsDoNotCountAsNewSpeech' started at 2026-10-16 04:47:55.259
+Test Case 'VoiceTurnTests.testRepeatedPartialsDoNotCountAsNewSpeech' passed (0.0 seconds)
+Test Case 'VoiceTurnTests.testRevisedRecognitionTextIsDeliveredOnce' started at 2026-10-16 04:47:55.259
+Test Case 'VoiceTurnTests.testRevisedRecognitionTextIsDeliveredOnce' passed (0.0 seconds)
+Test Suite 'VoiceTurnTests' passed at 2026-10-16 04:47:55.259
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'WriteRequestValidationTests' started at 2026-10-16 04:47:55.259
+Test Case 'WriteRequestValidationTests.testAffirmativeMedicineAddRequestsRetainIdentityAndRoutingAlternatives' started at 2026-10-16 04:47:55.259
+Test Case 'WriteRequestValidationTests.testAffirmativeMedicineAddRequestsRetainIdentityAndRoutingAlternatives' passed (0.231 seconds)
+Test Case 'WriteRequestValidationTests.testAffirmativeOuterQuestionRequestsPreserveQuotedMedicalContent' started at 2026-10-16 04:47:55.490
+Test Case 'WriteRequestValidationTests.testAffirmativeOuterQuestionRequestsPreserveQuotedMedicalContent' passed (0.003 seconds)
+Test Case 'WriteRequestValidationTests.testAffirmativeReminderRequestsPreserveConditionalOrNegativePayloads' started at 2026-10-16 04:47:55.493
+Test Case 'WriteRequestValidationTests.testAffirmativeReminderRequestsPreserveConditionalOrNegativePayloads' passed (0.001 seconds)
+Test Case 'WriteRequestValidationTests.testAppointmentNotePreparationCannotAuthorizeAnAppointmentWrite' started at 2026-10-16 04:47:55.494
+Test Case 'WriteRequestValidationTests.testAppointmentNotePreparationCannotAuthorizeAnAppointmentWrite' passed (0.075 seconds)
+Test Case 'WriteRequestValidationTests.testAppointmentWritesRejectQuotedReportsWhilePreservingAffirmativeRequests' started at 2026-10-16 04:47:55.570
+Test Case 'WriteRequestValidationTests.testAppointmentWritesRejectQuotedReportsWhilePreservingAffirmativeRequests' passed (0.037 seconds)
+Test Case 'WriteRequestValidationTests.testCurrentDoseStatusesAndFutureSchedulesKeepDistinctSourceIntent' started at 2026-10-16 04:47:55.607
+Test Case 'WriteRequestValidationTests.testCurrentDoseStatusesAndFutureSchedulesKeepDistinctSourceIntent' passed (0.347 seconds)
+Test Case 'WriteRequestValidationTests.testDoseAndScheduleSourceCompatibilityRejectsHistoryQuotesConditionsAndMixedActions' started at 2026-10-16 04:47:55.954
+Test Case 'WriteRequestValidationTests.testDoseAndScheduleSourceCompatibilityRejectsHistoryQuotesConditionsAndMixedActions' passed (0.346 seconds)
+Test Case 'WriteRequestValidationTests.testGenuineRecordingRequestsAndObservationsRemainAvailable' started at 2026-10-16 04:47:56.300
+Test Case 'WriteRequestValidationTests.testGenuineRecordingRequestsAndObservationsRemainAvailable' passed (0.171 seconds)
+Test Case 'WriteRequestValidationTests.testHealthImportAndMedicineCameraRequestsCannotAuthorizeEachOthersFlows' started at 2026-10-16 04:47:56.471
+Test Case 'WriteRequestValidationTests.testHealthImportAndMedicineCameraRequestsCannotAuthorizeEachOthersFlows' passed (0.015 seconds)
+Test Case 'WriteRequestValidationTests.testHypotheticalAndConceptualQuestionsCannotAuthorizeWrites' started at 2026-10-16 04:47:56.486
+Test Case 'WriteRequestValidationTests.testHypotheticalAndConceptualQuestionsCannotAuthorizeWrites' passed (0.002 seconds)
+Test Case 'WriteRequestValidationTests.testIndividualDeleteRequestsCannotBecomeClearAllProposals' started at 2026-10-16 04:47:56.488
+Test Case 'WriteRequestValidationTests.testIndividualDeleteRequestsCannotBecomeClearAllProposals' passed (0.131 seconds)
+Test Case 'WriteRequestValidationTests.testLabelScanInstrumentsAndPhotoPurposesKeepWholeRequestScope' started at 2026-10-16 04:47:56.619
+Test Case 'WriteRequestValidationTests.testLabelScanInstrumentsAndPhotoPurposesKeepWholeRequestScope' passed (0.014 seconds)
+Test Case 'WriteRequestValidationTests.testMedicineAddRejectsDoseReportsAndBareNames' started at 2026-10-16 04:47:56.634
+Test Case 'WriteRequestValidationTests.testMedicineAddRejectsDoseReportsAndBareNames' passed (0.132 seconds)
+Test Case 'WriteRequestValidationTests.testMedicineCameraPurposeClausesCannotAuthorizeImportOrMixedActions' started at 2026-10-16 04:47:56.765
+Test Case 'WriteRequestValidationTests.testMedicineCameraPurposeClausesCannotAuthorizeImportOrMixedActions' passed (0.006 seconds)
+Test Case 'WriteRequestValidationTests.testNamedMedicineRegistrationCommandsGeneralizeWithoutAuthorizingReportsOrQuotes' started at 2026-10-16 04:47:56.771
+Test Case 'WriteRequestValidationTests.testNamedMedicineRegistrationCommandsGeneralizeWithoutAuthorizingReportsOrQuotes' passed (0.144 seconds)
+Test Case 'WriteRequestValidationTests.testNegatedNumericObservationIsNotAReading' started at 2026-10-16 04:47:56.916
+Test Case 'WriteRequestValidationTests.testNegatedNumericObservationIsNotAReading' passed (0.001 seconds)
+Test Case 'WriteRequestValidationTests.testNegatedRecordingAndReminderRequestsCannotOpenWriteActions' started at 2026-10-16 04:47:56.916
+Test Case 'WriteRequestValidationTests.testNegatedRecordingAndReminderRequestsCannotOpenWriteActions' passed (0.001 seconds)
+Test Case 'WriteRequestValidationTests.testPoliteModalRequestsAndFrenchObjectPronounsRemainAvailable' started at 2026-10-16 04:47:56.917
+Test Case 'WriteRequestValidationTests.testPoliteModalRequestsAndFrenchObjectPronounsRemainAvailable' passed (0.003 seconds)
+Test Case 'WriteRequestValidationTests.testProviderFirstImportsAcceptDeterminersWithoutAuthorizingOtherEntryFlows' started at 2026-10-16 04:47:56.921
+Test Case 'WriteRequestValidationTests.testProviderFirstImportsAcceptDeterminersWithoutAuthorizingOtherEntryFlows' passed (0.009 seconds)
+Test Case 'WriteRequestValidationTests.testQuotedStatementsAndReportsCannotAuthorizeAnyWrite' started at 2026-10-16 04:47:56.929
+Test Case 'WriteRequestValidationTests.testQuotedStatementsAndReportsCannotAuthorizeAnyWrite' passed (0.001 seconds)
+Test Case 'WriteRequestValidationTests.testSavedModifiersCannotAuthorizeADeletionSubset' started at 2026-10-16 04:47:56.931
+Test Case 'WriteRequestValidationTests.testSavedModifiersCannotAuthorizeADeletionSubset' passed (0.001 seconds)
+Test Case 'WriteRequestValidationTests.testScheduleRequiresExplicitValidTimesOrFrequencyInTheOriginalRequest' started at 2026-10-16 04:47:56.932
+Test Case 'WriteRequestValidationTests.testScheduleRequiresExplicitValidTimesOrFrequencyInTheOriginalRequest' passed (0.134 seconds)
+Test Case 'WriteRequestValidationTests.testScopedDeletionCannotBroadenToTheWholeArchive' started at 2026-10-16 04:47:57.067
+Test Case 'WriteRequestValidationTests.testScopedDeletionCannotBroadenToTheWholeArchive' passed (0.002 seconds)
+Test Case 'WriteRequestValidationTests.testWholeArchiveDeletionAllowsAppAndHealthDomainQualifiers' started at 2026-10-16 04:47:57.069
+Test Case 'WriteRequestValidationTests.testWholeArchiveDeletionAllowsAppAndHealthDomainQualifiers' passed (0.12 seconds)
+Test Case 'WriteRequestValidationTests.testWholeArchiveDeletionAllowsSavedModifiersAroundDomainAndLocation' started at 2026-10-16 04:47:57.189
+Test Case 'WriteRequestValidationTests.testWholeArchiveDeletionAllowsSavedModifiersAroundDomainAndLocation' passed (0.119 seconds)
+Test Case 'WriteRequestValidationTests.testWholeRecordRequestsAcceptEnglishAndFrenchNounNumber' started at 2026-10-16 04:47:57.308
+Test Case 'WriteRequestValidationTests.testWholeRecordRequestsAcceptEnglishAndFrenchNounNumber' passed (0.045 seconds)
+Test Suite 'WriteRequestValidationTests' passed at 2026-10-16 04:47:57.353
+	 Executed 26 tests, with 0 failures (0 unexpected) in 2.094 (2.094) seconds
+Test Suite 'Release-linux-x86_64.xctest' failed at 2026-10-16 04:47:57.353
+	 Executed 274 tests, with 4 failures (0 unexpected) in 43.991 (43.991) seconds
+Test Suite 'All tests' failed at 2026-10-16 04:47:57.353
+	 Executed 274 tests, with 4 failures (0 unexpected) in 43.991 (43.991) seconds
+◇ Test run started.
+↳ Testing Library Version: 6.4 (efd8d65801f569d)
+↳ Target Platform: x86_64-unknown-linux-gnu
+✔ Test run with 0 tests in 0 suites passed after 0.001 seconds.
+Note: Some test targets reported failures:
+  - HarbourCoreTests (XCTest)

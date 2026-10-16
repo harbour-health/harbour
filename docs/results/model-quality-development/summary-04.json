@@ -1,0 +1,16 @@
+{
+  "formatVersion": 1,
+  "evidenceArchive": "development-evidence-04.zip",
+  "archiveSHA256": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9",
+  "bytes": 212837,
+  "files": 12,
+  "releaseStatus": "blocked",
+  "heldoutUnopened": true,
+  "coreTests": 172,
+  "runtimeTests": 21,
+  "failures": 0,
+  "sourceIdentitySHA256": "b512d198db35223be001f62534e3554e2b0eada00e65edbc90e06bdca0443ddc",
+  "sourceArchiveSHA256": "35cd06e0a873405da60f62137baf3afc72fdea9a593d136b762aa0bc36de6c25",
+  "originalFailurePreserved": "minimum-correctness-01 (170/171; accented French stop eligibility failed)",
+  "limits": "Tests bind the exact working-source snapshot. Subsequent ModelEval-only native grammar boundary additions require separate compile/native evidence; fresh model inference remains pending."
+}

@@ -2,10 +2,188 @@ import XCTest
 import UserNotifications
 import UIKit
 import AVFoundation
+import Combine
 import HarbourCore
 @testable import Harbour
 
+@MainActor final class HarbourModelPreferenceTests: XCTestCase {
+    private func withPreferences(_ body: (UserDefaults, URL) throws -> Void) throws {
+        let suite = "model-preferences-test-" + UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(suite)
+        defer {
+            defaults.removePersistentDomain(forName: suite)
+            try? FileManager.default.removeItem(at: directory)
+        }
+        try body(defaults, directory)
+    }
+
+    func testFreshAndUnrecognizedPreferencesKeepAutomatic() throws {
+        try withPreferences { defaults, directory in
+            let fresh = ModelManager(defaults: defaults, directory: directory)
+            XCTAssertEqual(fresh.selection, .automatic)
+            #if targetEnvironment(simulator)
+            XCTAssertEqual(fresh.resolved, .small)
+            #endif
+            XCTAssertEqual(fresh.effort, .standard)
+
+            defaults.set("a-model-from-an-unknown-version", forKey: "model")
+            defaults.set("an-unknown-effort", forKey: "effort")
+            let restored = ModelManager(defaults: defaults, directory: directory)
+            XCTAssertEqual(restored.selection, .automatic)
+            XCTAssertEqual(restored.effort, .standard)
+        }
+    }
+
+    func testExistingModelChoicesAndEffortSurviveUpgrade() throws {
+        try withPreferences { defaults, directory in
+            for choice in ModelChoice.allCases {
+                defaults.set(choice.rawValue, forKey: "model")
+                defaults.set(Effort.extended.rawValue, forKey: "effort")
+                let restored = ModelManager(defaults: defaults, directory: directory)
+                XCTAssertEqual(restored.selection, choice)
+                XCTAssertEqual(restored.effort, .extended)
+                XCTAssertEqual(defaults.string(forKey: "model"), choice.rawValue)
+            }
+        }
+    }
+
+    func testChangingModelAndEffortPersistsAcrossManagers() throws {
+        try withPreferences { defaults, directory in
+            let manager = ModelManager(defaults: defaults, directory: directory)
+            manager.selection = .small
+            manager.effort = .quick
+            let small = ModelManager(defaults: defaults, directory: directory)
+            XCTAssertEqual(small.selection, .small)
+            XCTAssertEqual(small.effort, .quick)
+
+            small.selection = .qwen35
+            small.effort = .extended
+            let qwen35 = ModelManager(defaults: defaults, directory: directory)
+            XCTAssertEqual(qwen35.selection, .qwen35)
+            XCTAssertEqual(qwen35.resolved, .qwen35)
+            XCTAssertEqual(qwen35.effort, .extended)
+        }
+    }
+
+    func testAutomaticSelectionRetainsMemoryPowerAndThermalSafeguards() {
+        let choose = ModelChoice.automaticModel
+        XCTAssertEqual(choose(7_999_999_999, false, .nominal), .small)
+        XCTAssertEqual(choose(8_000_000_000, false, .nominal), .balanced)
+        XCTAssertEqual(choose(16_000_000_000, true, .nominal), .small)
+        for thermalState in [ProcessInfo.ThermalState.fair, .serious, .critical] {
+            XCTAssertEqual(choose(16_000_000_000, false, thermalState), .small)
+        }
+    }
+
+    func testQwen35PinsVerifiedWeightsAndUsesNonThinkingPrompt() throws {
+        let model = ModelChoice.qwen35
+        XCTAssertEqual(model.size, 1_280_835_840)
+        XCTAssertEqual(model.hash, "aaf42c8b7c3cab2bf3d69c355048d4a0ee9973d48f16c731c0520ee914699223")
+        XCTAssertEqual(model.url.absoluteString, "https://huggingface.co/unsloth/Qwen3.5-2B-GGUF/resolve/f6d5376be1edb4d416d56da11e5397a961aca8ae/Qwen3.5-2B-Q4_K_M.gguf")
+        XCTAssertEqual(model.url.lastPathComponent, model.filename)
+        let prompt = "<|im_start|>assistant"
+        XCTAssertEqual(try model.promptFormat.prepare(prompt), prompt + "\n<think>\n\n</think>\n\n")
+        for legacy in [ModelChoice.small, .balanced] {
+            XCTAssertEqual(try legacy.promptFormat.prepare(prompt), prompt)
+        }
+    }
+
+    func testChatCancellationPublishesBusyUntilDrainAcrossViewConsumers() async throws {
+        let name = "chat-lifecycle-hosted-" + UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: name))
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(name)
+        defer { defaults.removePersistentDomain(forName: name); try? FileManager.default.removeItem(at: directory) }
+        let manager = ModelManager(defaults: defaults, directory: directory)
+        let entered = HostedChatSignal(), release = HostedChatSignal(), drained = HostedChatSignal()
+        var observed: [ChatRequestLifecycle.State] = [], accepted: [Bool] = []
+        let subscription = manager.$chatRequestState.sink { observed.append($0) }
+        defer { subscription.cancel() }
+        let id = try XCTUnwrap(manager.chatRequests.start(operation: { _ in
+            entered.signal(); await release.wait()
+        }, onCompletion: { accepted.append($0); drained.signal() }))
+        await entered.wait()
+        XCTAssertEqual(manager.chatRequestState, .running(id))
+        manager.chatRequests.cancel()
+        XCTAssertEqual(manager.chatRequestState, .cancelling(id))
+        // A replacement ChatView reads the same app-owned manager, not a new
+        // view-local idle flag. No model download/inference participates here.
+        let replacementConsumer = manager
+        XCTAssertNil(replacementConsumer.chatRequests.start(operation: { _ in XCTFail("Early admission") }))
+        await Task.yield()
+        XCTAssertTrue(replacementConsumer.chatRequestState.isBusy)
+        XCTAssertTrue(replacementConsumer.chatRequestState.isCancelling)
+        release.signal(); await drained.wait()
+        XCTAssertEqual(manager.chatRequestState, .idle)
+        XCTAssertEqual(observed, [.idle, .running(id), .cancelling(id), .idle])
+        XCTAssertEqual(accepted, [false])
+        XCTAssertFalse(manager.generating)
+        XCTAssertFalse(manager.installed(.small))
+    }
+}
+
+@MainActor private final class HostedChatSignal {
+    private var signalled = false
+    private var waiters: [CheckedContinuation<Void, Never>] = []
+    func wait() async {
+        if signalled { return }
+        await withCheckedContinuation { waiters.append($0) }
+    }
+    func signal() {
+        signalled = true
+        let pending = waiters; waiters.removeAll()
+        for waiter in pending { waiter.resume() }
+    }
+}
+
 @MainActor final class HarbourCareServiceTests: XCTestCase {
+    func testVisitExtractionEvidencePersistsWithSummaryAndRejectsStaleTranscript() async throws {
+        let store = temporaryStore(), source = "The patient reported a mild cough."
+        defer { try? FileManager.default.removeItem(at: store.file.deletingLastPathComponent()) }
+        let visit = DoctorVisit(transcript: source)
+        XCTAssertTrue(store.saveVisit(visit))
+        let run = await VisitExtraction.run(transcript: source, medicines: [], modelID: "storage-test") { request in
+            let output = request.id == "classify"
+                ? #"{"units":[{"id":0,"kinds":["highlight"]}]}"#
+                : #"{"highlights":[{"quote":"The patient reported a mild cough."}],"medicines":[],"followUps":[],"appointments":[]}"#
+            return .init(output: output, preparedPrompt: request.prompt, modelID: "storage-test")
+        }
+        XCTAssertTrue(run.completed)
+        let summary = try XCTUnwrap(run.acceptedSummary)
+        XCTAssertEqual(summary.highlights.map(\.quote), [source])
+        store.saveVisitSummary(summary, id: visit.id, transcript: source, baseline: [], extractionRuns: [run])
+        let restored = AppStore(folder: store.file.deletingLastPathComponent())
+        XCTAssertNil(restored.error)
+        XCTAssertEqual(restored.visits.first?.summary, summary)
+        XCTAssertEqual(restored.visits.first?.extractionRuns, [run])
+        XCTAssertEqual(restored.visits.first?.medicineBaseline, [])
+
+        let saved = restored.visits
+        restored.saveVisitSummary(VisitSummary(), id: visit.id, transcript: "A stale transcript.", baseline: [], extractionRuns: [])
+        restored.saveVisitExtractionRuns([], id: visit.id, transcript: "A stale transcript.")
+        XCTAssertEqual(restored.visits, saved)
+        XCTAssertEqual(AppStore(folder: store.file.deletingLastPathComponent()).visits, saved)
+    }
+
+    func testFailedAndCancelledVisitExtractionRetainPreviousSummaryAcrossRelaunch() throws {
+        let store = temporaryStore(), source = "The patient reported a mild cough."
+        defer { try? FileManager.default.removeItem(at: store.file.deletingLastPathComponent()) }
+        var visit = DoctorVisit(transcript: source)
+        visit.summary = try VisitReview.parse(#"{"highlights":[{"quote":"The patient reported a mild cough."}],"medicines":[],"followUps":[],"appointments":[]}"#, transcript: source, medicines: [])
+        visit.medicineBaseline = []
+        XCTAssertTrue(store.saveVisit(visit))
+        var failed = VisitExtractionRun(transcript: source, validationTranscript: source, language: .english, modelID: "storage-test")
+        failed.errors = ["generation_failed"]
+        var cancelled = failed
+        cancelled.errors = ["cancelled"]; cancelled.cancelled = true
+        store.saveVisitExtractionRuns([failed, cancelled], id: visit.id, transcript: source)
+        let restored = AppStore(folder: store.file.deletingLastPathComponent())
+        XCTAssertNil(restored.error)
+        XCTAssertEqual(restored.visits.first?.summary, visit.summary)
+        XCTAssertEqual(restored.visits.first?.medicineBaseline, visit.medicineBaseline)
+        XCTAssertEqual(restored.visits.first?.extractionRuns, [failed, cancelled])
+    }
+
     func testAppointmentPersistsExportsAndDetachesEditedSource() throws {
         let store = temporaryStore(), target = temporaryStore()
         defer { try? FileManager.default.removeItem(at: store.file.deletingLastPathComponent()); try? FileManager.default.removeItem(at: target.file.deletingLastPathComponent()) }

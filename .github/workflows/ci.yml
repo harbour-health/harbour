@@ -88,8 +88,8 @@ jobs:
             -only-testing:HarbourUITests/HarbourAppearanceTests/testScreensAndAppearancePersistence \
             -only-testing:HarbourUITests/HarbourNavigationTests/testDashboardNavigationAndSystemAppearance \
             -only-testing:HarbourUITests/HarbourVisitTests/testMedicineReviewDrawerScreens \
-            -only-testing:HarbourUITests/HarbourStreamlineTests/testMainActionsDraftRetentionAndVisitCreation \
-            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+            -only-testing:HarbourUITests/HarbourVisitTests/testAppointmentOnlySummaryDoesNotShowEmptyWarning \
+            -only-testing:HarbourUITests/HarbourStreamlineTests/testMainActionsDraftRetentionAndVisitCreation
 
       - name: Export simulator screenshots
         if: always()

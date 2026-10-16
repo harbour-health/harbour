@@ -1,0 +1,46 @@
+{
+  "formatVersion": 1,
+  "sourceCommit": "6d16eefb888df4eb537eb7b8a3fc6adb5d480e7f",
+  "evidenceArchive": "development-evidence-02.zip",
+  "archiveSHA256": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a",
+  "bytes": 398010,
+  "files": 68,
+  "releaseStatus": "blocked",
+  "heldoutUnopened": true,
+  "focused": {
+    "statusFile": "dev-compact-targeted81-01/focused-status.json",
+    "SHA256": "0f13fe6c2aaa386c7ee5b400d69fa5ef1d048e59851e13b388829fac50d7a7b9",
+    "modelSemanticPasses": {
+      "qwen35": 23,
+      "small": 14,
+      "balanced": 17
+    },
+    "runsPerModel": 27,
+    "requiredReviews": 54,
+    "pendingReviews": 0,
+    "protectedRegressions": [
+      "small prose.recorded_values.en",
+      "small prose.recorded_values.fr-CA"
+    ]
+  },
+  "controls": {
+    "statusFile": "dev-independent-controls12-01/controls-status.json",
+    "SHA256": "f1e67fbc79d1b5b5ad07a2ba84e4921a3d59423a78285cacf547fb55842c2d78",
+    "modelPasses": {
+      "qwen35": 3,
+      "small": 2,
+      "balanced": 2
+    },
+    "runsPerModel": 4,
+    "requiredReviews": 12,
+    "pendingReviews": 0,
+    "limits": "Separate development controls under preregistered broad causal rubric; do not replace the main app gate."
+  },
+  "nextCoreBatch": {
+    "statusFile": "core-v12-163-01/test-result.json",
+    "SHA256": "5fb86d0703e94808c23cae61b9618f863156b4303e1f9441120f7efcd5450f27",
+    "tests": 163,
+    "failures": 0,
+    "limits": "Working-source/test hashes are bound in its source-manifest; later commit identity may normalize source line endings."
+  }
+}

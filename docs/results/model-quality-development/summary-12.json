@@ -1,0 +1,729 @@
+{
+  "formatVersion": 1,
+  "releaseEvidence": false,
+  "archive": "development-evidence-12.zip",
+  "archiveSHA256": "e1f44ecd97238f68a6f3e9a3929230059082ae1fdaf69f13d24aa6feb7d64269",
+  "archiveBytes": 4164289,
+  "evidenceFiles": 591,
+  "membersIncludingManifest": 592,
+  "manifestSHA256": "ac8d1b4e15219c3c7381739d4a8cb302aaa1d24de4b01dff41205dc4302f460f",
+  "builderSHA256": "c03ecc04ebbfe513a80f51198ec753f3d0b5f1e42ceb34f87f385e7ae90fca8a",
+  "allowlistSHA256": "d57c2d17678e6c33d97996fc743c09bb1d9c2a8d52aabf021b20b05b94c89553",
+  "previousArchivesUnchangedSHA256": {
+    "01": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091",
+    "02": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a",
+    "03": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e",
+    "04": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9",
+    "05": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571",
+    "06": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da",
+    "07": "b36dd12db0892e89f8d8c1f2672462d9212a71f016076b9beeca0a51a22c6529",
+    "08": "8997676469921003a6e4a112e3c120317382cc562cc5150f3646d4869b524a10",
+    "09": "7da96637ba2b134a309905cb97e908427408125c3d7bf13704503eabd7e4f688",
+    "10": "ad796f1d76199ad8dd613bbb1f36d4ed05cc2178483d4e1dd23375f506de31f7",
+    "11": "7ef4c58f54f264df70b1b1ddd0e42baa108a16d1a0862e9c5a14e5666bf23108"
+  },
+  "allowlistBindings": [
+    {
+      "group": "terminal-CI8b4",
+      "source": "build/native-ci-8b4a40d/publishable-allowlist.json",
+      "sha256": "2d3988aa983d22c0ef17ddf3b75489bbe84c9b9afca1ede3f00e962526e848a9",
+      "sourceFiles": 302,
+      "scope": "Completed standard and Native source08 CI plus unchanged read-only inspection. Native6/7 blocked; no new app/inference experiment, model quality or promotion acceptance. Canonical Git source inventory is distinct from actual Mac compiler bytes."
+    },
+    {
+      "group": "failed-CI3e",
+      "source": "build/native-ci-3e02d89/publishable-allowlist.json",
+      "sha256": "84b1a34c4ffc9bb44eb86d31e4dfe3ae5fa5987b23d2236cc57bd8d727388918",
+      "sourceFiles": 140,
+      "scope": "Original source3e200/199/1 Core-only Mac CI failure, source tree binding, environment-only artifact, and transparent duplicate-cancellation collector correction; no Runtime, app/model run, new experiment, quality or ready claim."
+    },
+    {
+      "group": "source10-correctness",
+      "source": "build/model-quality/committed-source10-publishable-allowlist.json",
+      "sha256": "dd5f1acf171d176370585e529f191dc9395f8c0941d8bff06568b2dc2cb583ee",
+      "sourceFiles": 46,
+      "scope": "Fresh committed5458730 source10 correctness proof only; no quality comparison, compiled apps/test artifacts, native UI execution, heldout results or promotion claim"
+    },
+    {
+      "group": "xtool545",
+      "source": "build/xtool-5458730-validation/publishable-allowlist.json",
+      "sha256": "ba101b6b9a8f85f0df04df3cdecb1ab34de74e7d20f7679bec18de215cd84f19",
+      "sourceFiles": 34,
+      "scope": "Compact final-source545 xtool build and source-bound coordinated test evidence allowlist; no publication/commit performed."
+    }
+  ],
+  "cohorts": {
+    "terminalCI8b4": {
+      "sourceCommit": "8b4a40dbae603be67ec72dafd5f20b01e158ce98",
+      "runs": [
+        {
+          "kind": "standard",
+          "runID": 38349639541,
+          "conclusion": "success",
+          "Core": {
+            "executed": 198,
+            "passed": 198,
+            "failed": 0
+          },
+          "Runtime": {
+            "executed": 21,
+            "passed": 21,
+            "failed": 0
+          },
+          "appTests": {
+            "hosted": {
+              "total": 24,
+              "passed": 23,
+              "failed": 0,
+              "skipped": 1
+            },
+            "UI": {
+              "total": 11,
+              "passed": 11,
+              "failed": 0,
+              "skipped": 0
+            }
+          },
+          "receiptSHA256": "797df4157f61ebba2448eda8bc4c993aa59e3be6152c8768ec7677e0ff0f5e53",
+          "modelAccuracyJob": "skipped"
+        },
+        {
+          "kind": "native",
+          "runID": 38349639635,
+          "conclusion": "failure",
+          "Core": {
+            "executed": 198,
+            "passed": 198,
+            "failed": 0
+          },
+          "Runtime": {
+            "executed": 21,
+            "passed": 21,
+            "failed": 0
+          },
+          "appTests": {
+            "hosted": {
+              "total": 25,
+              "passed": 24,
+              "failed": 0,
+              "skipped": 1
+            },
+            "UI": {
+              "total": 7,
+              "passed": 6,
+              "failed": 1,
+              "skipped": 0
+            }
+          },
+          "receiptSHA256": "824b5b05a23b6745d91bb0ab53872751b5d56a5864a5c4f7a1a92dcc5bc8e949",
+          "modelAccuracyJob": "not part of Native workflow"
+        }
+      ],
+      "scope": "StandardCI passed; NativeUI6/7 failed only Small symptom draft wait. Actual submitted source/completed stale reply bound; no raw route or recovery cause inferred.",
+      "SmallFailureEvidence": {
+        "schemaVersion": 1,
+        "capturedUTC": "2026-10-13T05:48:39.149716+00:00",
+        "sourceCommit": "8b4a40dbae603be67ec72dafd5f20b01e158ce98",
+        "sourceNativeRunID": 38349639635,
+        "inspectionRunID": 38352594585,
+        "inspectionReceiptSHA256": "4647449097ec2ca27757accea2f313afd3c07e062b96632d0bef3cde81772dfc",
+        "originalXCResultSummary": {
+          "total": 32,
+          "passed": 30,
+          "failed": 1,
+          "skipped": 1
+        },
+        "failedTest": {
+          "identifier": "HarbourUITests/testLocalModelChat()",
+          "sourceLine": 79,
+          "assertion": "symptomText.waitForExistence(timeout:45)",
+          "exactSubmittedUserText": "My knee has been sore since Tuesday",
+          "reachedEarlierChecks": [
+            "source interaction panel",
+            "reading draft field exists",
+            "reading draft value exactly72",
+            "saveReading tap",
+            "subsequent Send existence"
+          ],
+          "unreachedLaterChecks": [
+            "symptom text equality",
+            "symptom confirmation/save",
+            "Symptom saved receipt"
+          ],
+          "rawRoute": "unlogged",
+          "fallbackOrigin": "unlogged",
+          "completedAssistantText": "Confirm Heart rate: 72 bpm.",
+          "sameAsPreviousAssistantReceipt": true,
+          "observedThinkingOrStopStateAtFailure": false,
+          "observedSymptomDraftAtFailure": false,
+          "storedReadingPersistenceIndependentlyQueried": false,
+          "scope": "Original completed test log and failure AX establish request submission and completed stale reading response; no raw routing or model/fallback cause is inferred."
+        },
+        "AX": {
+          "file": "extracted/small-attachments/E73392D1-4613-4F89-8C71-74DF2F04E305.txt",
+          "bytes": 16175,
+          "sha256": "f123308008a2d9062f3d4ce004dca1ac0afb200b7fadea15b94b2f9ff1051f51",
+          "originalAttachmentTimestamp": 1791869670.414,
+          "originalAttachmentFailureAssociation": false
+        },
+        "video": {
+          "scope": "Sequential decode of original failed test recording; no synthesized frame or new app/test/inference. Decoder timestamp may differ from nominal frame-count duration.",
+          "sourceVideo": "extracted/small-attachments/15F6D445-5001-48BC-A4B4-BD720A87349E.mp4",
+          "sourceVideoBytes": 35691945,
+          "sourceVideoSHA256": "5bc8b108b0f7597bbe1100b6a3abd24d1be267ebde442ebba53d0293a46af577",
+          "reportedFPS": 43.67622037273962,
+          "reportedFrameCount": 5519.0,
+          "reportedDurationSeconds": 126.36166666666668,
+          "decodedFrames": 5519,
+          "actualReturnedLastFramePositionMS": 126325.0,
+          "frame": "small-last-available-original-video-frame.png",
+          "frameSHA256": "969a8b4b2d736b3e7c14c2f07fa1759008ce21b5e566f90ec4eb73a15be5d1d1",
+          "visuallyReviewed": true,
+          "observedFrame": "Submitted symptom followed by repeated reading receipt, normal empty composer and Small model selector; no Thinking or symptom editor."
+        },
+        "inspectionLimitations": [
+          {
+            "output": "console.txt",
+            "exitCode": 1
+          },
+          {
+            "output": "small-screen-recording.mp4-export.txt",
+            "exitCode": 1
+          },
+          {
+            "output": "small-final-ui-snapshot.bin-export.txt",
+            "exitCode": 1
+          },
+          {
+            "output": "action-console-0.txt",
+            "exitCode": 1
+          }
+        ],
+        "noNewAppBuildTestOrInferenceTriggered": true
+      },
+      "rawModelQualityCreditEstablished": false
+    },
+    "failed3eCore": {
+      "sourceCommit": "3e02d89f26c376f77f9bb2b46f7620264d54ae8d",
+      "LinuxCore": {
+        "executed": 200,
+        "passed": 199,
+        "failed": 1,
+        "exitCode": 1,
+        "errors": [
+          "/evalcache/committed-source09/HarbourCore/Tests/HarbourCoreTests/ChatReplyTests.swift:198: error: ChatReplyTests.testConversationalReplyIsAvailableForEveryTopic : XCTAssertEqual failed: (\"symptom(\"My knee is sore\")\") is not equal to (\"reply(\"Let\\'s discuss that.\")\") - "
+        ]
+      },
+      "MacRuns": [
+        {
+          "kind": "standard",
+          "runID": 38354724325,
+          "sourceHead": "3e02d89f26c376f77f9bb2b46f7620264d54ae8d",
+          "conclusion": "failure",
+          "Core": {
+            "executed": 200,
+            "passed": 199,
+            "failed": 1
+          },
+          "failedTest": "-[HarbourCoreTests.ChatReplyTests testConversationalReplyIsAvailableForEveryTopic]",
+          "sourceLine": 198,
+          "newSymptomControlMethodsPassed": 2,
+          "Runtime": "not run",
+          "hosted": "not run",
+          "UI": "not run",
+          "receiptSHA256": "49ea234c3474823e207c0eab8bc2fe022668b4a176da6d915f75a1f5bbf6065b",
+          "originalLogSHA256": "93d402210f944ccdc6cf5ef99b617622171a46fce7b9ae4480817a5dba68e867",
+          "checkout": "32992ee94924e298801fab22e3f0ddad2b192a5c"
+        },
+        {
+          "kind": "native",
+          "runID": 38354724263,
+          "sourceHead": "3e02d89f26c376f77f9bb2b46f7620264d54ae8d",
+          "conclusion": "failure",
+          "Core": {
+            "executed": 200,
+            "passed": 199,
+            "failed": 1
+          },
+          "failedTest": "-[HarbourCoreTests.ChatReplyTests testConversationalReplyIsAvailableForEveryTopic]",
+          "sourceLine": 198,
+          "newSymptomControlMethodsPassed": 2,
+          "Runtime": "not run",
+          "hosted": "not run",
+          "UI": "not run",
+          "receiptSHA256": "ec39c5be05a0586b7977053a0a60d989abea6d096b028cf7a576238aca7827c3",
+          "originalLogSHA256": "777f3f9892f94d30fda100fd82910b57b3a2ce5a630cae8cde26f6ad305316f9",
+          "checkout": "32992ee94924e298801fab22e3f0ddad2b192a5c"
+        }
+      ],
+      "dependenciesStarted": false,
+      "scope": "Original Linux/bothMac200/199/1 failures remain. Approved implicit symptom contract conflicts with an old blanket reply assertion; correction belongs to separate545 cohort."
+    },
+    "collectorCancellationCorrection": {
+      "originalCopiedSubmissionExitCode": 0,
+      "actualCancellationSucceeded": false,
+      "exactNonzeroExitCodeKnown": false,
+      "originalReceiptRewritten": false,
+      "scope": "Original checkpoint false field and independent correction retained. Duplicate completed naturally; attempt rejected, no run cancelled."
+    },
+    "source09PreparationsOnly": {
+      "sourceCommit": "3e02d89f26c376f77f9bb2b46f7620264d54ae8d",
+      "xtoolBuilt": false,
+      "qualityExecuted": false,
+      "readinessSnapshotProduced": false,
+      "scope": "Original source09/3e archive/procedures/quality wrapper and packet preparation remain unexecuted and unchanged."
+    },
+    "acceptedSourceChanges": {
+      "symptomPatchSHA256": "0595584babc958a446d75f1bcb2867e1335974e1d10de0de59159b1bc473b5c0",
+      "symptomScopeCanonicalSHA256": "7cdaa3961fde529c5ca19056568d39114cecb2aa71cde2f0e2a5ff3685d22905",
+      "contractPatchSHA256": "fccfdca16899ff09ec9c2b98c465f6969133e5f5bc068ce35893685b946bf389",
+      "all7OriginalInputsRetained": true,
+      "CoreMethodCount": 200,
+      "scope": "Full original symptom text to existing manual draft review/save; no clinical fields or model ability credit. Narrow test contract correction preserves original topics and all21 tools."
+    },
+    "source10Correctness": {
+      "sourceCommit": "5458730a34dbe320653341dc5fefe1c67bbfe04c",
+      "sourceIdentitySHA256": "b24a9a4e6e7ceb44401857161fc4ae6a82f25dd8b58d2e6011d4c47e2f9bbd69",
+      "sourceArchiveSHA256": "e184bf1b650e69c6026c70263e8acc4fa6318887abb2888188bf45cf52ae68d0",
+      "Core": 200,
+      "Runtime": 21,
+      "nativeGrammarContext": 159,
+      "Python": 60,
+      "localizationKeys": 598,
+      "actualFiles": 131,
+      "independentAuditScope": "Local hash/receipt binding against retained remote audit; reviewer did not reread remote binaries.",
+      "scope": "Actual committed byte/EOL proof; native159 is grammar/context only, not appUI, model-quality or clinical validation."
+    },
+    "freshXtool545": {
+      "sourceCommit": "5458730a34dbe320653341dc5fefe1c67bbfe04c",
+      "sourceIdentitySHA256": "58f0c94653524f76e5c2cdf8b16738946abcbcb2c63a59fe0d3e7f0116a9ae37",
+      "sourceArchiveSHA256": "f9666a801519c1abe1eab14e08f786e49c0656e2322d09454d2bdca602eefdf8",
+      "actualFiles": 128,
+      "buildExitCode": 0,
+      "elapsedSeconds": 72.09597875364125,
+      "bundleFiles": 25,
+      "importedCore": 200,
+      "importedRuntime": 21,
+      "testsRerunInXtool": false,
+      "matchingPackageFiles": 48,
+      "scope": "Fresh isolated arm64 iOS Release cross-build and exact resources/Mach-O/ad-hoc signatures; no device, model quality, provisioning, installation or distribution."
+    },
+    "currentPreparedQuality": {
+      "sourceCommit": "5458730a34dbe320653341dc5fefe1c67bbfe04c",
+      "DEV": {
+        "directory": "final-dev-291-source5458730-01",
+        "primaryRows": 267,
+        "extraStandardTimingRows": 24,
+        "rows": 291,
+        "rowsPerModel": 97,
+        "repeats": 3
+      },
+      "supplemental": {
+        "directory": "supplemental-120-source5458730-01",
+        "rows": 120,
+        "routingPerModel": 31,
+        "visitsPerModel": 9
+      },
+      "wrapperSHA256": "1f63c7e839ec0487f28f2398d3ae093b01115c0b25731079876385ea4535feb0",
+      "executed": false,
+      "heldoutAuthorized": false,
+      "hostCaptureIsPlanOnly": true,
+      "scope": "DEV291 repeats3 + supplement120 and complete97-row/model English extraction are prepared only; fullNative7 and explicit rootGO still required."
+    }
+  },
+  "externalAssetsAndArtifactsExcluded": [
+    {
+      "group": "terminal-CI8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-8b4a40d/standard/original-artifacts/11791425352-harbour-ci-results.zip",
+        "bytes": 120124320,
+        "sha256": "121efa10b238a9e98c91c9b1c16908efb548fa05c31f4ec556f01e3c1b9e5d9f",
+        "url": "https://github.com/harbour-health/harbour/actions/runs/38349639541/artifacts/11791425352",
+        "scope": "Original full artifact ZIP and extracted xcresult/build binaries retained locally; compact selected logs/metadata only."
+      }
+    },
+    {
+      "group": "terminal-CI8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-8b4a40d/standard/original-artifacts/11791295764-harbour-ci-screenshots.zip",
+        "bytes": 12336550,
+        "sha256": "1432a65ec6c94c0d0ff54f8c8aae22cde80e98936b0b66f84b7536279861594d",
+        "url": "https://github.com/harbour-health/harbour/actions/runs/38349639541/artifacts/11791295764",
+        "scope": "Original full artifact ZIP and extracted xcresult/build binaries retained locally; compact selected logs/metadata only."
+      }
+    },
+    {
+      "group": "terminal-CI8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-8b4a40d/native/original-artifacts/11791656077-native-test-results.zip",
+        "bytes": 127366143,
+        "sha256": "686e3c01ecf5b2545a16ec979a912d7b49d19dca051547fd1c58d77719436c81",
+        "url": "https://github.com/harbour-health/harbour/actions/runs/38349639635/artifacts/11791656077",
+        "scope": "Original full artifact ZIP and extracted xcresult/build binaries retained locally; compact selected logs/metadata only."
+      }
+    },
+    {
+      "group": "terminal-CI8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-8b4a40d/xcresult-inspection/original-artifacts/11791242657-temporary-existing-native-failures-38349639635.zip",
+        "bytes": 35431087,
+        "sha256": "d241ba5f510b23285787c92dba7db960d8addf5f4c7b3f4fcaf8ff7ac3ac26ab",
+        "url": "https://github.com/harbour-health/harbour/actions/runs/38352594585/artifacts/11791242657",
+        "scope": "Original full read-only inspection ZIP retained locally; compact text/JSON/frame included, full recording and opaque UI snapshot excluded."
+      }
+    },
+    {
+      "group": "terminal-CI8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-8b4a40d/xcresult-inspection/extracted/small-attachments/15F6D445-5001-48BC-A4B4-BD720A87349E.mp4",
+        "bytes": 35691945,
+        "sha256": "5bc8b108b0f7597bbe1100b6a3abd24d1be267ebde442ebba53d0293a46af577",
+        "scope": "Original failed test recording retained locally; derived sequential last available frame included."
+      }
+    },
+    {
+      "group": "terminal-CI8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-8b4a40d/xcresult-inspection/extracted/small-attachments/0C91A16C-9F75-4C69-9B95-61EE82CC510A",
+        "bytes": 1774,
+        "sha256": "87fb44b26189c20d9c7b364937160fe5f556062d8d409367223f7137a68db376",
+        "scope": "Opaque original UI snapshot/debug payload retained locally and in original read-only inspection ZIP; omitted from compact text/JSON/frame proof."
+      }
+    },
+    {
+      "group": "terminal-CI8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-8b4a40d/xcresult-inspection/extracted/small-attachments/284EE31A-E337-4F4F-B224-F810E6159E7D",
+        "bytes": 64873,
+        "sha256": "afc24628918abf5a67c238a948c6f16632851ba67a28b6e3ae5598fb0c2b49d8",
+        "scope": "Opaque original UI snapshot/debug payload retained locally and in original read-only inspection ZIP; omitted from compact text/JSON/frame proof."
+      }
+    },
+    {
+      "group": "terminal-CI8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-8b4a40d/xcresult-inspection/extracted/small-attachments/3EB4EBF2-FD0A-4A10-9B88-76804A13B511",
+        "bytes": 1778,
+        "sha256": "e74c4622875f566f3e8552304969255a5fa5bf6025d8bd39dcb0bb63f7580ff9",
+        "scope": "Opaque original UI snapshot/debug payload retained locally and in original read-only inspection ZIP; omitted from compact text/JSON/frame proof."
+      }
+    },
+    {
+      "group": "terminal-CI8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-8b4a40d/xcresult-inspection/extracted/small-attachments/4869B0F8-DB7C-4DA8-9EBC-F51FB3D198A4",
+        "bytes": 1903,
+        "sha256": "d94a7647e6f366097a1e67226f3b0d091219299f0303346d6b9698084c91654d",
+        "scope": "Opaque original UI snapshot/debug payload retained locally and in original read-only inspection ZIP; omitted from compact text/JSON/frame proof."
+      }
+    },
+    {
+      "group": "terminal-CI8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-8b4a40d/xcresult-inspection/extracted/small-attachments/63BBDABA-E4BB-4D34-88DE-0DF51DA08AEB",
+        "bytes": 1770,
+        "sha256": "cef77e654d65b8dcedb4e317e5699c06100eda4a5aee03f6e4e399e15fa12022",
+        "scope": "Opaque original UI snapshot/debug payload retained locally and in original read-only inspection ZIP; omitted from compact text/JSON/frame proof."
+      }
+    },
+    {
+      "group": "terminal-CI8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-8b4a40d/xcresult-inspection/extracted/small-attachments/64C7925C-7785-445F-99CE-AB3D3B9635FC",
+        "bytes": 1879,
+        "sha256": "703852ecabf3c810393574edbf200836960375b62081291b42a41dfd0e58414c",
+        "scope": "Opaque original UI snapshot/debug payload retained locally and in original read-only inspection ZIP; omitted from compact text/JSON/frame proof."
+      }
+    },
+    {
+      "group": "terminal-CI8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-8b4a40d/xcresult-inspection/extracted/small-attachments/6830B5A4-C2D8-4425-A420-C2702ED61BEC",
+        "bytes": 1879,
+        "sha256": "1678a215c4795da92b31661ff039bd7ceb7b81a83343ce0aa9886282aa1a4a61",
+        "scope": "Opaque original UI snapshot/debug payload retained locally and in original read-only inspection ZIP; omitted from compact text/JSON/frame proof."
+      }
+    },
+    {
+      "group": "terminal-CI8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-8b4a40d/xcresult-inspection/extracted/small-attachments/7975E4B7-E608-4301-80DD-A750208488EB",
+        "bytes": 1879,
+        "sha256": "703852ecabf3c810393574edbf200836960375b62081291b42a41dfd0e58414c",
+        "scope": "Opaque original UI snapshot/debug payload retained locally and in original read-only inspection ZIP; omitted from compact text/JSON/frame proof."
+      }
+    },
+    {
+      "group": "terminal-CI8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-8b4a40d/xcresult-inspection/extracted/small-attachments/8A037529-025F-4661-92BD-18DBF2F4C2C8",
+        "bytes": 1879,
+        "sha256": "1678a215c4795da92b31661ff039bd7ceb7b81a83343ce0aa9886282aa1a4a61",
+        "scope": "Opaque original UI snapshot/debug payload retained locally and in original read-only inspection ZIP; omitted from compact text/JSON/frame proof."
+      }
+    },
+    {
+      "group": "terminal-CI8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-8b4a40d/xcresult-inspection/extracted/small-attachments/8E8C8805-37A4-4DA9-B825-63EDEBEBFA15",
+        "bytes": 1879,
+        "sha256": "ec9f50fe243664fb80dbef7314853a735a48e073fccf8fb67c1823efc1ae7c69",
+        "scope": "Opaque original UI snapshot/debug payload retained locally and in original read-only inspection ZIP; omitted from compact text/JSON/frame proof."
+      }
+    },
+    {
+      "group": "terminal-CI8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-8b4a40d/xcresult-inspection/extracted/small-attachments/8FE6D415-1B55-4BBC-882F-BEC7E5543A13",
+        "bytes": 1891,
+        "sha256": "565e68137e559d272bf877d5bf5359eb85a57b0aea8facc942fbb5a8f65f5d16",
+        "scope": "Opaque original UI snapshot/debug payload retained locally and in original read-only inspection ZIP; omitted from compact text/JSON/frame proof."
+      }
+    },
+    {
+      "group": "terminal-CI8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-8b4a40d/xcresult-inspection/extracted/small-attachments/D598F419-8C6D-4B85-A132-83CC1DAE33CE",
+        "bytes": 1879,
+        "sha256": "1678a215c4795da92b31661ff039bd7ceb7b81a83343ce0aa9886282aa1a4a61",
+        "scope": "Opaque original UI snapshot/debug payload retained locally and in original read-only inspection ZIP; omitted from compact text/JSON/frame proof."
+      }
+    },
+    {
+      "group": "terminal-CI8b4",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-8b4a40d/xcresult-inspection/extracted/small-attachments/E666C75D-604E-4C79-93E2-64822DBC2D57",
+        "bytes": 1879,
+        "sha256": "703852ecabf3c810393574edbf200836960375b62081291b42a41dfd0e58414c",
+        "scope": "Opaque original UI snapshot/debug payload retained locally and in original read-only inspection ZIP; omitted from compact text/JSON/frame proof."
+      }
+    },
+    {
+      "group": "failed-CI3e",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/native-ci-3e02d89/native/original-artifacts/11792895544-native-test-results.zip",
+        "bytes": 3748,
+        "sha256": "75fc9387742dd0d6e2029837df964c86c42fe7e6001cc5980eed67c06aab72bd",
+        "url": "https://github.com/harbour-health/harbour/actions/runs/38354724263/artifacts/11792895544",
+        "scope": "Original environment-only artifact ZIP retained locally; its four selected text/JSON files included."
+      }
+    },
+    {
+      "group": "xtool545",
+      "retainedInArchive": false,
+      "originalRecord": {
+        "source": "build/xtool-5458730-validation/Harbour-5458730.app.zip",
+        "bytes": 4417783,
+        "sha256": "af09882fa864a5b1e60090294115bbdd236107b2cd48848c8dbf7088b094095f",
+        "reason": "Compiled app retained locally; omitted from compact publishable proof"
+      }
+    },
+    {
+      "kind": "Compiled XCTest artifacts",
+      "retainedInArchive": false,
+      "sourceReceipt": "build/model-quality/committed-source09/HarbourCore-test-result.json",
+      "artifactsSHA256": {
+        "HarbourCore/.build/out/Products/Release-linux-x86_64/HarbourCoreTests-test-runner": "e53fbdb855f9c8f7007444cdd7e7279c1de0f1e71ea91d0d6cad9ac6d0c00ca0",
+        "HarbourCore/.build/out/Products/Release-linux-x86_64/HarbourCoreTests.so": "08c35631c509156533d384f10d94ba476d0d33cc5772e47a756cbc59c8c7abf4"
+      },
+      "verificationScope": "Original retained measured hashes; no remote binary reread by archive preparation"
+    },
+    {
+      "kind": "Compiled XCTest artifacts",
+      "retainedInArchive": false,
+      "sourceReceipt": "build/model-quality/committed-source10/HarbourCore-test-result.json",
+      "artifactsSHA256": {
+        "HarbourCore/.build/out/Products/Release-linux-x86_64/HarbourCoreTests-test-runner": "cb0496b123c8754b05e40fe76ab6c5d5bafc87570b9f5b0da65031ab5b270ac3",
+        "HarbourCore/.build/out/Products/Release-linux-x86_64/HarbourCoreTests.so": "623835b701406f9a3caaa5f904bbe68fe9d497a5e3077c96cfb66580731b1ab8"
+      },
+      "verificationScope": "Original retained measured hashes; no remote binary reread by archive preparation"
+    },
+    {
+      "kind": "Compiled XCTest artifacts",
+      "retainedInArchive": false,
+      "sourceReceipt": "build/model-quality/committed-source10/HarbourRuntime-test-result.json",
+      "artifactsSHA256": {
+        "HarbourRuntime/.build/out/Products/Release-linux-x86_64/HarbourRuntimeTests-test-runner": "7d8983a0a43700864ffd34f5b456b0f4e716abb27c9e0b6e1265c821a2658fa9",
+        "HarbourRuntime/.build/out/Products/Release-linux-x86_64/HarbourRuntimeTests.so": "a1072999d6213e12cb3c95b54a54a2c43beb8a2871e0b752479d17262ed9c3e3"
+      },
+      "verificationScope": "Original retained measured hashes; no remote binary reread by archive preparation"
+    },
+    {
+      "kind": "Pinned GGUF weights",
+      "retainedInArchive": false,
+      "assets": [
+        {
+          "model": "qwen35",
+          "repository": "unsloth/Qwen3.5-2B-GGUF",
+          "revision": "f6d5376be1edb4d416d56da11e5397a961aca8ae",
+          "url": "https://huggingface.co/unsloth/Qwen3.5-2B-GGUF/resolve/f6d5376be1edb4d416d56da11e5397a961aca8ae/Qwen3.5-2B-Q4_K_M.gguf",
+          "filename": "Qwen3.5-2B-Q4_K_M.gguf",
+          "bytes": 1280835840,
+          "sha256": "aaf42c8b7c3cab2bf3d69c355048d4a0ee9973d48f16c731c0520ee914699223",
+          "verified": true
+        },
+        {
+          "model": "small",
+          "repository": "Qwen/Qwen2.5-0.5B-Instruct-GGUF",
+          "revision": "9217f5db79a29953eb74d5343926648285ec7e67",
+          "url": "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/9217f5db79a29953eb74d5343926648285ec7e67/qwen2.5-0.5b-instruct-q4_k_m.gguf",
+          "filename": "qwen2.5-0.5b-instruct-q4_k_m.gguf",
+          "bytes": 491400032,
+          "sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+          "verified": true
+        },
+        {
+          "model": "balanced",
+          "repository": "Qwen/Qwen2.5-1.5B-Instruct-GGUF",
+          "revision": "91cad51170dc346986eccefdc2dd33a9da36ead9",
+          "url": "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/91cad51170dc346986eccefdc2dd33a9da36ead9/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+          "filename": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+          "bytes": 1117320736,
+          "sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+          "verified": true
+        }
+      ],
+      "verificationScope": "Retained measured revision/hash records; no asset reread"
+    },
+    {
+      "kind": "Linux ModelEval executable",
+      "retainedInArchive": false,
+      "sha256": "95ed88eb068d6d5092cc5123ff55aa1098e67688aacbb3ce3f97d7595327af71",
+      "originalReceipt": "build/model-quality/committed-source10/validation-status.json"
+    },
+    {
+      "kind": "Installed Linux runtime",
+      "retainedInArchive": false,
+      "filesSHA256": {
+        "harbour-runtime.json": "6a7920a8c06038bfa85e58c7d6b1b7bc3b6fe80313e0efe2de92af23d885823b",
+        "include/ggml-alloc.h": "94e4cd069b9313b2ceb35dacec901981e0bb478d8bb31035b7126be091998c23",
+        "include/ggml-backend.h": "46d84cb998105f871240864fd0f55446939a2fe86c5c281afa63a010fb1f65a2",
+        "include/ggml-blas.h": "e76cb8594dc9866d99e7d63191b9fff6ab8b50244b4a28ce3af0f962964a6b5b",
+        "include/ggml-cann.h": "2cdb134f27fe5c4ec19d52f1eb58f5355aa42b8f54bf385f0e487501c5df7362",
+        "include/ggml-cpp.h": "bc15ba002c68685df23faae42df0d2b3d58032011f88b649021ab92485862c72",
+        "include/ggml-cpu.h": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e",
+        "include/ggml-cuda.h": "9cbfcea49f6da4d07f41dc22fa8dbf870825faaa2a68e34e65fe30ea6c41e042",
+        "include/ggml-metal.h": "322f36cd30f3e9e7aad7b5b9bc63078012fd0b7706ac4e24f5721b604f3d8980",
+        "include/ggml-openvino.h": "c2e3f301e28ad815b4285888aad6130808a77e6acb4e8b558de63a648cf9743e",
+        "include/ggml-opt.h": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2",
+        "include/ggml-rpc.h": "3d396875aadee0c8dea93a68adac82e0aa1ecbf6d492e06ea680f74fd45b2a4a",
+        "include/ggml-sycl.h": "58429f8045b335f5e740faa2198caf72ba3beb04df0eb970103b932340daca8b",
+        "include/ggml-virtgpu.h": "ed231e7db3f0f58b84073f5ee67f9ec9d63046d1a7ed091c36a6cfe9f685a463",
+        "include/ggml-vulkan.h": "7eae5dad2cc7bb4d3eca828539f441816d5fd59fdc7b224d49aa229fc7b7248c",
+        "include/ggml-webgpu.h": "a91d855313a9e85e75ba597ff869a267247dea936a2c0faef03aeb7f1ea6e79c",
+        "include/ggml-zendnn.h": "2cb034b842438281616ce647232d922fb224450323f0d422d2af567c334aa8ff",
+        "include/ggml.h": "6fe9b62d3ea48c2de82cce6e9e06d3ae4f0de34f4b5831399c49c099badefb09",
+        "include/gguf.h": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4",
+        "include/llama-cpp.h": "c48fd31095d2403a3bf7cbe98333ba0e61a398ee6e83b56f9d8b7237143b9877",
+        "include/llama.h": "1fbcba4003cfc089fa9681973acb3d9e24e465f32c3506ceb0ec7fa29952bdae",
+        "lib/cmake/ggml/ggml-config-version.cmake": "00841778e95a6839287ebf5f48d95424885a7bacff38b8bb4d2207aa82506e34",
+        "lib/cmake/ggml/ggml-config.cmake": "ef60f518315c7f8c2c2e39bc996ec6cac23b71653187883d06d7c920eb6db56c",
+        "lib/cmake/llama/llama-config-version.cmake": "91c838b8ca2061a63e2bc75339c7c508059b86d6f2fe8b819c560e1303ddfd84",
+        "lib/cmake/llama/llama-config.cmake": "7314f182e73fd3b1bf571b7c42f9c14bf9e5fbd3f645f9b9ec4b807938e9fb8c",
+        "lib/libggml-base.so": "f1b2badc2fdc96500c35010ad2502a702c5e6a34fd80bab5c7bb98847626a2f9",
+        "lib/libggml-base.so.0": "f1b2badc2fdc96500c35010ad2502a702c5e6a34fd80bab5c7bb98847626a2f9",
+        "lib/libggml-base.so.0.20.2": "f1b2badc2fdc96500c35010ad2502a702c5e6a34fd80bab5c7bb98847626a2f9",
+        "lib/libggml-cpu.so": "edb09ad46888b06f86cadcb27fb86c8810b5b04c1ce158691a837d3954404309",
+        "lib/libggml-cpu.so.0": "edb09ad46888b06f86cadcb27fb86c8810b5b04c1ce158691a837d3954404309",
+        "lib/libggml-cpu.so.0.20.2": "edb09ad46888b06f86cadcb27fb86c8810b5b04c1ce158691a837d3954404309",
+        "lib/libggml.so": "69412d6ec524eb45af6ee66cf5af153fca55be7fb2ec5eeaca18e8199e56756b",
+        "lib/libggml.so.0": "69412d6ec524eb45af6ee66cf5af153fca55be7fb2ec5eeaca18e8199e56756b",
+        "lib/libggml.so.0.20.2": "69412d6ec524eb45af6ee66cf5af153fca55be7fb2ec5eeaca18e8199e56756b",
+        "lib/libllama.so": "37c4b12b68104a3d497d0871bbba9802605947f81b66e853a8ae61b771d6c39b",
+        "lib/libllama.so.0": "37c4b12b68104a3d497d0871bbba9802605947f81b66e853a8ae61b771d6c39b",
+        "lib/libllama.so.0.1.2": "37c4b12b68104a3d497d0871bbba9802605947f81b66e853a8ae61b771d6c39b",
+        "lib/pkgconfig/llama.pc": "7a6bfb94d03196730758ee23e35fde8756b6d9fcfef24de782ecc333ffcbd927"
+      },
+      "verificationScope": "Retained38-file measured inventory only"
+    },
+    {
+      "kind": "Official xtool/image/SDK/device-framework assets",
+      "retainedInArchive": false,
+      "sourceReceipts": [
+        "build/xtool-5458730-validation/environment-reuse.json",
+        "build/xtool-5458730-validation/external-references.json"
+      ],
+      "verificationScope": "Original pinned tool/image/3 SDK metadata/19 framework hashes; not every SDK file independently hashed"
+    },
+    {
+      "kind": "New545 CI or model-quality outputs",
+      "retainedInArchive": false,
+      "reason": "Outside current archive scope; no completed/pass/model comparison claim"
+    },
+    {
+      "kind": "Source09 readiness/host snapshot",
+      "produced": false,
+      "retainedInArchive": false,
+      "reason": "Core gate failed; only prospective wrappers/preparation existed. Earlier source08 readiness stays historical in archive11."
+    },
+    {
+      "kind": "Current actual measured-start host snapshot",
+      "producedAtPreparedReadiness": false,
+      "retainedInArchive": false,
+      "reason": "Source10 host capture is a future plan, not an executed snapshot"
+    }
+  ],
+  "limits": [
+    "Original8b4 Small failure shows submitted symptom and completed stale reading text, not the unlogged raw routing/prose/recovery mechanism or persisted-reading state.",
+    "Original3e failed Linux/Mac Core evidence is unchanged. Later explicit test-contract expectations are a distinct source, with all seven original inputs retained.",
+    "Original copied cancellation field is false; independent correction preserves unknown exact exit code and establishes no run was cancelled.",
+    "Core200/Runtime21/native159/Python60/localization598 and xtool success do not prove current full Native7 app flow or general model quality.",
+    "Source inventories exceed per-frontend compiler inputs; raw Git LF and actual materialized CRLF bytes are separately bound.",
+    "Xtool imports same-source200/21 receipts through48 matching files; no rerun. SDK27 metadata is distinct from app18/framework16.4 Mach-O SDK fields.",
+    "Current quality wrappers, complete-stream packet extraction and host capture are unexecuted preparation only; no DEV/supplement/heldout answers or scores retained.",
+    "Application recovery receives no model routing/prose/extraction or clinical credit. Automatic/optional policy, original fixtures, scorer and thresholds remain unchanged.",
+    "Previous01\u201311 stay byte-identical. Compiled apps/binaries/models/SDK/framework/fullXCResult/MP4/ZIP assets excluded with original references/digests.",
+    "No physical-device execution, clinician review or clinical correctness established."
+  ],
+  "checks": {
+    "previousArchives01To11Unchanged": true,
+    "old8b4StandardPassed": true,
+    "old8b4NativeUI": {
+      "passed": 6,
+      "failed": 1
+    },
+    "originalSymptomInputAndCompletedStaleReplyBound": true,
+    "rawRouteOriginStillUnlogged": true,
+    "failed3eLinuxAndTwoMacCore": {
+      "executed": 200,
+      "passed": 199,
+      "failed": 1
+    },
+    "oldCancellationFalseFieldAndSeparateCorrectionPreserved": true,
+    "prior3eXtoolAndQualityUnexecuted": true,
+    "source10Core": 200,
+    "source10Runtime": 21,
+    "nativeGrammarContext": 159,
+    "Python": 60,
+    "localizationKeys": 598,
+    "source09To10OnlyTestContractChanged": true,
+    "fresh545XtoolExitCode": 0,
+    "exactImportedPackageFiles": 48,
+    "testsRerunInXtool": false,
+    "new545CIExcluded": true,
+    "modelQualityAndHeldoutOutputsExcluded": true,
+    "preparedDEV291Supplement120Unexecuted": true,
+    "hostCapturePlanIsNotMeasuredStart": true,
+    "remoteBinaryRereadByBuilder": false,
+    "heldoutInputsSemanticallyInspected": false
+  }
+}

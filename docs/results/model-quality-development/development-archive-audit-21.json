@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "recordedUTC": "2026-10-13T13:01:01.088993+00:00",
+  "result": "PASS_ORIGINAL_SPLIT_ARCHIVE_NATIVE_REMAINS_FAILED",
+  "sourceHead": "fddbac203ee03f8e5470da6867da939bddd188ac",
+  "archiveSHA256": "1441d450a17e33dba68a38e8accaa754e682316fddaa39016351fac50f9819d6",
+  "members": 124,
+  "evidenceFiles": 123,
+  "CRCAndEveryMemberHashVerified": true,
+  "primaryCompactOriginalFiles": 94,
+  "standardUI": {
+    "passed": 11,
+    "total": 11
+  },
+  "originalNativeUI": {
+    "passed": 6,
+    "total": 7
+  },
+  "Core": 210,
+  "Runtime": 21,
+  "checkoutCanonicalTreeEqualsHeadTree": true,
+  "nativePreservationAssertionReached": false,
+  "causeEstablished": false,
+  "fullNativePassed": false,
+  "priorArchives01Through20Unchanged": true,
+  "scope": "Original source13 Standard PASS / Native FAILED evidence and labelled failure derivations. No repeat, model-quality, freeze, physical-device or Ready result.",
+  "auditHelperSHA256": "146bd589f94f33abd78cf93204627b8f49b55e2f6f4b664853404330e9f4c16a"
+}

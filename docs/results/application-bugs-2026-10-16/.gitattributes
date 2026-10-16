@@ -1,0 +1,5 @@
+local/*.log -text
+*.log -whitespace
+local/*execution.json -text
+initial/* -text
+source-manifest.json -text

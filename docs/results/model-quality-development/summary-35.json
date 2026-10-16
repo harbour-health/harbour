@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "checkedUTC": "2026-10-14T01:04:53.788409+00:00",
+  "sourceHead": "bba74d659eada0a6dcba834926973dc9d800e8bf",
+  "modelSourceCommit": "0cbc0b0b9fa37347ca7af4d52d755c259f058a0c",
+  "selectionSHA256": "9a70db816aa99100f73dc883449f8322f5eb562991b9a220ddec06bdeda824d9",
+  "fileCount": 242,
+  "totalUncompressedBytes": 7455087,
+  "observedCounts": {
+    "standard": {
+      "UI": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0
+      },
+      "hosted": {
+        "total": 24,
+        "passed": 23,
+        "failed": 0,
+        "skipped": 1
+      }
+    },
+    "native": {
+      "UI": {
+        "total": 7,
+        "passed": 7,
+        "failed": 0,
+        "skipped": 0
+      },
+      "hosted": {
+        "total": 25,
+        "passed": 24,
+        "failed": 0,
+        "skipped": 1
+      }
+    }
+  },
+  "currentAppGate": "PASS_CURRENT_BBA_FULL_APP",
+  "fourFullInputTracesAndTwoFinalMedicineAssertionsVerified": true,
+  "actualFinalFreezeSHA256": "a0792ace829ae4fb74257628ecef8a2aa38a8b86ca3b13ecfedb794a46db3c44",
+  "heldoutExecutionAuthorized": false,
+  "separateHeldoutGORequired": true,
+  "previousArchives01To34VerifiedUnchanged": true,
+  "scope": "Completed current-bba Standard/Native app proof: Core216/Runtime21, Standard11 UI/23 hosted plus notification skip1, Native7 UI/24 hosted plus notification skip1. All four complete-input-before-Send traces and both final medicine-preservation assertions passed with the original strict assertions retained. Canonical135 Git source and component-equivalence134 non-UI/28 measured/48 package/runtime38/xtool131 non-UI identities preserve original0cbc model/product/quality cohorts; whole captures are not relabelled. Retains original audit path failures and written3a2, clean481e plus independent binding/trace review, writer01/02 corrections and authoritative03, and actual protocol freeze a079 with independent42-reference audit. The freeze authorizes the fixed protocol only: heldoutExecutionAuthorized=false and a distinct later Root GO/live remote preflight remain mandatory. No held-out generation, Ready or physical-device claim.",
+  "externalExcluded": [
+    {
+      "source": "build/native-ci-bba74d6/standard/original-artifacts/11861786662-harbour-ci-screenshots.zip",
+      "bytes": 12535689,
+      "sha256": "33c419b23b697a23b200e600a715b6ab98c61c208e8fc3496bec85774b69d6ac",
+      "url": "https://github.com/harbour-health/harbour/actions/runs/38488871374/artifacts/11861786662",
+      "apiReportedDigest": "sha256:33c419b23b697a23b200e600a715b6ab98c61c208e8fc3496bec85774b69d6ac",
+      "scope": "Full original artifact remains local/external. Exact member lists and hashes retained in original current receipts/allowlist."
+    },
+    {
+      "source": "build/native-ci-bba74d6/standard/original-artifacts/11861697645-harbour-ci-results.zip",
+      "bytes": 112981389,
+      "sha256": "918842211011a534461a1c52e969cc223c314f7f6d2eee3b1ebbe4ebd4312720",
+      "url": "https://github.com/harbour-health/harbour/actions/runs/38488871374/artifacts/11861697645",
+      "apiReportedDigest": "sha256:918842211011a534461a1c52e969cc223c314f7f6d2eee3b1ebbe4ebd4312720",
+      "scope": "Full original artifact remains local/external. Exact member lists and hashes retained in original current receipts/allowlist."
+    },
+    {
+      "source": "build/native-ci-bba74d6/native/original-artifacts/11861663128-native-test-results.zip",
+      "bytes": 91951085,
+      "sha256": "9cf0f62e2b166f9a9f5dae224fcf9bbf589d57b9c72e20315680836bc7893a7d",
+      "url": "https://github.com/harbour-health/harbour/actions/runs/38488871420/artifacts/11861663128",
+      "apiReportedDigest": "sha256:9cf0f62e2b166f9a9f5dae224fcf9bbf589d57b9c72e20315680836bc7893a7d",
+      "scope": "Full original artifact remains local/external. Exact member lists and hashes retained in original current receipts/allowlist."
+    },
+    {
+      "source": "build/native-ci-bba74d6/native/original-artifacts/11861663128-native-test-results/simulator-runtime.log",
+      "bytes": 72724360,
+      "sha256": "4a283a946b7e11fb784db720dabcceb8386afc786055a8216464a75a70772ad9",
+      "scope": "Large original runtime log retained locally and in original native ZIP; excluded."
+    }
+  ],
+  "retentionLimits": "Full three original ZIP/XCResults/recordings/runtime log and original screenshot PNGs remain locally/external with digests/member lists. Source/resource PNGs and screenshot manifest are selected. Existing frozen fixture source bytes in canonical135 are copied opaquely; no held-out semantics inspected. This focused archive does not claim all42 prerequisite payloads are embedded; exact omitted roles are listed with earlier01-34 archive digests. No private connected-host helper/address, weights, SDK or executable/app binary selected.",
+  "modelRowsAndWholeCaptureIdentitiesNotRelabelledBba": true,
+  "ReadyOrPhysicalDeviceClaimed": false,
+  "newFreezeGOTestsModelsScorerCPUTransportNetworkHeldoutOrGitMutationInvokedByBuilder": false,
+  "builderSHA256": "f27dbaa45349bef6e88e44bcb850dfec347c10db19ff1b49f4b13bb1e26f9060",
+  "zipBuilt": true,
+  "archiveSHA256": "50c46d244b3e6176a22f8787ceb4c92373b5c1748b9b5c6c67b7f8963bcb5184",
+  "archiveBytes": 2024406,
+  "archiveMembers": 245,
+  "manifestSHA256": "5936cc231a86965afc47429e554c4774f6f2a6edfaaf64c3c307ba605d685fa6"
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "auditedUTC": "2026-10-13T14:47:43.541127+00:00",
+  "result": "PASS_PACKAGING_SOURCE13_QUALITY_REMAINS_FAILED",
+  "sourceHead": "fddbac203ee03f8e5470da6867da939bddd188ac",
+  "archiveSHA256": "95bab53815524211fd6b96645b7461fef6dac1361ab0aef0201dbfef8648300c",
+  "members": 191,
+  "evidenceFiles": 190,
+  "CRCAndEveryMemberAndLocalByteVerified": true,
+  "capturedSource13MemberCopiesVerified": 12,
+  "rows": 291,
+  "primaryRows": 267,
+  "timingRows": 24,
+  "requiredReviews": 128,
+  "queueKeysAndJudgmentsVerified": true,
+  "counts": {
+    "qwen35": 82,
+    "small": 64,
+    "balanced": 76
+  },
+  "rawRegressions": 6,
+  "overallRegressions": 3,
+  "acceptedRecordClinicalReplyBlockers": 4,
+  "automaticUnsafeFlagsDoNotEstablishProseSafety": true,
+  "capturedCRLFScorerAndActualLFScorerSeparatelyPreserved": true,
+  "priorArchives01Through22Unchanged": true,
+  "auditOnlyCorrections": "Initial helper assumed array/count types and an unselected root gold path. The three prior helper versions are preserved; correct stored types and selected captured-source gold path used. No archive evidence changed.",
+  "scope": "Failed source13 DEV evidence only. No source14, supplemental, heldout, freeze or Ready result.",
+  "auditHelperSHA256": "41d27531198aee3eeb0ca761cfb69c5e9df7fd3c85bdc76377e2ef685ac90569"
+}

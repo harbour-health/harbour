@@ -30,16 +30,18 @@ See [every screen below](#all-screens) and [capture details](docs/screenshots.md
 
 ## Run
 
-Requires a Mac, Xcode with an iOS SDK, and CMake for the simulator inference library. Minimum app target: iOS 18.0.
+The Xcode workflow requires a Mac, Xcode with an iOS SDK, and CMake for the simulator inference library. Minimum app target: iOS 18.0.
 
 ```sh
 bash scripts/prepare-runtime.sh
 open Harbour.xcodeproj
 ```
 
-Select the shared `Harbour` scheme and an iPhone simulator, then Run. The prepared runtime is already present in this working copy. On a real phone, choose your signing team in **Signing & Capabilities**, enable HealthKit for the bundle ID, and Run. No signing credentials are stored here.
+Select the shared `Harbour` scheme and an iPhone simulator, then Run. On a real phone, choose your signing team in **Signing & Capabilities**, enable HealthKit for the bundle ID, and Run. No signing credentials are stored here.
 
-Qwen Small downloads when the first chat message is sent, or from **Settings → Models**. The download is about 491 MB; Balanced is about 1.12 GB. Progress and cancellation are available. Verified models work without a network connection. Voice requires an available on-device recognizer for the app’s language; it never silently switches to server transcription.
+For an additional arm64 iPhone build route on Linux or Windows through WSL, see [xtool setup and validation](docs/xtool.md). `python3 scripts/xtool-build.py --prepare-only` prepares the runtime and app metadata; with xtool and its Apple SDK installed, `python3 scripts/xtool-build.py` builds `xtool/Harbour.app`. The wrapper does not request device installation or an upload. Build validation and remaining device tests are recorded in [evaluation](docs/evaluation.md).
+
+New installs keep **Automatic**: Balanced (1.12 GB) on eligible physical devices, otherwise Small (491 MB). Qwen3.5 2B (1.28 GB) is an optional download in **Settings → Models**; it is never selected by Automatic. Existing choices persist. The selected model downloads on the first chat message or from Settings, with progress and cancellation. Verified models work without a network connection. Qwen3.5 still has documented English/French quality failures; see [evaluation results](docs/evaluation.md). Voice requires an available on-device recognizer for the app’s language; it never silently switches to server transcription.
 
 English and Canadian French follow the iOS app language setting. French includes permission prompts, voice controls, notifications, structured notes, medicine search, decimal-comma readings, and bounded French chat/visit input. Original notes and source quotations keep their language. See [localization](docs/localization.md) for coverage and verification limits.
 
@@ -65,6 +67,16 @@ xcodebuild -project Harbour.xcodeproj -scheme Harbour \
 ```
 
 `testLocalModelChat` downloads Qwen Small if missing; budget network access and roughly 500 MB of free space. Other UI tests exercise manual entry, persisted records, draft preservation, and model controls. See [chat agent](docs/chat-agent.md) for conversation/tool handling and [evaluation](docs/evaluation.md) for measured model results and limits.
+
+The frozen [model quality fixture v1](evaluation/harbour-model-quality-v1.json) contains 121 synthetic cases (59 development, 62 held out; 60 English, 61 Canadian French), covering the original 19 tool intents, grounded replies, titles, visit quotes, and the known scheduling, negated deletion, and sky explanation regressions. SHA-256: `7a013eae0da56e0d829513ebd4c33a54eccd45c4ce6e8da4ffa81857d42fb5d9`. Standard effort across Small, Balanced, and Qwen3.5 yields 363 cases; Quick/Extended on 19 representative cases adds 114 runs, and repeats for eight timing cases add 48 runs. [The scorer](evaluation/score.py) separates production validation, semantic facts, source fidelity, pending qualitative reviews, and latency. Repeated deterministic outputs count toward timing only. Run its checks with `python3 -m unittest discover -s evaluation -p 'test_*.py'`.
+
+The merged catalog exposes 21 routing alternatives, adding `create_appointment` and `list_appointments`. V1 keeps its frozen original 19-intent coverage and accepts the added source-quoted appointment field without measuring appointment recall. Supplemental main routing and nine transcript cases run separately on all three models for the new appointment and frequency behavior. The baseline exposes 19 tools while the merged pipeline exposes 21, so paired results include catalog, prompt, and validation changes; they do not isolate model intelligence. See [the evaluation method](evaluation/README.md) for schema compatibility and coverage limits.
+
+The original Qwen default-promotion gate requires complete reviews, safe accepted actions, passing critical grounding/extraction/scheduling checks, at least 95% raw routing, no matched English routing loss against Balanced, and no paired French or grounding regressions. That frozen gate remains blocked. The user instead chose Automatic with optional 2B; the [recorded optional scope](evaluation/optional-model-scope-v1.json) preserves source-action safeguards, protected Automatic-model regressions, full comparisons/reviews and strict app/build checks. Application fallbacks are reported separately from raw model quality.
+
+Release scoring also requires `--run-manifest` from [the evidence collector](scripts/collect-model-evidence.py), binding raw streams to complete metadata, pinned assets, source/executable identities, and exact prepared-prompt/grammar hashes. Disjoint baseline development and held-out batches may combine into 477 primary runs only when their execution identity matches; the final 525-run matrix adds 48 timing repetitions. Partial development results remain scoreable with the release gate blocked.
+
+A reviewer may explicitly adjudicate a lexical false positive such as a faithful French synonym missing from a required-word pattern, with the frozen criterion and source evidence recorded. Automatic failures remain visible alongside adjudicated results. Tool intent, accepted unsafe actions, source quotes, validation limits, and unsupported numeric facts cannot be overridden, and fixture expectations remain frozen.
 
 The Xcode project is checked in. If adding source files, regenerate with `python3 scripts/generate-project.py`; this resets generated project settings, so change the generator for persistent configuration changes.
 

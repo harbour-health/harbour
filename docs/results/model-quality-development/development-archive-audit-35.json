@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "auditedUTC": "2026-10-14T01:10:26.498958+00:00",
+  "result": "PASS_ARCHIVE35_ALL245_MEMBERS_EXACT_BYTES_AND_ORIGINAL_APP_FREEZE_BINDINGS",
+  "auditorSHA256": "74b589a8d014e886e877f97ab1fa22d847eecdb11b6550beb0c464a9315fc4de",
+  "archive": {
+    "path": "build/archive-development-35/development-evidence-35.zip",
+    "bytes": 2024406,
+    "sha256": "50c46d244b3e6176a22f8787ceb4c92373b5c1748b9b5c6c67b7f8963bcb5184"
+  },
+  "summary": {
+    "path": "build/archive-development-35/summary-35.json",
+    "bytes": 5354,
+    "sha256": "de7a5ac39bf9f79c086f36b54b37ed6a1c761306b5b0d336beddb9ecc1a381fd"
+  },
+  "preflight": {
+    "path": "build/archive-development-35/preflight.json",
+    "bytes": 5128,
+    "sha256": "1e44fdca728da55c22a6988636e6b8a387f60a996fbf4bd0c27be8b05778b40b"
+  },
+  "selection": {
+    "path": "build/archive-development-35/selection-actual-final-01.json",
+    "bytes": 120255,
+    "sha256": "9a70db816aa99100f73dc883449f8322f5eb562991b9a220ddec06bdeda824d9"
+  },
+  "builder": {
+    "path": "build/archive-development-35.py",
+    "bytes": 10027,
+    "sha256": "f27dbaa45349bef6e88e44bcb850dfec347c10db19ff1b49f4b13bb1e26f9060"
+  },
+  "independentStaticGO": {
+    "path": "build/archive-development-35/builder-selection-independent-static-audit.json",
+    "bytes": 1723,
+    "sha256": "43a08468b1346a80b33d473db809df48187ea5bc267c478ca48dad362bb261ea"
+  },
+  "archiveMembers": 245,
+  "selectedOriginalFiles": 242,
+  "selectedOriginalBytes": 7455087,
+  "manifestSHA256": "5936cc231a86965afc47429e554c4774f6f2a6edfaaf64c3c307ba605d685fa6",
+  "allMemberCRCExactHashesAndLocalOriginalBytesVerified": true,
+  "priorArchives01To34VerifiedUnchanged": true,
+  "canonical135GitOnly": true,
+  "currentAppFourInputTwoFinalMedicineAndStrictCountsVerified": true,
+  "actualFreezeSHA256": "a0792ace829ae4fb74257628ecef8a2aa38a8b86ca3b13ecfedb794a46db3c44",
+  "all42FreezeRefsAndDeclared33OutsideRolesVerified": true,
+  "freezeHeldoutExecutionAuthorized": false,
+  "separateHeldoutGORequired": true,
+  "scope": "Original current bba full-app PASS and protocol freeze only. Source15 model/source/product identities and prior failures remain distinct. Exact opaque fixture/source bytes compared without semantic parsing. No heldout GO/result, Ready or physical-device claim.",
+  "archiveBuilderWriterTestsModelsScorerCPUTransportNetworkHeldoutOrGitMutationInvoked": false
+}

@@ -1,0 +1,63 @@
+{
+  "formatVersion": 1,
+  "archiveSHA256": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da",
+  "bytes": 208198,
+  "evidenceFiles": 64,
+  "zipMembers": 65,
+  "crc": "pass",
+  "memberHashes": "pass",
+  "sourcePromptAndReviewHashBindings": "pass",
+  "counters": "pass with explicit AI/human distinction",
+  "findings": {
+    "literalVisits": {
+      "rows": 12,
+      "reviews": 12,
+      "pendingAIReviews": 0,
+      "semanticPasses": {
+        "qwen35": 3,
+        "small": 0,
+        "balanced": 1
+      },
+      "acceptedMedicineCases": {
+        "qwen35": 4,
+        "small": 4,
+        "balanced": 4
+      },
+      "actualPreparedPromptsAndGrammars": "verified",
+      "committedSourceMaterialization": "28 metadata files match git archive bytes",
+      "releaseStatus": "blocked partial development run",
+      "limitation": "Deterministic medicine source fields are app pipeline evidence; raw follow-up omissions and unanchored quote proposals remain failures."
+    },
+    "thinkingDiagnostic": {
+      "rows": 6,
+      "outputBoundAIReviews": 6,
+      "pendingAIReviews": 0,
+      "provisionalAISemanticPasses": 1,
+      "completedCandidateFinals": 1,
+      "automaticallyAbsentFinals": 5,
+      "registeredHumanReviewStatus": "unsatisfied",
+      "pendingRegisteredHumanFinalReviews": 1,
+      "humanSubjectMatterReviewPerformed": false,
+      "actualStopCause": "unknown",
+      "preparedPromptAndOriginalPolicySnapshotUserBytes": "verified",
+      "actualCompilerInputsVerified": 32,
+      "actualRuntimeFilesVerified": 38,
+      "releaseEvidence": false
+    }
+  },
+  "originalArchiveAndStatusUnchanged": true,
+  "humanReviewAddendumSHA256": "664323881b70ac8a228d54495865c20f402a61322214e0eebd44e957a225f796",
+  "previousArchivesUnchanged": {
+    "01": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091",
+    "02": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a",
+    "03": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e",
+    "04": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9",
+    "05": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571"
+  },
+  "heldoutEvidenceRead": false,
+  "releaseStatus": "blocked",
+  "limits": [
+    "Archive06 has no newly tested single-contract/French-heading snapshot02 evidence.",
+    "The provisional AI pass does not satisfy the diagnostic preregistered human-review requirement."
+  ]
+}

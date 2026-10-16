@@ -6,12 +6,13 @@ output="${2:-$root/docs/results/care-tools}"
 bundle="com.matteopolak.harbour"
 container="$(xcrun simctl get_app_container "$device" "$bundle" data)"
 mkdir -p "$output"
-for model in small balanced; do
+for model in small balanced qwen35; do
     report="$container/Library/Application Support/Harbour/model-evaluation-$model.json"
     # Only delete this generated evaluation artifact; never the records archive.
     rm -f "$report"
     args=(--evaluate-model --evaluate-all-efforts)
     if [[ "$model" == balanced ]]; then args+=(--evaluate-balanced); fi
+    if [[ "$model" == qwen35 ]]; then args+=(--evaluate-qwen35); fi
     xcrun simctl launch --terminate-running-process "$device" "$bundle" "${args[@]}"
     echo "Evaluating $model: routing and transcript cases at each of three effort settings."
     previous_count=-1

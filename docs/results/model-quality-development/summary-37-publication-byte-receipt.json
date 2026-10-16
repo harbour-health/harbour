@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "kind": "explicit-Git-LF-publication-derivative-of-original-summary37",
+  "original": {
+    "path": "build/archive-development-37/summary-37.json",
+    "bytes": 696,
+    "sha256": "6aa2c835b97827a73a4af130ba92145e9e3b8603c7c2d66191bfd2caa1983b4d",
+    "base64ExactOriginalBytes": "ew0KICAic2NoZW1hVmVyc2lvbiI6IDEsDQogICJzb3VyY2VIZWFkIjogImJiYTc0ZDY1OWVhZGEwYTZkY2JhODM0OTI2OTczZGM5ZDgwMGU4YmYiLA0KICAibW9kZWxTb3VyY2VDb21taXQiOiAiMGNiYzBiMGI5ZmEzNzM0N2NhN2FmNGQ1MmQ3NTVjMjU5ZjA1OGEwYyIsDQogICJhcmNoaXZlU0hBMjU2IjogIjY2NTY2NDhhNTZlY2RlMDZmZmFlOTM5MzQ4MmYyNjBmNzNiODQ5NmQyMjY4ZTU1ZDlmNjJmYzQxOGMzOTNjZWYiLA0KICAiYXJjaGl2ZUJ5dGVzIjogMTE2NzgxLA0KICAiYXJjaGl2ZU1lbWJlcnMiOiAyMiwNCiAgImV2aWRlbmNlRmlsZXMiOiAyMCwNCiAgIm1hbmlmZXN0U0hBMjU2IjogImRlZDg1NjkwODAwZDYwOGMxMDM3YTA3OGEwZDFjNzBkOGEzZTFhMzRjODdmODk1NzM3NTYzYjhlMGY5NTNhYTQiLA0KICAiYWxsb3dsaXN0U0hBMjU2IjogIjViMzFiZDYxOWMxYTZjMWUwYjM2NTAyMjZmMzNmNWQ0YzIyYTk1NTNhOWNhZTk3YmYzNGQ4ZTY1MDZhZDRiNTMiLA0KICAicGFyZW50QXJjaGl2ZTM2U0hBMjU2IjogIjY0MmFlMTNiOTMxMDg3NjQ0ZmI0OTE1NjJkMDZjY2I5ZDJlY2MxZjA4OGNjNDQyM2FkYTNiMWQwZjQ0ZWMwMzEiLA0KICAib3B0aW9uYWxDb25kaXRpb24iOiAiQkxPQ0tFRCIsDQogICJuZXdNb2RlbFNjb3JlclRlc3RzT3JHcmFkZXMiOiBmYWxzZSwNCiAgIlJlYWR5Q2xhaW0iOiBmYWxzZQ0KfQ0K"
+  },
+  "publishedGitBlob": {
+    "path": "docs/results/model-quality-development/summary-37.json",
+    "bytes": 681,
+    "sha256": "bb53d31443dd8a627e4c778f24701b1075b22ea07cb3b0c097f34d8bd2a8dc63"
+  },
+  "transformation": "CRLF to LF from existing Git normalization only; every JSON value unchanged. Raw identities measured separately.",
+  "archive37BytesAndActualAuditUnchanged": true,
+  "initialStrictNineBlobCheck": "Stopped on summary37 normalization before writing a success receipt; other8 staged evidence originals were exact."
+}

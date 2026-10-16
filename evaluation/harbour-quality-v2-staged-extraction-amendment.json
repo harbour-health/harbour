@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "kind": "harbour-v2-before-staged-candidate-generation-amendment",
+  "createdUTC": "2026-10-15T01:46:26.223162+00:00",
+  "status": "REGISTERED_BEFORE_STAGED_CANDIDATE_INFERENCE",
+  "originalPreregistration": {
+    "path": "evaluation/harbour-quality-v2-preregistration.json",
+    "sha256": "0902afa6e6c1fa310634b4b9eb8111d049320029df3f4bfe266b2ccf40e6eaf3",
+    "bytesUnchanged": true
+  },
+  "frozenInputs": [
+    {
+      "path": "evaluation\\harbour-quality-v2-dev.json",
+      "sha256": "e883b339bebce6a85b97d362075ab1735f0ca93dda726411a73b8088e55d905a"
+    },
+    {
+      "path": "evaluation\\harbour-quality-v2-heldout-commitment.json",
+      "sha256": "31d2741c69803e12956c500bf139b4b61a1015852428bcf94dead9891c8cfc8e"
+    },
+    {
+      "path": "evaluation\\harbour-quality-v2-review-rubric.json",
+      "sha256": "8c620ead50245582a9326d74e0ca875d97e7a92d2fa977c65663f61cc137782f"
+    },
+    {
+      "path": "evaluation\\score.py",
+      "sha256": "8cdfefb5b04e125ad44f331f668d59179594f09c422ee8e13b8484cc5124c70d"
+    }
+  ],
+  "scope": "General application extraction redesign on exposed DEV after preserved source03 English/French all-empty visit failures. No unseen acceptance inputs read or used; acceptance remains sealed.",
+  "pipeline": {
+    "version": "staged-visit-v1",
+    "sourceChunkCharacters": 1800,
+    "maximumSourceUnits": 24,
+    "unitConstruction": "Stable ordered contiguous source sentences; coalesce contiguous sentences to bound count, never select units by expected clinical answer.",
+    "maximumContainingContextCharacters": 3600,
+    "contextPolicy": "Retain complete containing source context, or fail closed; no silent qualifier truncation.",
+    "classifier": "One model generation accounts for every ordered source unit ID exactly once. Clinical category decisions remain model-produced; none skips extraction, uncertain is extracted.",
+    "extractor": "One model generation per selected unit with complete retained context and an unbound four-array structural grammar. Model chooses every clinical name, action, direction and quote, and may decline. No deterministic required medicine answer is inserted.",
+    "perGenerationMaximumTokens": 650,
+    "sampling": "Unchanged production greedy grammar sampler",
+    "context": 4096,
+    "batch": 512,
+    "threads": 4,
+    "totalWork": "One classifier plus N selected-unit extractions. Maximum requested tokens is 650*(1+N), recorded per actual attempt. This is more application work than the baseline single650-token call.",
+    "assembly": "Application assembles and deduplicates model-produced objects, checks focus/source ownership, then uses existing full-source parse and apply validation. All rejected/declined/failed stage outputs remain in trace.",
+    "failure": "Persist trace, fail closed, preserve prior saved summary; source/omission/recovery warnings require transcript review.",
+    "productionDefault": "staged",
+    "legacySingleCall": "Explicit --single-visit diagnostic only, separately labelled."
+  },
+  "evidence": {
+    "outputKind": "application_assembled_model_stages",
+    "traceField": "visitExtractionTrace",
+    "primaryFields": {
+      "ModelEval": "output",
+      "ModelProbe": "rawOutput"
+    },
+    "retained": "Each stage request ID/unit IDs/logical prompt/actual prepared prompt/grammar/model identity/configuration/raw output/errors/token maximum/timing, every classification, assembled output and independently accepted summary.",
+    "nativeManifestLimit": "Unchanged scorer/provenance binds original row/prompt/grammar metadata. Extra stage binder binds internal trace and raw stage hashes separately; native manifest alone does not verify internal stage semantics.",
+    "assemblyLimit": "Primary visit output is a filtered application assembly, not one raw model generation. Raw extraction/source/safety review must inspect ALL stage outputs including dropped/rejected objects; assembly or literal parser recovery earns no independent raw recall credit.",
+    "comparison": "Report application pipeline fulfillment, raw stage decision/extraction correctness, accepted-source safety, call count/total requested tokens and latency separately. No equal-total-compute or single-call model IQ claim. Same weights/runtime/per-call context/batch/threads/650 maximum and greedy sampler remain; visit pipeline work differs."
+  },
+  "gates": {
+    "originalScorerRubricFixturesThresholds": "UNCHANGED",
+    "default": "automatic",
+    "qwen35": "optional",
+    "protectedSmallBalanced": "All original protected raw/factual/fulfillment/source-safety regressions still block readiness.",
+    "safety": "Zero unsafe accepted actions/source summaries/capability claims required; no raw failure hidden by recovery.",
+    "quality": "Every mandatory original criterion including visit medicine/highlight/follow-up/appointment/dose/clock/frequency reviewed against full original source and all raw stages.",
+    "acceptance": "No unseal until required source-specific correctness/native/xtool/app/DEV/supplemental review+safety freeze; no post-unseal tuning.",
+    "training": "NO fine-tuning, weight changes or training execution authorized or performed."
+  }
+}

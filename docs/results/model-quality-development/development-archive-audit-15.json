@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "auditedUTC": "2026-10-13T09:31:12.097521+00:00",
+  "auditor": "Codex root, independent of Archive15 builder",
+  "passed": true,
+  "archiveSHA256": "ca624ec881a7328f0de79d60f65938887e00e008f15f2af996173cc0377372da",
+  "archiveBytes": 1058260,
+  "memberCount": 109,
+  "manifestSHA256": "1f633993d32cd8291d1fa35d1656db235ebf839146df00a858fabecc9be3da2c",
+  "CRCAllPass": true,
+  "allManifestHashesAndBytesPass": true,
+  "nestedSourceMembersVerified": {
+    "committed-source11": 131,
+    "xtool-7a41812-validation": 128
+  },
+  "sourceCommit": "7a4181264af9c5443811796aacd6d64c13a76339",
+  "source11Correctness": {
+    "Core": 200,
+    "Runtime": 21,
+    "nativeGrammarContext": 159,
+    "Python": 60,
+    "localizationKeys": 598
+  },
+  "xtool": {
+    "exitCode": 0,
+    "elapsedSeconds": 91.994,
+    "bundleFiles": 25,
+    "arm64": true,
+    "CoreRuntimeResultsImportedNotRerun": true
+  },
+  "codeProfileAndPayloadAuditPass": true,
+  "previous14ArchivesUnchanged": true,
+  "initialHelperSchemaError": {
+    "scope": "Audit helper only; no original archive or gate error",
+    "detail": "Initial helper used previousArchivesSHA256; actual preflight field is priorArchivesSHA256. Original helper retained; no audit receipt was produced by the failed attempt.",
+    "initialHelperSHA256": "526d7afb746e66e36cf475ac791d29341e00c033e85d806efed15f742c62f3c0"
+  },
+  "MacQualityHeldoutOrReadinessClaimed": false,
+  "scope": "Stored source, receipt, log and ZIP integrity; no test, compiler, model or remote app rerun. Individual original audits retain detailed provenance and limits.",
+  "auditorSHA256": "3d6145a3b99c51e72a01d41f7bcef6c945be68e902fc471726fd5c289b3a19e7"
+}

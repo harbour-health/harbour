@@ -1,0 +1,71 @@
+{
+  "commit": "8e9def558ccd7daf416375947a1a54cab555612c",
+  "startedUTC": "2026-10-16T04:46:02.812157+00:00",
+  "sourceIdentitySHA256": "586979a789bf6702f43df49e4dc8121a5c200c736f56011b5ea49281996e0ea2",
+  "commands": [
+    {
+      "label": "core",
+      "argv": [
+        "swift",
+        "test",
+        "--package-path",
+        "/evalcache/application-fixes-8e9def558ccd/HarbourCore",
+        "--configuration",
+        "release",
+        "--jobs",
+        "4"
+      ],
+      "exitCode": 1,
+      "seconds": 114.53718203585595,
+      "logSHA256": "34db6c478039ddf4b5e225649667e2754c17b5d1cab20ea3a335ccf4375b5280"
+    },
+    {
+      "label": "runtime",
+      "argv": [
+        "swift",
+        "test",
+        "--package-path",
+        "/evalcache/application-fixes-8e9def558ccd/HarbourRuntime",
+        "--configuration",
+        "release",
+        "--jobs",
+        "4"
+      ],
+      "exitCode": 0,
+      "seconds": 34.86332743195817,
+      "logSHA256": "d014c5f1e4921ba04602e8c437fa5bae426187077c81449094ad592f7263a5d4"
+    },
+    {
+      "label": "python",
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "evaluation",
+        "-p",
+        "test_*.py"
+      ],
+      "exitCode": 0,
+      "seconds": 0.9497749321162701,
+      "logSHA256": "e5298c306f4ae8e43a9ae703a2d72cb88407da76d1489e8c92ca615b0d75d165"
+    },
+    {
+      "label": "localization",
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/audit-localization.py",
+        "--json"
+      ],
+      "exitCode": 0,
+      "seconds": 0.37601578515022993,
+      "logSHA256": "d14d48db61de5a384de5cf9d600892737d3d6d3f0d02dd7812294c5c6c9b0d66"
+    }
+  ],
+  "complete": true,
+  "newModelInference": false,
+  "sourceBytesVerifiedBefore": true,
+  "finishedUTC": "2026-10-16T04:48:33.679536+00:00",
+  "sourceBytesVerifiedAfter": true
+}

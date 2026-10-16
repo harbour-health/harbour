@@ -1,0 +1,805 @@
+{
+  "formatVersion": 1,
+  "releaseEvidence": false,
+  "calibration": "Source-supported interpretation of the unchanged broad principal-process/material-error rubric; ordinary other-colors shorthand with a correct atmospheric-scattering explanation passes with violet precision notes. Explicit all-colors/shortest-visible or wrong absorption/refraction/conversion/reversed-wavelength mechanisms still fail.",
+  "primaryReferences": [
+    "https://spaceplace.nasa.gov/blue-sky/en/",
+    "https://www.weather.gov/fgz/SkyBlue"
+  ],
+  "sourceFinding": "NASA SpacePlace uses the ordinary other-colors shorthand in its short explanation and separately clarifies blue versus longer red waves.",
+  "inventorySHA256": "245b6461139a34dea4d770a91d980c9b2909989e5f142de9bab82fd0703011c0",
+  "frozenSuiteSHA256": "7a013eae0da56e0d829513ebd4c33a54eccd45c4ce6e8da4ffa81857d42fb5d9",
+  "affectedUniqueResponseGroups": [
+    {
+      "model": "balanced",
+      "caseID": "prose.sky.en",
+      "outputSHA256": "6aef74307722fc40264590cf51f3a7169e86775e1754e17ea84e6e37072c6527",
+      "output": " Because the blue light in sunlight is scattered more by the Earth's atmosphere than the other colors, making the sky appear blue.",
+      "originalDecisions": [
+        "fail"
+      ],
+      "calibratedDecision": "pass",
+      "qualityConcern": "Ordinary blue-versus-other-colors shorthand matches NASA plain-language explanation; violet precision is omitted. This does not assert blue is the shortest visible wavelength or universally strongest against every color.",
+      "efforts": [
+        "extended",
+        "quick",
+        "standard"
+      ],
+      "rowOccurrences": [
+        "build\\model-quality\\final-dev-267-02\\balanced.jsonl"
+      ],
+      "originalReviewOccurrences": [
+        "build\\model-quality\\final-dev-267-02\\manual-reviews-v9-dev-complete.json",
+        "build\\model-quality\\final-dev-267-02\\reviews-root-english-balanced-dev.json",
+        "build\\model-quality\\final-dev-267-02\\score-v9-dev-complete-reviewed.json"
+      ]
+    },
+    {
+      "model": "balanced",
+      "caseID": "prose.sky.en",
+      "outputSHA256": "a31daacb7a4d970b1416883a40b9c7f303739262ecaddeeca4b6622ae656f512",
+      "output": " Because the blue light in sunlight is scattered more by the atmosphere than other colors, making the sky appear blue.",
+      "originalDecisions": [
+        "fail",
+        "pass"
+      ],
+      "calibratedDecision": "pass",
+      "qualityConcern": "Ordinary blue-versus-other-colors shorthand matches NASA plain-language explanation; violet precision is omitted. This does not assert blue is the shortest visible wavelength or universally strongest against every color.",
+      "efforts": [
+        "extended",
+        "quick",
+        "standard"
+      ],
+      "rowOccurrences": [
+        "build\\model-quality\\baseline-dev-267-01\\balanced.jsonl",
+        "build\\model-quality\\dev-baseline-01\\balanced.jsonl"
+      ],
+      "originalReviewOccurrences": [
+        "build\\model-quality\\baseline-dev-267-01\\manual-reviews-baseline-dev-complete.json",
+        "build\\model-quality\\baseline-dev-267-01\\reviews-root-english-balanced-dev.json",
+        "build\\model-quality\\baseline-dev-267-01\\score-dev-reviewed.json",
+        "build\\model-quality\\dev-baseline-01\\manual-reviews.json",
+        "build\\model-quality\\dev-baseline-01\\score-reviewed.json"
+      ]
+    },
+    {
+      "model": "qwen35",
+      "caseID": "prose.sky.en",
+      "outputSHA256": "bc01e06f3f6bb96c88822fd54561fc844a36cec43aabd720ad537e904d69e36d",
+      "output": "The sky appears blue because sunlight scatters off molecules in the atmosphere, making blue light scatter more than other colors.",
+      "originalDecisions": [
+        "fail"
+      ],
+      "calibratedDecision": "pass",
+      "qualityConcern": "Ordinary blue-versus-other-colors shorthand matches NASA plain-language explanation; violet precision is omitted. This does not assert blue is the shortest visible wavelength or universally strongest against every color.",
+      "efforts": [
+        "standard"
+      ],
+      "rowOccurrences": [
+        "build\\model-quality\\dev-policy-targeted81-01\\qwen35.jsonl"
+      ],
+      "originalReviewOccurrences": [
+        "build\\model-quality\\dev-policy-targeted81-01\\manual-reviews-focused-complete.json",
+        "build\\model-quality\\dev-policy-targeted81-01\\reviews-root-english-qwen35-focused.json",
+        "build\\model-quality\\dev-policy-targeted81-01\\score-focused-complete-reviewed.json"
+      ]
+    },
+    {
+      "model": "small",
+      "caseID": "prose.sky.en",
+      "outputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+      "output": "\nThe sky appears blue because of the scattering of sunlight by tiny particles in the Earth's atmosphere. When sunlight enters the atmosphere, it is scattered in all directions by these particles. The blue light is scattered more than the other colors, which is why we see the sky appear blue.",
+      "originalDecisions": [
+        "fail",
+        "pass"
+      ],
+      "calibratedDecision": "pass",
+      "qualityConcern": "Ordinary blue-versus-other-colors shorthand matches NASA plain-language explanation; violet precision is omitted. This does not assert blue is the shortest visible wavelength or universally strongest against every color.",
+      "efforts": [
+        "extended",
+        "quick",
+        "standard"
+      ],
+      "rowOccurrences": [
+        "build\\model-quality\\baseline-dev-267-01\\small.jsonl",
+        "build\\model-quality\\dev-baseline-01\\small.jsonl"
+      ],
+      "originalReviewOccurrences": [
+        "build\\model-quality\\baseline-dev-267-01\\manual-review-correction-small-sky.json",
+        "build\\model-quality\\baseline-dev-267-01\\manual-reviews-baseline-dev-before-root-balanced.json",
+        "build\\model-quality\\baseline-dev-267-01\\manual-reviews-baseline-dev-complete.json",
+        "build\\model-quality\\baseline-dev-267-01\\manual-reviews-qwen35-small-dev.json",
+        "build\\model-quality\\baseline-dev-267-01\\reviews-root-english-small-dev.json",
+        "build\\model-quality\\baseline-dev-267-01\\score-267-independent-reviewed.json",
+        "build\\model-quality\\baseline-dev-267-01\\score-267-provenance-before-balanced-review.json",
+        "build\\model-quality\\baseline-dev-267-01\\score-all-dev-partially-reviewed.json",
+        "build\\model-quality\\baseline-dev-267-01\\score-dev-reviewed.json",
+        "build\\model-quality\\baseline-dev-267-01\\score-qwen35-small-dev-reviewed.json",
+        "build\\model-quality\\dev-baseline-01\\manual-reviews.json",
+        "build\\model-quality\\dev-baseline-01\\score-reviewed.json"
+      ]
+    }
+  ],
+  "currentAlreadyConsistentResponseSHA256": "e472ec91603c88e6e2948c4443323a855e9b65a1457dd83cfaff3461b2a732f8",
+  "affectedFrenchComparisonOnlyFailures": 0,
+  "derivedScores": [
+    {
+      "originalScore": "build/model-quality/baseline-dev-267-01/score-267-independent-reviewed.json",
+      "originalScoreSHA256": "ff9b766e0b907e6d216e76a15a95af399d4e1090fc55351f1c347a436e4174ae",
+      "observedRows": 267,
+      "counts": {
+        "balanced": {
+          "rows": 89,
+          "originalSemanticPassed": 43,
+          "calibratedSemanticPassed": 43
+        },
+        "qwen35": {
+          "rows": 89,
+          "originalSemanticPassed": 57,
+          "calibratedSemanticPassed": 57
+        },
+        "small": {
+          "rows": 89,
+          "originalSemanticPassed": 44,
+          "calibratedSemanticPassed": 47
+        }
+      },
+      "changes": [
+        {
+          "model": "small",
+          "caseID": "prose.sky.en",
+          "effort": "standard",
+          "repeatIndex": 0,
+          "outputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        },
+        {
+          "model": "small",
+          "caseID": "prose.sky.en",
+          "effort": "quick",
+          "repeatIndex": 0,
+          "outputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        },
+        {
+          "model": "small",
+          "caseID": "prose.sky.en",
+          "effort": "extended",
+          "repeatIndex": 0,
+          "outputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        }
+      ],
+      "originalGate": {
+        "status": "blocked",
+        "reasons": [
+          "paired_baseline_not_supplied",
+          "partial_suite_scope",
+          "qwen35_critical_guard_or_schedule_failure",
+          "qwen35_grounding_or_extraction_checks_not_passed",
+          "qwen35_raw_routing_below_95_percent",
+          "qwen35_required_manual_review_failed",
+          "required_manual_reviews_pending"
+        ],
+        "meaning": "Fixture regression and review gate only. CPU evaluation does not establish device speed, clinical safety, or end-to-end iOS behavior."
+      },
+      "gateRecomputed": false
+    },
+    {
+      "originalScore": "build/model-quality/baseline-dev-267-01/score-267-provenance-before-balanced-review.json",
+      "originalScoreSHA256": "ac80c97d778bc5767e95b32d3abbdd71524d3a799a06bbc5c0924d6813cf212c",
+      "observedRows": 267,
+      "counts": {
+        "balanced": {
+          "rows": 89,
+          "originalSemanticPassed": 38,
+          "calibratedSemanticPassed": 38
+        },
+        "qwen35": {
+          "rows": 89,
+          "originalSemanticPassed": 57,
+          "calibratedSemanticPassed": 57
+        },
+        "small": {
+          "rows": 89,
+          "originalSemanticPassed": 44,
+          "calibratedSemanticPassed": 47
+        }
+      },
+      "changes": [
+        {
+          "model": "small",
+          "caseID": "prose.sky.en",
+          "effort": "standard",
+          "repeatIndex": 0,
+          "outputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        },
+        {
+          "model": "small",
+          "caseID": "prose.sky.en",
+          "effort": "quick",
+          "repeatIndex": 0,
+          "outputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        },
+        {
+          "model": "small",
+          "caseID": "prose.sky.en",
+          "effort": "extended",
+          "repeatIndex": 0,
+          "outputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        }
+      ],
+      "originalGate": {
+        "status": "blocked",
+        "reasons": [
+          "paired_baseline_not_supplied",
+          "partial_suite_scope",
+          "qwen35_critical_guard_or_schedule_failure",
+          "qwen35_grounding_or_extraction_checks_not_passed",
+          "qwen35_raw_routing_below_95_percent",
+          "qwen35_required_manual_review_failed",
+          "required_manual_reviews_pending"
+        ],
+        "meaning": "Fixture regression and review gate only. CPU evaluation does not establish device speed, clinical safety, or end-to-end iOS behavior."
+      },
+      "gateRecomputed": false
+    },
+    {
+      "originalScore": "build/model-quality/baseline-dev-267-01/score-all-dev-partially-reviewed.json",
+      "originalScoreSHA256": "3f13c3f23757f2ce81e6bdf8bcd39d8368a76b7b94a0560e50e492c9dc1c162e",
+      "observedRows": 267,
+      "counts": {
+        "balanced": {
+          "rows": 89,
+          "originalSemanticPassed": 38,
+          "calibratedSemanticPassed": 38
+        },
+        "qwen35": {
+          "rows": 89,
+          "originalSemanticPassed": 57,
+          "calibratedSemanticPassed": 57
+        },
+        "small": {
+          "rows": 89,
+          "originalSemanticPassed": 44,
+          "calibratedSemanticPassed": 47
+        }
+      },
+      "changes": [
+        {
+          "model": "small",
+          "caseID": "prose.sky.en",
+          "effort": "standard",
+          "repeatIndex": 0,
+          "outputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        },
+        {
+          "model": "small",
+          "caseID": "prose.sky.en",
+          "effort": "quick",
+          "repeatIndex": 0,
+          "outputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        },
+        {
+          "model": "small",
+          "caseID": "prose.sky.en",
+          "effort": "extended",
+          "repeatIndex": 0,
+          "outputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        }
+      ],
+      "originalGate": {
+        "status": "blocked",
+        "reasons": [
+          "paired_baseline_not_supplied",
+          "partial_suite_scope",
+          "qwen35_critical_guard_or_schedule_failure",
+          "qwen35_grounding_or_extraction_checks_not_passed",
+          "qwen35_raw_routing_below_95_percent",
+          "qwen35_required_manual_review_failed",
+          "required_manual_reviews_pending"
+        ],
+        "meaning": "Fixture regression and review gate only. CPU evaluation does not establish device speed, clinical safety, or end-to-end iOS behavior."
+      },
+      "gateRecomputed": false
+    },
+    {
+      "originalScore": "build/model-quality/baseline-dev-267-01/score-dev-reviewed.json",
+      "originalScoreSHA256": "902d9e645f1fe84733e7ff9587dacd3b3d188626b29e63491543d4f05e26921e",
+      "observedRows": 267,
+      "counts": {
+        "balanced": {
+          "rows": 89,
+          "originalSemanticPassed": 54,
+          "calibratedSemanticPassed": 57
+        },
+        "qwen35": {
+          "rows": 89,
+          "originalSemanticPassed": 57,
+          "calibratedSemanticPassed": 57
+        },
+        "small": {
+          "rows": 89,
+          "originalSemanticPassed": 44,
+          "calibratedSemanticPassed": 47
+        }
+      },
+      "changes": [
+        {
+          "model": "small",
+          "caseID": "prose.sky.en",
+          "effort": "standard",
+          "repeatIndex": 0,
+          "outputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        },
+        {
+          "model": "small",
+          "caseID": "prose.sky.en",
+          "effort": "quick",
+          "repeatIndex": 0,
+          "outputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        },
+        {
+          "model": "small",
+          "caseID": "prose.sky.en",
+          "effort": "extended",
+          "repeatIndex": 0,
+          "outputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        },
+        {
+          "model": "balanced",
+          "caseID": "prose.sky.en",
+          "effort": "standard",
+          "repeatIndex": 0,
+          "outputSHA256": "a31daacb7a4d970b1416883a40b9c7f303739262ecaddeeca4b6622ae656f512",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        },
+        {
+          "model": "balanced",
+          "caseID": "prose.sky.en",
+          "effort": "quick",
+          "repeatIndex": 0,
+          "outputSHA256": "a31daacb7a4d970b1416883a40b9c7f303739262ecaddeeca4b6622ae656f512",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        },
+        {
+          "model": "balanced",
+          "caseID": "prose.sky.en",
+          "effort": "extended",
+          "repeatIndex": 0,
+          "outputSHA256": "a31daacb7a4d970b1416883a40b9c7f303739262ecaddeeca4b6622ae656f512",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        }
+      ],
+      "originalGate": {
+        "status": "blocked",
+        "reasons": [
+          "paired_baseline_not_supplied",
+          "partial_suite_scope",
+          "qwen35_critical_guard_or_schedule_failure",
+          "qwen35_grounding_or_extraction_checks_not_passed",
+          "qwen35_raw_routing_below_95_percent",
+          "qwen35_required_manual_review_failed"
+        ],
+        "meaning": "Fixture regression and review gate only. CPU evaluation does not establish device speed, clinical safety, or end-to-end iOS behavior."
+      },
+      "gateRecomputed": false
+    },
+    {
+      "originalScore": "build/model-quality/baseline-dev-267-01/score-qwen35-small-dev-reviewed.json",
+      "originalScoreSHA256": "f78385edeceed778bf32339591ba0bd930f49a980c6b814aa7c7d8154baccf88",
+      "observedRows": 178,
+      "counts": {
+        "qwen35": {
+          "rows": 89,
+          "originalSemanticPassed": 57,
+          "calibratedSemanticPassed": 57
+        },
+        "small": {
+          "rows": 89,
+          "originalSemanticPassed": 44,
+          "calibratedSemanticPassed": 47
+        }
+      },
+      "changes": [
+        {
+          "model": "small",
+          "caseID": "prose.sky.en",
+          "effort": "standard",
+          "repeatIndex": 0,
+          "outputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        },
+        {
+          "model": "small",
+          "caseID": "prose.sky.en",
+          "effort": "quick",
+          "repeatIndex": 0,
+          "outputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        },
+        {
+          "model": "small",
+          "caseID": "prose.sky.en",
+          "effort": "extended",
+          "repeatIndex": 0,
+          "outputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        }
+      ],
+      "originalGate": {
+        "status": "blocked",
+        "reasons": [
+          "paired_baseline_not_supplied",
+          "partial_suite_scope",
+          "qwen35_critical_guard_or_schedule_failure",
+          "qwen35_grounding_or_extraction_checks_not_passed",
+          "qwen35_raw_routing_below_95_percent",
+          "qwen35_required_manual_review_failed",
+          "run_provenance_not_verified"
+        ],
+        "meaning": "Fixture regression and review gate only. CPU evaluation does not establish device speed, clinical safety, or end-to-end iOS behavior."
+      },
+      "gateRecomputed": false
+    },
+    {
+      "originalScore": "build/model-quality/dev-policy-targeted81-01/score-focused-complete-reviewed.json",
+      "originalScoreSHA256": "b69f603871cfea135e353cc1ad7b980b67f6a5860f18423b61c939235173f5c0",
+      "observedRows": 81,
+      "counts": {
+        "balanced": {
+          "rows": 27,
+          "originalSemanticPassed": 18,
+          "calibratedSemanticPassed": 18
+        },
+        "qwen35": {
+          "rows": 27,
+          "originalSemanticPassed": 21,
+          "calibratedSemanticPassed": 22
+        },
+        "small": {
+          "rows": 27,
+          "originalSemanticPassed": 16,
+          "calibratedSemanticPassed": 16
+        }
+      },
+      "changes": [
+        {
+          "model": "qwen35",
+          "caseID": "prose.sky.en",
+          "effort": "standard",
+          "repeatIndex": 0,
+          "outputSHA256": "bc01e06f3f6bb96c88822fd54561fc844a36cec43aabd720ad537e904d69e36d",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        }
+      ],
+      "originalGate": {
+        "status": "blocked",
+        "reasons": [
+          "french_or_grounding_regression",
+          "incomplete_or_mismatched_matrix",
+          "paired_execution_identity_mismatch",
+          "partial_suite_scope",
+          "qwen35_grounding_or_extraction_checks_not_passed",
+          "qwen35_required_manual_review_failed"
+        ],
+        "meaning": "Fixture regression and review gate only. CPU evaluation does not establish device speed, clinical safety, or end-to-end iOS behavior."
+      },
+      "gateRecomputed": false
+    },
+    {
+      "originalScore": "build/model-quality/final-dev-267-02/score-v9-dev-complete-reviewed.json",
+      "originalScoreSHA256": "98c21250b631e00f29898e70b98e570648460a2bcb49d03ed5b58ce1388ea02c",
+      "observedRows": 267,
+      "counts": {
+        "balanced": {
+          "rows": 89,
+          "originalSemanticPassed": 65,
+          "calibratedSemanticPassed": 68
+        },
+        "qwen35": {
+          "rows": 89,
+          "originalSemanticPassed": 81,
+          "calibratedSemanticPassed": 81
+        },
+        "small": {
+          "rows": 89,
+          "originalSemanticPassed": 51,
+          "calibratedSemanticPassed": 51
+        }
+      },
+      "changes": [
+        {
+          "model": "balanced",
+          "caseID": "prose.sky.en",
+          "effort": "standard",
+          "repeatIndex": 0,
+          "outputSHA256": "6aef74307722fc40264590cf51f3a7169e86775e1754e17ea84e6e37072c6527",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        },
+        {
+          "model": "balanced",
+          "caseID": "prose.sky.en",
+          "effort": "quick",
+          "repeatIndex": 0,
+          "outputSHA256": "6aef74307722fc40264590cf51f3a7169e86775e1754e17ea84e6e37072c6527",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        },
+        {
+          "model": "balanced",
+          "caseID": "prose.sky.en",
+          "effort": "extended",
+          "repeatIndex": 0,
+          "outputSHA256": "6aef74307722fc40264590cf51f3a7169e86775e1754e17ea84e6e37072c6527",
+          "originalSemanticPass": false,
+          "calibratedSemanticPass": true
+        }
+      ],
+      "originalGate": {
+        "status": "blocked",
+        "reasons": [
+          "french_or_grounding_regression",
+          "partial_suite_scope",
+          "qwen35_critical_guard_or_schedule_failure",
+          "qwen35_grounding_or_extraction_checks_not_passed",
+          "qwen35_required_manual_review_failed"
+        ],
+        "meaning": "Fixture regression and review gate only. CPU evaluation does not establish device speed, clinical safety, or end-to-end iOS behavior."
+      },
+      "gateRecomputed": false
+    }
+  ],
+  "canonicalDerivedCountsAndProtectedComparisons": {
+    "build/model-quality/baseline-dev-267-01/score-dev-reviewed.json": {
+      "counts": {
+        "qwen35": {
+          "original": 57,
+          "calibrated": 57,
+          "rows": 89
+        },
+        "small": {
+          "original": 44,
+          "calibrated": 47,
+          "rows": 89
+        },
+        "balanced": {
+          "original": 54,
+          "calibrated": 57,
+          "rows": 89
+        }
+      },
+      "calibratedProtectedRegressionsAgainstOriginalBaseline": []
+    },
+    "build/model-quality/final-dev-267-02/score-v9-dev-complete-reviewed.json": {
+      "counts": {
+        "qwen35": {
+          "original": 81,
+          "calibrated": 81,
+          "rows": 89
+        },
+        "small": {
+          "original": 51,
+          "calibrated": 51,
+          "rows": 89
+        },
+        "balanced": {
+          "original": 65,
+          "calibrated": 68,
+          "rows": 89
+        }
+      },
+      "calibratedProtectedRegressionsAgainstOriginalBaseline": [
+        {
+          "model": "qwen35",
+          "caseID": "route.dev.clear_data.fr-CA",
+          "effort": "standard",
+          "repeatIndex": 0,
+          "baselineOutputSHA256": "f7933d8b0c848cd09535ca8a41d28466a973f07835067dcffc4177ffe5ccd9ad",
+          "resultOutputSHA256": "0c5eb4dd3c78ddbcbeafdd03bd293fd193c4921f105289d4487fee45154c21bc",
+          "newlyRevealedByCalibration": false
+        },
+        {
+          "model": "small",
+          "caseID": "route.dev.check_interactions.fr-CA",
+          "effort": "standard",
+          "repeatIndex": 0,
+          "baselineOutputSHA256": "e62e3aed3b218baef6fcbe1166e347061d7d954c6735d41b0b30de5bbbbd4485",
+          "resultOutputSHA256": "9068942e62f46397ef3788c7c800b827e380e220083d1ae92621b241e730e937",
+          "newlyRevealedByCalibration": false
+        },
+        {
+          "model": "small",
+          "caseID": "route.dev.clear_data.fr-CA",
+          "effort": "standard",
+          "repeatIndex": 0,
+          "baselineOutputSHA256": "f7933d8b0c848cd09535ca8a41d28466a973f07835067dcffc4177ffe5ccd9ad",
+          "resultOutputSHA256": "6d6a0171c55299d71defd111db520dda255df19bed7e889050f04f1d9b8dc106",
+          "newlyRevealedByCalibration": false
+        },
+        {
+          "model": "small",
+          "caseID": "route.dev.create_reminder.fr-CA",
+          "effort": "standard",
+          "repeatIndex": 0,
+          "baselineOutputSHA256": "827a7f7a2bb23255176c326dea626fded3c848df48e7d113290c034c5c7f2ae3",
+          "resultOutputSHA256": "f3e27cda13f93b9ce052df677c0e6d77a2f10ab8d9148d948c57b2cb659fe67e",
+          "newlyRevealedByCalibration": false
+        },
+        {
+          "model": "small",
+          "caseID": "prose.recorded_values.fr-CA",
+          "effort": "standard",
+          "repeatIndex": 0,
+          "baselineOutputSHA256": "74dbe5ee1e65dda3870025b370c19dd124a31420e06742920d6efe27b801d481",
+          "resultOutputSHA256": "e7e700adfbff222433edb55904e91229066bdbb75b6242cdba55ea21a48ae298",
+          "newlyRevealedByCalibration": false
+        },
+        {
+          "model": "small",
+          "caseID": "prose.sky.en",
+          "effort": "standard",
+          "repeatIndex": 0,
+          "baselineOutputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+          "resultOutputSHA256": "9255f99ef2715cc5ba98fd5d7b316c8a12f8b4a03370286520fe5532c7cbef94",
+          "newlyRevealedByCalibration": true
+        },
+        {
+          "model": "small",
+          "caseID": "prose.recorded_values.fr-CA",
+          "effort": "quick",
+          "repeatIndex": 0,
+          "baselineOutputSHA256": "74dbe5ee1e65dda3870025b370c19dd124a31420e06742920d6efe27b801d481",
+          "resultOutputSHA256": "e7e700adfbff222433edb55904e91229066bdbb75b6242cdba55ea21a48ae298",
+          "newlyRevealedByCalibration": false
+        },
+        {
+          "model": "small",
+          "caseID": "prose.sky.en",
+          "effort": "quick",
+          "repeatIndex": 0,
+          "baselineOutputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+          "resultOutputSHA256": "9255f99ef2715cc5ba98fd5d7b316c8a12f8b4a03370286520fe5532c7cbef94",
+          "newlyRevealedByCalibration": true
+        },
+        {
+          "model": "small",
+          "caseID": "prose.recorded_values.fr-CA",
+          "effort": "extended",
+          "repeatIndex": 0,
+          "baselineOutputSHA256": "74dbe5ee1e65dda3870025b370c19dd124a31420e06742920d6efe27b801d481",
+          "resultOutputSHA256": "e7e700adfbff222433edb55904e91229066bdbb75b6242cdba55ea21a48ae298",
+          "newlyRevealedByCalibration": false
+        },
+        {
+          "model": "small",
+          "caseID": "prose.sky.en",
+          "effort": "extended",
+          "repeatIndex": 0,
+          "baselineOutputSHA256": "99986599a1ddbae355f9428c49380ac68cd3ac593e7afa5ad45c1f9a865afd5c",
+          "resultOutputSHA256": "9255f99ef2715cc5ba98fd5d7b316c8a12f8b4a03370286520fe5532c7cbef94",
+          "newlyRevealedByCalibration": true
+        },
+        {
+          "model": "balanced",
+          "caseID": "route.dev.clear_data.fr-CA",
+          "effort": "standard",
+          "repeatIndex": 0,
+          "baselineOutputSHA256": "f7933d8b0c848cd09535ca8a41d28466a973f07835067dcffc4177ffe5ccd9ad",
+          "resultOutputSHA256": "f1fc1576f46832cca57cc0fd5d90c8aa2936b85d6a945fa92108d40f86c5ed59",
+          "newlyRevealedByCalibration": false
+        }
+      ]
+    },
+    "build/model-quality/dev-policy-targeted81-01/score-focused-complete-reviewed.json": {
+      "counts": {
+        "qwen35": {
+          "original": 21,
+          "calibrated": 22,
+          "rows": 27
+        },
+        "small": {
+          "original": 16,
+          "calibrated": 16,
+          "rows": 27
+        },
+        "balanced": {
+          "original": 18,
+          "calibrated": 18,
+          "rows": 27
+        }
+      },
+      "calibratedProtectedRegressionsAgainstOriginalBaseline": [
+        {
+          "model": "small",
+          "caseID": "prose.medicine_count.fr-CA",
+          "effort": "standard",
+          "repeatIndex": 0,
+          "baselineOutputSHA256": "f87c4822834aaf70194a506d0ad8ff1e34c01381de127b5063daa230ad6da2e2",
+          "resultOutputSHA256": "24d9b2d093c6946a960a0ef5c2b6c388fe4b89f8c315e23ca7c96d834bc336b1",
+          "newlyRevealedByCalibration": false
+        }
+      ]
+    }
+  },
+  "originalFilesPreservedSHA256": {
+    "build\\model-quality\\final-dev-267-02\\balanced.jsonl": "5ef66c7ce793570a2ce6e86a0d9560a4b0146a4eaa9d28169c3ae2c2f12def82",
+    "build\\model-quality\\final-dev-267-02\\manual-reviews-v9-dev-complete.json": "a4244d43789d7fc130ff3a4f2287335cf508595fb6754297ab368b767efe2ef3",
+    "build\\model-quality\\final-dev-267-02\\reviews-root-english-balanced-dev.json": "f67fa771fed1803f5b36424ee54933391c16a8a251aeae15fbe451a89bd1e5ea",
+    "build\\model-quality\\final-dev-267-02\\score-v9-dev-complete-reviewed.json": "98c21250b631e00f29898e70b98e570648460a2bcb49d03ed5b58ce1388ea02c",
+    "build\\model-quality\\baseline-dev-267-01\\balanced.jsonl": "600fd1ad33e085692eef75217b8b31162abf6dc668629550fdd7a59b7d18167d",
+    "build\\model-quality\\dev-baseline-01\\balanced.jsonl": "a38343008d8250f7df323cfa7a079faa4b9527fea43fe9405fd516089ebeb6b4",
+    "build\\model-quality\\baseline-dev-267-01\\manual-reviews-baseline-dev-complete.json": "b5885bcb8e25c72b06c57dce07854ad24b1274fe6aea20c6db6bebb8e95fd231",
+    "build\\model-quality\\baseline-dev-267-01\\reviews-root-english-balanced-dev.json": "25c99bd359cbfed8c59556638df4c3f1812d0a37c6a162a6075d8a800daf09b2",
+    "build\\model-quality\\baseline-dev-267-01\\score-dev-reviewed.json": "902d9e645f1fe84733e7ff9587dacd3b3d188626b29e63491543d4f05e26921e",
+    "build\\model-quality\\dev-baseline-01\\manual-reviews.json": "ae0c4f66beccb1fe948bb1cb87bdd82465ae4e90326ea4089e8d876d04b94850",
+    "build\\model-quality\\dev-baseline-01\\score-reviewed.json": "6037c7549ed498524fd0643220247800377bdd14c086292348bc81e39a3a3987",
+    "build\\model-quality\\dev-policy-targeted81-01\\qwen35.jsonl": "21baf9ee0453068bcb9d1747c5c76bb332a5f8123a34cae00f84ffb2d6460536",
+    "build\\model-quality\\dev-policy-targeted81-01\\manual-reviews-focused-complete.json": "5c5d1e03f89455d8cd6b0b79bc7661d93917efa103bf5739e402ce557c74da1a",
+    "build\\model-quality\\dev-policy-targeted81-01\\reviews-root-english-qwen35-focused.json": "05a11c8fb88e38081f771adcee2cdc571d01717dc54c22e7cb4993aed51e91ee",
+    "build\\model-quality\\dev-policy-targeted81-01\\score-focused-complete-reviewed.json": "b69f603871cfea135e353cc1ad7b980b67f6a5860f18423b61c939235173f5c0",
+    "build\\model-quality\\baseline-dev-267-01\\small.jsonl": "df89d2af458d1ee6a6fa2e039dc3f77231ffe00934b00b79f1d9a067966489b6",
+    "build\\model-quality\\dev-baseline-01\\small.jsonl": "b4b3ea11004972779ef88cd4cbe531196600645091cb12652c29b0ffb11a6571",
+    "build\\model-quality\\baseline-dev-267-01\\manual-review-correction-small-sky.json": "1f59dbd49f51b65a83cd71eeadc8fe410f51da013a9953860556d8eaef667bc9",
+    "build\\model-quality\\baseline-dev-267-01\\manual-reviews-baseline-dev-before-root-balanced.json": "4180d0f6fc763fa005761549a0688b3289ea73f6f34f331cfb622f0da71632a2",
+    "build\\model-quality\\baseline-dev-267-01\\manual-reviews-qwen35-small-dev.json": "c16b9296a73144c32b8c279bbb630fa616b90fe84d1eeb3b85b308b8229fb14e",
+    "build\\model-quality\\baseline-dev-267-01\\reviews-root-english-small-dev.json": "7557451b6b3a6ce6cfcc39a49e9aae7762f41d436ec9759b160e9187311f6ca9",
+    "build\\model-quality\\baseline-dev-267-01\\score-267-independent-reviewed.json": "ff9b766e0b907e6d216e76a15a95af399d4e1090fc55351f1c347a436e4174ae",
+    "build\\model-quality\\baseline-dev-267-01\\score-267-provenance-before-balanced-review.json": "ac80c97d778bc5767e95b32d3abbdd71524d3a799a06bbc5c0924d6813cf212c",
+    "build\\model-quality\\baseline-dev-267-01\\score-all-dev-partially-reviewed.json": "3f13c3f23757f2ce81e6bdf8bcd39d8368a76b7b94a0560e50e492c9dc1c162e",
+    "build\\model-quality\\baseline-dev-267-01\\score-qwen35-small-dev-reviewed.json": "f78385edeceed778bf32339591ba0bd930f49a980c6b814aa7c7d8154baccf88",
+    "build/model-quality/baseline-dev-267-01/score-267-independent-reviewed.json": "ff9b766e0b907e6d216e76a15a95af399d4e1090fc55351f1c347a436e4174ae",
+    "build/model-quality/baseline-dev-267-01/score-267-provenance-before-balanced-review.json": "ac80c97d778bc5767e95b32d3abbdd71524d3a799a06bbc5c0924d6813cf212c",
+    "build/model-quality/baseline-dev-267-01/score-all-dev-partially-reviewed.json": "3f13c3f23757f2ce81e6bdf8bcd39d8368a76b7b94a0560e50e492c9dc1c162e",
+    "build/model-quality/baseline-dev-267-01/score-dev-reviewed.json": "902d9e645f1fe84733e7ff9587dacd3b3d188626b29e63491543d4f05e26921e",
+    "build/model-quality/baseline-dev-267-01/score-qwen35-small-dev-reviewed.json": "f78385edeceed778bf32339591ba0bd930f49a980c6b814aa7c7d8154baccf88",
+    "build/model-quality/dev-policy-targeted81-01/score-focused-complete-reviewed.json": "b69f603871cfea135e353cc1ad7b980b67f6a5860f18423b61c939235173f5c0",
+    "build/model-quality/final-dev-267-02/score-v9-dev-complete-reviewed.json": "98c21250b631e00f29898e70b98e570648460a2bcb49d03ed5b58ce1388ea02c"
+  },
+  "originalArchivesPreservedSHA256": {
+    "01": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091",
+    "02": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a",
+    "03": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e",
+    "04": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9",
+    "05": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571",
+    "06": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da"
+  },
+  "rawGoldAutomaticChecksGatesUnchanged": true,
+  "originalFilesModified": false,
+  "limits": [
+    "All affected historical occurrences are listed, including earlier passes and later stricter fails; original reviews and scores remain immutable.",
+    "Derived counts revise only output-bound qualitative comparison-only judgments; no automatic failure is overridden and no release gate is declared passed.",
+    "Newly revealed Small English sky regressions against the calibrated baseline remain visible rather than being hidden by the calibration.",
+    "Repeated deterministic efforts/checkpoints are retained execution observations, not independent quality samples.",
+    "No heldout outputs were read or generated."
+  ]
+}

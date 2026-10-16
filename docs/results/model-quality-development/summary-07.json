@@ -1,0 +1,246 @@
+{
+  "formatVersion": 1,
+  "archive": "development-evidence-07.zip",
+  "bytes": 721498,
+  "sha256": "b36dd12db0892e89f8d8c1f2672462d9212a71f016076b9beeca0a51a22c6529",
+  "evidenceFiles": 126,
+  "sourceTestProof": {
+    "sourceIdentitySHA256": "562e13947dd959edf951c13e79f016b2ac3caf38471bdb09332c6416a6cf4be8",
+    "workingSourceBytes": true,
+    "committedSourceClaim": false,
+    "coreTests": 178,
+    "runtimeTests": 21,
+    "failures": 0,
+    "precedingSnapshot01": "Preserved uncompiled draft before conditional-scope clarification; no test or quality pass claim."
+  },
+  "focusedDevelopment": {
+    "formatVersion": 1,
+    "releaseEvidence": false,
+    "sourceSnapshotIdentitySHA256": "562e13947dd959edf951c13e79f016b2ac3caf38471bdb09332c6416a6cf4be8",
+    "scope": "Single visit contract/localized French snapshot/conditional prose scope, Standard-only focused development81. Complete frozen release matrix and heldout remain unrun.",
+    "requiredReviews": 54,
+    "pendingReviews": 0,
+    "models": {
+      "qwen35": {
+        "rows": 27,
+        "structuralPassed": 27,
+        "automaticPassed": 22,
+        "semanticPassed": 21,
+        "requiredReviews": 18,
+        "pendingReviews": 0,
+        "unsafeAccepted": 0,
+        "visitSemanticPassed": 0,
+        "acceptedMedicineCases": 4,
+        "previousLiteralVisitSemanticPassed": 3
+      },
+      "small": {
+        "rows": 27,
+        "structuralPassed": 26,
+        "automaticPassed": 18,
+        "semanticPassed": 18,
+        "requiredReviews": 18,
+        "pendingReviews": 0,
+        "unsafeAccepted": 0,
+        "visitSemanticPassed": 1,
+        "acceptedMedicineCases": 4,
+        "previousLiteralVisitSemanticPassed": 0
+      },
+      "balanced": {
+        "rows": 27,
+        "structuralPassed": 26,
+        "automaticPassed": 18,
+        "semanticPassed": 18,
+        "requiredReviews": 18,
+        "pendingReviews": 0,
+        "unsafeAccepted": 0,
+        "visitSemanticPassed": 0,
+        "acceptedMedicineCases": 4,
+        "previousLiteralVisitSemanticPassed": 1
+      }
+    },
+    "provenanceStatus": "verified",
+    "originalBaselineProtectedRegressions": [],
+    "originalBaselineInputSHA256": "902d9e645f1fe84733e7ff9587dacd3b3d188626b29e63491543d4f05e26921e",
+    "defaultModelChecks": {
+      "model": "qwen35",
+      "rawStandardRoutingRate": 1.0,
+      "requiredRoutingRate": 0.95,
+      "groundingOrExtractionFailures": [
+        {
+          "caseID": "prose.sky.fr-CA",
+          "effort": "standard",
+          "failures": [
+            "required_fact_missing:\\b(?:diffusion|diffus(?:e|ee|ees|ion)|dispers(?:e|ee|ees|ion|ent)|rayleigh)\\b"
+          ],
+          "manualReviewStatus": "fail"
+        },
+        {
+          "caseID": "visit.start.en",
+          "effort": "standard",
+          "failures": [
+            "visit_raw_missing_followup"
+          ],
+          "manualReviewStatus": "fail"
+        },
+        {
+          "caseID": "visit.start.fr-CA",
+          "effort": "standard",
+          "failures": [
+            "visit_raw_missing_followup"
+          ],
+          "manualReviewStatus": "fail"
+        },
+        {
+          "caseID": "visit.stop.en",
+          "effort": "standard",
+          "failures": [
+            "visit_raw_missing_followup"
+          ],
+          "manualReviewStatus": "fail"
+        },
+        {
+          "caseID": "visit.stop.fr-CA",
+          "effort": "standard",
+          "failures": [
+            "visit_raw_missing_followup"
+          ],
+          "manualReviewStatus": "fail"
+        }
+      ],
+      "englishRoutingRegressionsAgainstBalanced": []
+    },
+    "releaseGate": {
+      "status": "blocked",
+      "reasons": [
+        "incomplete_or_mismatched_matrix",
+        "paired_execution_identity_mismatch",
+        "partial_suite_scope",
+        "qwen35_grounding_or_extraction_checks_not_passed",
+        "qwen35_required_manual_review_failed"
+      ],
+      "meaning": "Fixture regression and review gate only. CPU evaluation does not establish device speed, clinical safety, or end-to-end iOS behavior."
+    },
+    "hashes": {
+      "score-focused-complete-reviewed.json": "b6ca0f060c239e3bd9edc8c9c578895395839bd0b4f8723738af3f224df4276a",
+      "manual-reviews-focused-complete.json": "f8ceb6b3bfb0dc7c4097fd3bee81db86c1d5c8bd590fe7d05c0c9f48194162dd",
+      "metadata.json": "c2ce5b99409acb4264116013e84dacd81b8b9f5af6e2ab6480b00ccadec765c7",
+      "collection-manifest.json": "0d2c5c575347770ae84dc1a83eb931ee584b89e542c947613d5ed4833385beab"
+    },
+    "limits": [
+      "Medicines in the narrow prevalidated branch are source-literal decoder constraints, not independent model extraction.",
+      "Raw follow-up omissions/unanchored proposals remain failed; accepted Core recovery earns no raw quality credit.",
+      "Frozen v1 does not measure highlight/appointment recall, which remains a separate recorded limitation.",
+      "The original baseline score is preserved; NASA comparison calibration is a separate historical addendum, not silently substituted here.",
+      "Partial Standard-only scope has a formal paired baseline effort/matrix mismatch; no final-source iOS/device inference claim."
+    ]
+  },
+  "independentControls": {
+    "formatVersion": 1,
+    "releaseEvidence": false,
+    "suiteSHA256": "0e485c0b26ea46565dc2da188ce8d83c8d765be5567e376b4a388d856dd395cf",
+    "sourceSnapshotIdentitySHA256": "562e13947dd959edf951c13e79f016b2ac3caf38471bdb09332c6416a6cf4be8",
+    "scope": "Frozen four-case independent factual supplement across all three models, Standard greedy CPU, source02; no model-dependent or topic-dependent prompt facts.",
+    "rows": 12,
+    "requiredReviews": 12,
+    "pendingReviews": 0,
+    "models": {
+      "qwen35": {
+        "rows": 4,
+        "semanticPassed": 3,
+        "englishPassed": 2,
+        "frenchPassed": 1
+      },
+      "small": {
+        "rows": 4,
+        "semanticPassed": 0,
+        "englishPassed": 0,
+        "frenchPassed": 0
+      },
+      "balanced": {
+        "rows": 4,
+        "semanticPassed": 2,
+        "englishPassed": 1,
+        "frenchPassed": 1
+      }
+    },
+    "hashes": {
+      "manual-reviews-complete.json": "771b9248245d108c1172b335165bcbb2591a3123d1fa9bd94a7df71173f101cf",
+      "metadata.json": "cd889b5f45aefe3e24849600e90941c7082823c13893b7d672dac92ed2f3dea5",
+      "collection-manifest.json": "fbd9449f04a73e4e037f84e91c699059cffc1c38e8570f7c71808aeca705f275"
+    },
+    "limits": [
+      "Broad principal-process/material-additional-error/language criteria are unchanged.",
+      "Partial supplement does not replace the full frozen release matrix or human subject-matter/clinical validation.",
+      "Repeated reaction fragments in Small are preserved as incomplete qualitative failure; actual generation stop cause is unavailable.",
+      "No heldout or physical iPhone evidence."
+    ]
+  },
+  "samplingDiagnostic": {
+    "formatVersion": 1,
+    "releaseEvidence": false,
+    "preregistrationSHA256": "215cb5421287a34e2e8f00ab1615de552ecb67f809bd6ea9a97732464bbe3200",
+    "sourceIdentitySHA256": "562e13947dd959edf951c13e79f016b2ac3caf38471bdb09332c6416a6cf4be8",
+    "scope": "All18 retained responses from all three fixed seeds; isolated sampler approximation, not production evidence",
+    "rows": 18,
+    "requiredQualitativeAIReviews": 18,
+    "pendingQualitativeAIReviews": 0,
+    "semanticPassed": 5,
+    "englishPassed": 4,
+    "frenchPassed": 1,
+    "seeds": {
+      "1729": {
+        "rows": 6,
+        "semanticPassed": 3,
+        "englishPassed": 2,
+        "frenchPassed": 1
+      },
+      "2027": {
+        "rows": 6,
+        "semanticPassed": 1,
+        "englishPassed": 1,
+        "frenchPassed": 0
+      },
+      "4099": {
+        "rows": 6,
+        "semanticPassed": 1,
+        "englishPassed": 1,
+        "frenchPassed": 0
+      }
+    },
+    "investigationQualification": {
+      "requiredPasses": 18,
+      "observedPasses": 5,
+      "status": "failed",
+      "meaning": "Does not meet preregistered threshold even for further production investigation; no production sampler change or release-gate replacement."
+    },
+    "generationErrors": 0,
+    "actualGenerationStopCause": "unknown; copied production actor returns text only",
+    "hashes": {
+      "sampling-system-preregistration-01.json": "215cb5421287a34e2e8f00ab1615de552ecb67f809bd6ea9a97732464bbe3200",
+      "metadata.json": "e79c3b67dd5ad0bf378f131b6bc5b131527e89b944a9207856be60896de8e7aa",
+      "qwen35.jsonl": "930e86c32b055a2879a8c7332ba5a969de7585545467ac1c40005e77b5da267f",
+      "manual-reviews-complete.json": "13bca7bc76d7fe1552484588e702accff5ac11cadf1d8f01ebfa9db2d83f5223"
+    },
+    "actualPreparedPrompts": "All18 match the six sealed unchanged source02 prompt hashes",
+    "sourceRuntimeModelIdentities": "Match preregistration; actual compiler-byte audit is separate",
+    "implementationLimit": "The author card does not specify penalty history scope or sampler order. This llama.cpp generated-only history window and explicit chain are a bounded approximation, not a claim of exact framework equivalence.",
+    "limits": [
+      "All three fixed seeds and all18 responses are retained; no favorable-seed selection or independent replication claim.",
+      "Sampler construction uses declared generated-only history/order approximation; it is not exact framework-equivalence evidence.",
+      "Qualitative AI labels do not constitute human subject-matter/clinical validation.",
+      "No production sampler/source/gold/gate change, heldout or physical iPhone evidence."
+    ]
+  },
+  "calibration": {
+    "path": "sky-comparison-calibration-addendum-01.json",
+    "sha256": "26b129e74c85b193588e7b83d05b309a8bd9fcffd20cacee5d21708e116cf2c8",
+    "scope": "All affected historical comparison-only English AI decisions; original grades/outputs remain preserved, with derived counts and newly exposed Small regressions."
+  },
+  "limits": [
+    "This revision regresses Qwen raw visit follow-up recall relative to the preceding literal-source focus.",
+    "Source-constrained medicine fields and recovered summaries do not measure independent model recall.",
+    "The isolated approximate author-sampling profile retains all three seeds and does not replace production settings or release gates.",
+    "All qualitative decisions are AI review of synthetic cases, not clinician labels.",
+    "No heldout, complete final release matrix, final-source xtool or physical iPhone/Metal validation."
+  ]
+}

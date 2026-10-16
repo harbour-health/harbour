@@ -41,6 +41,36 @@ public enum AppointmentRules {
         guard input.range(of: "\\b(?:appointment|rendez-vous|consultation|follow[- ]?up|see (?:dr|doctor)|visit with)\\b", options: .regularExpression) != nil else { return false }
         return input.range(of: "\\b(?:not|don't|do not|never|maybe|might|may|could|if|should i|can i|pas|jamais|peut-etre|si|pourrais|pourrait|pourrions|devrais|devrait|envisager|envisagez|eventuellement|puis-je|dois-je)\\b|\\?", options: .regularExpression) == nil
     }
+    static func hasCreationCommandTarget(_ command: String) -> Bool {
+        let verb = #"(?:create|add|save|record|book|schedule|set|make|cree|creez|creer|ajoute|ajoutez|ajouter|enregistre|enregistrez|enregistrer|reserve|reservez|reserver|planifie|planifiez|planifier|programme|programmez|programmer|prends|prenez|prendre)"#
+        let qualifiers = #"(?:(?:my|the|an|a|our|new|next|upcoming|dentist|dentist's|dental|doctor|doctor's|medical|optometrist|mon|ma|le|la|un|une|notre|nouveau|nouvelle|prochain|prochaine)\s+){0,5}"#
+        let target = #"\A"# + verb + #"\s+(?:(?:me|us|nous|moi)\s+)?"# + qualifiers + #"(?:appointment|rendez-vous|consultation)\b"#
+        return command.range(of: target, options: .regularExpression) != nil
+    }
+    /// A polite current write request is distinct from an appointment fact in a
+    /// transcript. Strip only the outer request modal and terminal question mark;
+    /// the existing fact/negation checks still apply to the complete command.
+    static func isPoliteCreationRequest(_ text: String) -> Bool {
+        guard text.count <= 1000, !text.contains("<|"),
+              !text.unicodeScalars.contains(where: { CharacterSet.controlCharacters.contains($0) }) else { return false }
+        let quotes = #""[^"]*"|“[^”]*”|«[^»]*»|‘[^’]*’|(?<![\p{L}\p{N}])'(?:[^']|(?<=[\p{L}])'(?=[\p{L}]))*'(?![\p{L}\p{N}])"#
+        guard text.range(of: quotes, options: .regularExpression) == nil else { return false }
+        let input = InputLanguage.folded(text).trimmingCharacters(in: .whitespaces)
+        let courtesy = #"(?:(?:please|svp|veuillez|s'il vous plait|s'il te plait),?\s+)?"#
+        let modal = #"(?:(?:can|could|would|will)\s+you|(?:peux|pourrais|pouvez|pourriez)[ -](?:tu|vous)|est-ce que (?:tu (?:peux|pourrais)|vous (?:pouvez|pourriez)))\s+"#
+        guard let prefix = input.range(of: #"\A"# + courtesy + modal + courtesy + #"(?:(?:me|nous)\s+|m')?"#, options: .regularExpression) else { return false }
+        var command = String(input[prefix.upperBound...]).trimmingCharacters(in: .whitespaces)
+        if command.hasSuffix("?") { command.removeLast(); command = command.trimmingCharacters(in: .whitespaces) }
+        guard hasCreationCommandTarget(command), isAppointment(command) else { return false }
+        // A polite wrapper cannot authorize a conditional booking or an
+        // additional action concealed in a later clause.
+        let condition = #"\b(?:unless|until|when|once|after|before|provided|assuming|pending|as\s+long\s+as|on\s+condition|subject\s+to|s'il(?:s)?(?!\s+(?:vous|te)\s+plait)|sauf|quand|lorsque|apres|avant|des\s+que|une\s+fois|a\s+condition|a\s+moins|pourvu|sous\s+reserve|en\s+attendant)\b"#
+        let otherAction = #"(?:[,.;:]\s*|\b(?:and|then|also|et|puis|ensuite)\s+)"# + courtesy + "(?:" + modal + ")?" + courtesy
+            + #"(?:add|create|save|record|book|schedule|remove|delete|clear|import|export|scan|log|stop|remind|reminder|reset|wipe|erase|set|make|open|use|read|take|skip|mark|remember|keep|store|start|begin|put|register|include|track|note|sync|ajout[a-z]*|cre[eazr]*|enregistr[a-z]*|retir[a-z]*|supprim[a-z]*|effac[a-z]*|import[a-z]*|export[a-z]*|scann[a-z]*|planifi[a-z]*|programm[a-z]*|arret[a-z]*|rappel[a-z]*|reinitialis[a-z]*|vid[a-z]*|consign[a-z]*|marqu[a-z]*|sauv[a-z]*|gard[a-z]*|inscris|inscrivez|inscrire)\b"#
+        return command.range(of: condition, options: .regularExpression) == nil
+            && command.range(of: otherAction, options: .regularExpression) == nil
+            && command.range(of: #"\b(?:or|ou)\b"#, options: .regularExpression) == nil
+    }
     public static func draft(from text: String, visitID: UUID? = nil, now: Date = .now, calendar: Calendar = .current) -> Appointment {
         let input = InputLanguage.folded(text)
         var date = calendar.startOfDay(for: now)

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "recordedUTC": "2026-10-13T22:22:51.077647+00:00",
+  "passed": true,
+  "archiveSHA256": "9256a1b05980ecca73de810848a2bbf854bbac2c6264c26d10506df71732608c",
+  "manifestSHA256": "bf6c126fb63e423c0b6d19401bc78f126974ca8001b67251b4471b7c2de97cec",
+  "evidenceFiles": 184,
+  "membersIncludingManifest": 185,
+  "allSelectedBytesEqualLocalOriginals": true,
+  "priorArchives01Through29Unchanged": true,
+  "originalSource15AppGate": "BLOCKED_NATIVE_FAILURE",
+  "scope": "Original source15 correctness/xtool and Standard-pass/Native-fail evidence integrity; separate UI candidate/equivalence. No model-quality, new3ee4 app, freeze, heldout or Ready credit.",
+  "auditorSHA256": "6b71deccb27b508b20356bf051aa4bfb4041b873bf8b50d1ecfd17ee2f367711"
+}

@@ -5,6 +5,7 @@
 - [Architecture](architecture.md) — modules, persistence, tool execution, and change points.
 - [Chat agent](chat-agent.md) — generated conversation, model-selected tools, history, and validation.
 - [Local models](local-models.md) — runtime setup, pinned weights, downloads, and cancellation.
+- [xtool builds](xtool.md) — Linux/WSL preparation, Apple SDK setup, app packaging, permissions, and validation limits.
 - [Doctor visits](doctor-visits.md) — local recording, transcript recovery, source-grounded summaries, and confirmed medicine updates.
 - [Care actions](care-actions.md) — reminders, schedules, dose logging, history, appointment preparation, and shared chat tools.
 - [Care notifications](care-notifications.md) — local scheduling, permission, privacy, limits, and cancellation.

@@ -258,6 +258,7 @@
 "Negated then affirmative" = "Négation suivie d’une affirmation";
 "New chat" = "Nouvelle conversation";
 "New confusion" = "Confusion nouvelle";
+"New installs use Automatic. Qwen3.5 2B is optional." = "Les nouvelles installations utilisent le mode automatique. Qwen3.5 2B est disponible en option.";
 "Next step" = "Prochaine étape";
 "NHS source" = "Source du NHS";
 "No details extracted. Review the transcript." = "Aucun détail extrait. Vérifiez la transcription.";
@@ -331,6 +332,8 @@
 "Qwen 1.5B" = "Qwen 1.5B";
 "Qwen Balanced" = "Qwen Équilibré";
 "Qwen Small" = "Qwen Petit";
+"Qwen3.5" = "Qwen3.5";
+"Qwen3.5 2B" = "Qwen3.5 2B";
 "Read response aloud" = "Lire la réponse à voix haute";
 "Read test label" = "Lire l’étiquette de test";
 "Reading" = "Relevé";
@@ -455,6 +458,7 @@
 "The microphone format isn’t supported for transcription." = "Le format audio du microphone n’est pas pris en charge pour la transcription.";
 "The model could not be opened. Remove it and download it again." = "Impossible d’ouvrir le modèle. Supprimez-le et téléchargez-le de nouveau.";
 "The model could not prepare the required response format. Please try again." = "Le modèle n’a pas pu préparer le format de réponse requis. Réessayez.";
+"The model could not prepare this request. Please try again." = "Le modèle n’a pas pu préparer cette demande. Réessayez.";
 "The model could not read this message." = "Le modèle n’a pas pu lire ce message.";
 "The model could not start generating a response. Please try again." = "Le modèle n’a pas pu commencer à générer une réponse. Réessayez.";
 "The model couldn’t extract a visit summary. Your transcript is still saved." = "Le modèle n’a pas pu extraire un résumé de consultation. Votre transcription est toujours sauvegardée.";
@@ -593,3 +597,4 @@
 "Times" = "Heures";
 "Edit details" = "Modifier les détails";
 "Add medication" = "Ajouter un médicament";
+"Review the transcript before saving changes; some details could not be confirmed." = "Relisez la transcription avant d’enregistrer les modifications; certains détails n’ont pas pu être confirmés.";

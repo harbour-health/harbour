@@ -1,0 +1,20 @@
+{
+  "formatVersion": 1,
+  "archiveNumber": 19,
+  "sourceCommit": "740a797ffcd7f15c9a21c8db8f86d729a362b863",
+  "archive": "development-evidence-19.zip",
+  "archiveBytes": 445859,
+  "archiveSHA256": "77c44c435552002131873a750b610e58a4f0f1fe1130c125b2f960e030539d1a",
+  "manifestSHA256": "e48bc0081e7da41b59ff9d6088e9f710eb358a0e86e9aa3feb79ca6d476b66cc",
+  "members": 25,
+  "scope": "Failed source12 implementation and fresh Core checks only. 210 tests, 13 failed assertions across four methods. Runtime/native/auxiliary/xtool/quality/heldout did not run.",
+  "failedCorePreservationSHA256": "d1d8e289533500541f30d7aeae6c36ccaa5cb89b40f295f7de1325b99b6a985d",
+  "notEstablished": [
+    "Passed source12 Core",
+    "Source12 Runtime/native/xtool/app/model quality",
+    "Final source freeze",
+    "Heldout accuracy",
+    "Physical-device execution"
+  ],
+  "archiveBuilderSHA256": "0d2dc6e2bbd6d1a49efaff59eaad2f14d56ec001d48578a92ba368b228f0a7bf"
+}

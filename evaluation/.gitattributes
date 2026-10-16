@@ -1,0 +1,3 @@
+# Preserve the exact frozen fixture bytes and digest across platforms.
+harbour-model-quality-v1.json -text
+independent-factual-controls-v1.json -text

@@ -1,0 +1,92 @@
+Building for production...
+[Provisioning 1 / 10]
+[Pre-planning 1 / 213]
+[Creating build graph]
+[Starting]
+[47 / 79] HarbourRuntime
+[53 / 79] HarbourCore
+[65 / 84] HarbourRuntimeTests-product
+[67 / 85] model-probe-product
+[70 / 85] model-probe-product
+[70 / 85] HarbourRuntimeTests-product
+[75 / 85] HarbourRuntimeTests-product
+[79 / 87] HarbourRuntimeTests-test-runner
+[84 / 87] HarbourRuntimeTests-test-runner
+[84 / 87] model-eval-product
+[87 / 87] model-eval-product
+Build complete! (33.25 secs)
+Test Suite 'All tests' started at 2026-10-16 04:48:32.074
+Test Suite 'Release-linux-x86_64.xctest' started at 2026-10-16 04:48:32.076
+Test Suite 'JSONEnvelopeTests' started at 2026-10-16 04:48:32.076
+Test Case 'JSONEnvelopeTests.testBracesInsideStrings' started at 2026-10-16 04:48:32.076
+Test Case 'JSONEnvelopeTests.testBracesInsideStrings' passed (0.001 seconds)
+Test Case 'JSONEnvelopeTests.testEscapedQuoteDoesNotEndString' started at 2026-10-16 04:48:32.077
+Test Case 'JSONEnvelopeTests.testEscapedQuoteDoesNotEndString' passed (0.0 seconds)
+Test Case 'JSONEnvelopeTests.testLeadingAndTrailingTextAndIncompleteInput' started at 2026-10-16 04:48:32.077
+Test Case 'JSONEnvelopeTests.testLeadingAndTrailingTextAndIncompleteInput' passed (0.0 seconds)
+Test Case 'JSONEnvelopeTests.testNestedArgumentDoesNotStopGenerationEarly' started at 2026-10-16 04:48:32.077
+Test Case 'JSONEnvelopeTests.testNestedArgumentDoesNotStopGenerationEarly' passed (0.0 seconds)
+Test Suite 'JSONEnvelopeTests' passed at 2026-10-16 04:48:32.077
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'ModelPromptFormatTests' started at 2026-10-16 04:48:32.077
+Test Case 'ModelPromptFormatTests.testMissingAssistantMarkerIsRejectedBeforeInference' started at 2026-10-16 04:48:32.078
+Test Case 'ModelPromptFormatTests.testMissingAssistantMarkerIsRejectedBeforeInference' passed (0.0 seconds)
+Test Case 'ModelPromptFormatTests.testQwen35DisablesThinkingForEveryGenerationPath' started at 2026-10-16 04:48:32.078
+Test Case 'ModelPromptFormatTests.testQwen35DisablesThinkingForEveryGenerationPath' passed (0.001 seconds)
+Test Case 'ModelPromptFormatTests.testRoutingCompatibilityProfileFollowsFixedModelFamilyAndSharedLocalization' started at 2026-10-16 04:48:32.079
+Test Case 'ModelPromptFormatTests.testRoutingCompatibilityProfileFollowsFixedModelFamilyAndSharedLocalization' passed (0.001 seconds)
+Test Case 'ModelPromptFormatTests.testTerminalNewlineMatchesCanonicalTemplate' started at 2026-10-16 04:48:32.080
+Test Case 'ModelPromptFormatTests.testTerminalNewlineMatchesCanonicalTemplate' passed (0.0 seconds)
+Test Suite 'ModelPromptFormatTests' passed at 2026-10-16 04:48:32.080
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.003 (0.003) seconds
+Test Suite 'TitleOutputGrammarTests' started at 2026-10-16 04:48:32.080
+Test Case 'TitleOutputGrammarTests.testFrenchTitleEnvelopePreservesEscapedQuotesBracesAndUnicode' started at 2026-10-16 04:48:32.080
+Test Case 'TitleOutputGrammarTests.testFrenchTitleEnvelopePreservesEscapedQuotesBracesAndUnicode' passed (0.0 seconds)
+Test Case 'TitleOutputGrammarTests.testJSONStringEscapesAndControlCharactersHaveExplicitRules' started at 2026-10-16 04:48:32.081
+Test Case 'TitleOutputGrammarTests.testJSONStringEscapesAndControlCharactersHaveExplicitRules' passed (0.0 seconds)
+Test Case 'TitleOutputGrammarTests.testRootContractIsExactlyOneTitleString' started at 2026-10-16 04:48:32.081
+Test Case 'TitleOutputGrammarTests.testRootContractIsExactlyOneTitleString' passed (0.0 seconds)
+Test Suite 'TitleOutputGrammarTests' passed at 2026-10-16 04:48:32.081
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'ToolOutputGrammarTests' started at 2026-10-16 04:48:32.081
+Test Case 'ToolOutputGrammarTests.testActionOnlyGrammarKeepsEmptyArguments' started at 2026-10-16 04:48:32.081
+Test Case 'ToolOutputGrammarTests.testActionOnlyGrammarKeepsEmptyArguments' passed (0.0 seconds)
+Test Case 'ToolOutputGrammarTests.testDuplicateToolsPreserveFirstOrder' started at 2026-10-16 04:48:32.081
+Test Case 'ToolOutputGrammarTests.testDuplicateToolsPreserveFirstOrder' passed (0.0 seconds)
+Test Case 'ToolOutputGrammarTests.testEmptyToolsAreRejected' started at 2026-10-16 04:48:32.081
+Test Case 'ToolOutputGrammarTests.testEmptyToolsAreRejected' passed (0.0 seconds)
+Test Case 'ToolOutputGrammarTests.testInvalidGrammarFailsBeforeLoadingModel' started at 2026-10-16 04:48:32.081
+Test Case 'ToolOutputGrammarTests.testInvalidGrammarFailsBeforeLoadingModel' passed (0.101 seconds)
+Test Case 'ToolOutputGrammarTests.testReplyRouterDecisionHasAnEmptyArgument' started at 2026-10-16 04:48:32.182
+Test Case 'ToolOutputGrammarTests.testReplyRouterDecisionHasAnEmptyArgument' passed (0.0 seconds)
+Test Case 'ToolOutputGrammarTests.testRouterReturnsExactToolObjectWithEmptyArgument' started at 2026-10-16 04:48:32.182
+Test Case 'ToolOutputGrammarTests.testRouterReturnsExactToolObjectWithEmptyArgument' passed (0.0 seconds)
+Test Case 'ToolOutputGrammarTests.testUnsafeNamesCannotInjectGrammarOrJSON' started at 2026-10-16 04:48:32.182
+Test Case 'ToolOutputGrammarTests.testUnsafeNamesCannotInjectGrammarOrJSON' passed (0.0 seconds)
+Test Suite 'ToolOutputGrammarTests' passed at 2026-10-16 04:48:32.182
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.101 (0.101) seconds
+Test Suite 'VisitSummaryOutputGrammarTests' started at 2026-10-16 04:48:32.182
+Test Case 'VisitSummaryOutputGrammarTests.testEscapedUnicodeAndEmptyCategoriesAreValidJSON' started at 2026-10-16 04:48:32.182
+Test Case 'VisitSummaryOutputGrammarTests.testEscapedUnicodeAndEmptyCategoriesAreValidJSON' passed (0.0 seconds)
+Test Case 'VisitSummaryOutputGrammarTests.testGrammarContainsOnlyTheSupportedMedicationFields' started at 2026-10-16 04:48:32.182
+Test Case 'VisitSummaryOutputGrammarTests.testGrammarContainsOnlyTheSupportedMedicationFields' passed (0.0 seconds)
+Test Case 'VisitSummaryOutputGrammarTests.testNativeRuntimeParsesAllOutputGrammarsWithoutModelWeights' started at 2026-10-16 04:48:32.182
+parse: error parsing grammar: expecting newline or end at _rule
+invalid_rule ::= "x"
+
+root ::= invalid_rule
+invalid_rule ::= "x"
+failed to parse grammar
+Test Case 'VisitSummaryOutputGrammarTests.testNativeRuntimeParsesAllOutputGrammarsWithoutModelWeights' passed (0.034 seconds)
+Test Case 'VisitSummaryOutputGrammarTests.testRootRequiresAllCategoriesAndBoundedCollections' started at 2026-10-16 04:48:32.216
+Test Case 'VisitSummaryOutputGrammarTests.testRootRequiresAllCategoriesAndBoundedCollections' passed (0.0 seconds)
+Test Suite 'VisitSummaryOutputGrammarTests' passed at 2026-10-16 04:48:32.217
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.034 (0.034) seconds
+Test Suite 'Release-linux-x86_64.xctest' passed at 2026-10-16 04:48:32.217
+	 Executed 22 tests, with 0 failures (0 unexpected) in 0.14 (0.14) seconds
+Test Suite 'All tests' passed at 2026-10-16 04:48:32.217
+	 Executed 22 tests, with 0 failures (0 unexpected) in 0.14 (0.14) seconds
+◇ Test run started.
+↳ Testing Library Version: 6.4 (efd8d65801f569d)
+↳ Target Platform: x86_64-unknown-linux-gnu
+✔ Test run with 0 tests in 0 suites passed after 0.001 seconds.

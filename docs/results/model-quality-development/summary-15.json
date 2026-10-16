@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "createdUTC": "2026-10-13T09:29:46.346892+00:00",
+  "archive": "development-evidence-15.zip",
+  "archiveSHA256": "ca624ec881a7328f0de79d60f65938887e00e008f15f2af996173cc0377372da",
+  "archiveBytes": 1058260,
+  "manifestSHA256": "1f633993d32cd8291d1fa35d1656db235ebf839146df00a858fabecc9be3da2c",
+  "evidenceFiles": 108,
+  "memberCount": 109,
+  "allowlistSHA256": "9c256e4298be3784894b7390193254aa24721bde94fc902091f6145b032f2d4d",
+  "preflightSHA256": "48b56ab1fb10efe24dea4db0a65d8a330458fa24c117d425cf43232c643049be",
+  "builderSHA256": "4c536a015a13e7c2841f1b11507940898db3e4b7f27df9427d337a560ce60345",
+  "scope": "Completed source11 local correctness and fresh xtool Release cross-build only; no Mac UI, DEV/supplement/heldout comparison or production readiness claim.",
+  "releaseEvidence": false,
+  "CRCAndAllMemberHashesVerified": true,
+  "previousArchivesUnchanged": true,
+  "preflight": {
+    "schemaVersion": 1,
+    "result": "PASS",
+    "createdUTC": "2026-10-13T09:29:46.346892+00:00",
+    "sourceCommit": "7a4181264af9c5443811796aacd6d64c13a76339",
+    "allowlistSHA256": "9c256e4298be3784894b7390193254aa24721bde94fc902091f6145b032f2d4d",
+    "selectedEvidenceFiles": 108,
+    "totalUncompressedBytes": 2380613,
+    "maximumMemberBytes": 363284,
+    "sourceArchives": [
+      {
+        "folder": "build/model-quality/committed-source11",
+        "filesVerified": 131,
+        "sourceIdentitySHA256": "38cbb809476100fe09e5eb3f000e9d01c6cef2d875a5990e64f3e51b149b32b3",
+        "archiveSHA256": "c1d525289d2784eece047b297a3fdde1bbc3fff144420352c8675834c508a005",
+        "manifestSHA256": "00635c7b2be7fcb65516b5ad9635c416adb0716ec0ea9646c58c2aa7abd97b97",
+        "actualBytesAndEOLVerified": true
+      },
+      {
+        "folder": "build/xtool-7a41812-validation",
+        "filesVerified": 128,
+        "sourceIdentitySHA256": "70c4fa3109efc52ecc1f7b68d503639137e025a6e41863e8a90f900bb529d4c8",
+        "archiveSHA256": "f733c69d048095584868787adf1986f6f82af1f2206a5eece560776ca227cc4d",
+        "manifestSHA256": "aeb47d91533efa98aeb120ffb1c6f123ec911985cd478977429f4b618a978bda",
+        "actualBytesAndEOLVerified": true
+      }
+    ],
+    "identicalCoreRuntimeFiles": 48,
+    "importedTestArtifactsByteIdentical": 4,
+    "testsImportedByXtoolNotRerun": true,
+    "counts": {
+      "Core": 200,
+      "Runtime": 21,
+      "nativeGrammarContext": 159,
+      "Python": 60,
+      "localizationKeys": 598
+    },
+    "xtool": {
+      "elapsedSeconds": 91.99446912575513,
+      "bundleFiles": 25,
+      "exitCode": 0
+    },
+    "priorArchivesSHA256": {
+      "01": "e86661c3036c467bd6146c15fc92dc767915bf0432d20af0bdfd36ccf8e4d091",
+      "02": "f08639d073f8f34b8725942c9274bac777d6c0863bd10722257d76108625500a",
+      "03": "bff3f023da2ecd32bf5e6b4f292c359037e9f1f1a1705a55f812718bfb60c69e",
+      "04": "c07b78a7ee9d1a828ba569267dbe2355fcfce353c97d4ccbf16559c77c0e0fb9",
+      "05": "6fdf02c93c388a56a913e636762e62b2c31ce9d6e57ba1d6717ef2921e05a571",
+      "06": "7cfdcf12e805d297b498794bd6eebc0142b9aba9f10b42530cd181d5a32736da",
+      "07": "b36dd12db0892e89f8d8c1f2672462d9212a71f016076b9beeca0a51a22c6529",
+      "08": "8997676469921003a6e4a112e3c120317382cc562cc5150f3646d4869b524a10",
+      "09": "7da96637ba2b134a309905cb97e908427408125c3d7bf13704503eabd7e4f688",
+      "10": "ad796f1d76199ad8dd613bbb1f36d4ed05cc2178483d4e1dd23375f506de31f7",
+      "11": "7ef4c58f54f264df70b1b1ddd0e42baa108a16d1a0862e9c5a14e5666bf23108",
+      "12": "e1f44ecd97238f68a6f3e9a3929230059082ae1fdaf69f13d24aa6feb7d64269",
+      "13": "ed487a3e47a7a5ef31c9b21ec72dd3580c157bd25835bc517e26382c3c325810",
+      "14": "41710bf12bf2b1854fb7ec16114c2bbc1b76c7104b350db114b9bd89d89c2796"
+    },
+    "privateControllerAddressAbsent": true,
+    "scope": "Completed source11 local correctness and fresh xtool Release cross-build only; no Mac UI, DEV/supplement/heldout comparison or production readiness claim.",
+    "noTestsCompilerInferenceScorerOrPublicationPerformedByPackager": true
+  }
+}

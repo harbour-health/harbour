@@ -1,0 +1,11 @@
+{
+  "errors": [],
+  "catalog_keys": 599,
+  "permission_keys": 6,
+  "explicit_literal_uses": 274,
+  "implicit_ui_literal_uses": 244,
+  "bounded_content_uses": 89,
+  "source_keys_checked": 488,
+  "interpolation_review": [],
+  "limitation": "Source consistency only. Review dynamic strings, persisted/generated text, SwiftUI interpolation keys, plural grammar, runtime language selection, and rendered screens separately."
+}
