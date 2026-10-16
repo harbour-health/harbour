@@ -219,7 +219,7 @@ struct VisitDetailView: View {
                                 }
                             }
                         }
-                        if summary.highlights.isEmpty && summary.followUps.isEmpty && summary.medicines.isEmpty { Text("No details extracted. Review the transcript.").font(.title3) }
+                        if summary.isEmpty { Text("No details extracted. Review the transcript.").font(.title3).accessibilityIdentifier("visitEmptySummary") }
                     } else {
                         VStack(alignment: .leading, spacing: 20) {
                             Text(L10n.string(visit.transcript.isEmpty ? "Add a transcript to prepare a summary" : "Ready to summarise")).font(.system(.title2, design: .rounded, weight: .bold))

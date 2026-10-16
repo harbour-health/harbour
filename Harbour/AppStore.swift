@@ -191,6 +191,17 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
         let visit = DoctorVisit(title: title, transcript: transcript)
         if saveVisit(visit) { saveVisitSummary(summary, id: visit.id, transcript: transcript, baseline: records.medicines) }
     }
+    func prepareAppointmentSummaryFixture() {
+        let title = "Appointment summary regression"
+        for visit in visits where visit.title == title { deleteVisit(visit) }
+        let transcript = L10n.isFrench ? "Rendez-vous demain à 15 h." : "Appointment tomorrow at 3 pm."
+        let output = #"{"highlights":[],"medicines":[],"followUps":[]}"#
+        guard let summary = try? VisitReview.parse(output, transcript: transcript, medicines: records.medicines),
+              summary.appointments?.count == 1, summary.highlights.isEmpty,
+              summary.medicines.isEmpty, summary.followUps.isEmpty else { return }
+        let visit = DoctorVisit(title: title, transcript: transcript)
+        if saveVisit(visit) { saveVisitSummary(summary, id: visit.id, transcript: transcript, baseline: records.medicines) }
+    }
     #endif
     func deleteVisit(_ visit: DoctorVisit) {
         if update({ value in

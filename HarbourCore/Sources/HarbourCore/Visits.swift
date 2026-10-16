@@ -36,6 +36,9 @@ public struct VisitSummary: Codable, Equatable, Sendable {
     public var followUps: [VisitQuote] = []
     public var appointments: [VisitQuote]?
     public init() {}
+    public var isEmpty: Bool {
+        highlights.isEmpty && medicines.isEmpty && followUps.isEmpty && (appointments ?? []).isEmpty
+    }
     public mutating func merge(_ other: VisitSummary) {
         for quote in other.appointments ?? [] where !(appointments ?? []).contains(quote) { if appointments == nil { appointments = [] }; appointments!.append(quote) }
         for quote in other.highlights where !highlights.contains(quote) { highlights.append(quote) }
@@ -79,6 +82,7 @@ public enum VisitReviewError: LocalizedError {
 /// Model output is a suggestion. Every displayed fact must include a verbatim source quote.
 public enum VisitReview {
     public static let chunkCharacters = 1800
+    static let maximumModelItemsPerCategory = 12
     public static func chunks(_ transcript: String) -> [String] {
         let words = transcript.split(whereSeparator: \.isWhitespace)
         var result: [String] = [], current = ""
@@ -189,11 +193,21 @@ public enum VisitReview {
         return lines.joined(separator: "\n")
     }
     public static func parse(_ output: String, transcript: String, medicines: [Medicine]) throws -> VisitSummary {
+        try parse(output, transcript: transcript, medicines: medicines, maximumItemsPerCategory: maximumModelItemsPerCategory)
+    }
+    /// Only the bounded staged pipeline may combine independently bounded model arrays.
+    /// Single-call output retains its original limit and all paths share source validation.
+    static func parseStaged(_ output: String, transcript: String, medicines: [Medicine], unitCount: Int) throws -> VisitSummary {
+        guard (1...VisitExtraction.maximumUnits).contains(unitCount) else { throw VisitReviewError.invalidOutput }
+        return try parse(output, transcript: transcript, medicines: medicines, maximumItemsPerCategory: unitCount * maximumModelItemsPerCategory)
+    }
+    private static func parse(_ output: String, transcript: String, medicines: [Medicine], maximumItemsPerCategory: Int) throws -> VisitSummary {
         struct RawChange: Decodable { let action: MedicineChangeAction; let name: String; let instructions: String; let quote: String }
         struct RawSummary: Decodable { let highlights: [VisitQuote]; let medicines: [RawChange]; let followUps: [VisitQuote]; let appointments: [VisitQuote]? }
         guard let start = output.firstIndex(of: "{"), let end = output.lastIndex(of: "}"), start <= end,
               let raw = try? JSONDecoder().decode(RawSummary.self, from: Data(output[start...end].utf8)),
-              raw.highlights.count <= 12, raw.followUps.count <= 12, raw.medicines.count <= 12, (raw.appointments?.count ?? 0) <= 12 else { throw VisitReviewError.invalidOutput }
+              raw.highlights.count <= maximumItemsPerCategory, raw.followUps.count <= maximumItemsPerCategory,
+              raw.medicines.count <= maximumItemsPerCategory, (raw.appointments?.count ?? 0) <= maximumItemsPerCategory else { throw VisitReviewError.invalidOutput }
         let source = normalise(transcript)
         func quoteIsValid(_ quote: String) -> Bool {
             let text = normalise(quote)

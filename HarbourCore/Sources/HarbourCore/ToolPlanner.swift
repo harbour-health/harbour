@@ -598,7 +598,7 @@ public enum ToolPlanner {
             // A closed reminder request is not an appointment-add request,
             // even when its organizational task mentions an appointment.
             guard replyFallback(original: original, records: records, language: language)?.reason != "reminder_draft" else { throw PlannerError.forbidden }
-            guard AppointmentRules.isAppointment(original) else { throw PlannerError.forbidden }
+            guard AppointmentRules.isAppointment(original) || AppointmentRules.isPoliteCreationRequest(original) else { throw PlannerError.forbidden }
             return .appointment(original)
         case .listAppointments: return .appointments
         case .reply:

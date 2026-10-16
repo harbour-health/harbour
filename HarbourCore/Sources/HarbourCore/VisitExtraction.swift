@@ -160,7 +160,7 @@ public enum VisitExtraction {
             var value = value; value.seconds = Date().timeIntervalSince(started); return value
         }
         run.units = sourceUnits(source, fullTranscript: full)
-        guard !run.units.isEmpty, source.count <= VisitReview.chunkCharacters,
+        guard !run.units.isEmpty, run.units.count <= maximumUnits, source.count <= VisitReview.chunkCharacters,
               run.units.allSatisfy({ !$0.contexts.isEmpty && $0.contexts.allSatisfy { $0.count <= maximumRetainedContextCharacters } }) else {
             run.errors.append("source_context_out_of_bounds"); return finished(run)
         }
@@ -198,11 +198,15 @@ public enum VisitExtraction {
                       Set(object.keys) == Set(raw.keys) else { throw VisitReviewError.invalidOutput }
                 var retained = 0, staged: [String: [[String: Any]]] = [:]
                 for category in ["medicines", "followUps", "appointments", "highlights"] {
-                    guard let items = object[category] as? [[String: Any]], items.count <= 12 else { throw VisitReviewError.invalidOutput }
+                    guard let items = object[category] as? [[String: Any]], items.count <= VisitReview.maximumModelItemsPerCategory else { throw VisitReviewError.invalidOutput }
                     for item in items {
                         guard let quote = item["quote"] as? String else { throw VisitReviewError.invalidOutput }
                         let copied = VisitReview.normalise(quote)
-                        guard full.contains(copied), !copied.isEmpty, unit.text.contains(copied) else {
+                        // Documentation may need the exact retained speaker/history context
+                        // across sentences. Medicine proposals still belong to the unit itself.
+                        let belongsToUnit = unit.text.contains(copied)
+                            || (category != "medicines" && unit.contexts.contains { $0 == copied && $0.contains(unit.text) })
+                        guard full.contains(copied), !copied.isEmpty, belongsToUnit else {
                             run.warnings.append("unrelated_quote.unit.\(unit.id).\(category)"); continue
                         }
                         staged[category, default: []].append(item)
@@ -220,7 +224,7 @@ public enum VisitExtraction {
             let data = try JSONSerialization.data(withJSONObject: raw, options: [.sortedKeys, .withoutEscapingSlashes])
             run.assembledOutput = String(decoding: data, as: UTF8.self)
             guard run.errors.isEmpty, !run.cancelled else { return finished(run) }
-            run.acceptedSummary = try VisitReview.parse(run.assembledOutput, transcript: full, medicines: medicines)
+            run.acceptedSummary = try VisitReview.parseStaged(run.assembledOutput, transcript: full, medicines: medicines, unitCount: run.units.count)
             for candidate in VisitSourceGrounding.candidates(source) where !(raw["medicines"] ?? []).contains(where: { ($0["quote"] as? String).map(VisitReview.normalise) == candidate.quote }) {
                 run.warnings.append("possible_medicine_omission")
             }

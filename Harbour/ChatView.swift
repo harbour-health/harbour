@@ -12,9 +12,7 @@ struct ChatView: View {
     @Environment(\.scenePhase) private var scenePhase
     @State private var draft = ""
     @State private var hint: String?
-    @State private var task: Task<Void, Never>?
-    @State private var operationID = UUID()
-    @State private var busy = false
+    private var busy: Bool { models.chatRequestState.isBusy }
     @State private var modelSheet = false
     @State private var toolSheet = false
     @State private var deleteConfirmation = false
@@ -41,7 +39,7 @@ struct ChatView: View {
                     }
                     ForEach(store.messages) { message in MessageView(message: message, speak: { if !recorder.active { voice.speak(message.spokenText) } }).id(message.id).transition(.opacity.combined(with: .move(edge: .bottom))) }
                     if busy {
-                        HStack(spacing: 12) { HarbourMark(size: AppLayout.loadingMarkSize, spinning: true).foregroundStyle(Palette.blue); Text(models.downloading == nil ? L10n.string("Thinking…") : models.status).font(.subheadline).foregroundStyle(Palette.muted) }.id("pending")
+                        HStack(spacing: 12) { HarbourMark(size: AppLayout.loadingMarkSize, spinning: true).foregroundStyle(Palette.blue); Text(models.chatRequestState.isCancelling ? L10n.string("Please wait before trying again.") : models.downloading == nil ? L10n.string("Thinking…") : models.status).font(.subheadline).foregroundStyle(Palette.muted) }.id("pending")
                         if models.downloading != nil { VStack(alignment: .leading, spacing: 8) { ProgressView(value: models.progress); Text(models.isVerifying ? models.status : L10n.format("%lld%% downloaded", Int64(models.progress * 100))).font(.caption).foregroundStyle(Palette.muted) } }
                     }
                     Color.clear.frame(height: 1).id("bottom")
@@ -132,7 +130,7 @@ struct ChatView: View {
                     Button { busy ? cancel() : send() } label: {
                         Image(systemName: busy ? "stop.fill" : "arrow.up").font(.body.weight(.semibold))
                             .foregroundStyle(Palette.canvas).frame(width: 44, height: 44).background(Palette.ink, in: Circle())
-                    }.accessibilityLabel(L10n.string(busy ? "Stop" : "Send message")).disabled(!busy && draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    }.accessibilityLabel(L10n.string(busy ? "Stop" : "Send message")).disabled(models.chatRequestState.isCancelling || (!busy && draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty))
                 }
             }
             .padding(16).background(Palette.surface, in: RoundedRectangle(cornerRadius: 28))
@@ -165,34 +163,34 @@ struct ChatView: View {
         guard voiceMode, let reply = store.messages.last, !reply.isUser else { return }
         voice.speak(reply.spokenText, finished: { startVoiceTurn() })
     }
-    private func cancel() { voiceMode = false; operationID = UUID(); task?.cancel(); task = nil; busy = false; voice.stop() }
+    private func cancel() { voiceMode = false; models.chatRequests.cancel(); voice.stop() }
     private func send() {
         let input = draft.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !input.isEmpty else { return }
-        voice.stop(); focused = false; draft = ""
+        guard !input.isEmpty, !models.chatRequests.state.isBusy else { return }
         let firstMessage = !store.messages.contains(where: \.isUser)
         let message = ChatMessage(isUser: true, text: input)
-        store.append(message)
         // Emergency wording is checked before any download or model inference.
         if HealthRules.emergencyCue(input) {
+            voice.stop(); focused = false; draft = ""; store.append(message)
             store.append(ChatMessage(text: L10n.string(HealthRules.guidance(Symptom(text: input)))))
             sheet = .symptom(input); speakReply(); return
         }
-        busy = true
-        let currentID = UUID(); operationID = currentID
         let chosenHint = hint
-        let history = store.messages.dropLast().map { ConversationTurn(isUser: $0.isUser, text: $0.spokenText) }
-        task = Task {
-            defer { if operationID == currentID { busy = false; task = nil; speakReply() } }
+        let history = store.messages.map { ConversationTurn(isUser: $0.isUser, text: $0.spokenText) }
+        guard models.chatRequests.start(operation: { currentID in
             do {
                 let decision = try await models.chatDecision(input, hint: chosenHint, records: store.records, history: history)
                 try Task.checkCancellation()
+                guard models.chatRequests.canApplyResult(for: currentID) else { return }
                 let action = try ToolPlanner.validate(decision, original: input, records: store.records, language: L10n.isFrench ? .french : .english)
                 execute(action)
-                if firstMessage, let title = try? await models.title(for: input), !Task.isCancelled, operationID == currentID { store.nameChat(title, firstMessage: message.id) }
+                if firstMessage, let title = try? await models.title(for: input), !Task.isCancelled, models.chatRequests.canApplyResult(for: currentID) { store.nameChat(title, firstMessage: message.id) }
             } catch is CancellationError { }
-            catch { if !Task.isCancelled { store.append(ChatMessage(text: L10n.string(error.localizedDescription))); if firstMessage, let title = try? await models.title(for: input), !Task.isCancelled, operationID == currentID { store.nameChat(title, firstMessage: message.id) } } }
-        }
+            catch { if !Task.isCancelled, models.chatRequests.canApplyResult(for: currentID) { store.append(ChatMessage(text: L10n.string(error.localizedDescription))); if firstMessage, let title = try? await models.title(for: input), !Task.isCancelled, models.chatRequests.canApplyResult(for: currentID) { store.nameChat(title, firstMessage: message.id) } } }
+        }, onCompletion: { accepted in if accepted { speakReply() } }) != nil else { return }
+        // Admission precedes every composer/message mutation. The operation runs
+        // on MainActor after this synchronous send has appended its user input.
+        voice.stop(); focused = false; draft = ""; store.append(message)
     }
     private func execute(_ action: ValidatedAction) {
         switch action {

@@ -68,6 +68,7 @@ jobs:
             -only-testing:HarbourUITests/HarbourUITests/testQwen35FallbackSelectionAndPersistenceWithoutDownloading \
             -only-testing:HarbourUITests/HarbourUITests/testLocalModelChat \
             -only-testing:HarbourUITests/HarbourUITests/testChatHintPreservesDraftAndModelSelector \
+            -only-testing:HarbourUITests/HarbourVisitTests/testAppointmentOnlySummaryDoesNotShowEmptyWarning \
             -only-testing:HarbourUITests/HarbourQwen35EvaluationTests | tee build/ci/test.log
       - name: Collect simulator runtime diagnostics
         if: always() && env.SIMULATOR_ID != ''

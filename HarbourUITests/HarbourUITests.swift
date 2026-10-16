@@ -556,6 +556,22 @@ import XCTest
     private func capture(_ name: String) {
         let item = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); item.name = name; item.lifetime = .keepAlways; add(item)
     }
+    func testAppointmentOnlySummaryDoesNotShowEmptyWarning() {
+        for french in [false, true] {
+            let app = XCUIApplication()
+            app.launchArguments = ["--ui-test-unlocked", "--appointment-summary-fixture", "-AppleLanguages", french ? "(fr)" : "(en)", "-AppleLocale", french ? "fr_CA" : "en_CA"]
+            app.launch()
+            app.buttons["nav-visits"].tap()
+            let visit = app.buttons.containing(NSPredicate(format: "label CONTAINS %@", "Appointment summary regression")).firstMatch
+            XCTAssertTrue(visit.waitForExistence(timeout: 10), app.debugDescription)
+            visit.tap()
+            XCTAssertTrue(app.buttons["addVisitAppointment"].waitForExistence(timeout: 10), app.debugDescription)
+            XCTAssertTrue(app.staticTexts[french ? "Rendez-vous demain à 15 h." : "Appointment tomorrow at 3 pm."].exists)
+            XCTAssertFalse(app.staticTexts["visitEmptySummary"].exists, app.debugDescription)
+            capture(french ? "appointment-only-summary-fr" : "appointment-only-summary-en")
+            app.terminate()
+        }
+    }
     func testMedicineReviewDrawerScreens() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-unlocked", "--verify-drawers", "--medicine-review-fixture", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]

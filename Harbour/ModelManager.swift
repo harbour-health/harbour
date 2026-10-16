@@ -108,6 +108,8 @@ private final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchec
     @Published var revision = 0
     private let runtime = LocalModel()
     @Published private(set) var generating = false
+    let chatRequests = ChatRequestLifecycle()
+    @Published private(set) var chatRequestState: ChatRequestLifecycle.State = .idle
     private var activeDownload: ModelDownload?
     private var downloadCancelled = false
     private let defaults: UserDefaults
@@ -121,6 +123,8 @@ private final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchec
         var excluded = self.directory
         var values = URLResourceValues(); values.isExcludedFromBackup = true
         try? excluded.setResourceValues(values)
+        // ModelManager outlives a ChatView replaced by the background lock UI.
+        chatRequests.onStateChange = { [weak self] state in self?.chatRequestState = state }
     }
     var resolved: ModelChoice {
         guard selection == .automatic else { return selection }

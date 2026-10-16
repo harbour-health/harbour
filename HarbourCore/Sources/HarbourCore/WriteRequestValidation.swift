@@ -95,8 +95,30 @@ enum WriteRequestValidation {
             let appointment = "(?:appointment|consultation|rendez-vous)"
             let note = "(?:notes?|questions?|summar(?:y|ies)|memo|resume|compte[- ]rendu)"
             let appointmentNote = "\\b" + appointment + "[ -]+" + note + "\\b"
-            let noteForAppointment = "\\b" + note + "\\s+(?:for|about|before|pour|sur|avant)\\s+(?:(?:my|the|an|a|mon|ma|le|la|un|une|prochain|prochaine)\\s+)*" + appointment + "\\b"
-            if match(unquoted, appointmentNote) != nil || match(unquoted, noteForAppointment) != nil { return false }
+            let connector = #"(?:(?:for|about|before|of|pour|sur|avant|de|du|des)\s+|d')"#
+            // Qualifiers belong to the documented appointment (e.g. "my last
+            // dentist appointment"), not authorization to create a new one.
+            let qualifiers = #"(?:[\p{L}\p{N}][\p{L}\p{N}'-]*\.?\s+){0,8}"#
+            let noteForAppointment = "\\b" + note + "\\s+" + connector + qualifiers + appointment + "\\b"
+            var documentationScope = unquoted
+            if let payload = match(unquoted, #"(?:[,;]\s*)?(?:notes?|summary|memo|resume|compte[- ]rendu)\s*:"#),
+               let prefix = match(unquoted, "\\A" + requestPrefix) {
+                let outerRequest = String(unquoted[..<payload.lowerBound])
+                let outerCommand = String(outerRequest.dropFirst(unquoted.distance(from: unquoted.startIndex, to: prefix.upperBound)))
+                // A genuine booking may carry documentation as its notes. The
+                // payload cannot change which outer action was requested.
+                if AppointmentRules.hasCreationCommandTarget(outerCommand) { documentationScope = outerRequest }
+            }
+            if match(documentationScope, appointmentNote) != nil || match(documentationScope, noteForAppointment) != nil { return false }
+        }
+
+        if tool == .removeMedicine {
+            // Removal happens on confirmation, not when a future approval or
+            // condition becomes true. Do not discard a condition after an
+            // otherwise affirmative command, or hide it in quoted text. Quoted
+            // medicine names remain valid objects of an unquoted command.
+            let condition = #"\b(?:if|unless|until|when|once|after|before|provided|assuming|pending|as\s+long\s+as|on\s+condition|subject\s+to|si|s'il(?:s)?(?!\s+(?:vous|te)\s+plait)|sauf|quand|lorsque|apres|avant|des\s+que|une\s+fois|a\s+condition|a\s+moins|pourvu|sous\s+reserve|en\s+attendant)\b"#
+            if match(input, condition) != nil { return false }
         }
 
         if command == nil, [.addMedicine, .removeMedicine, .scheduleMedicine, .logDose].contains(tool),
