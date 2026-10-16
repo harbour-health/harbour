@@ -1,0 +1,66 @@
+Building for debugging...
+[Computing dependencies]
+[Pre-planning 1 / 243]
+[Planning deferred tasks]
+[Starting]
+[56 / 102] HarbourCancellationInvestigation_CancellationInvestigationTests
+[62 / 123] CryptoKit
+[63 / 123] HarbourRuntime
+[74 / 123] HarbourRuntime
+[76 / 123] HarbourCore
+[77 / 123] HarbourRuntime
+[86 / 124] HarbourCore
+[87 / 124] HarbourCore-product
+[89 / 125] HarbourRuntime
+[92 / 125] HarbourCore
+[96 / 125] HarbourCore
+[97 / 125] CryptoKit
+[101 / 125] CryptoKit
+[102 / 126]
+[102 / 126] HarbourCore
+[105 / 130] HarbourCore
+/investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-03/Sources/CancellationSubject/PlatformBoundary.swift:56:67: [1;33mwarning: [1;39m'HeldDownloadProtocol' inherits an unavailable 'Sendable' conformance; conforming here risks data races[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/unavailable-sendable-conformance\UnavailableSendableConformance]8;;\]
+[0;36m54 |[0;0m }
+[0;36m55 |[0;0m 
+[0;36m56 |[0;0m private final class HeldDownloadProtocol: URLProtocol, @unchecked Sendable {
+   [0;36m|[0;0m                     |                                             `- [1;33mwarning: [1;39m'HeldDownloadProtocol' inherits an unavailable 'Sendable' conformance; conforming here risks data races[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/unavailable-sendable-conformance\UnavailableSendableConformance]8;;\]
+   [0;36m|[0;0m                     `- [1;39mnote: [1;39m'HeldDownloadProtocol' inherits unavailable conformance to protocol 'Sendable' from superclass here[0;0m
+[0;36m57 |[0;0m     override class func canInit(with request: URLRequest) -> Bool { true }
+[0;36m58 |[0;0m     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+
+[#UnavailableSendableConformance]: <https://docs.swift.org/compiler/documentation/diagnostics/unavailable-sendable-conformance>
+[107 / 131] HarbourCore
+/investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-03/Sources/CancellationSubject/PlatformBoundary.swift:56:67: [1;33mwarning: [1;39m'HeldDownloadProtocol' inherits an unavailable 'Sendable' conformance; conforming here risks data races[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/unavailable-sendable-conformance\UnavailableSendableConformance]8;;\]
+[0;36m54 |[0;0m }
+[0;36m55 |[0;0m 
+[0;36m56 |[0;0m private final class HeldDownloadProtocol: URLProtocol, @unchecked Sendable {
+   [0;36m|[0;0m                     |                                             `- [1;33mwarning: [1;39m'HeldDownloadProtocol' inherits an unavailable 'Sendable' conformance; conforming here risks data races[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/unavailable-sendable-conformance\UnavailableSendableConformance]8;;\]
+   [0;36m|[0;0m                     `- [1;39mnote: [1;39m'HeldDownloadProtocol' inherits unavailable conformance to protocol 'Sendable' from superclass here[0;0m
+[0;36m57 |[0;0m     override class func canInit(with request: URLRequest) -> Bool { true }
+[0;36m58 |[0;0m     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+
+[#UnavailableSendableConformance]: <https://docs.swift.org/compiler/documentation/diagnostics/unavailable-sendable-conformance>
+[115 / 133] CancellationInvestigationTests-product
+[118 / 136] CancellationInvestigationTests-product
+[123 / 136] CancellationInvestigationTests-product
+[126 / 137] CancellationSubject
+[130 / 138] CancellationInvestigationTests-product
+[132 / 139] CancellationInvestigationTests-test-runner
+[134 / 141] CancellationInvestigationTests-test-runner
+[138 / 141] CancellationInvestigationTests-test-runner
+[142 / 142] CancellationInvestigationTests-test-runner
+Build complete! (12.47 secs)
+Test Suite 'Selected tests' started at 2026-10-16 03:41:42.641
+Test Suite 'CancellationInvestigationTests' started at 2026-10-16 03:41:42.642
+Test Case 'CancellationInvestigationTests.testExactChatViewReferenceAdvertisesReadySynchronouslyOnStop' started at 2026-10-16 03:41:42.642
+Test Case 'CancellationInvestigationTests.testExactChatViewReferenceAdvertisesReadySynchronouslyOnStop' passed (0.002 seconds)
+Test Case 'CancellationInvestigationTests.testNormalCompletionClearsBusyAndAllowsNextRequest' started at 2026-10-16 03:41:42.645
+Test Case 'CancellationInvestigationTests.testNormalCompletionClearsBusyAndAllowsNextRequest' passed (0.107 seconds)
+Test Case 'CancellationInvestigationTests.testRealURLSessionDownloadCancellationHasAnImmediateRetryBusyWindow' started at 2026-10-16 03:41:42.752
+Test Case 'CancellationInvestigationTests.testRealURLSessionDownloadCancellationHasAnImmediateRetryBusyWindow' passed (0.204 seconds)
+Test Case 'CancellationInvestigationTests.testStopDuringActualSwiftRuntimeCDecodeKeepsManagerBusyUntilDecodeReturns' started at 2026-10-16 03:41:42.956
+Test Case 'CancellationInvestigationTests.testStopDuringActualSwiftRuntimeCDecodeKeepsManagerBusyUntilDecodeReturns' passed (0.068 seconds)
+Test Suite 'CancellationInvestigationTests' passed at 2026-10-16 03:41:43.024
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.381 (0.381) seconds
+Test Suite 'Selected tests' passed at 2026-10-16 03:41:43.024
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.381 (0.381) seconds

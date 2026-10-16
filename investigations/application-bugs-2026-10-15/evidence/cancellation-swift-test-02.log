@@ -1,0 +1,53 @@
+Building for debugging...
+[Computing dependencies]
+[Pre-planning 1 / 243]
+[Constructing 313 / 506]
+[Starting]
+[56 / 102] HarbourCore
+[61 / 122] HarbourRuntime
+[70 / 122] HarbourCore
+[81 / 122] HarbourRuntime
+[82 / 122] HarbourRuntime
+[83 / 122] HarbourCore
+[85 / 122] HarbourCore-product
+[91 / 123] HarbourCore
+[92 / 123] HarbourCore
+[93 / 123] HarbourCore
+[94 / 123] CryptoKit
+[99 / 125] CancellationSubject
+[104 / 130] HarbourCore
+[105 / 130] HarbourCore
+/investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/Sources/CancellationSubject/PlatformBoundary.swift:56:67: [1;33mwarning: [1;39m'HeldDownloadProtocol' inherits an unavailable 'Sendable' conformance; conforming here risks data races[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/unavailable-sendable-conformance\UnavailableSendableConformance]8;;\]
+[0;36m54 |[0;0m }
+[0;36m55 |[0;0m 
+[0;36m56 |[0;0m private final class HeldDownloadProtocol: URLProtocol, @unchecked Sendable {
+   [0;36m|[0;0m                     |                                             `- [1;33mwarning: [1;39m'HeldDownloadProtocol' inherits an unavailable 'Sendable' conformance; conforming here risks data races[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/unavailable-sendable-conformance\UnavailableSendableConformance]8;;\]
+   [0;36m|[0;0m                     `- [1;39mnote: [1;39m'HeldDownloadProtocol' inherits unavailable conformance to protocol 'Sendable' from superclass here[0;0m
+[0;36m57 |[0;0m     override class func canInit(with request: URLRequest) -> Bool { true }
+[0;36m58 |[0;0m     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+
+[#UnavailableSendableConformance]: <https://docs.swift.org/compiler/documentation/diagnostics/unavailable-sendable-conformance>
+/investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/Sources/CancellationSubject/PlatformBoundary.swift:56:67: [1;33mwarning: [1;39m'HeldDownloadProtocol' inherits an unavailable 'Sendable' conformance; conforming here risks data races[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/unavailable-sendable-conformance\UnavailableSendableConformance]8;;\]
+[0;36m54 |[0;0m }
+[0;36m55 |[0;0m 
+[0;36m56 |[0;0m private final class HeldDownloadProtocol: URLProtocol, @unchecked Sendable {
+   [0;36m|[0;0m                     |                                             `- [1;33mwarning: [1;39m'HeldDownloadProtocol' inherits an unavailable 'Sendable' conformance; conforming here risks data races[0;0m [#]8;;https://docs.swift.org/compiler/documentation/diagnostics/unavailable-sendable-conformance\UnavailableSendableConformance]8;;\]
+   [0;36m|[0;0m                     `- [1;39mnote: [1;39m'HeldDownloadProtocol' inherits unavailable conformance to protocol 'Sendable' from superclass here[0;0m
+[0;36m57 |[0;0m     override class func canInit(with request: URLRequest) -> Bool { true }
+[0;36m58 |[0;0m     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+
+[#UnavailableSendableConformance]: <https://docs.swift.org/compiler/documentation/diagnostics/unavailable-sendable-conformance>
+[114 / 131]
+error: SwiftCompile normal x86_64 /investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/Sources/CancellationSubject/ModelManager.swift failed with a nonzero exit code. Command line:     cd /investigation/source/build/application-bug-investigation-20261015
+    builtin-SwiftPerFileCompile ModelManager.swift
+/investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/Sources/CancellationSubject/ModelManager.swift:239:128: [1;31merror: [1;39mcannot find 'TitleOutputGrammar' in scope[0;0m
+[0;36m237 |[0;0m     func title(for message: String) async throws -> String? {
+[0;36m238 |[0;0m         let prompt = try ModelPrompts.title(message, language: language)
+[0;36m239 |[0;0m         let output = try await generate(prompt, maxTokens: ModelPrompts.titleTokenBudget(language: language), responseGrammar: [4;39mTitleOutputGrammar[0;0m.make(), purpose: .title)
+    [0;36m|[0;0m                                                                                                                                `- [1;31merror: [1;39mcannot find 'TitleOutputGrammar' in scope[0;0m
+[0;36m240 |[0;0m         return ModelPrompts.parseTitle(output)
+[0;36m241 |[0;0m     }
+Failed frontend command:
+/usr/bin/swift-frontend -frontend -c /investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/Sources/CancellationSubject/L10n.swift -primary-file /investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/Sources/CancellationSubject/ModelManager.swift /investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/Sources/CancellationSubject/PlatformBoundary.swift -emit-dependencies-path /investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/.build/out/Intermediates.noindex/HarbourCancellationInvestigation.build/Debug-linux-x86_64/CancellationSubject-t.build/Objects-normal/x86_64/ModelManager.d -emit-const-values-path /investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/.build/out/Intermediates.noindex/HarbourCancellationInvestigation.build/Debug-linux-x86_64/CancellationSubject-t.build/Objects-normal/x86_64/ModelManager.swiftconstvalues -emit-reference-dependencies-path /investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/.build/out/Intermediates.noindex/HarbourCancellationInvestigation.build/Debug-linux-x86_64/CancellationSubject-t.build/Objects-normal/x86_64/ModelManager.swiftdeps -serialize-diagnostics-path /investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/.build/out/Intermediates.noindex/HarbourCancellationInvestigation.build/Debug-linux-x86_64/CancellationSubject-t.build/Objects-normal/x86_64/ModelManager.dia -target x86_64-unknown-linux-gnu -disable-objc-interop -I /investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/.build/out/Products/Debug-linux-x86_64 -module-cache-path /investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/.build/out/ModuleCache.noindex -color-diagnostics -Xcc -fcolor-diagnostics -enable-testing -g -debug-info-format\=dwarf -dwarf-version\=4 -swift-version 5 -Onone -D SWIFT_PACKAGE -D DEBUG -D SWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE -D Xcode -serialize-debugging-options -enable-experimental-feature DebugDescriptionMacro -empty-abi-descriptor -external-plugin-path /usr/lib/swift/host/plugins/testing\#/usr/bin/swift-plugin-server -validate-clang-modules-once -clang-build-session-file /investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/.build/out/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /investigation/source/build/application-bug-investigation-20261015 -enable-anonymous-context-mangled-names -file-compilation-dir /investigation/source/build/application-bug-investigation-20261015 -Xcc -fmodule-map-file\=/investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/.build/out/Intermediates.noindex/GeneratedModuleMaps-linux-x86_64/llama.modulemap -Xcc -fno-omit-frame-pointer -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -Xcc -fmodules-prune-interval\=86400 -Xcc -fmodules-prune-after\=345600 -Xcc -I/investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/Sources/llama/include -Xcc -I/investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/.build/out/Products/Debug-linux-x86_64/include -Xcc -I/investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/.build/out/Intermediates.noindex/HarbourCancellationInvestigation.build/Debug-linux-x86_64/CancellationSubject-t.build/DerivedSources-normal/x86_64 -Xcc -I/investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/.build/out/Intermediates.noindex/HarbourCancellationInvestigation.build/Debug-linux-x86_64/CancellationSubject-t.build/DerivedSources/x86_64 -Xcc -I/investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/.build/out/Intermediates.noindex/HarbourCancellationInvestigation.build/Debug-linux-x86_64/CancellationSubject-t.build/DerivedSources -Xcc -DSWIFT_PACKAGE -Xcc -DDEBUG\=1 -no-auto-bridging-header-chaining -module-name CancellationSubject -package-name cancellation_canonical_02 -const-gather-protocols-file /investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/.build/out/Intermediates.noindex/HarbourCancellationInvestigation.build/Debug-linux-x86_64/CancellationSubject-t.build/Objects-normal/x86_64/CancellationSubject_const_extract_protocols.json -in-process-plugin-server-path /usr/lib/swift/host/libSwiftInProcPluginServer.so -plugin-path /usr/lib/swift/host/plugins -plugin-path /usr/local/lib/swift/host/plugins -parse-as-library -o /investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/.build/out/Intermediates.noindex/HarbourCancellationInvestigation.build/Debug-linux-x86_64/CancellationSubject-t.build/Objects-normal/x86_64/ModelManager.o -index-unit-output-path /HarbourCancellationInvestigation.build/Debug-linux-x86_64/CancellationSubject-t.build/Objects-normal/x86_64/ModelManager.o -index-store-path /investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-02/.build/out -index-system-modules
+error: Build failed
+error: fatalError

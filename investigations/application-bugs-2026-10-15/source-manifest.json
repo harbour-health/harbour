@@ -1,0 +1,231 @@
+{
+  "sourceCommit": "5158710fa518816ca14781ca4d7a4c3f459675b8",
+  "canonicalGitBytes": true,
+  "files": [
+    {
+      "path": "Harbour/ChatView.swift",
+      "bytes": 27323,
+      "sha256": "1a75e7b470d9ddb2a7096d2d42a189af72681a5dc99678f994a60b53387bf897"
+    },
+    {
+      "path": "Harbour/ModelManager.swift",
+      "bytes": 15049,
+      "sha256": "26a1fe8008fe6f348cb2a1e1a6830f2cfde5ee1cc341ae3d0db8b1d959bb327c"
+    },
+    {
+      "path": "Harbour/VisitsView.swift",
+      "bytes": 30333,
+      "sha256": "4a5f8f08a176da923afa927bf79e16e01464f1d43a4fbb1f785675b23f0e4c63"
+    },
+    {
+      "path": "HarbourCore/Package.swift",
+      "bytes": 320,
+      "sha256": "626ea0ace057b566b89a7362ff8df6dfdf132424965027fb9b27ef3d412d582f"
+    },
+    {
+      "path": "HarbourCore/Sources/HarbourCore/Appointments.swift",
+      "bytes": 4862,
+      "sha256": "dad5a482b0d8ea15c9d8e503c187e28e9b3cf3eab01132df48f71b26a9ca54a9"
+    },
+    {
+      "path": "HarbourCore/Sources/HarbourCore/Care.swift",
+      "bytes": 25789,
+      "sha256": "fa9a65cb03979dc88f7f05c79722eccf49b75e878468ce9b354038b330da99e2"
+    },
+    {
+      "path": "HarbourCore/Sources/HarbourCore/Evaluation.swift",
+      "bytes": 12917,
+      "sha256": "a7332295517b5692f6773b75ef45f8cc7c05224a7063f369bcec6cd8ca8ac5ce"
+    },
+    {
+      "path": "HarbourCore/Sources/HarbourCore/GroundedReply.swift",
+      "bytes": 7341,
+      "sha256": "27532c50874ea7d7ef31f8712f134a0b0e5d21e8a98b19b1fb8781a95ee26f43"
+    },
+    {
+      "path": "HarbourCore/Sources/HarbourCore/HealthRules.swift",
+      "bytes": 5297,
+      "sha256": "a2b50355544bec339f817e168606f448e5d7ffb1d890696f57f5d344b807834d"
+    },
+    {
+      "path": "HarbourCore/Sources/HarbourCore/ModelPrompts.swift",
+      "bytes": 15352,
+      "sha256": "0805fd04ec6e8200fd7e67970a779d4f2b1c27639435b32191fd2eea10f9a3da"
+    },
+    {
+      "path": "HarbourCore/Sources/HarbourCore/Records.swift",
+      "bytes": 10980,
+      "sha256": "f08bac2917a64d3e8e68864be50c5992bc83e98c7640bcd2210f0cf3ad6acd5e"
+    },
+    {
+      "path": "HarbourCore/Sources/HarbourCore/SpeechVoiceSelection.swift",
+      "bytes": 1528,
+      "sha256": "464b9678204c435ddc8a6dff209bcef781b6a60041e9a16bba2d808936c419d4"
+    },
+    {
+      "path": "HarbourCore/Sources/HarbourCore/ToolPlanner.swift",
+      "bytes": 62502,
+      "sha256": "62c7409f827b631d2e1c6e32975781543ffcc6ae1fcbb2e0b563aa8eeaff1943"
+    },
+    {
+      "path": "HarbourCore/Sources/HarbourCore/VisitExtraction.swift",
+      "bytes": 18027,
+      "sha256": "869959ddfd53fa2cff78333cbd5ced257c9f4c8e8452f0428ab4a0521ca2ae11"
+    },
+    {
+      "path": "HarbourCore/Sources/HarbourCore/VisitSourceGrounding.swift",
+      "bytes": 44415,
+      "sha256": "4babfcf0a766aa18a21c319741b3876c0a4d72c9cee1c73e037ff3600f43dd5b"
+    },
+    {
+      "path": "HarbourCore/Sources/HarbourCore/Visits.swift",
+      "bytes": 23705,
+      "sha256": "ad6fe54a2e402e960c34005e7ffad96c4f95d8385fd37a1423258c8394401c42"
+    },
+    {
+      "path": "HarbourCore/Sources/HarbourCore/VoiceTurn.swift",
+      "bytes": 1147,
+      "sha256": "9b02df88977d7454a8fc626447d0097e5a1043e90b6b2abd30dc76d53175a9e0"
+    },
+    {
+      "path": "HarbourCore/Sources/HarbourCore/WriteRequestValidation.swift",
+      "bytes": 12150,
+      "sha256": "425ef33a66ed746a24877e3cffdd261d73e341a18c67860d6e93bb94426ad9bf"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/AppointmentTests.swift",
+      "bytes": 6228,
+      "sha256": "f615fa5d798d642d1d1d7f6e8a8e14d3f15d9fb075cd5c8b72b2ecc98012938d"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/CareTests.swift",
+      "bytes": 23459,
+      "sha256": "2e8fdcb89ce97f59bed6ca77b1f1ae456aa463e935436aa4af16b531c736adcd"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/ChatReplyTests.swift",
+      "bytes": 23748,
+      "sha256": "b26a570f0e2b44f9b7c999d6298c679d3daa6b5b434445d404a122eb8b0e8c2e"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/DoseReportRecordingClauseTests.swift",
+      "bytes": 4303,
+      "sha256": "6d4fa76df79d68e2365f8a60c3785bedac3618558d961dbacb85e7d5657800d6"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/FrenchInputTests.swift",
+      "bytes": 11709,
+      "sha256": "4781a4a9a79f607fb7f5c662a4f6a44b5c10586177a313975d5dfa7d553d0d0a"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/FrenchRecordsTests.swift",
+      "bytes": 4942,
+      "sha256": "373e8566f56656f74b8e2211e771fe661594813f3172ecfeef7e3cca02bcbcf6"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/GroundedReplyTests.swift",
+      "bytes": 8316,
+      "sha256": "32782532f77960110bde3b8d22a1f3954aa041a0436232beea9ee9d0c95ba502"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/HarbourCoreTests.swift",
+      "bytes": 5246,
+      "sha256": "f874ecb0bf63298f8dc8c287fd80b164c3a90a63d561f2289882d331d57d6ba0"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/ModelPromptsTests.swift",
+      "bytes": 15159,
+      "sha256": "5ae7485dfa0816165c692d3ab9fd516bfbfc1d99d0c4a4d87b1f43ff772872a6"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/ReadingParserTests.swift",
+      "bytes": 1745,
+      "sha256": "b2564e1cc06ff390eefc32847b336e0e516c3b9bc580655bc6013920e641f682"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/ReplyFallbackTests.swift",
+      "bytes": 63804,
+      "sha256": "bb27670c11ba1da22821243ba03d1a68eaf0f62a2ae39e4f202fcc6d0c38ff56"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/RoutingPromptProfileTests.swift",
+      "bytes": 3228,
+      "sha256": "fefaadbc9078e1d1e8c8854af00f12b6c1a6250a9cac454305f52295f753d311"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/SpeechVoiceSelectionTests.swift",
+      "bytes": 2183,
+      "sha256": "12cc46040ff6913c36cfbcb2b2b0f66a57df8ecc60f789f646851f2b82851ef7"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/TimelineQueryTests.swift",
+      "bytes": 3745,
+      "sha256": "da6d09f46386c45d2137058fec8192ced547ea606ff22f16b4c48ea3de9f8c44"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/TypedReadingConnectorTests.swift",
+      "bytes": 2250,
+      "sha256": "5db1eb0f4d8bf6a18642e461415be195071bda610d13c7250cb0c9a0cc20140e"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/VisitEvaluationComparisonTests.swift",
+      "bytes": 3816,
+      "sha256": "ef73fc2c37e96356978002b40a77dbe842eb7c38d699c97f0e7fc5d20cd828ac"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/VisitExtractionPromptTests.swift",
+      "bytes": 4851,
+      "sha256": "94d6813d754e7f2d9fce494d17cc13ca33f26eaa108612fdd27dcba6afa4cd82"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/VisitExtractionTests.swift",
+      "bytes": 13115,
+      "sha256": "3370551fc38c73b2a6f0b9223320c874a12653e77383dbaad18a2aa787fd02d6"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/VisitHistoryGroundingTests.swift",
+      "bytes": 10347,
+      "sha256": "1c33c3f596eb5f7ad0c74f22db7ab6a10b8f828c2ec35cdb13060135cf386b18"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/VisitInstructionReplacementTests.swift",
+      "bytes": 7994,
+      "sha256": "01eb3e1ca4f81966631b7f771a6dd697a49e8337143c947e61c46cd000988bd3"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/VisitMinimumGroundingTests.swift",
+      "bytes": 15243,
+      "sha256": "a545c0d60a7852269c72f681209defd09f645ac33e8551c49c7bb53dc5bd5989"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/VisitScheduleScopeTests.swift",
+      "bytes": 18137,
+      "sha256": "519e8d1d24541fc3403b73c287a3beb59c23679a94375ff39d65d73578d8f5e3"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/VisitSourceGroundingTests.swift",
+      "bytes": 36693,
+      "sha256": "eae0b305b789528bdb9a596240e62485677d55f72701900d208ac3617130204c"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/VisitTests.swift",
+      "bytes": 12359,
+      "sha256": "246e712284946cf584c4508d9b7bf590751574b978937e78729645eb06ed6770"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/VoiceTurnTests.swift",
+      "bytes": 3144,
+      "sha256": "4bcfe176c8e2cb9fe0f36006e42ba65cf7eba647dd815f7652aea6b52654cd9f"
+    },
+    {
+      "path": "HarbourCore/Tests/HarbourCoreTests/WriteRequestValidationTests.swift",
+      "bytes": 29727,
+      "sha256": "040bad5cd6a3d56c032b8de777e9eba1ca97dbae4a3ce7ff8476b7ce3198dc34"
+    },
+    {
+      "path": "HarbourRuntime/Sources/HarbourRuntime/LocalModel.swift",
+      "bytes": 6953,
+      "sha256": "6d40375c78b5e25625a09ea61472fe2a4af6f8e970a9c6f4735cba9c4d731d47"
+    }
+  ]
+}

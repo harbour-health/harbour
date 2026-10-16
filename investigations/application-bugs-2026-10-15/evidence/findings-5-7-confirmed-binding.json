@@ -1,0 +1,94 @@
+{
+  "kind": "confirmed-visit-application-bug-investigation",
+  "reviewer": "/root/english_balanced_review",
+  "baselineCommit": "5158710fa518816ca14781ca4d7a4c3f459675b8",
+  "findings": [
+    {
+      "issue": 5,
+      "status": "confirmed",
+      "runtimeEvidence": "12 assembled/12 accepted;13 assembled/completed=false/acceptedSummary=nil",
+      "testMethods": 1
+    },
+    {
+      "issue": 6,
+      "status": "confirmed",
+      "runtimeEvidence": "Both EN/FR full contextual quote parser-valid;3 units;0 retained highlights;controls pass",
+      "testMethods": 2
+    },
+    {
+      "issue": 7,
+      "status": "confirmed-source-bound-ui-predicate",
+      "runtimeEvidence": "Parser-produced EN/FR appointment-only states satisfy actual appointment and empty branch conditions",
+      "testMethods": 1,
+      "renderedSwiftUIOrDeviceExecuted": false
+    }
+  ],
+  "report": {
+    "path": "build/application-bug-investigation-20261015/visits/findings-5-7-confirmed.md",
+    "sha256": "749a8398f5b7ea76ec585e09acabe9aaf813c36a1be760ce04cba1d396e2d76c",
+    "bytes": 9098
+  },
+  "preparation": {
+    "path": "build/application-bug-investigation-20261015/visits/preparation.json",
+    "sha256": "31b768e33ec1a1639aad101031d13a4db7aeddf62cc09cb67f9795194434cd6a",
+    "bytes": 5086
+  },
+  "execution": {
+    "path": "build/application-bug-investigation-20261015/core-execution.json",
+    "sha256": "ba118f7a64e27e81389b031f9d00cb131624b0b93ab61da16f70c91092eec884",
+    "bytes": 1527
+  },
+  "fullLog": {
+    "path": "build/application-bug-investigation-20261015/core-swift-test.log",
+    "sha256": "7d175a7a15bab3b29c461f9efe712c9a984388630729b15616c09e95f7f2a436",
+    "bytes": 7373
+  },
+  "test": {
+    "path": "build/application-bug-investigation-20261015/visits/VisitApplicationBugReproductionTests.swift",
+    "sha256": "94aa72c478ea2ff59d02a9fa2a0884ed71b49fb55444bd76b6e1e9f80da6cfd1",
+    "bytes": 11061
+  },
+  "productionSourceBindings": [
+    {
+      "path": "HarbourCore/Sources/HarbourCore/VisitExtraction.swift",
+      "sha256": "6562207205cc483d06f0516264f940cd4cc7c6020bb7f041e7115afc00b27f83",
+      "bytes": 18268
+    },
+    {
+      "path": "HarbourCore/Sources/HarbourCore/Visits.swift",
+      "sha256": "f2479a1eb2fe5bb1c648e20b475af1c9f8370c4a21eb5ef2b8f3c426af93c841",
+      "bytes": 23994
+    },
+    {
+      "path": "HarbourCore/Sources/HarbourCore/VisitSourceGrounding.swift",
+      "sha256": "2a68406efd83b584e4beebb68d84fba059f1fca843917a8ecd1fc6ae912089ad",
+      "bytes": 44956
+    },
+    {
+      "path": "HarbourCore/Sources/HarbourCore/Appointments.swift",
+      "sha256": "f873e3b88f5db5c8895589bd0ce5d9ed367f6127bc8b9ef7aeca3595d963bcca",
+      "bytes": 4926
+    },
+    {
+      "path": "Harbour/VisitsView.swift",
+      "sha256": "faeef4bbe3d8bd2dc92877b4f2018ad1bffb1bc7a568e76b1b1c526fffce555c",
+      "bytes": 30712
+    }
+  ],
+  "executionReview": {
+    "exitCode": 0,
+    "combinedSelectedMethods": 16,
+    "combinedFailures": 0,
+    "visitMethods": 4,
+    "visitFailures": 0,
+    "canonicalSourceFiles": 45,
+    "sourcePreAndPostAllExact": true,
+    "noModelInference": true
+  },
+  "scopeLimits": [
+    "Characterization tests reproduce bugs;no fix claim.",
+    "UI predicate and parser state executed;no SwiftUI render/accessibility/device claim.",
+    "No new test execution by reviewer during final evidence review.",
+    "No proof these application defects cause already-empty raw model extractor arrays."
+  ]
+}

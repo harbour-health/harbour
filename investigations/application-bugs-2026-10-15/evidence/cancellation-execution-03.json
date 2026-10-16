@@ -1,0 +1,117 @@
+{
+  "baselineCommit": "5158710fa518816ca14781ca4d7a4c3f459675b8",
+  "image": "sha256:4e2d836d1252e502c2c5ac92bc73e675d5d9a1780a82ad4c4127624e5792d756",
+  "command": [
+    "swift",
+    "test",
+    "--package-path",
+    "/investigation/source/build/application-bug-investigation-20261015/cancellation-canonical-03",
+    "--jobs",
+    "4",
+    "--filter",
+    "CancellationInvestigationTests"
+  ],
+  "inputHashes": {
+    "README.md": "6d84e31e2bef80b9675b04d574ff60b63128cc546653885072f5e6237ffb0b15",
+    "Package.swift": "6ff75f3a1334ef0b8d141c31026567cd9824896cf0eb7ab586a7010487d4a815",
+    "preparation.json": "9eb006e663f6fc5c869ea15f54bad5365ff3d2e385907c8102d28ccffcc20702",
+    "Tests/CancellationInvestigationTests.swift": "d5fd9146927984daf7c57540b14d21cd9f073042f7130c8fe3ba17f02fb0e56b",
+    "Tests/ChatView.reference.swift.txt": "1a75e7b470d9ddb2a7096d2d42a189af72681a5dc99678f994a60b53387bf897",
+    "Sources/llama/llama.c": "671d4700b05454a32577d4c98957fbdcce935c3ce49f214b222d3e136131e2ff",
+    "Sources/LinuxCryptoKitBoundary/SHA256.swift": "7eae4443a06d728ae59ec2d4d6c8d4794b2b082e372e5f8aa6e17fad8768bf91",
+    "Sources/CancellationSubject/L10n.swift": "397f05d205970383dfaa31f43fb201f1d9ff9abb78b6b4d694e8922d5948090e",
+    "Sources/CancellationSubject/PlatformBoundary.swift": "e07939f3be105329e68ea4330f1c1aeec6702700e114f41fa2a582fed4e394d3",
+    "Sources/CancellationSubject/ModelManager.swift": "117cc23d67d9541592afd7af9e1f15c25f6a31d5777e7643966114dd8e778898",
+    "Sources/HarbourRuntime/JSONEnvelope.swift": "d5e6f92463b4870158f9f9b860e9f8520ccc9a84375ce4cbe06dd44347b0b465",
+    "Sources/HarbourRuntime/TitleOutputGrammar.swift": "88736de8b3ea4acf7014e72c96f7d375cb0c8639b35a20e97b522acc22792a1c",
+    "Sources/HarbourRuntime/ModelPromptFormat.swift": "2571da38da025a05db8d0ab739a2c81461042d68ef3a0acd3a526468ad1db0c0",
+    "Sources/HarbourRuntime/ToolOutputGrammar.swift": "0a8583e6a930b9f57ef45f52a5cda24fd469b2e254b9201770b78bba4a37de0e",
+    "Sources/HarbourRuntime/LocalModel.swift": "6d40375c78b5e25625a09ea61472fe2a4af6f8e970a9c6f4735cba9c4d731d47",
+    "Sources/llama/include/llama.h": "c7d759ca239348461cb730cc817c87067f77c433a95276bfdf246ebd9628243e"
+  },
+  "allHarnessInputsUnchangedAfterRun": true,
+  "sourceCopyBindings": [
+    {
+      "original": "HarbourRuntime/Sources/HarbourRuntime/LocalModel.swift",
+      "harnessPath": "Sources/HarbourRuntime/LocalModel.swift",
+      "canonicalGitSHA256": "6d40375c78b5e25625a09ea61472fe2a4af6f8e970a9c6f4735cba9c4d731d47",
+      "originalWorkingSHA256": "27e679b64700069f018cc841096f452994363536a2781686e4fd8f6d5999a9a7",
+      "originalHarnessSHA256": "27e679b64700069f018cc841096f452994363536a2781686e4fd8f6d5999a9a7",
+      "testedHarnessSHA256": "6d40375c78b5e25625a09ea61472fe2a4af6f8e970a9c6f4735cba9c4d731d47",
+      "workingOnlyEOLChange": true,
+      "additivePrefixUTF8": ""
+    },
+    {
+      "original": "HarbourRuntime/Sources/HarbourRuntime/ModelPromptFormat.swift",
+      "harnessPath": "Sources/HarbourRuntime/ModelPromptFormat.swift",
+      "canonicalGitSHA256": "2571da38da025a05db8d0ab739a2c81461042d68ef3a0acd3a526468ad1db0c0",
+      "originalWorkingSHA256": "5d560218e1ed29daa732785406ef9d0b1e214a40b876cc5d2dd437d40e2fc799",
+      "originalHarnessSHA256": "5d560218e1ed29daa732785406ef9d0b1e214a40b876cc5d2dd437d40e2fc799",
+      "testedHarnessSHA256": "2571da38da025a05db8d0ab739a2c81461042d68ef3a0acd3a526468ad1db0c0",
+      "workingOnlyEOLChange": true,
+      "additivePrefixUTF8": ""
+    },
+    {
+      "original": "HarbourRuntime/Sources/HarbourRuntime/JSONEnvelope.swift",
+      "harnessPath": "Sources/HarbourRuntime/JSONEnvelope.swift",
+      "canonicalGitSHA256": "d5e6f92463b4870158f9f9b860e9f8520ccc9a84375ce4cbe06dd44347b0b465",
+      "originalWorkingSHA256": "9064725f22ced32229ca8ef9bbcd21fa8f6f9bf22e36bd543fcc1db786900886",
+      "originalHarnessSHA256": "9064725f22ced32229ca8ef9bbcd21fa8f6f9bf22e36bd543fcc1db786900886",
+      "testedHarnessSHA256": "d5e6f92463b4870158f9f9b860e9f8520ccc9a84375ce4cbe06dd44347b0b465",
+      "workingOnlyEOLChange": true,
+      "additivePrefixUTF8": ""
+    },
+    {
+      "original": "HarbourRuntime/Sources/HarbourRuntime/ToolOutputGrammar.swift",
+      "harnessPath": "Sources/HarbourRuntime/ToolOutputGrammar.swift",
+      "canonicalGitSHA256": "0a8583e6a930b9f57ef45f52a5cda24fd469b2e254b9201770b78bba4a37de0e",
+      "originalWorkingSHA256": "199ab819a003a8c32382a6bdf8593e41b03a6a6d080e86967d21aeead81fc422",
+      "originalHarnessSHA256": "199ab819a003a8c32382a6bdf8593e41b03a6a6d080e86967d21aeead81fc422",
+      "testedHarnessSHA256": "0a8583e6a930b9f57ef45f52a5cda24fd469b2e254b9201770b78bba4a37de0e",
+      "workingOnlyEOLChange": true,
+      "additivePrefixUTF8": ""
+    },
+    {
+      "original": "Harbour/ModelManager.swift",
+      "harnessPath": "Sources/CancellationSubject/ModelManager.swift",
+      "canonicalGitSHA256": "26a1fe8008fe6f348cb2a1e1a6830f2cfde5ee1cc341ae3d0db8b1d959bb327c",
+      "originalWorkingSHA256": "597dd3932878e5a19bed550115c1b35d404c92a7a6ebc1e2c290f7b6cc3abab7",
+      "originalHarnessSHA256": "8392f9d199d337c3e8f8ea089ac69160ea45a8400f728e1adcdeb03d4d177941",
+      "testedHarnessSHA256": "117cc23d67d9541592afd7af9e1f15c25f6a31d5777e7643966114dd8e778898",
+      "workingOnlyEOLChange": true,
+      "additivePrefixUTF8": "#if canImport(FoundationNetworking)\nimport FoundationNetworking\n#endif\n"
+    },
+    {
+      "original": "Harbour/L10n.swift",
+      "harnessPath": "Sources/CancellationSubject/L10n.swift",
+      "canonicalGitSHA256": "397f05d205970383dfaa31f43fb201f1d9ff9abb78b6b4d694e8922d5948090e",
+      "originalWorkingSHA256": "1ad34f5f3b9d9405bee9fc459e1d65cece01be152f9a98a8e2a2032826b0cdd9",
+      "originalHarnessSHA256": "1ad34f5f3b9d9405bee9fc459e1d65cece01be152f9a98a8e2a2032826b0cdd9",
+      "testedHarnessSHA256": "397f05d205970383dfaa31f43fb201f1d9ff9abb78b6b4d694e8922d5948090e",
+      "workingOnlyEOLChange": true,
+      "additivePrefixUTF8": ""
+    },
+    {
+      "original": "Harbour/ChatView.swift",
+      "harnessPath": "Tests/ChatView.reference.swift.txt",
+      "canonicalGitSHA256": "1a75e7b470d9ddb2a7096d2d42a189af72681a5dc99678f994a60b53387bf897",
+      "originalWorkingSHA256": "31af77aaeae4038c4ce2588e137419e7ace563e459d51441b1c30a442d2542f7",
+      "originalHarnessSHA256": "31af77aaeae4038c4ce2588e137419e7ace563e459d51441b1c30a442d2542f7",
+      "testedHarnessSHA256": "1a75e7b470d9ddb2a7096d2d42a189af72681a5dc99678f994a60b53387bf897",
+      "workingOnlyEOLChange": true,
+      "additivePrefixUTF8": ""
+    },
+    {
+      "original": "HarbourRuntime/Sources/HarbourRuntime/TitleOutputGrammar.swift",
+      "harnessPath": "Sources/HarbourRuntime/TitleOutputGrammar.swift",
+      "canonicalGitSHA256": "88736de8b3ea4acf7014e72c96f7d375cb0c8639b35a20e97b522acc22792a1c",
+      "testedHarnessSHA256": "88736de8b3ea4acf7014e72c96f7d375cb0c8639b35a20e97b522acc22792a1c",
+      "additivePrefixUTF8": ""
+    }
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 21.740802838932723,
+  "logSHA256": "ee688b33dc98db6fedc44ba8887e84f7b1e60e861a0e80e836d3387803540249",
+  "noModelInferenceOrNetwork": true,
+  "scope": "Actual manager and runtime Swift execute against controlled C llama ABI and platform/dependency boundaries. No real weights, physical taps, rendered SwiftUI or measured device decode duration."
+}

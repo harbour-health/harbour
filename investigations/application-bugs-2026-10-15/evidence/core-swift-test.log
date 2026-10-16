@@ -1,0 +1,83 @@
+Building for debugging...
+[Constructing description]
+[Planning deferred tasks]
+[Starting]
+[28 / 51] HarbourCore
+[33 / 64] HarbourCore
+[34 / 64] HarbourCore
+[41 / 64] HarbourCore
+[42 / 64] HarbourCoreTests-product
+[43 / 64] HarbourCoreTests-product
+[45 / 64] HarbourCore
+[46 / 64] HarbourCore
+[46 / 64]
+[47 / 65] HarbourCore
+[47 / 65] HarbourCoreTests-product
+[51 / 78] HarbourCoreTests-product
+[52 / 79] HarbourCoreTests-product
+[53 / 79] HarbourCoreTests-product
+[55 / 79] HarbourCoreTests-product
+[59 / 79] HarbourCoreTests-product
+[61 / 79] HarbourCoreTests-product
+[63 / 79] HarbourCoreTests-product
+[64 / 79] HarbourCoreTests-product
+[68 / 79] HarbourCore-product
+[68 / 79] HarbourCoreTests-product
+[72 / 80] HarbourCoreTests-product
+[73 / 80] HarbourCoreTests-test-runner
+[76 / 83] HarbourCoreTests-test-runner
+[80 / 83] HarbourCoreTests-test-runner
+[84 / 84] HarbourCoreTests-test-runner
+Build complete! (22.36 secs)
+Test Suite 'Selected tests' started at 2026-10-16 03:36:09.039
+Test Suite 'Issue002AppointmentSummaryReproductionTests' started at 2026-10-16 03:36:09.078
+Test Case 'Issue002AppointmentSummaryReproductionTests.testActualAppointmentsRemainAllowedAndQuotedOrSpeculativeRequestsRejected' started at 2026-10-16 03:36:09.078
+Test Case 'Issue002AppointmentSummaryReproductionTests.testActualAppointmentsRemainAllowedAndQuotedOrSpeculativeRequestsRejected' passed (0.099 seconds)
+Test Case 'Issue002AppointmentSummaryReproductionTests.testExistingDocumentationConnectorsStillRejectAppointmentCreation' started at 2026-10-16 03:36:09.177
+Test Case 'Issue002AppointmentSummaryReproductionTests.testExistingDocumentationConnectorsStillRejectAppointmentCreation' passed (0.001 seconds)
+Test Case 'Issue002AppointmentSummaryReproductionTests.testSummaryOfAndResumeDeCurrentlyOpenAppointmentDrafts' started at 2026-10-16 03:36:09.178
+Test Case 'Issue002AppointmentSummaryReproductionTests.testSummaryOfAndResumeDeCurrentlyOpenAppointmentDrafts' passed (0.07 seconds)
+Test Case 'Issue002AppointmentSummaryReproductionTests.testWrongDraftIsStructurallyValidButValidationDoesNotPersistIt' started at 2026-10-16 03:36:09.247
+Test Case 'Issue002AppointmentSummaryReproductionTests.testWrongDraftIsStructurallyValidButValidationDoesNotPersistIt' passed (0.018 seconds)
+Test Suite 'Issue002AppointmentSummaryReproductionTests' passed at 2026-10-16 03:36:09.266
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.188 (0.188) seconds
+Test Suite 'Issue003ConditionalRemovalReproductionTests' started at 2026-10-16 03:36:09.266
+Test Case 'Issue003ConditionalRemovalReproductionTests.testDirectRemovalStillAllowedAndNegativeQuotedOrReportedRequestsRejected' started at 2026-10-16 03:36:09.266
+Test Case 'Issue003ConditionalRemovalReproductionTests.testDirectRemovalStillAllowedAndNegativeQuotedOrReportedRequestsRejected' passed (0.032 seconds)
+Test Case 'Issue003ConditionalRemovalReproductionTests.testEquivalentLeadingConditionsAreRejected' started at 2026-10-16 03:36:09.298
+Test Case 'Issue003ConditionalRemovalReproductionTests.testEquivalentLeadingConditionsAreRejected' passed (0.001 seconds)
+Test Case 'Issue003ConditionalRemovalReproductionTests.testSavedIdentityAndSingleMedicineRequirementsStillApply' started at 2026-10-16 03:36:09.299
+Test Case 'Issue003ConditionalRemovalReproductionTests.testSavedIdentityAndSingleMedicineRequirementsStillApply' passed (0.046 seconds)
+Test Case 'Issue003ConditionalRemovalReproductionTests.testTrailingApprovalConditionCurrentlyBecomesUnconditionalRemovalAction' started at 2026-10-16 03:36:09.345
+Test Case 'Issue003ConditionalRemovalReproductionTests.testTrailingApprovalConditionCurrentlyBecomesUnconditionalRemovalAction' passed (0.07 seconds)
+Test Suite 'Issue003ConditionalRemovalReproductionTests' passed at 2026-10-16 03:36:09.415
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.149 (0.149) seconds
+Test Suite 'Issue004PoliteAppointmentReproductionTests' started at 2026-10-16 03:36:09.415
+Test Case 'Issue004PoliteAppointmentReproductionTests.testCouldAndQuestionMarkEachIndependentlyCauseRejection' started at 2026-10-16 03:36:09.415
+Test Case 'Issue004PoliteAppointmentReproductionTests.testCouldAndQuestionMarkEachIndependentlyCauseRejection' passed (0.053 seconds)
+Test Case 'Issue004PoliteAppointmentReproductionTests.testEquivalentDirectRequestsAndNonQuestionPoliteFormsRemainAllowed' started at 2026-10-16 03:36:09.467
+Test Case 'Issue004PoliteAppointmentReproductionTests.testEquivalentDirectRequestsAndNonQuestionPoliteFormsRemainAllowed' passed (0.07 seconds)
+Test Case 'Issue004PoliteAppointmentReproductionTests.testPoliteBookingRequestsPassWriteIntentButAreRejectedAsAppointmentFacts' started at 2026-10-16 03:36:09.537
+Test Case 'Issue004PoliteAppointmentReproductionTests.testPoliteBookingRequestsPassWriteIntentButAreRejectedAsAppointmentFacts' passed (0.11 seconds)
+Test Case 'Issue004PoliteAppointmentReproductionTests.testSpeculationNegationAndQuotationRemainRejected' started at 2026-10-16 03:36:09.647
+Test Case 'Issue004PoliteAppointmentReproductionTests.testSpeculationNegationAndQuotationRemainRejected' passed (0.018 seconds)
+Test Suite 'Issue004PoliteAppointmentReproductionTests' passed at 2026-10-16 03:36:09.665
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.25 (0.25) seconds
+Test Suite 'VisitApplicationBugReproductionTests' started at 2026-10-16 03:36:09.665
+Test Case 'VisitApplicationBugReproductionTests.testIssue5TwelveValidHighlightsSucceedButThirteenRejectWholeRun' started at 2026-10-16 03:36:09.665
+VISIT_ISSUE_5 boundary=12 assembled=12 completed=true accepted=12
+VISIT_ISSUE_5 boundary=13 assembled=13 completed=false accepted=-1
+Test Case 'VisitApplicationBugReproductionTests.testIssue5TwelveValidHighlightsSucceedButThirteenRejectWholeRun' passed (0.911 seconds)
+Test Case 'VisitApplicationBugReproductionTests.testIssue6ControlsAcceptSingleSentenceQualifiedAndSeparateOrdinaryFacts' started at 2026-10-16 03:36:10.576
+Test Case 'VisitApplicationBugReproductionTests.testIssue6ControlsAcceptSingleSentenceQualifiedAndSeparateOrdinaryFacts' passed (0.013 seconds)
+Test Case 'VisitApplicationBugReproductionTests.testIssue6WholeQualifiedQuotePassesParserButCannotPassAnyUnitOwnership' started at 2026-10-16 03:36:10.589
+VISIT_ISSUE_6 language=english units=3 fullQuoteValid=true retainedHighlights=0
+VISIT_ISSUE_6 language=french units=3 fullQuoteValid=true retainedHighlights=0
+Test Case 'VisitApplicationBugReproductionTests.testIssue6WholeQualifiedQuotePassesParserButCannotPassAnyUnitOwnership' passed (0.026 seconds)
+Test Case 'VisitApplicationBugReproductionTests.testIssue7ParserProducedAppointmentOnlyStateTriggersActualEmptyPredicate' started at 2026-10-16 03:36:10.615
+VISIT_ISSUE_7 parserAppointmentOnlyReachable=true actualUIPredicateBound=true simultaneousAppointmentAndEmptyBranches=true
+Test Case 'VisitApplicationBugReproductionTests.testIssue7ParserProducedAppointmentOnlyStateTriggersActualEmptyPredicate' passed (0.011 seconds)
+Test Suite 'VisitApplicationBugReproductionTests' passed at 2026-10-16 03:36:10.626
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.961 (0.961) seconds
+Test Suite 'Selected tests' passed at 2026-10-16 03:36:10.626
+	 Executed 16 tests, with 0 failures (0 unexpected) in 1.548 (1.548) seconds

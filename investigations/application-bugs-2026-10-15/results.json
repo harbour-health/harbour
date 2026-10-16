@@ -1,0 +1,62 @@
+{
+  "baselineCommit": "5158710fa518816ca14781ca4d7a4c3f459675b8",
+  "productionSourcesChanged": false,
+  "modelInferencePerformed": false,
+  "coreTestMethods": 16,
+  "cancellationTestMethods": 4,
+  "totalCharacterizationMethodsPassed": 20,
+  "meaning": "Passing characterization tests reproduce defects, not fixes.",
+  "issues": [
+    {
+      "number": 2,
+      "url": "https://github.com/harbour-health/harbour/issues/2",
+      "key": "appointment-summary",
+      "outcome": "confirmed"
+    },
+    {
+      "number": 3,
+      "url": "https://github.com/harbour-health/harbour/issues/3",
+      "key": "conditional-removal",
+      "outcome": "confirmed"
+    },
+    {
+      "number": 4,
+      "url": "https://github.com/harbour-health/harbour/issues/4",
+      "key": "polite-appointment",
+      "outcome": "confirmed"
+    },
+    {
+      "number": 5,
+      "url": "https://github.com/harbour-health/harbour/issues/5",
+      "key": "aggregate-limit",
+      "outcome": "confirmed"
+    },
+    {
+      "number": 6,
+      "url": "https://github.com/harbour-health/harbour/issues/6",
+      "key": "quote-ownership",
+      "outcome": "confirmed"
+    },
+    {
+      "number": 7,
+      "url": "https://github.com/harbour-health/harbour/issues/7",
+      "key": "appointment-empty-state",
+      "outcome": "confirmed-parser-state-and-source-bound-UI-predicate"
+    },
+    {
+      "number": 8,
+      "url": "https://github.com/harbour-health/harbour/issues/8",
+      "key": "stop-send",
+      "outcome": "confirmed-controlled-lifecycle-gap-with-UI-timing-limit"
+    }
+  ],
+  "coreLogSHA256": "7d175a7a15bab3b29c461f9efe712c9a984388630729b15616c09e95f7f2a436",
+  "cancellationLogSHA256": "ee688b33dc98db6fedc44ba8887e84f7b1e60e861a0e80e836d3387803540249",
+  "limitations": [
+    "No rendered SwiftUI or physical iPhone test.",
+    "No real-model output frequency or actual C decode/cancellation latency measured.",
+    "The first six findings use actual production Core; cancellation uses actual Swift manager/runtime with explicit C/platform/dependency boundaries.",
+    "Wrong appointment/removal actions still require user confirmation before persistence.",
+    "These defects do not establish why a model itself emitted empty extraction arrays."
+  ]
+}

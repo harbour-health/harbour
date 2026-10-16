@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent_actual_application_bug_investigation_issues_002_004",
+  "sourceCommit": "5158710fa518816ca14781ca4d7a4c3f459675b8",
+  "actualSwiftExecutionVerified": true,
+  "actualExecution": {
+    "path": "build/application-bug-investigation-20261015/core-execution.json",
+    "bytes": 1527,
+    "sha256": "ba118f7a64e27e81389b031f9d00cb131624b0b93ab61da16f70c91092eec884"
+  },
+  "originalLog": {
+    "path": "build/application-bug-investigation-20261015/core-swift-test.log",
+    "bytes": 7373,
+    "sha256": "7d175a7a15bab3b29c461f9efe712c9a984388630729b15616c09e95f7f2a436"
+  },
+  "canonicalManifest": {
+    "path": "build/application-bug-investigation-20261015/source515-canonical-manifest.json",
+    "bytes": 8904,
+    "sha256": "18feba704a1b4fb1f7890fb703c7e47e2cbb8d48881d6638ecaa428cc01c7eec"
+  },
+  "canonicalArchive": {
+    "path": "build/application-bug-investigation-20261015/source515-canonical.tar.gz",
+    "bytes": 140859,
+    "sha256": "c4fc96d6cec232fd8d72c7b9622f281053a7572d357b89d5a6a201edda346dc4"
+  },
+  "canonical45GitAndArchiveBytesIndependentlyMatched": true,
+  "producerReportsSource45PrePostExact": true,
+  "ourCharacterizationMethods": 12,
+  "ourMethodsPassed": 12,
+  "combinedMethods": 16,
+  "combinedFailures": 0,
+  "testSources": [
+    {
+      "path": "build/application-bug-investigation-20261015/validation/Issue002AppointmentSummaryInvestigationTests.swift",
+      "bytes": 3789,
+      "sha256": "65eaea6eb2caa76568f1e7251b08893bf7d77918865fab939ad237114b9047b5"
+    },
+    {
+      "path": "build/application-bug-investigation-20261015/validation/Issue003ConditionalRemovalInvestigationTests.swift",
+      "bytes": 3168,
+      "sha256": "dc6b36479bd144150dc65fd14907f7c278d0e8da770ecc60e37c11d9b06e57d5"
+    },
+    {
+      "path": "build/application-bug-investigation-20261015/validation/Issue004PoliteAppointmentInvestigationTests.swift",
+      "bytes": 3385,
+      "sha256": "8271867963a3b3f7bc5c0f4bc067aedc5b72e57b29c5ad22b93ead2a9cf4782f"
+    }
+  ],
+  "findings": {
+    "path": "build/application-bug-investigation-20261015/validation/issues-002-004-actual-investigation.md",
+    "bytes": 7560,
+    "sha256": "c56ddebca8382d0a4f62a3b4e7ec2db0482f92e05ab7bafe17ad039c855bb6e9"
+  },
+  "originalStaticNotesRetained": {
+    "path": "build/application-bug-investigation-20261015/validation/issues-002-004-source-findings.md",
+    "bytes": 8158,
+    "sha256": "23bace96bf6924de1bb10db6b415f4bf0565ecda4843f16f30b7a95c2eb37f16"
+  },
+  "issues": [
+    {
+      "number": 2,
+      "status": "confirmed_narrowed_to_wrong_appointment_draft",
+      "automaticPersistenceProved": false
+    },
+    {
+      "number": 3,
+      "status": "confirmed_narrowed_to_wrong_unconditional_removal_confirmation",
+      "automaticPersistenceProved": false
+    },
+    {
+      "number": 4,
+      "status": "confirmed_false_rejection_of_authorized_polite_appointment",
+      "automaticPersistenceProved": false
+    }
+  ],
+  "scope": "Actual production Core characterization; persistence and UI boundaries source-inspected only; no model invocation, source fix, grader change or rendered UI test. Passing characterization reproduces a defect, not a fix."
+}

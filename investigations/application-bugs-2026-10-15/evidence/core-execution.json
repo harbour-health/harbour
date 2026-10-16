@@ -1,0 +1,43 @@
+{
+  "baselineCommit": "5158710fa518816ca14781ca4d7a4c3f459675b8",
+  "canonicalSourceFiles": 45,
+  "sourcePreAndPostAllExact": true,
+  "image": "sha256:4e2d836d1252e502c2c5ac92bc73e675d5d9a1780a82ad4c4127624e5792d756",
+  "command": [
+    "swift",
+    "test",
+    "--package-path",
+    "/investigation/source/HarbourCore",
+    "--jobs",
+    "4",
+    "--filter",
+    "ReproductionTests"
+  ],
+  "testInputs": [
+    {
+      "path": "Issue002AppointmentSummaryInvestigationTests.swift",
+      "bytes": 3789,
+      "sha256": "65eaea6eb2caa76568f1e7251b08893bf7d77918865fab939ad237114b9047b5"
+    },
+    {
+      "path": "Issue003ConditionalRemovalInvestigationTests.swift",
+      "bytes": 3168,
+      "sha256": "dc6b36479bd144150dc65fd14907f7c278d0e8da770ecc60e37c11d9b06e57d5"
+    },
+    {
+      "path": "Issue004PoliteAppointmentInvestigationTests.swift",
+      "bytes": 3385,
+      "sha256": "8271867963a3b3f7bc5c0f4bc067aedc5b72e57b29c5ad22b93ead2a9cf4782f"
+    },
+    {
+      "path": "VisitApplicationBugReproductionTests.swift",
+      "bytes": 11061,
+      "sha256": "94aa72c478ea2ff59d02a9fa2a0884ed71b49fb55444bd76b6e1e9f80da6cfd1"
+    }
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 58.6358368229121,
+  "logSHA256": "7d175a7a15bab3b29c461f9efe712c9a984388630729b15616c09e95f7f2a436",
+  "noModelInference": true,
+  "scope": "Production Core and parser execution with controlled generator outputs. UI predicate is source-bound; no rendered SwiftUI/device execution. Passing characterization assertions reproduce bugs, not fixes."
+}

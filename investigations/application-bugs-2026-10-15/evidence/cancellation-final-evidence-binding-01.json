@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent-actual-cancellation-investigation03-source-and-test-result-binding",
+  "createdUTC": "2026-10-16T03:43:19.729785+00:00",
+  "sourceCommit": "5158710fa518816ca14781ca4d7a4c3f459675b8",
+  "issue": "https://github.com/matteopolak/harbour/issues/8",
+  "integrityPassed": true,
+  "execution": {
+    "path": "build/application-bug-investigation-20261015/cancellation-execution-03.json",
+    "bytes": 7335,
+    "sha256": "f7532171c443e2fa1f4f3b9eef87983c5f1086f97bcbc42b8a1effe0e55194b8"
+  },
+  "log": {
+    "path": "build/application-bug-investigation-20261015/cancellation-swift-test-03.log",
+    "bytes": 5498,
+    "sha256": "ee688b33dc98db6fedc44ba8887e84f7b1e60e861a0e80e836d3387803540249"
+  },
+  "priorHarnessCompileFailure": {
+    "path": "build/application-bug-investigation-20261015/cancellation-swift-test-02.log",
+    "bytes": 9974,
+    "sha256": "d64b65625d87c6b193751a0df1c6f325f63a32a2091b4efd36d5841020fcc37f"
+  },
+  "originalUnexecutedHarnessPreparation": {
+    "path": "build/application-bug-investigation-20261015/cancellation/preparation.json",
+    "bytes": 9517,
+    "sha256": "ace4f18b67ee8adc9146153a3212b9d361dc550a28d018feb11427abf7addc3a"
+  },
+  "testedCanonicalHarnessPreparation": {
+    "path": "build/application-bug-investigation-20261015/cancellation-canonical-03/preparation.json",
+    "bytes": 5547,
+    "sha256": "9eb006e663f6fc5c869ea15f54bad5365ff3d2e385907c8102d28ccffcc20702"
+  },
+  "sources": [
+    {
+      "source": "HarbourRuntime/Sources/HarbourRuntime/LocalModel.swift",
+      "canonicalSHA256": "6d40375c78b5e25625a09ea61472fe2a4af6f8e970a9c6f4735cba9c4d731d47",
+      "testedSHA256": "6d40375c78b5e25625a09ea61472fe2a4af6f8e970a9c6f4735cba9c4d731d47",
+      "onlyAddedPrefix": ""
+    },
+    {
+      "source": "HarbourRuntime/Sources/HarbourRuntime/ModelPromptFormat.swift",
+      "canonicalSHA256": "2571da38da025a05db8d0ab739a2c81461042d68ef3a0acd3a526468ad1db0c0",
+      "testedSHA256": "2571da38da025a05db8d0ab739a2c81461042d68ef3a0acd3a526468ad1db0c0",
+      "onlyAddedPrefix": ""
+    },
+    {
+      "source": "HarbourRuntime/Sources/HarbourRuntime/JSONEnvelope.swift",
+      "canonicalSHA256": "d5e6f92463b4870158f9f9b860e9f8520ccc9a84375ce4cbe06dd44347b0b465",
+      "testedSHA256": "d5e6f92463b4870158f9f9b860e9f8520ccc9a84375ce4cbe06dd44347b0b465",
+      "onlyAddedPrefix": ""
+    },
+    {
+      "source": "HarbourRuntime/Sources/HarbourRuntime/ToolOutputGrammar.swift",
+      "canonicalSHA256": "0a8583e6a930b9f57ef45f52a5cda24fd469b2e254b9201770b78bba4a37de0e",
+      "testedSHA256": "0a8583e6a930b9f57ef45f52a5cda24fd469b2e254b9201770b78bba4a37de0e",
+      "onlyAddedPrefix": ""
+    },
+    {
+      "source": "Harbour/ModelManager.swift",
+      "canonicalSHA256": "26a1fe8008fe6f348cb2a1e1a6830f2cfde5ee1cc341ae3d0db8b1d959bb327c",
+      "testedSHA256": "117cc23d67d9541592afd7af9e1f15c25f6a31d5777e7643966114dd8e778898",
+      "onlyAddedPrefix": "#if canImport(FoundationNetworking)\nimport FoundationNetworking\n#endif\n"
+    },
+    {
+      "source": "Harbour/L10n.swift",
+      "canonicalSHA256": "397f05d205970383dfaa31f43fb201f1d9ff9abb78b6b4d694e8922d5948090e",
+      "testedSHA256": "397f05d205970383dfaa31f43fb201f1d9ff9abb78b6b4d694e8922d5948090e",
+      "onlyAddedPrefix": ""
+    },
+    {
+      "source": "Harbour/ChatView.swift",
+      "canonicalSHA256": "1a75e7b470d9ddb2a7096d2d42a189af72681a5dc99678f994a60b53387bf897",
+      "testedSHA256": "1a75e7b470d9ddb2a7096d2d42a189af72681a5dc99678f994a60b53387bf897",
+      "onlyAddedPrefix": ""
+    },
+    {
+      "source": "HarbourRuntime/Sources/HarbourRuntime/TitleOutputGrammar.swift",
+      "canonicalSHA256": "88736de8b3ea4acf7014e72c96f7d375cb0c8639b35a20e97b522acc22792a1c",
+      "testedSHA256": "88736de8b3ea4acf7014e72c96f7d375cb0c8639b35a20e97b522acc22792a1c",
+      "onlyAddedPrefix": ""
+    }
+  ],
+  "testsPassed": [
+    "testExactChatViewReferenceAdvertisesReadySynchronouslyOnStop",
+    "testNormalCompletionClearsBusyAndAllowsNextRequest",
+    "testRealURLSessionDownloadCancellationHasAnImmediateRetryBusyWindow",
+    "testStopDuringActualSwiftRuntimeCDecodeKeepsManagerBusyUntilDecodeReturns"
+  ],
+  "testCount": 4,
+  "failures": 0,
+  "actualExecutedTestBodyByteExactOriginalPreparedTest": true,
+  "all16LocalTestedHarnessInputsMatchProducerHashes": true,
+  "producerDeclaresInputsUnchangedAfterRun": true,
+  "limits": [
+    "No new execution or source modification by reviewer. Source bindings compare actual canonical515Git blobs,not false CRLF working-byte equality.",
+    "Confirmed real Swift manager/runtime cancellation lifecycle under controlledCcall and realFoundationURLSession protocol fixture. No actualmodel,decoderlatency,physicaltap/renderedSwiftUI orAppleCombine execution proof.",
+    "LinuxURLProtocol unavailableSendable warning retained. Its fixture is lock-protected and test-only;warning does not become a production finding or thread-safety proof.",
+    "Prior02 failed for a missing copied TitleOutputGrammar dependency beforetests,not an app production compilefailure.03 adds exactcanonicaldependency only.",
+    "Rootproducer declares pinnedimage/nonetwork/noML and pre/postinputequality;thisstoredproofreview doesnotindependentlyattestremoteOS/image/network."
+  ]
+}
