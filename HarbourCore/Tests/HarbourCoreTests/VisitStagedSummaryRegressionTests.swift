@@ -133,9 +133,21 @@ final class VisitStagedSummaryRegressionTests: XCTestCase {
             XCTAssertTrue(run.warnings.contains("unrelated_quote.unit.\(unit.id).medicines"))
             XCTAssertEqual(run.stages.last?.generation?.output, raw)
 
-            let extended = source + (language == .english ? " Weight is 72 kg." : " Le poids est de 72 kg.")
-            let wrongParagraph = try output(highlights: [extended])
-            let unrelated = try await extract(extended, language: language, selected: [0], outputs: [0: wrongParagraph])
+            let outsideFact = language == .english ? "Weight is 72 kg." : "Le poids est de 72 kg."
+            let extended = source + " " + outsideFact
+            let extendedUnit = try XCTUnwrap(VisitExtraction.sourceUnits(extended).first)
+            // The sentence containing the closing quote also contains the trailing
+            // fact, so this wider exact context is legitimate documentation.
+            XCTAssertTrue(extendedUnit.contexts.contains(extended))
+            let related = try await extract(extended, language: language, selected: [0], outputs: [0: try output(highlights: [extended])])
+            XCTAssertTrue(related.completed, related.errors.description)
+            XCTAssertEqual(related.acceptedSummary?.highlights, [VisitQuote(quote: extended)])
+            // The standalone later fact is not owned by the selected unit and
+            // cannot borrow that unit's permission to retain its whole context.
+            XCTAssertTrue(extended.contains(outsideFact))
+            XCTAssertFalse(extendedUnit.text.contains(outsideFact))
+            XCTAssertFalse(extendedUnit.contexts.contains(outsideFact))
+            let unrelated = try await extract(extended, language: language, selected: [0], outputs: [0: try output(highlights: [outsideFact])])
             XCTAssertTrue(unrelated.completed, unrelated.errors.description)
             XCTAssertTrue(try XCTUnwrap(unrelated.acceptedSummary).highlights.isEmpty)
             XCTAssertTrue(unrelated.warnings.contains("unrelated_quote.unit.0.highlights"))
