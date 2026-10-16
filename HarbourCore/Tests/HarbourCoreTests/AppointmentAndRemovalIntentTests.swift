@@ -10,6 +10,7 @@ final class AppointmentAndRemovalIntentTests: XCTestCase {
         for original in [
             "Make a summary of my appointment.",
             "Create a detailed summary of my last dentist appointment.",
+            "Make a summary of my last very important annual specialist follow up review appointment.",
             "Write notes about my next cardiology appointment.",
             "Prepare a summary of Dr. Smith's appointment.",
             "Prépare un résumé de mon rendez-vous.",

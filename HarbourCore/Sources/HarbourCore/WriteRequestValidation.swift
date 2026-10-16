@@ -98,7 +98,7 @@ enum WriteRequestValidation {
             let connector = #"(?:(?:for|about|before|of|pour|sur|avant|de|du|des)\s+|d')"#
             // Qualifiers belong to the documented appointment (e.g. "my last
             // dentist appointment"), not authorization to create a new one.
-            let qualifiers = #"(?:[\p{L}\p{N}][\p{L}\p{N}'-]*\.?\s+){0,8}"#
+            let qualifiers = #"(?:[\p{L}\p{N}][\p{L}\p{N}'-]*\.?\s+)*"#
             let noteForAppointment = "\\b" + note + "\\s+" + connector + qualifiers + appointment + "\\b"
             var documentationScope = unquoted
             if let payload = match(unquoted, #"(?:[,;]\s*)?(?:notes?|summary|memo|resume|compte[- ]rendu)\s*:"#),
