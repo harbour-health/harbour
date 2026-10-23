@@ -335,6 +335,36 @@ import XCTest
     }
 }
 
+@MainActor final class HarbourTrendsTests: XCTestCase {
+    override func setUpWithError() throws { continueAfterFailure = false }
+
+    func testReadingsAndSymptomsTrendsScreens() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
+        app.launch()
+
+        let openTrends = app.buttons["openTrends"]
+        XCTAssertTrue(openTrends.waitForExistence(timeout: 10), app.debugDescription)
+        openTrends.tap()
+        XCTAssertTrue(app.navigationBars["Trends"].waitForExistence(timeout: 5), app.debugDescription)
+        XCTAssertTrue(app.otherElements["readingTrendChart"].waitForExistence(timeout: 5), app.debugDescription)
+        let readings = XCTAttachment(screenshot: app.screenshot())
+        readings.name = "Trends - readings"
+        readings.lifetime = .keepAlways
+        add(readings)
+
+        let categoryPicker = app.segmentedControls.firstMatch
+        XCTAssertTrue(categoryPicker.buttons["Symptoms"].exists, app.debugDescription)
+        categoryPicker.buttons["Symptoms"].tap()
+        XCTAssertTrue(app.staticTexts["Symptoms logged"].waitForExistence(timeout: 5), app.debugDescription)
+        XCTAssertTrue(app.otherElements["symptomTrendChart"].waitForExistence(timeout: 5), app.debugDescription)
+        let symptoms = XCTAttachment(screenshot: app.screenshot())
+        symptoms.name = "Trends - symptoms"
+        symptoms.lifetime = .keepAlways
+        add(symptoms)
+    }
+}
+
 @MainActor final class HarbourLockTests: XCTestCase {
     override func setUpWithError() throws { continueAfterFailure = false }
     private func capture(_ name: String) {

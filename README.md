@@ -45,7 +45,7 @@ English and Canadian French follow the iOS app language setting. French includes
 
 ## Screens
 
-- **Today:** recent readings, upcoming reminders and doses, refill dates, and searchable health history.
+- **Today:** recent readings, upcoming reminders and doses, refill dates, and searchable health history. Trends charts show recorded readings and symptom-entry counts across 7, 30, or 90 days, or all time.
 - **Chat:** typed or spoken messages; optional topic hints; model and effort controls beside the microphone; model-written replies with recent conversation context, model-selected tool calls, and locally generated conversation titles.
 - **Records:** dedicated symptom, medication, reading, and appointment lists, with shared entry sheets and swipe deletion. Medication schedules support explicit clock times or a count per day, week, or month.
 - **Visits:** a large recorder with pause/resume, saved audio, direct note entry, editable transcripts, source-quoted notes and follow-up, confirmed medicine changes, and appointment preparation with saved questions.

@@ -1,4 +1,5 @@
 import SwiftUI
+import Charts
 import HarbourCore
 
 enum LocalizedHealthContent {
@@ -196,6 +197,232 @@ struct HealthHistoryView: View {
             .contentMargins(.bottom, 86, for: .scrollContent)
     }
 }
+
+private enum HealthTrendRange: String, CaseIterable, Identifiable, Hashable {
+    case week, month, threeMonths, allTime
+    var id: Self { self }
+    var title: String {
+        switch self {
+        case .week: "7 days"
+        case .month: "30 days"
+        case .threeMonths: "90 days"
+        case .allTime: "All time"
+        }
+    }
+    var dayCount: Int? {
+        switch self {
+        case .week: 7
+        case .month: 30
+        case .threeMonths: 90
+        case .allTime: nil
+        }
+    }
+}
+
+private enum HealthTrendSection: String, CaseIterable, Identifiable, Hashable {
+    case readings, symptoms
+    var id: Self { self }
+    var title: String { self == .readings ? "Readings" : "Symptoms" }
+}
+
+private struct SymptomTrendBucket: Identifiable {
+    let date: Date
+    let count: Int
+    var id: Date { date }
+}
+
+struct HealthTrendsView: View {
+    @EnvironmentObject private var store: AppStore
+    @Environment(\.floatingDockClearance) private var dockClearance
+    @State private var section: HealthTrendSection = .readings
+    @State private var range: HealthTrendRange = .month
+    @State private var readingKind: ReadingKind = .bloodPressure
+
+    private var rangeStart: Date? {
+        guard let dayCount = range.dayCount else { return nil }
+        return Calendar.current.date(byAdding: .day, value: -dayCount, to: .now)
+    }
+
+    private var readings: [Reading] {
+        store.records.readings.filter { reading in
+            reading.kind == readingKind && reading.date <= .now && (rangeStart == nil || reading.date >= rangeStart!)
+        }.sorted { $0.date < $1.date }
+    }
+
+    private var symptoms: [Symptom] {
+        store.records.symptoms.filter { $0.date <= .now && (rangeStart == nil || $0.date >= rangeStart!) }.sorted { $0.date < $1.date }
+    }
+
+    private var symptomBuckets: [SymptomTrendBucket] {
+        let calendar = Calendar.current
+        let grouped = Dictionary(grouping: symptoms) { symptom -> Date in
+            if range == .week { return calendar.startOfDay(for: symptom.date) }
+            return calendar.dateInterval(of: .weekOfYear, for: symptom.date)?.start ?? calendar.startOfDay(for: symptom.date)
+        }
+        return grouped.map { SymptomTrendBucket(date: $0.key, count: $0.value.count) }.sorted { $0.date < $1.date }
+    }
+
+    private var frequentSymptoms: [(name: String, count: Int)] {
+        let grouped = Dictionary(grouping: symptoms) { $0.text.trimmingCharacters(in: .whitespacesAndNewlines) }
+        var result: [(name: String, count: Int)] = []
+        for (name, values) in grouped where !name.isEmpty { result.append((name: name, count: values.count)) }
+        result.sort {
+            if $0.count != $1.count { return $0.count > $1.count }
+            return $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending
+        }
+        return Array(result.prefix(5))
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 22) {
+                Picker("Trend category", selection: $section) {
+                    ForEach(HealthTrendSection.allCases) { item in Text(L10n.string(item.title)).tag(item) }
+                }.pickerStyle(.segmented)
+
+                Picker("Date range", selection: $range) {
+                    ForEach(HealthTrendRange.allCases) { item in Text(L10n.string(item.title)).tag(item) }
+                }.pickerStyle(.segmented)
+
+                if section == .readings { readingsContent } else { symptomsContent }
+
+                Text(section == .readings
+                     ? L10n.string("Charts show readings you recorded or imported. They don’t explain changes or provide a diagnosis.")
+                     : L10n.string("Symptom charts count entries you logged. They don’t measure severity or provide a diagnosis."))
+                    .font(.footnote).foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.horizontal, AppLayout.screenInset)
+            .padding(.vertical, 20)
+            .frame(maxWidth: AppLayout.contentWidth, alignment: .leading)
+            .frame(maxWidth: .infinity)
+        }
+        .contentMargins(.bottom, dockClearance, for: .scrollContent)
+        .background(Palette.canvas)
+        .navigationTitle("Trends")
+        .navigationBarTitleDisplayMode(.inline)
+        .accessibilityIdentifier("healthTrends")
+    }
+
+    @ViewBuilder private var readingsContent: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Picker("Reading type", selection: $readingKind) {
+                ForEach(ReadingKind.allCases, id: \.self) { kind in Text(L10n.string(kind.rawValue)).tag(kind) }
+            }.pickerStyle(.menu).font(.headline)
+
+            if readings.isEmpty {
+                emptyState(title: "No readings in this period", detail: "Add or import readings to see how they change over time.", symbol: readingKind.symbol)
+            } else {
+                HStack(alignment: .top, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text("Latest").font(.subheadline).foregroundStyle(Palette.muted)
+                        Text(L10n.readingValue(readings[readings.count - 1]) + " " + L10n.string(readingKind.unit))
+                            .font(.title2.weight(.bold)).foregroundStyle(Palette.ink).lineLimit(1).minimumScaleFactor(0.75)
+                        Text(readings[readings.count - 1].date.formatted(.dateTime.month(.abbreviated).day().year().locale(L10n.locale)))
+                            .font(.subheadline).foregroundStyle(Palette.muted)
+                    }
+                    Spacer(minLength: 8)
+                    VStack(alignment: .trailing, spacing: 5) {
+                        Text("In this period").font(.subheadline).foregroundStyle(Palette.muted)
+                        Text(L10n.format(readings.count == 1 ? "%lld reading" : "%lld readings", Int64(readings.count)))
+                            .font(.title3.weight(.semibold)).foregroundStyle(Palette.ink)
+                    }
+                }
+
+                Chart(readings) { reading in
+                    if readingKind == .bloodPressure {
+                        let parts = reading.value.split(separator: "/").compactMap { Double($0) }
+                        if parts.count == 2 {
+                            LineMark(x: .value("Date", reading.date), y: .value("mmHg", parts[0]), series: .value("Measure", "Systolic"))
+                                .foregroundStyle(by: .value("Measure", "Systolic"))
+                            PointMark(x: .value("Date", reading.date), y: .value("mmHg", parts[0]))
+                                .foregroundStyle(by: .value("Measure", "Systolic"))
+                            LineMark(x: .value("Date", reading.date), y: .value("mmHg", parts[1]), series: .value("Measure", "Diastolic"))
+                                .foregroundStyle(by: .value("Measure", "Diastolic"))
+                            PointMark(x: .value("Date", reading.date), y: .value("mmHg", parts[1]))
+                                .foregroundStyle(by: .value("Measure", "Diastolic"))
+                        }
+                    } else if let value = Double(ReadingParser.normalizedValue(reading.value)) {
+                        LineMark(x: .value("Date", reading.date), y: .value(L10n.string(readingKind.rawValue), value))
+                            .foregroundStyle(Palette.blue)
+                        PointMark(x: .value("Date", reading.date), y: .value(L10n.string(readingKind.rawValue), value))
+                            .foregroundStyle(Palette.blue)
+                    }
+                }
+                .chartForegroundStyleScale(domain: ["Systolic", "Diastolic"], range: [Palette.blue, Palette.coral])
+                .chartLegend(readingKind == .bloodPressure ? .visible : .hidden)
+                .chartXAxis {
+                    AxisMarks(values: .automatic(desiredCount: 4)) { value in
+                        AxisValueLabel(format: .dateTime.month(.abbreviated).day().locale(L10n.locale))
+                    }
+                }
+                .chartYAxis { AxisMarks(position: .leading) }
+                .chartYScale(domain: .automatic(includesZero: false))
+                .frame(height: 190)
+                .accessibilityLabel(L10n.format("Recorded %@ over time", L10n.string(readingKind.rawValue)))
+                .accessibilityIdentifier("readingTrendChart")
+            }
+        }
+        .padding(AppLayout.surfaceInset)
+        .background(Palette.surface, in: RoundedRectangle(cornerRadius: 28))
+    }
+
+    @ViewBuilder private var symptomsContent: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Symptoms logged").font(.subheadline).foregroundStyle(Palette.muted)
+                Text(L10n.format(symptoms.count == 1 ? "%lld entry" : "%lld entries", Int64(symptoms.count)))
+                    .font(.title2.weight(.bold)).foregroundStyle(Palette.ink)
+                Text(range == .week ? L10n.string("Entries per day") : L10n.string("Entries per week"))
+                    .font(.subheadline).foregroundStyle(Palette.muted)
+            }
+
+            if symptomBuckets.isEmpty {
+                emptyState(title: "No symptoms in this period", detail: "Log symptoms to see how often entries appear over time.", symbol: "cross.case")
+            } else {
+                Chart(symptomBuckets) { bucket in
+                    BarMark(x: .value("Week", bucket.date, unit: range == .week ? .day : .weekOfYear), y: .value("Entries", bucket.count))
+                        .foregroundStyle(Palette.coral.gradient)
+                        .cornerRadius(5)
+                }
+                .chartXAxis {
+                    AxisMarks(values: .automatic(desiredCount: 4)) { value in
+                        AxisValueLabel(format: .dateTime.month(.abbreviated).day().locale(L10n.locale))
+                    }
+                }
+                .chartYAxis { AxisMarks(position: .leading, values: .automatic(desiredCount: 4)) }
+                .frame(height: 190)
+                .accessibilityLabel(L10n.string("Symptom entries recorded over time"))
+                .accessibilityIdentifier("symptomTrendChart")
+
+                if !frequentSymptoms.isEmpty {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Most logged").font(.headline)
+                        ForEach(Array(frequentSymptoms.enumerated()), id: \.offset) { _, item in
+                            HStack(spacing: 12) {
+                                Text(item.name).foregroundStyle(Palette.ink).lineLimit(2)
+                                Spacer(minLength: 8)
+                                Text(L10n.format(item.count == 1 ? "%lld entry" : "%lld entries", Int64(item.count)))
+                                    .font(.subheadline).foregroundStyle(Palette.muted)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .padding(AppLayout.surfaceInset)
+        .background(Palette.surface, in: RoundedRectangle(cornerRadius: 28))
+    }
+
+    private func emptyState(title: String, detail: String, symbol: String) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label(L10n.string(title), systemImage: symbol).font(.headline).foregroundStyle(Palette.ink)
+            Text(L10n.string(detail)).font(.subheadline).foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 8)
+    }
+}
+
 struct PreparationView: View {
     @EnvironmentObject private var store: AppStore
     @Environment(\.dismiss) private var dismiss

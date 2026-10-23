@@ -178,6 +178,9 @@ struct TodayView: View {
                 Text(Date.now, format: .dateTime.weekday(.wide).month(.wide).day()).font(.body).foregroundStyle(Palette.muted).padding(.top, 2)
                 VStack(spacing: 14) {
                     ReadingSummary(readings: store.records.readings)
+                    NavigationLink { HealthTrendsView() } label: {
+                        FeatureRow(title: "Trends", subtitle: "Readings and symptoms over time", symbol: "chart.xyaxis.line", colour: Palette.blue)
+                    }.buttonStyle(.plain).accessibilityIdentifier("openTrends")
                     if typeSize.isAccessibilitySize { VStack(spacing: 16) { shortcuts } }
                     else { HStack(alignment: .top, spacing: 14) { shortcuts } }
                 }
