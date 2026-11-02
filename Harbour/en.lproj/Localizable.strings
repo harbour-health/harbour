@@ -619,3 +619,26 @@
 "%lld entries" = "%lld entries";
 "Diastolic" = "Diastolic";
 "Entries" = "Entries";
+
+/* Doctor visit report */
+"Doctor visit report" = "Doctor visit report";
+"Current medications" = "Current medications";
+"Saved questions" = "Saved questions";
+"Choose records, preview, and share a PDF" = "Choose records, preview, and share a PDF";
+"Choose what to bring to your appointment." = "Choose what to bring to your appointment.";
+"The PDF is created on this device. Review it before sharing." = "The PDF is created on this device. Review it before sharing.";
+"From" = "From";
+"Through" = "Through";
+"Choose an end date on or after the start date." = "Choose an end date on or after the start date.";
+"Include in report" = "Include in report";
+"The date range applies to readings, symptoms, and visit notes. Current medications and saved questions are included as they are today. Visit notes include saved transcripts, not audio." = "The date range applies to readings, symptoms, and visit notes. Current medications and saved questions are included as they are today. Visit notes include saved transcripts, not audio.";
+"Preview report" = "Preview report";
+"Report preview" = "Report preview";
+"Share PDF" = "Share PDF";
+"Couldn’t create the report. Try a shorter date range or fewer sections." = "Couldn’t create the report. Try a shorter date range or fewer sections.";
+"Readings, symptoms, and visit notes use the selected dates. Medications and questions reflect the current saved list. Recorded information only; this report does not provide a diagnosis." = "Readings, symptoms, and visit notes use the selected dates. Medications and questions reflect the current saved list. Recorded information only; this report does not provide a diagnosis.";
+"No records to include." = "No records to include.";
+"Source" = "Source";
+"Dots show recorded values. Lines connect consecutive readings; gaps do not imply measurements." = "Dots show recorded values. Lines connect consecutive readings; gaps do not imply measurements.";
+"Blue: systolic. Coral: diastolic." = "Blue: systolic. Coral: diastolic.";
+"No transcript saved." = "No transcript saved.";

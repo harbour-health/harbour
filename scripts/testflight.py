@@ -36,6 +36,8 @@ def main():
         parser.error('The archive does not exist.')
     if not (ROOT / 'HarbourRuntime/Vendor/llama.xcframework/Info.plist').exists():
         parser.error('Run bash scripts/prepare-runtime.sh first.')
+    if not (ROOT / 'HarbourReports/Vendor/HarbourTypst.xcframework/Info.plist').exists():
+        parser.error('Run bash scripts/prepare-reports.sh first.')
     output.mkdir(parents=True, exist_ok=True)
 
     def run(command, log_name):

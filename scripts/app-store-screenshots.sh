@@ -23,6 +23,7 @@ python="${PYTHON:-python3}"
 command -v "$python" >/dev/null
 "$python" -c 'from PIL import Image, ImageDraw' || { echo "Install Pillow in your Python environment before running this workflow." >&2; exit 1; }
 [[ -f "$root/HarbourRuntime/Vendor/llama.xcframework/Info.plist" ]] || { echo "Missing prepared llama.xcframework; follow docs/local-models.md first. This script does not download it." >&2; exit 1; }
+[[ -f "$root/HarbourReports/Vendor/HarbourTypst.xcframework/Info.plist" ]] || { echo "Run bash scripts/prepare-reports.sh first." >&2; exit 1; }
 # The prepared path makes this an idempotent privacy-manifest refresh, without downloads.
 HARBOUR_RUNTIME_VENDOR="$root/HarbourRuntime/Vendor" bash "$root/scripts/prepare-runtime.sh"
 xcrun simctl list runtimes -j | "$python" -c 'import json,sys; name=sys.argv[1]; assert any(r["identifier"]==name and r["isAvailable"] for r in json.load(sys.stdin)["runtimes"]), "Install iOS 26.5 in Xcode first; this script does not download runtimes."' "$runtime"

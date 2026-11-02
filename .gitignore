@@ -8,3 +8,4 @@ xcuserdata/
 *.partial
 *.xcresult
 Vendor/
+target/

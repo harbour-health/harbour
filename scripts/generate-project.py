@@ -55,7 +55,7 @@ test_group = add('TestGroup', f'isa = PBXGroup; children = {refs(test_refs)}; pa
 products = add('Products', f'isa = PBXGroup; children = {refs([app, test_product])}; name = Products; sourceTree = "<group>";')
 group = add('RootGroup', f'isa = PBXGroup; children = {refs([source_group, test_group, products])}; sourceTree = "<group>";')
 packages, product_deps, package_builds = [], [], []
-for name in ['HarbourCore', 'HarbourRuntime']:
+for name in ['HarbourCore', 'HarbourRuntime', 'HarbourReports']:
     package = add('Package-' + name, f'isa = XCLocalSwiftPackageReference; relativePath = {name};')
     packages.append(package)
     product = add('Product-' + name, f'isa = XCSwiftPackageProductDependency; package = {package}; productName = {name};')
@@ -84,12 +84,15 @@ proxy = add('TestProxy', f'isa = PBXContainerItemProxy; containerPortal = {proje
 dependency = add('TestDependency', f'isa = PBXTargetDependency; target = {target}; targetProxy = {proxy};')
 test_target = add('TestTarget', f'isa = PBXNativeTarget; buildConfigurationList = {test_configs}; buildPhases = {refs([test_sources, test_frameworks])}; buildRules = (); dependencies = {refs([dependency])}; name = HarbourUITests; productName = HarbourUITests; productReference = {test_product}; productType = "com.apple.product-type.bundle.ui-testing";')
 unit_product = add('UnitProduct', 'isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = HarbourTests.xctest; sourceTree = BUILT_PRODUCTS_DIR;')
-unit_ref = add('UnitSource', 'isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarbourTests.swift; sourceTree = "<group>";')
-unit_build = add('UnitBuild', f'isa = PBXBuildFile; fileRef = {unit_ref};')
-unit_group = add('UnitGroup', f'isa = PBXGroup; children = {refs([unit_ref])}; path = HarbourTests; sourceTree = "<group>";')
+unit_refs, unit_builds = [], []
+for path in sorted((root / 'HarbourTests').glob('*.swift')):
+    unit_ref = add('UnitSource-' + path.name, f'isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "{path.name}"; sourceTree = "<group>";')
+    unit_refs.append(unit_ref)
+    unit_builds.append(add('UnitBuild-' + path.name, f'isa = PBXBuildFile; fileRef = {unit_ref};'))
+unit_group = add('UnitGroup', f'isa = PBXGroup; children = {refs(unit_refs)}; path = HarbourTests; sourceTree = "<group>";')
 objects[group] = '{ isa = PBXGroup; children = ' + refs([source_group, test_group, unit_group, products]) + '; sourceTree = "<group>"; }'
 objects[products] = '{ isa = PBXGroup; children = ' + refs([app, test_product, unit_product]) + '; name = Products; sourceTree = "<group>"; }'
-unit_sources = add('UnitSources', f'isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = {refs([unit_build])}; runOnlyForDeploymentPostprocessing = 0;')
+unit_sources = add('UnitSources', f'isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = {refs(unit_builds)}; runOnlyForDeploymentPostprocessing = 0;')
 unit_frameworks = add('UnitFrameworks', 'isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0;')
 unit_configs = config_list('Unit', 'PRODUCT_NAME = HarbourTests; PRODUCT_BUNDLE_IDENTIFIER = com.matteopolak.harbour.tests; GENERATE_INFOPLIST_FILE = YES; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Harbour.app/Harbour"; BUNDLE_LOADER = "$(TEST_HOST)"; TARGETED_DEVICE_FAMILY = "1,2"; CODE_SIGN_STYLE = Automatic;')
 unit_target = add('UnitTarget', f'isa = PBXNativeTarget; buildConfigurationList = {unit_configs}; buildPhases = {refs([unit_sources, unit_frameworks])}; buildRules = (); dependencies = {refs([dependency])}; name = HarbourTests; productName = HarbourTests; productReference = {unit_product}; productType = "com.apple.product-type.bundle.unit-test";')

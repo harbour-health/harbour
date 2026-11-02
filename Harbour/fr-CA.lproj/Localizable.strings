@@ -619,3 +619,26 @@
 "%lld entries" = "%lld entrées";
 "Diastolic" = "Diastolique";
 "Entries" = "Entrées";
+
+/* Doctor visit report */
+"Doctor visit report" = "Rapport de consultation";
+"Current medications" = "Médicaments actuels";
+"Saved questions" = "Questions enregistrées";
+"Choose records, preview, and share a PDF" = "Choisir des dossiers, prévisualiser et partager un PDF";
+"Choose what to bring to your appointment." = "Choisissez quoi apporter à votre rendez-vous.";
+"The PDF is created on this device. Review it before sharing." = "Le PDF est créé sur cet appareil. Vérifiez-le avant de le partager.";
+"From" = "Du";
+"Through" = "Au";
+"Choose an end date on or after the start date." = "Choisissez une date de fin égale ou postérieure à la date de début.";
+"Include in report" = "Inclure dans le rapport";
+"The date range applies to readings, symptoms, and visit notes. Current medications and saved questions are included as they are today. Visit notes include saved transcripts, not audio." = "La période s’applique aux mesures, aux symptômes et aux notes de consultation. Les médicaments actuels et les questions enregistrées sont inclus tels qu’ils sont aujourd’hui. Les notes comprennent les transcriptions enregistrées, sans audio.";
+"Preview report" = "Prévisualiser le rapport";
+"Report preview" = "Aperçu du rapport";
+"Share PDF" = "Partager le PDF";
+"Couldn’t create the report. Try a shorter date range or fewer sections." = "Impossible de créer le rapport. Essayez une période plus courte ou moins de sections.";
+"Readings, symptoms, and visit notes use the selected dates. Medications and questions reflect the current saved list. Recorded information only; this report does not provide a diagnosis." = "Les mesures, les symptômes et les notes de consultation correspondent aux dates choisies. Les médicaments et les questions reflètent la liste actuellement enregistrée. Ce rapport présente seulement des renseignements enregistrés; il ne fournit pas de diagnostic.";
+"No records to include." = "Aucun dossier à inclure.";
+"Source" = "Source";
+"Dots show recorded values. Lines connect consecutive readings; gaps do not imply measurements." = "Les points représentent les valeurs enregistrées. Les lignes relient les mesures consécutives; les intervalles ne représentent pas des mesures.";
+"Blue: systolic. Coral: diastolic." = "Bleu : systolique. Corail : diastolique.";
+"No transcript saved." = "Aucune transcription enregistrée.";

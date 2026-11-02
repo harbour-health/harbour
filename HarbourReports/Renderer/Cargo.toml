@@ -1,0 +1,18 @@
+[package]
+name = "harbour-typst"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies]
+typst = "=0.13.1"
+typst-pdf = "=0.13.1"
+typst-assets = { version = "=0.13.1", features = ["fonts"] }
+comemo = "0.4"
+
+[profile.release]
+opt-level = "s"
+lto = "thin"
+strip = "debuginfo"

@@ -1,5 +1,8 @@
 # Third-party components
 
+- **Typst 0.13.1**: embedded locally for PDF reports under the [Apache 2.0 licence](https://github.com/typst/typst/blob/v0.13.1/LICENSE). Rust dependencies are pinned in `HarbourReports/Renderer/Cargo.lock`. The compiler has no runtime network or filesystem access beyond the report JSON.
+- **typst-assets 0.13.1 fonts**: bundled Libertinus Serif, New Computer Modern, and DejaVu Sans Mono. Full font licence notices are bundled in `HarbourReports/Sources/HarbourReports/Resources/Fonts-NOTICE.txt`.
+
 - **llama.cpp**, pinned build `b10549`: [MIT licence and copyright notice](https://github.com/ggml-org/llama.cpp/blob/b10549/LICENSE). Prepared frameworks are local, ignored build artifacts; preserve the upstream licence when distributing binaries.
 - **Qwen2.5 0.5B / 1.5B Instruct GGUF**: downloaded from official Qwen repositories. Consult each pinned [Small model card](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF) / [Balanced model card](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF) for the model licence and attribution before redistribution. Weights are not committed.
 - **Health source fixtures**: four paraphrased medication pair entries cite NHS medicine pages; emergency next steps cite Ontario pages. These entries are a limited source fixture, not an official interaction database.

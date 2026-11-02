@@ -443,6 +443,7 @@ struct PreparationView: View {
                     for id in ids { store.removeQuestion(id) }
                 }
             }
+            Section { NavigationLink { VisitReportView() } label: { Label("Doctor visit report", systemImage: "doc.richtext") } }
             Section("Appointment note") { Text(note).textSelection(.enabled).accessibilityIdentifier("appointmentNoteContent") }
             Section { ShareLink(item: note) { Label("Share note", systemImage: "square.and.arrow.up") }; Button { UIPasteboard.general.string = note } label: { Label("Copy note", systemImage: "doc.on.doc") } }
         }.listStyle(.plain).scrollContentBackground(.hidden).background(Palette.canvas)

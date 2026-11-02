@@ -66,6 +66,18 @@ jobs:
       - name: Test deterministic runtime parsing
         run: swift test --package-path HarbourRuntime
 
+      - name: Cache embedded report renderer
+        id: reports-cache
+        uses: actions/cache@v4
+        with:
+          path: HarbourReports/Vendor/HarbourTypst.xcframework
+          key: ${{ runner.os }}-typst-${{ hashFiles('HarbourReports/Renderer/**', 'scripts/prepare-reports.sh') }}
+      - uses: dtolnay/rust-toolchain@stable
+        if: steps.reports-cache.outputs.cache-hit != 'true'
+      - name: Prepare embedded report renderer
+        if: steps.reports-cache.outputs.cache-hit != 'true'
+        run: bash scripts/prepare-reports.sh
+
       - name: Run native iOS smoke and visual regression tests
         run: |
           mkdir -p build
@@ -78,6 +90,7 @@ jobs:
             -resultBundlePath build/Harbour-CI.xcresult \
             -parallel-testing-enabled NO \
             -only-testing:HarbourTests \
+            -only-testing:HarbourUITests/VisitReportUITests \
             -skip-testing:HarbourTests/HarbourCareServiceTests/testNativeVoiceActuallyCompletesShortUtterance \
             -only-testing:HarbourUITests/AppearanceAndLockVisualTests \
             -only-testing:HarbourUITests/HarbourAppointmentUITests \
@@ -131,6 +144,18 @@ jobs:
         run: |
           brew install cmake
           bash scripts/prepare-runtime.sh
+      - name: Cache embedded report renderer
+        id: reports-cache
+        uses: actions/cache@v4
+        with:
+          path: HarbourReports/Vendor/HarbourTypst.xcframework
+          key: ${{ runner.os }}-typst-${{ hashFiles('HarbourReports/Renderer/**', 'scripts/prepare-reports.sh') }}
+      - uses: dtolnay/rust-toolchain@stable
+        if: steps.reports-cache.outputs.cache-hit != 'true'
+      - name: Prepare embedded report renderer
+        if: steps.reports-cache.outputs.cache-hit != 'true'
+        run: bash scripts/prepare-reports.sh
+
       - name: Restore verified model weights
         id: model-cache
         uses: actions/cache/restore@v4

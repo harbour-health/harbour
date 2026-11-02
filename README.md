@@ -34,10 +34,13 @@ Requires a Mac, Xcode with an iOS SDK, and CMake for the simulator inference lib
 
 ```sh
 bash scripts/prepare-runtime.sh
+bash scripts/prepare-reports.sh
 open Harbour.xcodeproj
 ```
 
 Select the shared `Harbour` scheme and an iPhone simulator, then Run. The prepared runtime is already present in this working copy. On a real phone, choose your signing team in **Signing & Capabilities**, enable HealthKit for the bundle ID, and Run. No signing credentials are stored here.
+
+The report renderer requires Rust/Cargo and builds a pinned, embedded Typst compiler with bundled fonts for offline PDF generation. See [doctor visit reports](docs/visit-reports.md).
 
 Qwen Small downloads when the first chat message is sent, or from **Settings → Models**. The download is about 491 MB; Balanced is about 1.12 GB. Progress and cancellation are available. Verified models work without a network connection. Voice requires an available on-device recognizer for the app’s language; it never silently switches to server transcription.
 
@@ -48,7 +51,7 @@ English and Canadian French follow the iOS app language setting. French includes
 - **Today:** recent readings, upcoming reminders and doses, refill dates, and searchable health history. Trends charts show recorded readings and symptom-entry counts across 7, 30, or 90 days, or all time.
 - **Chat:** typed or spoken messages; optional topic hints; model and effort controls beside the microphone; model-written replies with recent conversation context, model-selected tool calls, and locally generated conversation titles.
 - **Records:** dedicated symptom, medication, reading, and appointment lists, with shared entry sheets and swipe deletion. Medication schedules support explicit clock times or a count per day, week, or month.
-- **Visits:** a large recorder with pause/resume, saved audio, direct note entry, editable transcripts, source-quoted notes and follow-up, confirmed medicine changes, and appointment preparation with saved questions.
+- **Visits:** a large recorder with pause/resume, saved audio, direct note entry, editable transcripts, source-quoted notes and follow-up, confirmed medicine changes, appointment preparation with saved questions, and selectable doctor visit reports with offline Typst PDF preview and sharing.
 - **Settings:** appearance, optional Face ID or app PIN lock, model downloads, voice choice and preview, Apple Health import, record import/export, reset, and evaluation.
 
 Settings is available at the upper right of every main screen. Forms use Cancel and Save/Review; read-only drawers use Done. See [navigation and actions](docs/navigation-and-actions.md) for the shared control conventions.

@@ -1,0 +1,4 @@
+module TypstBridge {
+    header "HarbourTypst.h"
+    export *
+}
