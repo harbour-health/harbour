@@ -256,9 +256,15 @@ struct SymptomRow: View {
 }
 
 struct ShareView: UIViewControllerRepresentable {
+    @Environment(\.dismiss) private var dismiss
     let url: URL
     func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        let controller = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        let close = dismiss
+        controller.completionWithItemsHandler = { _, _, _, _ in
+            Task { @MainActor in close() }
+        }
+        return controller
     }
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }

@@ -98,6 +98,7 @@ jobs:
             -parallel-testing-enabled NO \
             -only-testing:HarbourTests \
             -only-testing:HarbourUITests/VisitReportUITests \
+            -only-testing:HarbourUITests/ShareExportUITests \
             -skip-testing:HarbourTests/HarbourCareServiceTests/testNativeVoiceActuallyCompletesShortUtterance \
             -only-testing:HarbourUITests/AppearanceAndLockVisualTests \
             -only-testing:HarbourUITests/HarbourAppointmentUITests \

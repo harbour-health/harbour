@@ -35,3 +35,5 @@ Course context, the project plan, and the preliminary report are maintained sepa
 
 - [Chat request lifecycle](chat-request-lifecycle.md) — cancellation ownership and request admission.
 - [Record validation](record-validation.md) — reading punctuation and complete summary emptiness.
+
+- [Export presentation](export-presentation.md) — system share dismissal and parent drawer ownership.
