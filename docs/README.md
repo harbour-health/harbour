@@ -32,3 +32,6 @@
 Course context, the project plan, and the preliminary report are maintained separately in the parent CSI4900 coursework folder.
 
 - [Report design](report-design.md) — shared report/app styling, bundled fonts, and rendered fictional previews.
+
+- [Chat request lifecycle](chat-request-lifecycle.md) — cancellation ownership and request admission.
+- [Record validation](record-validation.md) — reading punctuation and complete summary emptiness.

@@ -108,12 +108,14 @@ A78A10A31F3744529F1B63F6 = { isa = XCConfigurationList; buildConfigurations = (7
 8BC62B80562684797FDF3D7A = { isa = PBXTargetDependency; target = 0352A6A2FCE048894C87B37E; targetProxy = 858D0932EEACC1122B4B1EF1; };
 C24B2138018A654E3D8BE775 = { isa = PBXNativeTarget; buildConfigurationList = A78A10A31F3744529F1B63F6; buildPhases = (87AA925F24AC656A8AAB80A9, D6C04E321AC1AC815067AD02,); buildRules = (); dependencies = (8BC62B80562684797FDF3D7A,); name = HarbourUITests; productName = HarbourUITests; productReference = 77EB3AD38D803EC3C3DF9309; productType = "com.apple.product-type.bundle.ui-testing"; };
 D395CD88D9722089E4F2720D = { isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = HarbourTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+DB1DE2723103A74A3F6687DD = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRequestObservationTests.swift"; sourceTree = "<group>"; };
+1779F0FF9D03614AEAC64C82 = { isa = PBXBuildFile; fileRef = DB1DE2723103A74A3F6687DD; };
 22B8FDB3BCAC5B60F8B1C044 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HarbourTests.swift"; sourceTree = "<group>"; };
 D8BDB7FB127F1077DD77CE2F = { isa = PBXBuildFile; fileRef = 22B8FDB3BCAC5B60F8B1C044; };
 9E6B107BB7D3AF36504518F7 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VisitReportTests.swift"; sourceTree = "<group>"; };
 E830670CED38D6F1A91915F0 = { isa = PBXBuildFile; fileRef = 9E6B107BB7D3AF36504518F7; };
-A64E8FDA1CDDCFC5C8F31B69 = { isa = PBXGroup; children = (22B8FDB3BCAC5B60F8B1C044, 9E6B107BB7D3AF36504518F7,); path = HarbourTests; sourceTree = "<group>"; };
-8C28BD7E83EA237748DF87EB = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (D8BDB7FB127F1077DD77CE2F, E830670CED38D6F1A91915F0,); runOnlyForDeploymentPostprocessing = 0; };
+A64E8FDA1CDDCFC5C8F31B69 = { isa = PBXGroup; children = (DB1DE2723103A74A3F6687DD, 22B8FDB3BCAC5B60F8B1C044, 9E6B107BB7D3AF36504518F7,); path = HarbourTests; sourceTree = "<group>"; };
+8C28BD7E83EA237748DF87EB = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (1779F0FF9D03614AEAC64C82, D8BDB7FB127F1077DD77CE2F, E830670CED38D6F1A91915F0,); runOnlyForDeploymentPostprocessing = 0; };
 36C1F758B410F6CC823EB42D = { isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 31A87FE6F415DC0BA59B39AF = { isa = XCBuildConfiguration; buildSettings = { PRODUCT_NAME = HarbourTests; PRODUCT_BUNDLE_IDENTIFIER = com.matteopolak.harbour.tests; GENERATE_INFOPLIST_FILE = YES; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Harbour.app/Harbour"; BUNDLE_LOADER = "$(TEST_HOST)"; TARGETED_DEVICE_FAMILY = "1,2"; CODE_SIGN_STYLE = Automatic; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; ENABLE_TESTABILITY = YES; SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG; DEBUG_INFORMATION_FORMAT = dwarf; ONLY_ACTIVE_ARCH = YES; }; name = Debug; };
 0530FB1EFD439BC26F2C66BA = { isa = XCBuildConfiguration; buildSettings = { PRODUCT_NAME = HarbourTests; PRODUCT_BUNDLE_IDENTIFIER = com.matteopolak.harbour.tests; GENERATE_INFOPLIST_FILE = YES; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Harbour.app/Harbour"; BUNDLE_LOADER = "$(TEST_HOST)"; TARGETED_DEVICE_FAMILY = "1,2"; CODE_SIGN_STYLE = Automatic; SWIFT_OPTIMIZATION_LEVEL = "-O"; DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym"; }; name = Release; };

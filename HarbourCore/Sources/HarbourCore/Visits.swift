@@ -36,6 +36,9 @@ public struct VisitSummary: Codable, Equatable, Sendable {
     public var followUps: [VisitQuote] = []
     public var appointments: [VisitQuote]?
     public init() {}
+    public var isEmpty: Bool {
+        highlights.isEmpty && medicines.isEmpty && followUps.isEmpty && (appointments ?? []).isEmpty
+    }
     public mutating func merge(_ other: VisitSummary) {
         for quote in other.appointments ?? [] where !(appointments ?? []).contains(quote) { if appointments == nil { appointments = [] }; appointments!.append(quote) }
         for quote in other.highlights where !highlights.contains(quote) { highlights.append(quote) }
