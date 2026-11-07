@@ -49,3 +49,6 @@ Course context, the project plan, and the preliminary report are maintained sepa
 - [Text results](evaluation/results.md) — all-model task, effort and sampling matrices and limitations.
 - [Instruction plans](instruction-plans.md) — experimental typed proposals, source validation and probe workflow.
 - [Prompt experiment results](evaluation/prompt-experiments.md) — rejected audit and structured-output candidates.
+
+- [Export presentation](export-presentation.md) — system share dismissal and parent drawer ownership.
+- [Testing](testing.md) — deterministic, neural and native checks with explicit skip boundaries.

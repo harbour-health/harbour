@@ -1,6 +1,6 @@
 # Harbour for iOS
 
-Native SwiftUI companion with local-model chat, voice conversation, editable dictation, follow-up reminders, medicine schedules and dose logs, refill reminders, label scanning, searchable history, saved appointment questions, symptom records, medicine comparison, readings, appointment notes, read-only Apple Health import, and doctor visit recording with editable transcripts and reviewed medicine changes. The app has no web view, inference server, analytics, or account requirement.
+Native SwiftUI companion with local-model chat, voice conversation, editable dictation, follow-up reminders, medicine schedules and dose logs, refill reminders, label scanning, searchable history, saved appointment questions, symptom records, medicine comparison, readings, appointment notes, read-only Apple Health import, and doctor visit recording with structured summaries and reviewed medicine changes. The app has no web view, inference server, analytics, or account requirement.
 
 ## Screenshots
 
@@ -94,7 +94,7 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 <!-- screenshot-gallery:start -->
 ## All screens
 
-159 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
+162 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
 
 ### Today
 
@@ -238,5 +238,12 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | <strong>Relevés dans la conversation · Français</strong><br>[<img src="docs/screenshots/139-french-model-readings.png" alt="Relevés dans la conversation · Français" width="220">](docs/screenshots/139-french-model-readings.png) | <strong>Symptôme dans la conversation · Français</strong><br>[<img src="docs/screenshots/140-french-model-symptom-review.png" alt="Symptôme dans la conversation · Français" width="220">](docs/screenshots/140-french-model-symptom-review.png) |
 | <strong>Rappel dans la conversation · Français</strong><br>[<img src="docs/screenshots/141-french-model-reminder-review.png" alt="Rappel dans la conversation · Français" width="220">](docs/screenshots/141-french-model-reminder-review.png) | <strong>Voix et aperçu · Français</strong><br>[<img src="docs/screenshots/145-french-voice.png" alt="Voix et aperçu · Français" width="220">](docs/screenshots/145-french-voice.png) |
 | <strong>Rapport · Aperçu PDF</strong><br>[<img src="docs/screenshots/150-french-report-preview.png" alt="Rapport · Aperçu PDF" width="220">](docs/screenshots/150-french-report-preview.png) |  |
+
+### Additional screens
+
+| | |
+| :---: | :---: |
+| <strong>Reading trends · Dark</strong><br>[<img src="docs/screenshots/161-trends-dark.png" alt="Reading trends · Dark" width="220">](docs/screenshots/161-trends-dark.png) | <strong>Medications · Dark</strong><br>[<img src="docs/screenshots/162-medications-dark.png" alt="Medications · Dark" width="220">](docs/screenshots/162-medications-dark.png) |
+| <strong>Voice selection · Dark</strong><br>[<img src="docs/screenshots/163-voice-dark.png" alt="Voice selection · Dark" width="220">](docs/screenshots/163-voice-dark.png) |  |
 
 <!-- screenshot-gallery:end -->

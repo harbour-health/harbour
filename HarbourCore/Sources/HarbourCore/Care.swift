@@ -249,7 +249,12 @@ public enum HealthTimeline {
     public static func entries(records: Records, care: CareData, visits: [DoctorVisit], query: String = "") -> [TimelineEntry] {
         var entries = records.symptoms.map { TimelineEntry(id: "symptom-\($0.id)", title: $0.text, detail: $0.severity + " · " + $0.onset, date: $0.date, symbol: "cross.case") }
         entries += records.readings.map { TimelineEntry(id: "reading-" + $0.id, title: $0.kind.rawValue + " " + $0.value + " " + $0.kind.unit, detail: $0.source, date: $0.date, symbol: $0.kind.symbol) }
-        entries += visits.map { TimelineEntry(id: "visit-\($0.id)", title: $0.title, detail: $0.transcript, date: $0.date, symbol: "waveform") }
+        entries += visits.map { visit in
+            // History is a summary surface; retained extraction source stays internal.
+            let notes = (visit.summary?.highlights ?? []) + (visit.summary?.followUps ?? [])
+            let preview = notes.compactMap(\.text).filter { !$0.isEmpty }.joined(separator: " · ")
+            return TimelineEntry(id: "visit-\(visit.id)", title: visit.title, detail: preview, date: visit.date, symbol: "waveform")
+        }
         entries += records.appointments.map { TimelineEntry(id: "appointment-\($0.id)", title: $0.title, detail: [$0.location, $0.notes].filter { !$0.isEmpty }.joined(separator: " · "), date: $0.date, symbol: "calendar") }
         entries += care.doses.map { log in TimelineEntry(id: "dose-" + log.id, title: (log.medicineName ?? records.medicines.first { $0.id == log.medicineID }?.name ?? "Medication") + " · " + log.status.rawValue, detail: "Scheduled " + log.scheduled.formatted(), date: log.date, symbol: "pills") }
         entries += care.medicineEvents.map { TimelineEntry(id: "medicine-\($0.id)", title: $0.text, detail: "Medication list updated", date: $0.date, symbol: "pills") }

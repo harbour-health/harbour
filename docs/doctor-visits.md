@@ -1,5 +1,7 @@
 # Doctor visits
 
+Timeline previews and history search use structured summary text, never the retained extraction transcript. Unsummarized visits remain listed by title/date with no raw-source excerpt. Source text remains available internally for extraction and validation.
+
 ## What it is
 
 Visits is a native recorder and visit history with saved audio, summary-first review, locally extracted notes/follow-up, and reviewable medicine changes. Recording is explicitly started by the user for their own visit; it does not have an all-participant permission gate.

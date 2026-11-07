@@ -68,10 +68,14 @@ struct RootView: View {
             NavigationStack { VisitsView(sheet: $sheet).toolbar(.hidden, for: .tabBar) }
                 .tabItem { Label("Visits", systemImage: tab == 3 ? "person.2.fill" : "person.2") }.tag(3)
         }
-        .tabViewStyle(.page(indexDisplayMode: .never))
-        .animation(reduceMotion ? nil : .easeInOut(duration: 0.32), value: tab)
         .toolbar(.hidden, for: .tabBar)
         .environment(\.floatingDockClearance, keyboardVisible ? 0 : (tab == 1 ? 34 : 86))
+        .environment(\.mainPageSwipeAction, MainPageSwipeAction(canBegin: { index in
+            tab == index && (index != 2 || recordCategory == nil) && !keyboardVisible && sheet == nil && store.shareFile == nil
+        }, perform: { index, step in
+            guard tab == index, (index != 2 || recordCategory == nil), !keyboardVisible, sheet == nil, store.shareFile == nil else { return }
+            tab = min(3, max(0, index + step))
+        }))
         .overlay(alignment: .bottom) {
             if !keyboardVisible { NavigationDock(selection: $tab) }
         }
@@ -172,6 +176,8 @@ struct SettingsButton: View {
     var body: some View { Button { sheet = .settings } label: { ToolbarGlyph(symbol: "gearshape") }.accessibilityLabel("Settings") }
 }
 struct TodayView: View {
+    @State private var showHistory = false
+    @State private var showTrends = false
     @EnvironmentObject var store: AppStore
     @Environment(\.dynamicTypeSize) private var typeSize
     @Environment(\.floatingDockClearance) private var dockClearance
@@ -183,10 +189,13 @@ struct TodayView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppLayout.sectionSpacing) {
-                Text(Date.now, format: .dateTime.weekday(.wide).month(.wide).day()).font(.body).foregroundStyle(Palette.muted).padding(.top, 2)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Today").font(.largeTitle.bold()).accessibilityAddTraits(.isHeader)
+                    Text(Date.now, format: .dateTime.weekday(.wide).month(.wide).day()).font(.body).foregroundStyle(Palette.muted)
+                }.padding(.top, 14)
                 VStack(spacing: 14) {
                     ReadingSummary(readings: store.records.readings)
-                    NavigationLink { HealthTrendsView() } label: {
+                    Button { showTrends = true } label: {
                         FeatureRow(title: "Trends", subtitle: "Readings and symptoms over time", symbol: "chart.xyaxis.line", colour: Palette.blue)
                     }.buttonStyle(.plain).accessibilityIdentifier("openTrends")
                     if typeSize.isAccessibilitySize { VStack(spacing: 16) { shortcuts } }
@@ -208,11 +217,13 @@ struct TodayView: View {
                     }
                 }
                 AgendaView(sheet: $sheet)
-                NavigationLink { HealthHistoryView() } label: { FeatureRow(title: "Timeline", subtitle: nil, symbol: "clock.arrow.circlepath", colour: Palette.blue) }.buttonStyle(.plain)
-            }.padding(.horizontal, AppLayout.screenInset).padding(.bottom, 32).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity)
+                Button { showHistory = true } label: { FeatureRow(title: "Timeline", subtitle: nil, symbol: "clock.arrow.circlepath", colour: Palette.blue) }.buttonStyle(.plain)
+            }.padding(.horizontal, AppLayout.screenInset).padding(.bottom, 32).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity).mainPageSwipes(0)
         }.contentMargins(.bottom, dockClearance, for: .scrollContent)
             .background(Palette.canvas).foregroundStyle(Palette.ink)
-            .navigationTitle("Today").toolbar { ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) } }
+            .navigationTitle("").navigationBarTitleDisplayMode(.inline).toolbar { ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) } }
+            .navigationDestination(isPresented: $showHistory) { HealthHistoryView() }
+            .navigationDestination(isPresented: $showTrends) { HealthTrendsView() }
     }
     @ViewBuilder private var shortcuts: some View {
         illustratedShortcut("Medications", detail: L10n.format("%lld recorded", Int64(store.records.medicines.count)), kind: .medicines, colour: Palette.blueWash, action: openMedicines).accessibilityIdentifier("openMedicines")
@@ -263,9 +274,15 @@ struct SymptomRow: View {
 }
 
 struct ShareView: UIViewControllerRepresentable {
+    @Environment(\.dismiss) private var dismiss
     let url: URL
     func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        let controller = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        let close = dismiss
+        controller.completionWithItemsHandler = { _, _, _, _ in
+            Task { @MainActor in close() }
+        }
+        return controller
     }
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }

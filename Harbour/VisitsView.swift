@@ -53,7 +53,7 @@ struct VisitsView: View {
                     Divider().overlay(Palette.line)
                 }
                 }
-            }.padding(.horizontal, AppLayout.screenInset).padding(.top, 14).padding(.bottom, 32).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity)
+            }.padding(.horizontal, AppLayout.screenInset).padding(.top, 14).padding(.bottom, 32).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity).mainPageSwipes(3)
         }.contentMargins(.bottom, dockClearance, for: .scrollContent)
             .background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle("").navigationBarTitleDisplayMode(.inline)
             .toolbar {

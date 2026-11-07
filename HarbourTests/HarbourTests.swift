@@ -142,9 +142,12 @@ import HarbourSpeech
         let reminder = CareReminder(title: "Book blood work")
         let reminderResponse = ChatMessage(text: "Reminders", reminders: [reminder])
         XCTAssertTrue(reminderResponse.spokenText.contains("Book blood work"))
-        let entry = HealthTimeline.entries(records: Records(), care: CareData(), visits: [DoctorVisit(title: "Blood test visit", transcript: "Recheck glucose")])[0]
+        var visit = DoctorVisit(title: "Blood test visit", transcript: "We should recheck glucose.")
+        var summary = VisitSummary(); summary.followUps = [VisitQuote(quote: visit.transcript, text: "Recheck glucose")]; visit.summary = summary
+        let entry = HealthTimeline.entries(records: Records(), care: CareData(), visits: [visit])[0]
         let history = ChatMessage(text: "Health history", timeline: [ChatTimelineEntry(entry)])
         XCTAssertTrue(history.spokenText.contains("Blood test visit")); XCTAssertTrue(history.spokenText.contains("Recheck glucose"))
+        XCTAssertFalse(history.spokenText.contains(visit.transcript))
         XCTAssertEqual(ChatMessage(text: "Plain response").spokenText, "Plain response")
     }
     func testNativeVoiceStopCancelsSpeechAndLateCompletion() async {
@@ -315,10 +318,13 @@ import HarbourSpeech
             XCTAssertTrue(note.hasPrefix("Préoccupation")); XCTAssertTrue(note.contains("Intensité")); XCTAssertTrue(note.contains("Légère")); XCTAssertTrue(note.contains("36,8"))
             XCTAssertFalse(note.contains("Medications entered:")); XCTAssertFalse(note.contains("Recent readings:"))
         } else { XCTAssertTrue(note.hasPrefix("Concern:")); XCTAssertTrue(note.contains("36.8")) }
-        let visit = DoctorVisit(title: "My consultation / ma consultation", transcript: "Keep my English and French transcript.")
+        var visit = DoctorVisit(title: "My consultation / ma consultation", transcript: "Internal spoken source.")
+        var summary = VisitSummary(); let preview = "My summary / mon résumé."
+        summary.highlights = [VisitQuote(quote: visit.transcript, text: preview)]; visit.summary = summary
         let timeline = LocalizedHealthContent.timelineEntries(records: records, care: care, visits: [visit])
         let visitEntry = try XCTUnwrap(timeline.first { $0.id == "visit-" + visit.id.uuidString })
-        XCTAssertEqual(visitEntry.title, visit.title); XCTAssertEqual(visitEntry.detail, visit.transcript)
+        XCTAssertEqual(visitEntry.title, visit.title); XCTAssertEqual(visitEntry.detail, preview)
+        XCTAssertFalse(visitEntry.detail.contains(visit.transcript))
         let readingEntry = try XCTUnwrap(timeline.first { $0.id == "reading-" + reading.id })
         XCTAssertEqual(readingEntry.detail, L10n.isFrench ? "Manuel" : "Manual")
         XCTAssertTrue(readingEntry.title.contains(L10n.isFrench ? "Température 36,8" : "Temperature 36.8"))

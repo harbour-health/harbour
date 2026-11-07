@@ -383,7 +383,12 @@ extension AppStore {
         records.symptoms = [Symptom(id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!, text: french ? "Genou douloureux après une promenade" : "Sore knee after a walk", onset: french ? "Depuis mardi" : "Since Tuesday", severity: "Mild", date: date.addingTimeInterval(-86400))]
         var care = CareData()
         care.questions = [AppointmentQuestion(id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!, text: french ? "Quels changements devrais-je surveiller?" : "What changes should I watch for?", date: date)]
-        let visit = DoctorVisit(id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!, title: french ? "Consultation de suivi" : "Follow-up visit", date: date.addingTimeInterval(-172800), transcript: french ? "Nous avons discuté du sommeil et des promenades quotidiennes. Apporter la liste des médicaments à la prochaine consultation." : "We discussed sleep habits and daily walks. Bring a medicine list to the next visit.")
+        var visit = DoctorVisit(id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!, title: french ? "Consultation de suivi" : "Follow-up visit", date: date.addingTimeInterval(-172800), transcript: french ? "Nous avons discuté du sommeil et des promenades quotidiennes. Apporter la liste des médicaments à la prochaine consultation." : "We discussed sleep habits and daily walks. Bring a medicine list to the next visit.")
+        // Authored screenshot fixture, never represented as a model generation.
+        var summary = VisitSummary()
+        summary.highlights = [VisitQuote(quote: french ? "Nous avons discuté du sommeil et des promenades quotidiennes." : "We discussed sleep habits and daily walks.", text: french ? "Sommeil et promenades quotidiennes." : "Sleep habits and daily walks.")]
+        summary.followUps = [VisitQuote(quote: french ? "Apporter la liste des médicaments à la prochaine consultation." : "Bring a medicine list to the next visit.", text: french ? "Apporter la liste des médicaments à la prochaine consultation." : "Bring a medicine list to the next visit.")]
+        visit.summary = summary
         _ = update { $0 = Archive(); $0.records = records; $0.care = care; $0.visits = [visit] }
     }
 }

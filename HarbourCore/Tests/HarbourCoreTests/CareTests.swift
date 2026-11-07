@@ -92,11 +92,16 @@ final class CareTests: XCTestCase {
         care.schedules[0].notify = false
         XCTAssertTrue(CareNotificationPlan.make(care: care, medicineIDs: [medicine.id], now: now, calendar: calendar).isEmpty)
     }
-    func testTimelineSearchesVisitTranscriptAndRealDates() {
-        let visit = DoctorVisit(date: date("2026-09-25T16:00:00Z"), transcript: "Discussed blood work.")
+    func testTimelineSearchesVisitSummaryAndKeepsRawSourceInternal() {
+        var visit = DoctorVisit(date: date("2026-09-25T16:00:00Z"), transcript: "Unreviewed spoken source.")
+        var summary = VisitSummary(); summary.highlights = [VisitQuote(quote: "Unreviewed spoken source.", text: "Discussed blood work.")]; visit.summary = summary
         let results = HealthTimeline.entries(records: Records(), care: CareData(), visits: [visit], query: "blood")
         XCTAssertEqual(results.count, 1); XCTAssertEqual(results[0].date, visit.date)
         XCTAssertTrue(HealthTimeline.entries(records: Records(), care: CareData(), visits: [visit], query: "insulin").isEmpty)
+        XCTAssertFalse(results[0].detail.contains(visit.transcript))
+        XCTAssertTrue(HealthTimeline.entries(records: Records(), care: CareData(), visits: [visit], query: "Unreviewed").isEmpty)
+        visit.summary = nil
+        XCTAssertEqual(HealthTimeline.entries(records: Records(), care: CareData(), visits: [visit])[0].detail, "")
     }
     func testOCRCatalogDoesNotInventIngredients() {
         XCTAssertEqual(CareRules.labelCandidates("METFORMIN\n500 mg\nTake with food").map(\.id), ["metformin"])

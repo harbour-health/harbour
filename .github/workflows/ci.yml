@@ -68,10 +68,10 @@ jobs:
 
       - name: Cache embedded report renderer
         id: reports-cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: HarbourReports/Vendor/HarbourTypst.xcframework
-          key: ${{ runner.os }}-typst-${{ hashFiles('HarbourReports/Renderer/**', 'scripts/prepare-reports.sh') }}
+          key: ${{ runner.os }}-typst-${{ hashFiles('HarbourReports/Renderer/Cargo.*', 'HarbourReports/Renderer/src/**', 'HarbourReports/Renderer/include/**', 'HarbourReports/Renderer/fonts/**', 'scripts/prepare-reports.sh') }}
       - uses: dtolnay/rust-toolchain@stable
         if: steps.reports-cache.outputs.cache-hit != 'true'
       - name: Prepare embedded report renderer
@@ -83,8 +83,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: HarbourReports/Vendor/HarbourTypst.xcframework
-          key: ${{ runner.os }}-typst-${{ hashFiles('HarbourReports/Renderer/**', 'scripts/prepare-reports.sh') }}
-
+          key: ${{ steps.reports-cache.outputs.cache-primary-key }}
       - name: Cache neural speech dependencies
         id: speech-cache
         uses: actions/cache@v4
@@ -115,6 +114,10 @@ jobs:
             -parallel-testing-enabled NO \
             -only-testing:HarbourTests \
             -only-testing:HarbourUITests/VisitReportUITests \
+            -only-testing:HarbourUITests/ShareExportUITests \
+            -only-testing:HarbourUITests/HarbourNativeRefreshTests/testChatDockShrinksLowersAndRetainsNavigation \
+            -only-testing:HarbourUITests/HarbourNativeRefreshTests/testSwipeBetweenMainPagesKeepsDockSelectionInSync \
+            -only-testing:HarbourUITests/HarbourNativeRefreshTests/testOneTapRecordingAndBackgroundReturn \
             -skip-testing:HarbourTests/HarbourCareServiceTests/testNativeVoiceActuallyCompletesShortUtterance \
             -only-testing:HarbourUITests/AppearanceAndLockVisualTests \
             -only-testing:HarbourUITests/HarbourAppointmentUITests \
@@ -174,7 +177,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: HarbourReports/Vendor/HarbourTypst.xcframework
-          key: ${{ runner.os }}-typst-${{ hashFiles('HarbourReports/Renderer/**', 'scripts/prepare-reports.sh') }}
+          key: ${{ runner.os }}-typst-${{ hashFiles('HarbourReports/Renderer/Cargo.*', 'HarbourReports/Renderer/src/**', 'HarbourReports/Renderer/include/**', 'HarbourReports/Renderer/fonts/**', 'scripts/prepare-reports.sh') }}
       - uses: dtolnay/rust-toolchain@stable
         if: steps.reports-cache.outputs.cache-hit != 'true'
       - name: Prepare embedded report renderer

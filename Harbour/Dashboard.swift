@@ -65,11 +65,13 @@ private final class DockButton: UIButton {
     }
 }
 
-private final class DockSymbols: UIView {
+private final class DockSymbols: UIImageView {
+    private var renderedSize = CGSize.zero
     var images: [UIImage] = [] { didSet { render() } }
-    override func layoutSubviews() { super.layoutSubviews(); render() }
+    override func layoutSubviews() { super.layoutSubviews(); if bounds.size != renderedSize { render() } }
     private func render() {
         guard bounds.width > 0, bounds.height > 0 else { return }
+        renderedSize = bounds.size
         let rendered = UIGraphicsImageRenderer(size: bounds.size).image { _ in
             for (index, image) in images.enumerated() {
                 let size = image.size
@@ -78,8 +80,7 @@ private final class DockSymbols: UIView {
                 image.draw(in: CGRect(x: centre.x - size.width / 2, y: centre.y - size.height / 2, width: size.width, height: size.height))
             }
         }
-        layer.contents = rendered.cgImage
-        layer.contentsScale = rendered.scale
+        image = rendered
     }
 }
 

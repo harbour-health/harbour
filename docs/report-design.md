@@ -31,3 +31,7 @@ Typst 0.13.1, the existing sandboxed Rust renderer, PDFKit, Lato under the SIL O
 `harbour-report-design-reviewed.xcresult` passed all five report tests on November 6, 2026: three hosted renderer/snapshot tests and two native English/French preview and sharing flows, with no runtime warnings reported. Captures 147–150 are exported from that completed run and included in the README. The report configuration and both final PDF preview originals were visually inspected. A separate six-page literal-text fixture was rendered with the same library/template to review continuation headers and footers. Localization source audit passed (641 interface keys). Physical-device and every-screen Dark/Dynamic Type acceptance were not repeated in this focused report review.
 
 Chart margins use one compact 6 pt panel inset. The SVG reserves 34 units at the left for numeric ticks and 7 units below the date-label baseline in its 640 × 174 view box; plot coordinates and labels must change together to avoid clipping.
+
+## CI build cache
+
+The renderer cache hashes Cargo manifests, source, headers, bundled fonts and the preparation script explicitly. Do not hash the entire Renderer directory: Cargo output changes that hash after compilation and makes the save key differ from the restore key. The deterministic job restores first, then saves using the captured `cache-primary-key` immediately after a successful framework build, so a later UI failure does not discard the expensive artifact.

@@ -100,6 +100,9 @@ TITLES = {
     '158-model-only-visit-summary': 'Model-generated visit summary',
     '159-model-only-medication-review': 'Extracted medication · Confirmation',
     '160-chat-compact-navigation': 'Chat · Compact navigation',
+    '161-trends-dark': 'Reading trends · Dark',
+    '162-medications-dark': 'Medications · Dark',
+    '163-voice-dark': 'Voice selection · Dark',
 
 
 }

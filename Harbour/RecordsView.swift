@@ -9,6 +9,7 @@ struct RecordsView: View {
     var body: some View {
         List {
             Text("Records").font(.largeTitle.bold()).accessibilityAddTraits(.isHeader)
+                .mainPageSwipes(2)
                 .listRowInsets(EdgeInsets(top: 8, leading: AppLayout.screenInset, bottom: 14, trailing: AppLayout.screenInset))
                 .listRowSeparator(.hidden).listRowBackground(Color.clear)
             categoryRow("Symptoms", count: store.records.symptoms.count, symbol: "cross.case.fill", colour: Palette.coral, index: 0)
