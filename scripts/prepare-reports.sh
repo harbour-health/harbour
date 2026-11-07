@@ -5,7 +5,20 @@ export IPHONEOS_DEPLOYMENT_TARGET=18.0
 root="$(cd "$(dirname "$0")/.." && pwd)"
 crate="$root/HarbourReports/Renderer"
 vendor="$root/HarbourReports/Vendor"
-if [[ -f "$vendor/HarbourTypst.xcframework/Info.plist" && "${1:-}" != "--force" ]]; then
+fingerprint="$(python3 - "$crate" <<'PY'
+import hashlib
+from pathlib import Path
+import sys
+root = Path(sys.argv[1])
+digest = hashlib.sha256()
+for path in sorted([root / 'Cargo.toml', root / 'Cargo.lock', *root.glob('src/**/*'), *root.glob('fonts/**/*')]):
+    if path.is_file():
+        digest.update(str(path.relative_to(root)).encode())
+        digest.update(path.read_bytes())
+print(digest.hexdigest())
+PY
+)"
+if [[ -f "$vendor/HarbourTypst.xcframework/Info.plist" && -f "$vendor/renderer-source.sha256" && "$(cat "$vendor/renderer-source.sha256")" == "$fingerprint" && "${1:-}" != "--force" ]]; then
     echo "Report renderer already prepared."
     exit 0
 fi
@@ -24,4 +37,5 @@ xcodebuild -create-xcframework \
     -output "$work/HarbourTypst.xcframework"
 rm -rf "$vendor/HarbourTypst.xcframework"
 mv "$work/HarbourTypst.xcframework" "$vendor/HarbourTypst.xcframework"
+printf '%s\n' "$fingerprint" > "$vendor/renderer-source.sha256"
 echo "Embedded Typst report renderer prepared."

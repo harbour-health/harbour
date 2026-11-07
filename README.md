@@ -90,7 +90,7 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 <!-- screenshot-gallery:start -->
 ## All screens
 
-145 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
+149 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
 
 ### Today
 
@@ -151,6 +151,8 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | <strong>Visit recorder · Dark</strong><br>[<img src="docs/screenshots/77-visit-recorder-dark.png" alt="Visit recorder · Dark" width="220">](docs/screenshots/77-visit-recorder-dark.png) | <strong>Visit summary · Dark</strong><br>[<img src="docs/screenshots/78-visit-summary-dark.png" alt="Visit summary · Dark" width="220">](docs/screenshots/78-visit-summary-dark.png) |
 | <strong>Visit notes drawer</strong><br>[<img src="docs/screenshots/83-visit-notes-drawer.png" alt="Visit notes drawer" width="220">](docs/screenshots/83-visit-notes-drawer.png) | <strong>New visit notes</strong><br>[<img src="docs/screenshots/87-new-visit-notes.png" alt="New visit notes" width="220">](docs/screenshots/87-new-visit-notes.png) |
 | <strong>New visit notes · Dark</strong><br>[<img src="docs/screenshots/88-new-visit-notes-dark.png" alt="New visit notes · Dark" width="220">](docs/screenshots/88-new-visit-notes-dark.png) | <strong>Visit medicine confirmation · Dark</strong><br>[<img src="docs/screenshots/142-visit-medicine-review-dark.png" alt="Visit medicine confirmation · Dark" width="220">](docs/screenshots/142-visit-medicine-review-dark.png) |
+| <strong>Doctor visit report · Options</strong><br>[<img src="docs/screenshots/147-report-options.png" alt="Doctor visit report · Options" width="220">](docs/screenshots/147-report-options.png) | <strong>Doctor visit report · PDF preview</strong><br>[<img src="docs/screenshots/148-report-preview.png" alt="Doctor visit report · PDF preview" width="220">](docs/screenshots/148-report-preview.png) |
+| <strong>Doctor visit report · Sharing</strong><br>[<img src="docs/screenshots/149-report-sharing.png" alt="Doctor visit report · Sharing" width="220">](docs/screenshots/149-report-sharing.png) |  |
 
 ### Settings, models, and notes
 
@@ -227,5 +229,6 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | <strong>Écrire un message · Français</strong><br>[<img src="docs/screenshots/137-french-chat-controls.png" alt="Écrire un message · Français" width="220">](docs/screenshots/137-french-chat-controls.png) | <strong>Médicaments et titre local · Français</strong><br>[<img src="docs/screenshots/138-french-model-medicines-title.png" alt="Médicaments et titre local · Français" width="220">](docs/screenshots/138-french-model-medicines-title.png) |
 | <strong>Relevés dans la conversation · Français</strong><br>[<img src="docs/screenshots/139-french-model-readings.png" alt="Relevés dans la conversation · Français" width="220">](docs/screenshots/139-french-model-readings.png) | <strong>Symptôme dans la conversation · Français</strong><br>[<img src="docs/screenshots/140-french-model-symptom-review.png" alt="Symptôme dans la conversation · Français" width="220">](docs/screenshots/140-french-model-symptom-review.png) |
 | <strong>Rappel dans la conversation · Français</strong><br>[<img src="docs/screenshots/141-french-model-reminder-review.png" alt="Rappel dans la conversation · Français" width="220">](docs/screenshots/141-french-model-reminder-review.png) | <strong>Voix et aperçu · Français</strong><br>[<img src="docs/screenshots/145-french-voice.png" alt="Voix et aperçu · Français" width="220">](docs/screenshots/145-french-voice.png) |
+| <strong>Rapport · Aperçu PDF</strong><br>[<img src="docs/screenshots/150-french-report-preview.png" alt="Rapport · Aperçu PDF" width="220">](docs/screenshots/150-french-report-preview.png) |  |
 
 <!-- screenshot-gallery:end -->

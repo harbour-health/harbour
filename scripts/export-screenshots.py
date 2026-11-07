@@ -89,6 +89,10 @@ TITLES = {
     '144-voice': 'Voice selection and preview',
     '145-french-voice': 'Voix et aperçu · Français',
     '146-chat-loading': 'Chat · Compact loading mark',
+    '147-report-options': 'Doctor visit report · Options',
+    '148-report-preview': 'Doctor visit report · PDF preview',
+    '149-report-sharing': 'Doctor visit report · Sharing',
+    '150-french-report-preview': 'Rapport · Aperçu PDF',
 
 }
 
@@ -110,9 +114,16 @@ for result in args.results:
         for test in json.loads((Path(temporary) / 'manifest.json').read_text()):
             for attachment in test['attachments']:
                 match = re.match(r'(\d{2,3}-[a-z-]+)_', attachment['suggestedHumanReadableName'])
-                if not match or not attachment['exportedFileName'].endswith('.png'):
+                report_names = {
+                    'Report - options_': '147-report-options',
+                    'Report - PDF preview_': '148-report-preview',
+                    'Report - sharing_': '149-report-sharing',
+                    'Rapport - aperçu PDF_': '150-french-report-preview',
+                }
+                report_stem = next((stem for prefix, stem in report_names.items() if attachment['suggestedHumanReadableName'].startswith(prefix)), None)
+                if (not match and not report_stem) or not attachment['exportedFileName'].endswith('.png'):
                     continue
-                stem = match.group(1)
+                stem = report_stem or match.group(1)
                 if stem == '26-health-access' and 'testHealthPermissionScreenshot' in test['testIdentifier']:
                     stem = '30-health-permission'
                 shutil.copyfile(Path(temporary) / attachment['exportedFileName'], args.output / (stem + '.png'))
@@ -173,14 +184,14 @@ if args.update_readme:
         'Chat': {10, 11, 12, 13, 28, 32, 36, 42, 44, 45, 46, 47, 53, 58, 89, 146},
         'Records': {2, 3, 4, 22, 33, 34, 35, 64, 65},
         'Entry and review': {5, 6, 7, 8, 9, 20, 21, 23, 24, 25, 48, 49, 50, 51, 52, 79, 81, 82, 84, 85, 90},
-        'Doctor visits': set(range(67, 79)) | {83, 87, 88, 142},
+        'Doctor visits': set(range(67, 79)) | {83, 87, 88, 142, 147, 148, 149},
         'Settings, models, and notes': {14, 15, 16, 18, 19, 27, 37, 38, 39, 40, 41, 60},
         'App lock': {54, 55, 56, 57, 59, 61, 62, 80},
         'Health permissions': {26, 30, 63},
         'Evaluation': {17, 29, 86},
         'Reminders, schedules, and preparation': set(range(91, 104)),
         'Voice and care tools in chat': set(range(104, 116)) | {143, 144},
-        'Canadian French': set(range(117, 142)) | {145},
+        'Canadian French': set(range(117, 142)) | {145, 150},
     }
     sections = {name: [] for name in groups}
     for entry in entries:

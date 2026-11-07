@@ -277,7 +277,7 @@ struct HealthTrendsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
                 Picker("Trend category", selection: $section) {
-                    ForEach(HealthTrendSection.allCases) { item in Text(L10n.string(item.title)).tag(item) }
+                    ForEach(HealthTrendSection.allCases) { item in Label(L10n.string(item.title), systemImage: item == .readings ? "waveform.path.ecg" : "cross.case").tag(item) }
                 }.pickerStyle(.segmented)
 
                 Picker("Date range", selection: $range) {
@@ -306,7 +306,7 @@ struct HealthTrendsView: View {
     @ViewBuilder private var readingsContent: some View {
         VStack(alignment: .leading, spacing: 18) {
             Picker("Reading type", selection: $readingKind) {
-                ForEach(ReadingKind.allCases, id: \.self) { kind in Text(L10n.string(kind.rawValue)).tag(kind) }
+                ForEach(ReadingKind.allCases, id: \.self) { kind in Label(L10n.string(kind.rawValue), systemImage: kind.symbol).tag(kind) }
             }.pickerStyle(.menu).font(.headline)
 
             if readings.isEmpty {
@@ -443,7 +443,7 @@ struct PreparationView: View {
                     for id in ids { store.removeQuestion(id) }
                 }
             }
-            Section { NavigationLink { VisitReportView() } label: { Label("Doctor visit report", systemImage: "doc.richtext") } }
+            Section { NavigationLink { VisitReportView() } label: { FeatureRow(title: "Doctor visit report", subtitle: nil, symbol: "doc.richtext", colour: Palette.blue) } }
             Section("Appointment note") { Text(note).textSelection(.enabled).accessibilityIdentifier("appointmentNoteContent") }
             Section { ShareLink(item: note) { Label("Share note", systemImage: "square.and.arrow.up") }; Button { UIPasteboard.general.string = note } label: { Label("Copy note", systemImage: "doc.on.doc") } }
         }.listStyle(.plain).scrollContentBackground(.hidden).background(Palette.canvas)

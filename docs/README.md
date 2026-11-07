@@ -30,3 +30,5 @@
 - [App Store screenshots](app-store-screenshots.md) — reproducible light iPhone marketing capture workflow and fictional-input provenance.
 
 Course context, the project plan, and the preliminary report are maintained separately in the parent CSI4900 coursework folder.
+
+- [Report design](report-design.md) — shared report/app styling, bundled fonts, and rendered fictional previews.

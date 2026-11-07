@@ -1,3 +1,5 @@
+Lato Regular and Bold are also bundled in the renderer. Copyright (c) 2010-2014 by tyPoland Lukasz Dziedzic, Reserved Font Name Lato. See the accompanying Lato-OFL.txt for the complete SIL Open Font License.
+
 Licenses for third party components bundled by this project can be found below.
 
 ================================================================================

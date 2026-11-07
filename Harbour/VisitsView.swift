@@ -26,7 +26,7 @@ struct VisitsView: View {
                     }.frame(maxWidth: .infinity).padding(.vertical, 36).background(Palette.coralWash, in: RoundedRectangle(cornerRadius: 32))
                 }.buttonStyle(PressFeedback()).accessibilityIdentifier("recordVisit")
                 Button { sheet = .note } label: { FeatureRow(title: "Appointment preparation", subtitle: nil, symbol: "text.bubble", colour: Palette.blue) }.buttonStyle(.plain).accessibilityIdentifier("prepareAppointment")
-                NavigationLink { VisitReportView() } label: { FeatureRow(title: "Doctor visit report", subtitle: "Choose records, preview, and share a PDF", symbol: "doc.richtext", colour: Palette.blue) }.buttonStyle(.plain).accessibilityIdentifier("openVisitReport")
+                NavigationLink { VisitReportView() } label: { FeatureRow(title: "Doctor visit report", subtitle: nil, symbol: "doc.richtext", colour: Palette.blue) }.buttonStyle(.plain).accessibilityIdentifier("openVisitReport")
                 Text("Recent visits").font(.title2.weight(.semibold))
                 if store.visits.isEmpty { Text("No visits yet").font(.title3).foregroundStyle(Palette.muted).padding(.vertical, 20) }
                 ForEach(store.visits) { visit in

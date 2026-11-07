@@ -6,6 +6,16 @@ import HarbourReports
 enum VisitReportSection: String, CaseIterable, Identifiable {
     case readings = "Readings", symptoms = "Symptoms", medications = "Current medications", visits = "Visit notes", questions = "Saved questions"
     var id: Self { self }
+    var symbol: String {
+        switch self {
+        case .readings: "waveform.path.ecg"
+        case .symptoms: "cross.case.fill"
+        case .medications: "pills.fill"
+        case .visits: "person.2.fill"
+        case .questions: "text.bubble.fill"
+        }
+    }
+    var colour: Color { self == .readings || self == .symptoms ? Palette.coral : Palette.blue }
 }
 
 struct VisitReportSnapshot: Encodable {
@@ -27,7 +37,7 @@ struct VisitReportSnapshot: Encodable {
         func included(_ date: Date) -> Bool { date >= start && date < end && date <= now }
         title = L10n.string("Doctor visit report")
         language = L10n.isFrench ? "fr" : "en"
-        period = L10n.date(start) + " - " + L10n.date(through)
+        period = L10n.date(start) + " – " + L10n.date(through)
         generated = L10n.date(now)
         context = L10n.string("Readings, symptoms, and visit notes use the selected dates. Medications and questions reflect the current saved list. Recorded information only; this report does not provide a diagnosis.")
         empty = L10n.string("No records to include.")
@@ -85,15 +95,15 @@ struct VisitReportSnapshot: Encodable {
         let padding = max((high - low) * 0.15, kind == .temperature ? 0.5 : 5)
         let minimum = low - padding, maximum = high + padding
         let first = readings.first!.date.timeIntervalSince1970, last = readings.last!.date.timeIntervalSince1970
-        var svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"640\" height=\"205\" viewBox=\"0 0 640 205\"><rect width=\"640\" height=\"205\" fill=\"#f7f9fc\"/>"
+        var svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"640\" height=\"205\" viewBox=\"0 0 640 205\"><rect width=\"640\" height=\"205\" fill=\"#f5f5f5\"/>"
         for tick in 0...4 {
             let y = 15 + Double(tick) * 36
             let label = maximum - Double(tick) * (maximum - minimum) / 4
             let axisLabel = String(format: kind == .temperature ? "%.1f" : "%.0f", locale: L10n.locale, label)
-            svg += "<line x1=\"55\" y1=\"\(number(y))\" x2=\"625\" y2=\"\(number(y))\" stroke=\"#dce2ec\"/><text x=\"47\" y=\"\(number(y + 4))\" text-anchor=\"end\" font-size=\"11\" font-family=\"Libertinus Serif\">\(xml(axisLabel))</text>"
+            svg += "<line x1=\"55\" y1=\"\(number(y))\" x2=\"625\" y2=\"\(number(y))\" stroke=\"#e5e5e5\"/><text x=\"47\" y=\"\(number(y + 4))\" text-anchor=\"end\" font-size=\"11\" font-family=\"Lato\">\(xml(axisLabel))</text>"
         }
         for (index, points) in series.enumerated() {
-            let color = index == 0 ? "#355acb" : "#d56755"
+            let color = index == 0 ? "#365dce" : "#b94831"
             let coordinates = points.enumerated().map { item -> (String, String) in
                 let x = first == last ? 340 : 55 + (readings[item.offset].date.timeIntervalSince1970 - first) / (last - first) * 570
                 let y = 159 - (item.element - minimum) / (maximum - minimum) * 144
@@ -102,8 +112,8 @@ struct VisitReportSnapshot: Encodable {
             svg += "<polyline points=\"\(coordinates.map { $0.0 + "," + $0.1 }.joined(separator: " "))\" fill=\"none\" stroke=\"\(color)\" stroke-width=\"2\"/>"
             for (x, y) in coordinates { svg += "<circle cx=\"\(x)\" cy=\"\(y)\" r=\"3\" fill=\"\(color)\"/>" }
         }
-        svg += "<text x=\"55\" y=\"185\" font-size=\"11\" font-family=\"Libertinus Serif\">\(xml(L10n.date(readings.first!.date, time: true)))</text>"
-        if first != last { svg += "<text x=\"625\" y=\"185\" text-anchor=\"end\" font-size=\"11\" font-family=\"Libertinus Serif\">\(xml(L10n.date(readings.last!.date, time: true)))</text>" }
+        svg += "<text x=\"55\" y=\"185\" font-size=\"11\" font-family=\"Lato\">\(xml(L10n.date(readings.first!.date, time: true)))</text>"
+        if first != last { svg += "<text x=\"625\" y=\"185\" text-anchor=\"end\" font-size=\"11\" font-family=\"Lato\">\(xml(L10n.date(readings.last!.date, time: true)))</text>" }
         return svg + "</svg>"
     }
 }
@@ -124,10 +134,6 @@ struct VisitReportView: View {
 
     var body: some View {
         Form {
-            Section {
-                Text("Choose what to bring to your appointment.").font(.title3.weight(.medium))
-                Text("The PDF is created on this device. Review it before sharing.").foregroundStyle(Palette.muted)
-            }
             Section("Date range") {
                 HStack {
                     Button("30 days") { from = Calendar.current.date(byAdding: .day, value: -29, to: .now)!; through = .now }
@@ -143,7 +149,12 @@ struct VisitReportView: View {
             }
             Section {
                 ForEach(VisitReportSection.allCases) { section in
-                    Toggle(L10n.string(section.rawValue), isOn: Binding(get: { selected.contains(section) }, set: { if $0 { selected.insert(section) } else { selected.remove(section) } }))
+                    Toggle(isOn: Binding(get: { selected.contains(section) }, set: { if $0 { selected.insert(section) } else { selected.remove(section) } })) {
+                        HStack(spacing: 14) {
+                            FeatureIcon(symbol: section.symbol, colour: section.colour)
+                            Text(L10n.string(section.rawValue)).foregroundStyle(Palette.ink)
+                        }
+                    }
                         .accessibilityIdentifier("reportSection-" + section.id.rawValue)
                 }
             } header: { Text("Include in report") } footer: {
@@ -151,17 +162,18 @@ struct VisitReportView: View {
             }
             Section {
                 Button { generate() } label: {
-                    HStack { Label("Preview report", systemImage: "doc.richtext"); Spacer(); if generating { ProgressView() } }
-                }.disabled(!valid || generating).accessibilityIdentifier("previewVisitReport")
+                    HStack(spacing: 12) { if generating { ProgressView().tint(Palette.canvas) }; Label("Preview report", systemImage: "doc.richtext") }
+                }.buttonStyle(ActionButtonStyle()).listRowBackground(Color.clear)
+                    .disabled(!valid || generating).accessibilityIdentifier("previewVisitReport")
                 if let error { Text(error).foregroundStyle(Palette.coral).accessibilityIdentifier("reportError") }
             }
         }
-        .disabled(generating)
+        .disabled(generating).tint(Palette.ink)
         .contentMargins(.bottom, dockClearance, for: .scrollContent)
         .scrollContentBackground(.hidden).background(Palette.canvas)
         .navigationTitle("Doctor visit report").navigationBarTitleDisplayMode(.inline)
         .sheet(item: $preview, onDismiss: cleanup) { file in
-            NavigationStack { VisitReportPreview(url: file.url) }.presentationDetents([.large])
+            NavigationStack { VisitReportPreview(url: file.url) }.floatingDrawer(height: 760)
         }
         .onDisappear { generation?.cancel(); cleanup() }
         .onChange(of: phase) { if phase == .background { generation?.cancel(); preview = nil; cleanup() } }
