@@ -15,7 +15,21 @@ import HarbourRuntime
             try TextEvaluation.correctRouting(source: argument("--report"), destination: argument("--output"))
             return
         }
+        #if canImport(FoundationModels)
+        if CommandLine.arguments.contains("--apple-instructions-suite") {
+            func argument(_ flag: String) -> URL { URL(fileURLWithPath: CommandLine.arguments[CommandLine.arguments.firstIndex(of: flag)! + 1]) }
+            if #available(macOS 26, iOS 26, *) {
+                try await AppleInstructionEvaluation.run(dataset: argument("--dataset"), destination: argument("--output"))
+            } else { throw NSError(domain: "AppleEvaluation", code: 1, userInfo: [NSLocalizedDescriptionKey: "Foundation Models requires macOS/iOS 26 or later"] ) }
+            return
+        }
+        #endif
         let file = URL(fileURLWithPath: CommandLine.arguments[1]), runtime = LocalModel(useGPU: !CommandLine.arguments.contains("--cpu"))
+        if CommandLine.arguments.contains("--linked-suite") {
+            func argument(_ flag: String) -> URL { URL(fileURLWithPath: CommandLine.arguments[CommandLine.arguments.firstIndex(of: flag)! + 1]) }
+            try await LinkedInstructionEvaluation.run(file: file, dataset: argument("--dataset"), destination: argument("--output"), audit: CommandLine.arguments.contains("--audit"))
+            return
+        }
         if CommandLine.arguments.contains("--instructions-suite") {
             func argument(_ flag: String) -> String { CommandLine.arguments[CommandLine.arguments.firstIndex(of: flag)! + 1] }
             func optional(_ flag: String) -> String? { CommandLine.arguments.firstIndex(of: flag).map { CommandLine.arguments[$0 + 1] } }

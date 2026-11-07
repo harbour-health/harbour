@@ -2,6 +2,8 @@
 
 The larger models help, but visit extraction remains unreliable on complicated instructions. Balanced is the minimum used for visit summaries; neither 1.5B nor 3B earns an accuracy claim suitable for unsupervised medication changes. These are authored engineering fixtures, without clinician review, and the scores below are exact-contract/lexical agreement rather than clinical accuracy.
 
+The later [7B and linked-plan study](linked-plan-study/results.md) scored **16/20** for 7B on the unchanged focused-summary holdout. The new bilingual structured-plan variants failed their promotion gates; the Apple system-model adapter also failed that new contract. Those structured scores use a different representation and must not be compared directly with the summary percentages below.
+
 ## Model and task matrix
 
 Later [prompt and structure experiments](prompt-experiments.md) failed their release gates and remain experimental. The matrix below continues to describe the focused extractor.

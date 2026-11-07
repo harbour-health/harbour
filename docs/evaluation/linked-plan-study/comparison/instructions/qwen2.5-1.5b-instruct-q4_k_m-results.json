@@ -1,0 +1,471 @@
+{
+  "model" : "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+  "protocolDescription" : "Experimental typed plans; 4096 context; 2048 output tokens; source references are selected by the model. No deterministic fact additions. Exact scope, count, ordered phase and required-detail checks; not clinical validation or directly comparable to the legacy summary representation.",
+  "runs" : [
+    {
+      "failures" : [
+        "plan count 1, expected 2",
+        "naproxen: scope negated, expected affirmed",
+        "missing medication:acetaminophen"
+      ],
+      "group" : "switch",
+      "id" : "switch-en",
+      "input" : "Stop naproxen and begin acetaminophen 325 mg every six hours as needed for pain.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"naproxen\",\"action\":\"stop\",\"scope\":\"negated\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Stop naproxen and begin acetaminophen 325 mg every six hours as needed for pain.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "stop",
+          "kind" : "medication",
+          "scope" : "negated",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "Stop naproxen and begin acetaminophen 325 mg every six hours as needed for pain.",
+              "timing" : ""
+            }
+          ],
+          "subject" : "naproxen"
+        }
+      ],
+      "seconds" : 2.376574993133545,
+      "valid" : true
+    },
+    {
+      "failures" : [
+        "plan count 1, expected 2",
+        "missing medication:acétaminophène"
+      ],
+      "group" : "switch",
+      "id" : "switch-fr",
+      "input" : "Arrêtez le naproxène et commencez l’acétaminophène 325 mg toutes les six heures au besoin pour la douleur.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"naproxène\",\"action\":\"stop\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Arrêtez le naproxène et commencez l’acétaminophène 325 mg toutes les six heures au besoin pour la douleur.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "stop",
+          "kind" : "medication",
+          "scope" : "affirmed",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "Arrêtez le naproxène et commencez l’acétaminophène 325 mg toutes les six heures au besoin pour la douleur.",
+              "timing" : ""
+            }
+          ],
+          "subject" : "naproxène"
+        }
+      ],
+      "seconds" : 2.026082992553711,
+      "valid" : true
+    },
+    {
+      "error" : "unsupportedEvidence",
+      "failures" : [
+        "plan count 0, expected 1",
+        "missing medication:prednisone"
+      ],
+      "group" : "taper",
+      "id" : "taper-en",
+      "input" : "Take prednisone 25 mg each morning for two days, then 15 mg each morning for three days, then stop.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"prednisone\",\"action\":\"start\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Take prednisone 25 mg each morning for two days, then 15 mg each morning for three days, then stop.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"each morning\",\"duration\":\"two days, then three days, then stop\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+
+      ],
+      "seconds" : 2.2215229272842407,
+      "valid" : false
+    },
+    {
+      "error" : "unsupportedEvidence",
+      "failures" : [
+        "plan count 0, expected 1",
+        "missing medication:prednisone"
+      ],
+      "group" : "taper",
+      "id" : "taper-fr",
+      "input" : "Prenez la prednisone 25 mg chaque matin pendant deux jours, puis 15 mg chaque matin pendant trois jours, puis arrêtez.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"prednisone\",\"action\":\"start\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Prenez la prednisone 25 mg chaque matin pendant deux jours, puis 15 mg chaque matin pendant trois jours, puis arrêtez.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"each matin\",\"duration\":\"two days, three days\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+
+      ],
+      "seconds" : 2.2916899919509888,
+      "valid" : false
+    },
+    {
+      "error" : "unsupportedEvidence",
+      "failures" : [
+        "plan count 0, expected 1",
+        "missing medication:insulin"
+      ],
+      "group" : "conditional-course",
+      "id" : "conditional-course-en",
+      "input" : "Start insulin 9 units at bedtime. After four days, increase to 11 units only if morning glucose remains above 10 mmol\/L.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"insulin\",\"action\":\"start\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Start insulin 9 units at bedtime.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null},{\"source\":0,\"text\":\"After four days, increase to 11 units only if morning glucose remains above 10 mmol\\\/L.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"after four days\",\"duration\":\"\",\"after\":0}]}]}",
+      "passed" : false,
+      "plans" : [
+
+      ],
+      "seconds" : 2.3873380422592163,
+      "valid" : false
+    },
+    {
+      "error" : "unsupportedEvidence",
+      "failures" : [
+        "plan count 0, expected 1",
+        "missing medication:insuline"
+      ],
+      "group" : "conditional-course",
+      "id" : "conditional-course-fr",
+      "input" : "Commencez l’insuline à 9 unités au coucher. Après quatre jours, augmentez à 11 unités seulement si la glycémie du matin reste supérieure à 10 mmol\/L.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"insulin\",\"action\":\"start\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Commencez l’insuline à 9 unités au coucher.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null},{\"source\":0,\"text\":\"Après quatre jours, augmentez à 11 unités seulement si la glycémie du matin reste supérieure à 10 mmol\\\/L.\",\"condition\":\"after four days\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":1}]}]  }",
+      "passed" : false,
+      "plans" : [
+
+      ],
+      "seconds" : 2.8548569679260254,
+      "valid" : false
+    },
+    {
+      "failures" : [
+        "plan count 1, expected 2",
+        ": missing structured timing in nine days",
+        ": scope conditional, expected affirmed",
+        ": missing potassium",
+        ": missing in nine days",
+        "missing followUp:"
+      ],
+      "group" : "followups",
+      "id" : "followups-en",
+      "input" : "Repeat the potassium test in nine days. Call our nurse the same day if ankle swelling increases.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"followUp\",\"subject\":\"\",\"action\":\"call\",\"scope\":\"conditional\",\"sources\":[1],\"steps\":[{\"source\":1,\"text\":\"Call our nurse the same day if ankle swelling increases.\",\"condition\":\"if ankle swelling increases\",\"timing\":\"same day\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "call",
+          "kind" : "followUp",
+          "scope" : "conditional",
+          "sources" : [
+            1
+          ],
+          "steps" : [
+            {
+              "condition" : "if ankle swelling increases",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 1,
+              "text" : "Call our nurse the same day if ankle swelling increases.",
+              "timing" : "same day"
+            }
+          ],
+          "subject" : ""
+        }
+      ],
+      "seconds" : 1.6731419563293457,
+      "valid" : true
+    },
+    {
+      "error" : "unsupportedEvidence",
+      "failures" : [
+        "plan count 0, expected 2",
+        "missing followUp:",
+        "missing followUp:"
+      ],
+      "group" : "followups",
+      "id" : "followups-fr",
+      "input" : "Refaites le dosage du potassium dans neuf jours. Appelez notre infirmière le jour même si l’enflure des chevilles augmente.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"followUp\",\"subject\":\"\",\"action\":\"call\",\"scope\":\"conditional\",\"sources\":[0,1],\"steps\":[{\"source\":0,\"text\":\"Refaites le dosage du potassium dans neuf jours.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null},{\"source\":1,\"text\":\"Appelez notre infirmière le jour même si l'enflure des chevilles augmente.\",\"condition\":\"l'enflure des chevilles augmente\",\"timing\":\"le jour même\",\"repetition\":\"\",\"duration\":\"\",\"after\":0}]}]}",
+      "passed" : false,
+      "plans" : [
+
+      ],
+      "seconds" : 2.5786290168762207,
+      "valid" : false
+    },
+    {
+      "failures" : [
+        "ramipril: missing structured condition unless the clinic calls you",
+        "ramipril: scope negated, expected conditional"
+      ],
+      "group" : "negation",
+      "id" : "negation-en",
+      "input" : "Do not stop ramipril unless the clinic calls you.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"ramipril\",\"action\":\"stop\",\"scope\":\"negated\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Do not stop ramipril unless the clinic calls you.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}] }",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "stop",
+          "kind" : "medication",
+          "scope" : "negated",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "Do not stop ramipril unless the clinic calls you.",
+              "timing" : ""
+            }
+          ],
+          "subject" : "ramipril"
+        }
+      ],
+      "seconds" : 1.6443909406661987,
+      "valid" : true
+    },
+    {
+      "failures" : [
+        "ramipril: missing structured condition sauf si la clinique vous appelle",
+        "ramipril: scope negated, expected conditional"
+      ],
+      "group" : "negation",
+      "id" : "negation-fr",
+      "input" : "N’arrêtez pas le ramipril sauf si la clinique vous appelle.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"ramipril\",\"action\":\"stop\",\"scope\":\"negated\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"N’arrêtez pas le ramipril sauf si la clinique vous appelle.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "stop",
+          "kind" : "medication",
+          "scope" : "negated",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "N’arrêtez pas le ramipril sauf si la clinique vous appelle.",
+              "timing" : ""
+            }
+          ],
+          "subject" : "ramipril"
+        }
+      ],
+      "seconds" : 1.757851004600525,
+      "valid" : true
+    },
+    {
+      "failures" : [
+        "metformin: action start, expected update",
+        "metformin: missing structured condition only after your pharmacist confirms the change",
+        "metformin: missing structured timing with breakfast",
+        "metformin: scope affirmed, expected conditional"
+      ],
+      "group" : "approval",
+      "id" : "approval-en",
+      "input" : "Increase metformin to 750 mg with breakfast only after your pharmacist confirms the change.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"metformin\",\"action\":\"start\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Increase metformin to 750 mg with breakfast only after your pharmacist confirms the change.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "start",
+          "kind" : "medication",
+          "scope" : "affirmed",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "Increase metformin to 750 mg with breakfast only after your pharmacist confirms the change.",
+              "timing" : ""
+            }
+          ],
+          "subject" : "metformin"
+        }
+      ],
+      "seconds" : 1.775015950202942,
+      "valid" : true
+    },
+    {
+      "failures" : [
+        "metformine: action start, expected update",
+        "metformine: missing structured condition seulement après confirmation du changement par votre pharmacien",
+        "metformine: missing structured timing avec le déjeuner",
+        "metformine: scope affirmed, expected conditional"
+      ],
+      "group" : "approval",
+      "id" : "approval-fr",
+      "input" : "Augmentez la metformine à 750 mg avec le déjeuner seulement après confirmation du changement par votre pharmacien.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"metformine\",\"action\":\"start\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Augmentez la metformine à 750 mg avec le déjeuner seulement après confirmation du changement par votre pharmacien.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "start",
+          "kind" : "medication",
+          "scope" : "affirmed",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "Augmentez la metformine à 750 mg avec le déjeuner seulement après confirmation du changement par votre pharmacien.",
+              "timing" : ""
+            }
+          ],
+          "subject" : "metformine"
+        }
+      ],
+      "seconds" : 1.9608150720596313,
+      "valid" : true
+    },
+    {
+      "error" : "unsupportedEvidence",
+      "failures" : [
+        "plan count 0, expected 1",
+        "missing medication:warfarin"
+      ],
+      "group" : "alternating",
+      "id" : "alternating-en",
+      "input" : "Take warfarin 1 mg on Monday and Saturday and 2 mg on all other days.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"warfarin\",\"action\":\"start\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Take warfarin 1 mg on Monday and Saturday and 2 mg on all other days.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"on Monday and Saturday and on all other days\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+
+      ],
+      "seconds" : 1.9663480520248413,
+      "valid" : false
+    },
+    {
+      "failures" : [
+        "missing medication:warfarine"
+      ],
+      "group" : "alternating",
+      "id" : "alternating-fr",
+      "input" : "Prenez la warfarine 1 mg le lundi et le samedi et 2 mg tous les autres jours.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"warfarin\",\"action\":\"start\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Prenez la warfarine 1 mg le lundi et le samedi et 2 mg tous les autres jours.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"le lundi et le samedi et 2 mg tous les autres jours\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "start",
+          "kind" : "medication",
+          "scope" : "affirmed",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "le lundi et le samedi et 2 mg tous les autres jours",
+              "source" : 0,
+              "text" : "Prenez la warfarine 1 mg le lundi et le samedi et 2 mg tous les autres jours.",
+              "timing" : ""
+            }
+          ],
+          "subject" : "warfarin"
+        }
+      ],
+      "seconds" : 2.224131941795349,
+      "valid" : true
+    },
+    {
+      "failures" : [
+        "plan count 1, expected 0"
+      ],
+      "group" : "empty",
+      "id" : "empty-en",
+      "input" : "The patient enjoyed the walk and has no questions today.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"followUp\",\"subject\":\"\",\"action\":\"call\",\"scope\":\"conditional\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"The patient enjoyed the walk and has no questions today.\",\"condition\":\"no questions today\",\"timing\":\"today\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "call",
+          "kind" : "followUp",
+          "scope" : "conditional",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "no questions today",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "The patient enjoyed the walk and has no questions today.",
+              "timing" : "today"
+            }
+          ],
+          "subject" : ""
+        }
+      ],
+      "seconds" : 1.7468169927597046,
+      "valid" : true
+    },
+    {
+      "failures" : [
+        "plan count 1, expected 0"
+      ],
+      "group" : "empty",
+      "id" : "empty-fr",
+      "input" : "La patiente a apprécié sa promenade et n’a aucune question aujourd’hui.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"followUp\",\"subject\":\"\",\"action\":\"call\",\"scope\":\"uncertain\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"La patiente a apprécié sa promenade et n’a aucune question aujourd’hui.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "call",
+          "kind" : "followUp",
+          "scope" : "uncertain",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "La patiente a apprécié sa promenade et n’a aucune question aujourd’hui.",
+              "timing" : ""
+            }
+          ],
+          "subject" : ""
+        }
+      ],
+      "seconds" : 1.730165958404541,
+      "valid" : true
+    }
+  ]
+}

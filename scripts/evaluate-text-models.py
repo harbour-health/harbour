@@ -35,7 +35,7 @@ def summarize(report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--model', type=Path, action='append', required=True)
-    parser.add_argument('--mode', choices=['text', 'focused', 'narration', 'titles', 'instructions'], default='text')
+    parser.add_argument('--mode', choices=['text', 'focused', 'narration', 'titles', 'instructions', 'linked'], default='text')
     parser.add_argument('--dataset', type=Path, default=ROOT / 'docs/evaluation/text-suite-v1.json')
     parser.add_argument('--output', type=Path, default=ROOT / 'docs/evaluation')
     parser.add_argument('--audit', action='store_true', help='Experimental model audit after focused extraction')
@@ -46,19 +46,22 @@ def main():
     if not math.isfinite(args.temperature) or not 0 <= args.temperature <= 2: parser.error('temperature must be finite and between 0 and 2')
     if not 0 <= args.seed <= 4294967295: parser.error('seed must fit an unsigned 32-bit integer')
     if args.mode in ['text', 'titles'] and args.temperature != 0: parser.error('temperature experiments use focused or narration mode')
-    if args.audit and args.mode != 'focused': parser.error('--audit requires --mode focused')
+    if args.mode == 'linked' and args.temperature != 0: parser.error('linked experiments are fixed greedy comparisons')
+    if args.audit and args.mode not in ['focused', 'linked']: parser.error('--audit requires --mode focused or linked')
     args.output.mkdir(parents=True, exist_ok=True)
     sources = ['HarbourCore/Sources/HarbourCore/ToolPlanner.swift', 'HarbourCore/Sources/HarbourCore/Visits.swift', 'HarbourCore/Sources/HarbourCore/VisitDirections.swift', 'HarbourCore/Sources/HarbourCore/VisitExtraction.swift', 'HarbourCore/Sources/HarbourCore/ChatTitles.swift', 'HarbourRuntime/Sources/ModelProbe/TextEvaluation.swift', 'HarbourRuntime/Sources/ModelProbe/LegacySourceRecovery.swift', 'HarbourRuntime/Sources/ModelProbe/BaselineVisitPrompt.swift', 'HarbourRuntime/Sources/ModelProbe/BaselineVisitGrammar.swift', 'HarbourRuntime/Sources/HarbourRuntime/VisitSummaryOutputGrammar.swift', 'HarbourRuntime/Sources/HarbourRuntime/LocalModel.swift']
     if (ROOT / 'HarbourRuntime/Sources/ModelProbe/VisitAuditExperiment.swift').exists(): sources.append('HarbourRuntime/Sources/ModelProbe/VisitAuditExperiment.swift')
-    if args.mode == 'instructions':
+    if args.mode in ['instructions', 'linked']:
         sources += ['HarbourCore/Sources/HarbourCore/InstructionPlans.swift', 'HarbourRuntime/Sources/ModelProbe/InstructionEvaluation.swift']
+    if args.mode == 'linked':
+        sources += ['HarbourCore/Sources/HarbourCore/LinkedInstructionPlans.swift', 'HarbourRuntime/Sources/ModelProbe/LinkedInstructionEvaluation.swift']
     snapshot = args.output / 'prompt-snapshot'; snapshot.mkdir(exist_ok=True)
     executable_hash = digest(args.executable)
     frozen = None
     for candidate in sorted((ROOT / 'docs/evaluation').rglob('manifest.json')):
         try:
             archived = json.loads(candidate.read_text())
-            if archived.get('executableSHA256') == executable_hash and all((candidate.parent / 'prompt-snapshot' / Path(name).name).exists() and digest(candidate.parent / 'prompt-snapshot' / Path(name).name) == checksum for name, checksum in archived['sourceSHA256'].items()):
+            if archived.get('executableSHA256') == executable_hash and set(sources).issubset(archived['sourceSHA256']) and all((candidate.parent / 'prompt-snapshot' / Path(name).name).exists() and digest(candidate.parent / 'prompt-snapshot' / Path(name).name) == checksum for name, checksum in archived['sourceSHA256'].items()):
                 frozen = (candidate.parent, archived['sourceSHA256']); break
         except (KeyError, ValueError, OSError): pass
     hashes = {}

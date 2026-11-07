@@ -52,3 +52,5 @@ Course context, the project plan, and the preliminary report are maintained sepa
 
 - [Export presentation](export-presentation.md) — system share dismissal and parent drawer ownership.
 - [Testing](testing.md) — deterministic, neural and native checks with explicit skip boundaries.
+
+- [Linked-plan evaluation](linked-plan-evaluation.md) — 7B baseline and bilingual instruction extraction/coverage experiments.
