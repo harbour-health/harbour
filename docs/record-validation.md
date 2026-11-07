@@ -15,3 +15,5 @@ Keep typed-reading bounds and units in `ReadingParser`. Extend the bilingual `Re
 ## Configuration and dependencies
 
 No additional configuration or external dependencies. These rules use Foundation and the existing Core records and visit types; they do not supply model-generated facts or route chat requests.
+
+Appointment creation validation distinguishes explicit/polite booking requests from documentation requests such as “Make a summary of my appointment.” Clinical appointment-fact recognition remains unchanged. Medication removal rejects unresolved approval and timing conditions instead of stripping them from the confirmation. The model still selects the tool; these checks can only reject an unsupported write. `WriteBoundaryTests` covers English/French and quoted, negated, hypothetical and compound controls.
