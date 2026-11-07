@@ -23,7 +23,7 @@ final class AppointmentTests: XCTestCase {
     }
     func testGroundedAppointmentDraftDoesNotInventTimeOrLocation() throws {
         let text = "Your follow-up appointment is next Tuesday."
-        let parsed = try summary(text)
+        let parsed = try summary(text, quote: text)
         XCTAssertEqual(parsed.appointments, [VisitQuote(quote: text)])
         let draft = AppointmentRules.draft(from: text)
         XCTAssertFalse(draft.includesTime); XCTAssertTrue(draft.location.isEmpty)
@@ -37,7 +37,7 @@ final class AppointmentTests: XCTestCase {
     }
     func testAppointmentSourceRevalidatedBeforeSaving() throws {
         let quote = "Follow-up appointment Friday at 3 pm."
-        var visit = DoctorVisit(transcript: quote); visit.summary = try summary(quote)
+        var visit = DoctorVisit(transcript: quote); visit.summary = try summary(quote, quote: quote)
         let draft = AppointmentRules.draft(from: quote, visitID: visit.id)
         XCTAssertNoThrow(try AppointmentRules.validate(draft, visits: [visit]))
         visit.transcript = "Cancelled."

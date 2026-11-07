@@ -29,3 +29,5 @@ Typst 0.13.1, the existing sandboxed Rust renderer, PDFKit, Lato under the SIL O
 ## Verified native run
 
 `harbour-report-design-reviewed.xcresult` passed all five report tests on November 6, 2026: three hosted renderer/snapshot tests and two native English/French preview and sharing flows, with no runtime warnings reported. Captures 147–150 are exported from that completed run and included in the README. The report configuration and both final PDF preview originals were visually inspected. A separate six-page literal-text fixture was rendered with the same library/template to review continuation headers and footers. Localization source audit passed (641 interface keys). Physical-device and every-screen Dark/Dynamic Type acceptance were not repeated in this focused report review.
+
+Chart margins use one compact 6 pt panel inset. The SVG reserves 34 units at the left for numeric ticks and 7 units below the date-label baseline in its 640 × 174 view box; plot coordinates and labels must change together to avoid clipping.

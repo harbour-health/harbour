@@ -1,0 +1,353 @@
+{
+  "memoryBytes" : 17179869184,
+  "model" : "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+  "operatingSystem" : "Version 27.0 (Build 26A428)",
+  "processors" : 10,
+  "protocolDescription" : "Focused model-only extraction: medicines, followUps\/appointments, highlights, per source chunk. Local Metal,4096 context,1536\/1024\/768 token limits. No source recovery; validators only reject candidates. Raw facts and accepted facts are separate. Exact-field scoring is not clinical validation. Development results are not held-out results. Dataset role and description: Temperature development subset, selected before sampling runs: 12 varied extraction cases plus the original 6 tool-result cases. Not a holdout. Temperature=0.5,seed=42,topP=0.95,topK=40",
+  "runs" : [
+    {
+      "category" : "medical",
+      "completedFacts" : [
+        "medicine|start|amlodipine|5 mg once daily at bedtime",
+        "medicine|start|metformin|500 mg twice daily with food"
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "medicine|start|amlodipine|5 mg once daily at bedtime",
+        "medicine|start|metformin|500 mg twice daily with food"
+      ],
+      "expectedFacts" : [
+        "medicine|start|amlodipine|5 mg once daily at bedtime",
+        "medicine|start|metformin|500 mg twice daily with food"
+      ],
+      "name" : "two-medicines",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Start metformin 500 mg twice daily with food.\",\"name\":\"metformin\",\"action\":\"start\",\"instructions\":\"500 mg twice daily with food\"},{\"quote\":\"Start amlodipine 5 mg once daily at bedtime.\",\"name\":\"amlodipine\",\"action\":\"start\",\"instructions\":\"5 mg once daily at bedtime\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Start metformin 500 mg twice daily with food. Start amlodipine 5 mg once daily at bedtime.\",\"text\":\"Start metformin 500 mg twice daily with food, then amlodipine 5 mg once daily at bedtime.\"}]}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+        "medicine|start|amlodipine|5 mg once daily at bedtime",
+        "medicine|start|metformin|500 mg twice daily with food"
+      ],
+      "seconds" : 4.052052974700928,
+      "validatedFacts" : [
+        "medicine|start|amlodipine|5 mg once daily at bedtime",
+        "medicine|start|metformin|500 mg twice daily with food"
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "medicine|start|amlodipine|5 mg at 9 am",
+        "medicine|start|metformin|500 mg at 8 am"
+      ],
+      "expectedFacts" : [
+        "medicine|start|amlodipine|5 mg at 9 am",
+        "medicine|start|metformin|500 mg at 8 am"
+      ],
+      "name" : "different-drug-directions",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Start metformin 500 mg at 8 am.\",\"name\":\"metformin\",\"action\":\"start\",\"instructions\":\"500 mg at 8 am\"},{\"quote\":\"Start amlodipine 5 mg at 9 am.\",\"name\":\"amlodipine\",\"action\":\"start\",\"instructions\":\"5 mg at 9 am\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Start metformin 500 mg at 8 am and start amlodipine 5 mg at 9 am.\",\"text\":\"Start metformin 500 mg at 8 am and start amlodipine 5 mg at 9 am.\"}]}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+        "medicine|start|amlodipine|5 mg at 9 am",
+        "medicine|start|metformin|500 mg at 8 am"
+      ],
+      "seconds" : 3.860082983970642,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+        "medicine|start|warfarin|2.5 mg once daily at bedtime"
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "medicine|start|warfarin|2.5 mg once daily at bedtime"
+      ],
+      "expectedFacts" : [
+        "medicine|start|warfarin|2.5 mg once daily at bedtime"
+      ],
+      "name" : "decimal-dose",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Start warfarin 2.5 mg once daily at bedtime.\",\"name\":\"warfarin\",\"action\":\"start\",\"instructions\":\"2.5 mg once daily at bedtime\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Start warfarin 2.5 mg once daily at bedtime.\",\"text\":\"Begin warfarin at 2.5 mg once daily at bedtime.\"}]}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+        "medicine|start|warfarin|2.5 mg once daily at bedtime"
+      ],
+      "seconds" : 2.734407067298889,
+      "validatedFacts" : [
+        "medicine|start|warfarin|2.5 mg once daily at bedtime"
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "medicine|start|metformin|500 mg at 8 am for seven days then 1000 mg at 8 am for seven days"
+      ],
+      "expectedFacts" : [
+        "medicine|start|metformin|500 mg at 8 am for seven days then 1000 mg at 8 am for seven days"
+      ],
+      "name" : "taper-preserve-both-phases",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Start metformin 500 mg at 8 am for seven days.\",\"name\":\"metformin\",\"action\":\"start\",\"instructions\":\"500 mg at 8 am for seven days\"},{\"quote\":\"Start metformin 1000 mg at 8 am for seven days.\",\"name\":\"metformin\",\"action\":\"start\",\"instructions\":\"1000 mg at 8 am for seven days\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Start metformin 500 mg at 8 am for seven days then 1000 mg at 8 am for seven days.\",\"text\":\"Start metformin 500 mg at 8 am for seven days, then 1000 mg at 8 am for seven days.\"}]}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+        "medicine|start|metformin|1000 mg at 8 am for seven days",
+        "medicine|start|metformin|500 mg at 8 am for seven days"
+      ],
+      "seconds" : 4.668048977851868,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+
+      ],
+      "name" : "negated-change",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Do not start metformin 500 mg twice daily.\",\"name\":\"metformin\",\"action\":\"stop\",\"instructions\":\"\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Do not start metformin 500 mg twice daily.\",\"text\":\"Do not start metformin 500 mg twice daily.\"}]}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+        "medicine|stop|metformin|"
+      ],
+      "seconds" : 2.5401350259780884,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "followUp|book blood work in two weeks"
+      ],
+      "expectedFacts" : [
+        "followUp|book blood work in two weeks"
+      ],
+      "name" : "blood-work-relative",
+      "output" : [
+        "{\"medicines\":[]}",
+        "{\"followUps\":[],\"appointments\":[{\"quote\":\"Book blood work in two weeks.\",\"text\":\"Book blood work in two weeks.\"}]}",
+        "{\"highlights\":[{\"quote\":\"Book blood work in two weeks.\",\"text\":\"Book blood work in two weeks.\"}]}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+        "appointment|book blood work in two weeks"
+      ],
+      "seconds" : 2.0488510131835938,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+        "medicine|start|metformin|500 mg deux fois par jour avec les repas"
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "medicine|start|metformin|500 mg deux fois par jour avec les repas"
+      ],
+      "expectedFacts" : [
+        "medicine|start|metformin|500 mg deux fois par jour avec les repas"
+      ],
+      "name" : "french-dose-food",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Commencez metformin 500 mg deux fois par jour avec les repas.\",\"name\":\"metformin\",\"action\":\"start\",\"instructions\":\"500 mg deux fois par jour avec les repas\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Commencez metformin 500 mg deux fois par jour avec les repas.\",\"text\":\"Start metformin 500 mg twice a day with meals.\"}]}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+        "medicine|start|metformin|500 mg deux fois par jour avec les repas"
+      ],
+      "seconds" : 3.087502956390381,
+      "validatedFacts" : [
+        "medicine|start|metformin|500 mg deux fois par jour avec les repas"
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+        "medicine|start|semaglutide|0.25 mg once weekly"
+      ],
+      "name" : "unfamiliar-medication",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Start semaglutide 0.25 mg once weekly.\",\"name\":\"semaglutide\",\"action\":\"start\",\"instructions\":\"0.25 mg once weekly\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Start semaglutide 0.25 mg once weekly.\",\"text\":\"Begin taking semaglutide 0.25 mg once per week.\"}]}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+        "medicine|start|semaglutide|0.25 mg once weekly"
+      ],
+      "seconds" : 2.8636480569839478,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "followUp|book blood work in two weeks",
+        "medicine|start|metformin|500 mg twice daily with food"
+      ],
+      "expectedFacts" : [
+        "followUp|book blood work in two weeks",
+        "medicine|start|metformin|500 mg twice daily with food"
+      ],
+      "name" : "long-multitopic",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"We discussed walking, sleep, and keeping a daily record of symptoms.\",\"name\":\"walking\",\"action\":\"update\",\"instructions\":\"keep a daily record of symptoms\"},{\"quote\":\"We discussed walking, sleep, and keeping a daily record of symptoms.\",\"name\":\"sleep\",\"action\":\"update\",\"instructions\":\"keep a daily record of symptoms\"},{\"quote\":\"We discussed walking, sleep, and keeping a daily record of symptoms.\",\"name\":\"walking\",\"action\":\"update\",\"instructions\":\"keep a daily record of symptoms\"},{\"quote\":\"We discussed walking, sleep, and keeping a daily record of symptoms.\",\"name\":\"sleep\",\"action\":\"update\",\"instructions\":\"keep a daily record of symptoms\"},{\"quote\":\"We discussed walking, sleep, and keeping a daily record of symptoms.\",\"name\":\"walking\",\"action\":\"update\",\"instructions\":\"keep a daily record of symptoms\"},{\"quote\":\"We discussed walking, sleep, and keeping a daily record of symptoms.\",\"name\":\"sleep\",\"action\":\"update\",\"instructions\":\"keep a daily record of symptoms\"},{\"quote\":\"We discussed walking, sleep, and keeping a daily record of symptoms.\",\"name\":\"walking\",\"action\":\"update\",\"instructions\":\"keep a daily record of symptoms\"},{\"quote\":\"We discussed walking, sleep, and keeping a daily record of symptoms.\",\"name\":\"sleep\",\"action\":\"update\",\"instructions\":\"keep a daily record of symptoms\"},{\"quote\":\"We discussed walking, sleep, and keeping a daily record of symptoms.\",\"name\":\"walking\",\"action\":\"update\",\"instructions\":\"keep a daily record of symptoms\"},{\"quote\":\"We discussed walking, sleep, and keeping a daily record of symptoms.\",\"name\":\"sleep\",\"action\":\"update\",\"instructions\":\"keep a daily record of symptoms\"},{\"quote\":\"We discussed walking, sleep, and keeping a daily record of symptoms.\",\"name\":\"walking\",\"action\":\"update\",\"instructions\":\"keep a daily record of symptoms\"},{\"quote\":\"We discussed walking, sleep, and keeping a daily record of symptoms.\",\"name\":\"sleep\",\"action\":\"update\",\"instructions\":\"keep a daily record of symptoms\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"We discussed walking, sleep, and keeping a daily record of symptoms.\",\"text\":\"Discussed walking, sleep, and daily symptom record.\"}]}",
+        "{\"medicines\":[{\"quote\":\"discussed walking, sleep, and keeping a daily record of symptoms.\",\"name\":\"walking\",\"action\":\"update\",\"instructions\":\"keep a daily record of symptoms\"},{\"quote\":\"discussed walking, sleep, and keeping a daily record of symptoms.\",\"name\":\"sleep\",\"action\":\"update\",\"instructions\":\"keep a daily record of symptoms\"},{\"quote\":\"discussed walking, sleep, and keeping a daily record of symptoms.\",\"name\":\"keeping a daily record of symptoms\",\"action\":\"update\",\"instructions\":\"keep a daily record of symptoms\"},{\"quote\":\"discussed walking, sleep, and keeping a daily record of symptoms.\",\"name\":\"walking\",\"action\":\"update\",\"instructions\":\"keep a daily record of symptoms\"},{\"quote\":\"We discussed walking, sleep, and keeping a daily record of symptoms.\",\"name\":\"sleep\",\"action\":\"update\",\"instructions\":\"keep a daily record of symptoms\"},{\"quote\":\"discussed walking, sleep, and keeping a daily record of symptoms.\",\"name\":\"keeping a daily record of symptoms\",\"action\":\"update\",\"instructions\":\"keep a daily record of symptoms\"}]}",
+        "{\"followUps\":[{\"quote\":\"discussed walking, sleep, and keeping a daily record of symptoms.\",\"text\":\"discussed walking, sleep, and keeping a daily record of symptoms.\"}],\"appointments\":[{\"quote\":\"Start metformin 500 mg twice daily with food.\",\"text\":\"metformin 500 mg twice daily with food.\"}]}",
+        "{\"highlights\":[{\"quote\":\"discussed walking, sleep, and keeping a daily record of symptoms.\",\"text\":\"Discussing walking, sleep, and daily symptom record.\"},{\"quote\":\"We discussed walking, sleep, and keeping a daily record of symptoms.\",\"text\":\"We discussed walking, sleep, and daily symptom record.\"},{\"quote\":\"Start metformin 500 mg twice daily with food.\",\"text\":\"Start metformin 500 mg twice daily with food.\"}]}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+        "appointment|start metformin 500 mg twice daily with food",
+        "followUp|discussed walking, sleep, and keeping a daily record of symptoms",
+        "medicine|update|keeping a daily record of symptoms|keep a daily record of symptoms",
+        "medicine|update|sleep|keep a daily record of symptoms",
+        "medicine|update|walking|keep a daily record of symptoms"
+      ],
+      "seconds" : 18.942649006843567,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+        "medicine|start|acetaminophen|500 mg every 6 hours if needed for pain, maximum 4 tablets per day for three days"
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "medicine|start|acetaminophen|500 mg every 6 hours if needed for pain, maximum 4 tablets per day for three days"
+      ],
+      "expectedFacts" : [
+        "medicine|start|acetaminophen|500 mg every 6 hours if needed for pain, maximum 4 tablets per day for three days"
+      ],
+      "name" : "prn-maximum-and-duration",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Take acetaminophen 500 mg every 6 hours if needed for pain, maximum 4 tablets per day for three days.\",\"name\":\"acetaminophen\",\"action\":\"start\",\"instructions\":\"500 mg every 6 hours if needed for pain, maximum 4 tablets per day for three days\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Take acetaminophen 500 mg every 6 hours if needed for pain, maximum 4 tablets per day for three days.\",\"text\":\"Take 500 mg of acetaminophen every 6 hours for pain relief, up to a maximum of 4 tablets per day for three days.\"}]}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+        "medicine|start|acetaminophen|500 mg every 6 hours if needed for pain, maximum 4 tablets per day for three days"
+      ],
+      "seconds" : 3.889541983604431,
+      "validatedFacts" : [
+        "medicine|start|acetaminophen|500 mg every 6 hours if needed for pain, maximum 4 tablets per day for three days"
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "medicine|update|warfarin|2.5 mg on monday, wednesday, and friday, then 5 mg on all other days"
+      ],
+      "expectedFacts" : [
+        "medicine|update|warfarin|2.5 mg on monday, wednesday, and friday, then 5 mg on all other days"
+      ],
+      "name" : "alternating-regimen",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Take warfarin 2.5 mg on Monday, Wednesday, and Friday, then 5 mg on all other days.\",\"name\":\"warfarin\",\"action\":\"start\",\"instructions\":\"2.5 mg on Monday, Wednesday, and Friday, 5 mg on all other days\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Take warfarin 2.5 mg on Monday, Wednesday, and Friday, then 5 mg on all other days.\",\"text\":\"Take warfarin 2.5 mg on Monday, Wednesday, and Friday, then 5 mg on all other days.\"}]}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+        "medicine|start|warfarin|2.5 mg on monday, wednesday, and friday, 5 mg on all other days"
+      ],
+      "seconds" : 3.595196008682251,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+        "medicine|start|insulin glargine|10 units at bedtime. increase by 2 units every three days only if fasting glucose stays above 8 mmol\/l"
+      ],
+      "name" : "unknown-insulin-conditional-review",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Start insulin glargine 10 units at bedtime.\",\"name\":\"insulin glargine\",\"action\":\"start\",\"instructions\":\"10 units at bedtime\"},{\"quote\":\"Increase by 2 units every three days only if fasting glucose stays above 8 mmol\\\/L.\",\"name\":\"insulin glargine\",\"action\":\"update\",\"instructions\":\"2 units every three days if fasting glucose stays above 8 mmol\\\/L\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Start insulin glargine 10 units at bedtime. Increase by 2 units every three days only if fasting glucose stays above 8 mmol\/L.\",\"text\":\"Start insulin glargine 10 units at bedtime. Increase by 2 units every three days if fasting glucose exceeds 8 mmol\/L.\"}]}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+        "medicine|start|insulin glargine|10 units at bedtime",
+        "medicine|update|insulin glargine|2 units every three days if fasting glucose stays above 8 mmol\/l"
+      ],
+      "seconds" : 4.369279980659485,
+      "validatedFacts" : [
+
+      ]
+    }
+  ],
+  "started" : "2026-11-07T03:04:25Z"
+}

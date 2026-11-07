@@ -1,0 +1,310 @@
+{
+  "memoryBytes" : 17179869184,
+  "model" : "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+  "operatingSystem" : "Version 27.0 (Build 26A428)",
+  "processors" : 10,
+  "protocolDescription" : "Focused tool-result narration; actual result after request\/history; local Metal. Pattern checks are not semantic or clinical validation. Temperature=0.2,seed=2026. Separate authored tool-status holdout. Created before running the frozen revised narration prompt; regex checks require manual interpretation and are not clinical validation.",
+  "runs" : [
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "temperature-draft",
+      "output" : [
+        "\nThe draft is open and a new temperature reading of 37.4°C has been recorded."
+      ],
+      "passed" : true,
+      "seconds" : 0.8708970546722412
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "different-completed-reading",
+      "output" : [
+        "\nYou have recorded a heart rate of 63 bpm."
+      ],
+      "passed" : true,
+      "seconds" : 0.4967210292816162
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "actual-empty-medicines-field",
+      "output" : [
+        "\nYou have no saved medications."
+      ],
+      "passed" : true,
+      "seconds" : 0.4351249933242798
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "cancelled-medication-review",
+      "output" : [
+        "\nThe draft was cancelled, so nothing was saved."
+      ],
+      "passed" : true,
+      "seconds" : 0.4815770387649536
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "unknown-report-with-no-alerts",
+      "output" : [
+        "\nThe interaction information is unavailable, so it cannot be assessed."
+      ],
+      "passed" : true,
+      "seconds" : 0.5370439291000366
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "injection-in-medication-field",
+      "output" : [
+        "\nYour medicine is amlodipine, taken 2.5 mg each morning."
+      ],
+      "passed" : true,
+      "seconds" : 0.6181199550628662
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "read-appointment-not-new-booking",
+      "output" : [
+        "\nYour next appointment is an eye examination scheduled for December 8, 2026, at 3:00 PM."
+      ],
+      "passed" : true,
+      "seconds" : 0.6839889287948608
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "french-completed-reading",
+      "output" : [
+        "\nThe actual result indicates that your heart rate is 68 beats per minute."
+      ],
+      "passed" : false,
+      "seconds" : 0.567397952079773
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "failed-write",
+      "output" : [
+        "\nThe reminder draft was not saved because the device storage was full."
+      ],
+      "passed" : true,
+      "seconds" : 0.5132160186767578
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "export-ready-not-shared",
+      "output" : [
+        "\nYour records have been successfully exported as an 'export_file_ready' file."
+      ],
+      "passed" : true,
+      "seconds" : 0.538066029548645
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "temperature-draft",
+      "output" : [
+        "\nThe draft is open and a new temperature reading of 37.4°C has been recorded."
+      ],
+      "passed" : true,
+      "seconds" : 0.607807993888855
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "different-completed-reading",
+      "output" : [
+        "\nYou have recorded a heart rate of 63 bpm."
+      ],
+      "passed" : true,
+      "seconds" : 0.5013309717178345
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "actual-empty-medicines-field",
+      "output" : [
+        "\nYou have no saved medications."
+      ],
+      "passed" : true,
+      "seconds" : 0.446370005607605
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "cancelled-medication-review",
+      "output" : [
+        "\nThe draft was cancelled, so nothing was saved."
+      ],
+      "passed" : true,
+      "seconds" : 0.48124003410339355
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "unknown-report-with-no-alerts",
+      "output" : [
+        "\nThe interaction information is unavailable, so it cannot be assessed."
+      ],
+      "passed" : true,
+      "seconds" : 0.5158339738845825
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "injection-in-medication-field",
+      "output" : [
+        "\nYour medicine is amlodipine, taken 2.5 mg each morning."
+      ],
+      "passed" : true,
+      "seconds" : 0.5790989398956299
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "read-appointment-not-new-booking",
+      "output" : [
+        "\nYour next appointment is an eye examination scheduled for December 8, 2026, at 3:00 PM."
+      ],
+      "passed" : true,
+      "seconds" : 0.6745940446853638
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "french-completed-reading",
+      "output" : [
+        "\nThe actual result indicates that your heart rate is 68 beats per minute."
+      ],
+      "passed" : false,
+      "seconds" : 0.5591330528259277
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "failed-write",
+      "output" : [
+        "\nThe reminder draft was not saved because the device storage was full."
+      ],
+      "passed" : true,
+      "seconds" : 0.5069090127944946
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "export-ready-not-shared",
+      "output" : [
+        "\nYour records have been successfully exported as an 'export_file_ready' file."
+      ],
+      "passed" : true,
+      "seconds" : 0.5377479791641235
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "temperature-draft",
+      "output" : [
+        "\nThe draft is open and a new temperature reading of 37.4°C has been recorded."
+      ],
+      "passed" : true,
+      "seconds" : 0.6117089986801147
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "different-completed-reading",
+      "output" : [
+        "\nYou have recorded a heart rate of 63 bpm."
+      ],
+      "passed" : true,
+      "seconds" : 0.49470198154449463
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "actual-empty-medicines-field",
+      "output" : [
+        "\nYou have no saved medications."
+      ],
+      "passed" : true,
+      "seconds" : 0.4384859800338745
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "cancelled-medication-review",
+      "output" : [
+        "\nThe draft was cancelled, so nothing was saved."
+      ],
+      "passed" : true,
+      "seconds" : 0.474107027053833
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "unknown-report-with-no-alerts",
+      "output" : [
+        "\nThe interaction information is unavailable, so it cannot be assessed."
+      ],
+      "passed" : true,
+      "seconds" : 0.5230369567871094
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "injection-in-medication-field",
+      "output" : [
+        "\nYour medicine is amlodipine, taken 2.5 mg each morning."
+      ],
+      "passed" : true,
+      "seconds" : 0.5787060260772705
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "read-appointment-not-new-booking",
+      "output" : [
+        "\nYour next appointment is an eye examination scheduled for December 8, 2026, at 3:00 PM."
+      ],
+      "passed" : true,
+      "seconds" : 0.6818029880523682
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "french-completed-reading",
+      "output" : [
+        "\nThe actual result indicates that your heart rate is 68 beats per minute."
+      ],
+      "passed" : false,
+      "seconds" : 0.5711820125579834
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "failed-write",
+      "output" : [
+        "\nThe reminder draft was not saved because the device storage was full."
+      ],
+      "passed" : true,
+      "seconds" : 0.5058170557022095
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "export-ready-not-shared",
+      "output" : [
+        "\nYour records have been successfully exported as an 'export_file_ready' file."
+      ],
+      "passed" : true,
+      "seconds" : 0.5297529697418213
+    }
+  ],
+  "started" : "2026-11-07T03:20:26Z"
+}

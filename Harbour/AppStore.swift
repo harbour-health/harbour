@@ -12,6 +12,8 @@ struct ChatMessage: Codable, Identifiable {
     var id = UUID()
     var isUser = false
     var text: String
+    var toolPayload: String?
+    var toolFailed: Bool?
     var report: InteractionReport?
     var readings: [Reading]?
     var medicines: [Medicine]?
@@ -20,11 +22,19 @@ struct ChatMessage: Codable, Identifiable {
     var timeline: [ChatTimelineEntry]?
     var date = Date()
 }
+struct ChatConversation: Codable, Identifiable {
+    var id: UUID
+    var title: String
+    var messages: [ChatMessage]
+    var updated: Date
+}
 struct Archive: Codable {
     var version = 1
     var records = Records()
     var messages: [ChatMessage] = []
     var chatTitle: String?
+    var chatID: UUID?
+    var chatHistory: [ChatConversation]?
     var visits: [DoctorVisit]?
     var care: CareData?
 }
@@ -40,6 +50,7 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
     var care: CareData { archive.care ?? CareData() }
     var records: Records { archive.records }
     var messages: [ChatMessage] { archive.messages }
+    var conversations: [ChatConversation] { (archive.chatHistory ?? []).sorted { $0.updated > $1.updated } }
     var chatTitle: String {
         if let title = archive.chatTitle { return title }
         guard let first = messages.first(where: \.isUser) else { return L10n.string("New chat") }
@@ -70,10 +81,26 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
         #if DEBUG
         if screenshots { prepareAppStoreScreenshots() }
         #endif
+        if !archive.messages.isEmpty && !loadFailed { newChat() }
     }
     @discardableResult func update(_ change: (inout Archive) -> Void) -> Bool {
         guard !loadFailed else { error = L10n.string("The saved file could not be read. Changes are blocked to preserve it. Export or recover the file before resetting records in Settings."); return false }
         var next = archive; change(&next)
+        // Confirmation outcomes and the record write commit atomically.
+        if next.records != archive.records || next.care != archive.care,
+           let index = next.messages.lastIndex(where: { $0.toolPayload?.hasPrefix("status=requires_confirmation\n") == true }),
+           index == next.messages.count - 1 {
+            let changedMedicines = next.records.medicines.filter { !archive.records.medicines.contains($0) }
+            let changedReadings = next.records.readings.filter { !archive.records.readings.contains($0) }
+            let changedAppointments = next.records.appointments.filter { !archive.records.appointments.contains($0) }
+            var result = ChatMessage(text: "record_changes_saved", readings: changedReadings, medicines: changedMedicines, appointments: changedAppointments)
+            result.reminders = (next.care?.reminders ?? []).filter { !(archive.care?.reminders ?? []).contains($0) }
+            let encoder = JSONEncoder(); encoder.dateEncodingStrategy = .iso8601
+            if let data = try? encoder.encode(result) {
+                next.messages[index].toolPayload = "status=completed\nresult=" + String(decoding: data, as: UTF8.self)
+                next.messages[index].text = ""; next.messages[index].toolFailed = false
+            }
+        }
         do {
             let data = try JSONEncoder().encode(next)
             try data.write(to: file, options: [.atomic, .completeFileProtection])
@@ -145,7 +172,56 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
     func add(_ symptom: Symptom) { update { $0.records.symptoms.insert(symptom, at: 0) } }
     func removeSymptom(_ id: UUID) { update { $0.records.symptoms.removeAll { $0.id == id } } }
     func append(_ message: ChatMessage) { update { $0.messages.append(message) } }
-    func newChat() { update { $0.messages.removeAll(); $0.chatTitle = nil } }
+    func appendToolEvent(_ result: ChatMessage, status: String = "completed") {
+        let encoder = JSONEncoder(); encoder.dateEncodingStrategy = .iso8601
+        guard let data = try? encoder.encode(result) else { return }
+        var pending = result
+        pending.text = ""
+        pending.toolPayload = "status=" + status + "\nresult=" + String(decoding: data, as: UTF8.self)
+        append(pending)
+    }
+    func failToolEvent(_ id: UUID) {
+        update { value in if let index = value.messages.firstIndex(where: { $0.id == id }) { value.messages[index].toolFailed = true } }
+    }
+    func retryToolEvent(_ id: UUID) {
+        update { value in if let index = value.messages.firstIndex(where: { $0.id == id }) { value.messages[index].toolFailed = false } }
+    }
+    func closeToolDraft() {
+        guard let pending = messages.last, pending.toolPayload?.hasPrefix("status=requires_confirmation\n") == true else { return }
+        update { value in
+            guard let index = value.messages.firstIndex(where: { $0.id == pending.id }) else { return }
+            value.messages[index].toolPayload = "status=cancelled\nresult={\"saved\":false}"
+            value.messages[index].text = ""; value.messages[index].toolFailed = false
+        }
+    }
+    func finishToolEvent(_ id: UUID, text: String, expectedPayload: String? = nil) {
+        guard !text.isEmpty else { return }
+        update { value in if let index = value.messages.firstIndex(where: { $0.id == id && $0.toolPayload != nil && (expectedPayload == nil || $0.toolPayload == expectedPayload) }) { value.messages[index].text = text } }
+    }
+    private static func archiveChat(in value: inout Archive) {
+        guard !value.messages.isEmpty else { return }
+        let id = value.chatID ?? value.messages.first!.id
+        let firstText = value.messages.first(where: \.isUser)?.text ?? "Harbour"
+        let title = value.chatTitle ?? String(firstText.split(whereSeparator: \.isWhitespace).prefix(6).joined(separator: " ").prefix(60))
+        var history = value.chatHistory ?? []
+        history.removeAll { $0.id == id }
+        history.insert(ChatConversation(id: id, title: title, messages: value.messages, updated: value.messages.last?.date ?? .now), at: 0)
+        value.chatHistory = history
+    }
+    func newChat() {
+        update { value in
+            Self.archiveChat(in: &value)
+            value.messages.removeAll(); value.chatTitle = nil; value.chatID = nil
+        }
+    }
+    func openConversation(_ id: UUID) {
+        guard let saved = conversations.first(where: { $0.id == id }) else { return }
+        update { value in
+            Self.archiveChat(in: &value)
+            value.chatHistory?.removeAll { $0.id == id }
+            value.messages = saved.messages; value.chatTitle = saved.title; value.chatID = id
+        }
+    }
     func clear() {
         if loadFailed {
             do { try FileManager.default.copyItem(at: file, to: file.deletingLastPathComponent().appendingPathComponent("unreadable-\(UUID().uuidString).json")); loadFailed = false }
@@ -226,9 +302,12 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
                     }
                     value.care!.medicineEvents.insert(MedicineEvent(text: event), at: 0)
                     if change.action == .stop { value.care!.schedules.removeAll { $0.medicineID == change.medicine.id } }
-                    else if change.frequency != nil || !change.times.isEmpty {
+                    else {
+                        value.care!.schedules.removeAll { $0.medicineID == change.medicine.id }
+                        if change.frequency != nil || !change.times.isEmpty {
                         value.care!.schedules.removeAll { $0.medicineID == change.medicine.id }
                         value.care!.schedules.append(MedicineSchedule(medicineID: change.medicine.id, times: change.times, frequency: change.frequency))
+                    }
                     }
                 }
                 value.care!.schedules.removeAll { schedule in !medicines.contains { $0.id == schedule.medicineID } }
@@ -241,10 +320,10 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
         do {
             var text = "\(visit.title)\n\(L10n.date(visit.date, time: true))\n\n"
             if let summary = visit.summary {
-                text += L10n.string("Notes") + "\n" + summary.highlights.map(\.quote).joined(separator: "\n") + "\n\n"
-                text += L10n.string("Follow-up") + "\n" + summary.followUps.map(\.quote).joined(separator: "\n") + "\n\n"
+                text += L10n.string("Notes") + "\n" + summary.highlights.compactMap(\.text).joined(separator: "\n") + "\n\n"
+                text += L10n.string("Follow-up") + "\n" + summary.followUps.map { $0.text ?? VisitFollowUp.title(for: $0.quote, french: L10n.isFrench) }.joined(separator: "\n") + "\n\n"
             }
-            text += L10n.string("Transcript") + "\n" + visit.transcript
+            if let summary = visit.summary { text += L10n.string("Medications") + "\n" + summary.medicines.map { L10n.medicineName($0.medicine) + ": " + $0.medicine.instructions }.joined(separator: "\n") }
             let url = FileManager.default.temporaryDirectory.appendingPathComponent("Harbour-visit.txt")
             try Data(text.utf8).write(to: url, options: [.atomic, .completeFileProtection])
             shareFile = ShareFile(url: url)

@@ -1,0 +1,729 @@
+{
+  "model" : "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+  "protocolDescription" : "Experimental typed plans; 4096 context; 2048 output tokens; source references are selected by the model. No deterministic fact additions. Exact scope, count, ordered phase and required-detail checks; not clinical validation or directly comparable to the legacy summary representation.",
+  "runs" : [
+    {
+      "failures" : [
+
+      ],
+      "group" : "exposed-development",
+      "id" : "en-start",
+      "input" : "Start amlodipine 5 mg every morning for 14 days.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"amlodipine\",\"action\":\"start\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Start amlodipine 5 mg every morning for 14 days.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"every morning\",\"duration\":\"14 days\",\"after\":null}]}]}",
+      "passed" : true,
+      "plans" : [
+        {
+          "action" : "start",
+          "kind" : "medication",
+          "scope" : "affirmed",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "14 days",
+              "repetition" : "every morning",
+              "source" : 0,
+              "text" : "Start amlodipine 5 mg every morning for 14 days.",
+              "timing" : ""
+            }
+          ],
+          "subject" : "amlodipine"
+        }
+      ],
+      "seconds" : 10.296166062355042,
+      "valid" : true
+    },
+    {
+      "failures" : [
+
+      ],
+      "group" : "exposed-development",
+      "id" : "en-no-start",
+      "input" : "Do not start amlodipine 5 mg every morning for 14 days.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"amlodipine\",\"action\":\"start\",\"scope\":\"negated\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Do not start amlodipine 5 mg every morning for 14 days.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : true,
+      "plans" : [
+        {
+          "action" : "start",
+          "kind" : "medication",
+          "scope" : "negated",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "Do not start amlodipine 5 mg every morning for 14 days.",
+              "timing" : ""
+            }
+          ],
+          "subject" : "amlodipine"
+        }
+      ],
+      "seconds" : 2.0550649166107178,
+      "valid" : true
+    },
+    {
+      "error" : "unsupportedEvidence",
+      "failures" : [
+        "plan count 0, expected 1",
+        "missing medication:amlodipine"
+      ],
+      "group" : "exposed-development",
+      "id" : "fr-start",
+      "input" : "Commencez amlodipine 5 mg chaque matin pendant 14 jours.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"amlodipine\",\"action\":\"start\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Commencez amlodipine 5 mg chaque matin pendant 14 jours.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"every day\",\"duration\":\"14 days\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+
+      ],
+      "seconds" : 2.07977294921875,
+      "valid" : false
+    },
+    {
+      "failures" : [
+        "amlodipine: scope affirmed, expected negated"
+      ],
+      "group" : "exposed-development",
+      "id" : "fr-no-start",
+      "input" : "Ne commencez pas amlodipine 5 mg chaque matin pendant 14 jours.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"amlodipine\",\"action\":\"start\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Ne commencez pas amlodipine 5 mg chaque matin pendant 14 jours.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"14 jours\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "start",
+          "kind" : "medication",
+          "scope" : "affirmed",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "14 jours",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "Ne commencez pas amlodipine 5 mg chaque matin pendant 14 jours.",
+              "timing" : ""
+            }
+          ],
+          "subject" : "amlodipine"
+        }
+      ],
+      "seconds" : 2.0373579263687134,
+      "valid" : true
+    },
+    {
+      "failures" : [
+        "ramipril: scope affirmed, expected conditional"
+      ],
+      "group" : "exposed-development",
+      "id" : "en-condition",
+      "input" : "Stop ramipril only if your clinician confirms the change after the blood test.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"ramipril\",\"action\":\"stop\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Stop ramipril only if your clinician confirms the change after the blood test.\",\"condition\":\"only if your clinician confirms the change after the blood test\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "stop",
+          "kind" : "medication",
+          "scope" : "affirmed",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "only if your clinician confirms the change after the blood test",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "Stop ramipril only if your clinician confirms the change after the blood test.",
+              "timing" : ""
+            }
+          ],
+          "subject" : "ramipril"
+        }
+      ],
+      "seconds" : 2.3573310375213623,
+      "valid" : true
+    },
+    {
+      "error" : "unsupportedEvidence",
+      "failures" : [
+        "plan count 0, expected 1",
+        "missing medication:ramipril"
+      ],
+      "group" : "exposed-development",
+      "id" : "fr-condition",
+      "input" : "Arrêtez ramipril seulement si votre médecin confirme le changement après la prise de sang.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"ramipril\",\"action\":\"stop\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Arrêtez ramipril seulement si votre médecin confirme le changement après la prise de sang.\",\"condition\":\"si votre médecin confirme le changement après la prise de sang\",\"timing\":\"only if the change is confirmed by the doctor\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+
+      ],
+      "seconds" : 2.424723982810974,
+      "valid" : false
+    },
+    {
+      "failures" : [
+        "ramipril: scope affirmed, expected historical"
+      ],
+      "group" : "exposed-development",
+      "id" : "en-history",
+      "input" : "Last year my father stopped ramipril after a blood test.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"ramipril\",\"action\":\"stop\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Last year my father stopped ramipril after a blood test.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}] }",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "stop",
+          "kind" : "medication",
+          "scope" : "affirmed",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "Last year my father stopped ramipril after a blood test.",
+              "timing" : ""
+            }
+          ],
+          "subject" : "ramipril"
+        }
+      ],
+      "seconds" : 1.7225669622421265,
+      "valid" : true
+    },
+    {
+      "failures" : [
+        "ramipril: scope negated, expected historical"
+      ],
+      "group" : "exposed-development",
+      "id" : "fr-history",
+      "input" : "L’année dernière, mon père a arrêté ramipril après une prise de sang.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"ramipril\",\"action\":\"stop\",\"scope\":\"negated\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"L’année dernière, mon père a arrêté ramipril après une prise de sang.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "stop",
+          "kind" : "medication",
+          "scope" : "negated",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "L’année dernière, mon père a arrêté ramipril après une prise de sang.",
+              "timing" : ""
+            }
+          ],
+          "subject" : "ramipril"
+        }
+      ],
+      "seconds" : 1.9209100008010864,
+      "valid" : true
+    },
+    {
+      "error" : "unsupportedEvidence",
+      "failures" : [
+        "plan count 0, expected 1",
+        "missing medication:prednisone"
+      ],
+      "group" : "exposed-development",
+      "id" : "en-course",
+      "input" : "Take prednisone 20 mg each morning for 3 days. Then take 10 mg each morning for 2 days. Then stop.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"prednisone\",\"action\":\"start\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Take prednisone 20 mg each morning for 3 days.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"each morning\",\"duration\":\"3 days\",\"after\":null},{\"source\":1,\"text\":\"Then take 10 mg each morning for 2 days.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"each morning\",\"duration\":\"2 days\",\"after\":0},{\"source\":2,\"text\":\"Then stop.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":1}]}]}",
+      "passed" : false,
+      "plans" : [
+
+      ],
+      "seconds" : 2.988028049468994,
+      "valid" : false
+    },
+    {
+      "error" : "unsupportedEvidence",
+      "failures" : [
+        "plan count 0, expected 1",
+        "missing medication:prednisone"
+      ],
+      "group" : "exposed-development",
+      "id" : "fr-course",
+      "input" : "Prenez prednisone 20 mg chaque matin pendant 3 jours. Ensuite prenez 10 mg chaque matin pendant 2 jours. Ensuite arrêtez.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"prednisone\",\"action\":\"start\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Prenez prednisone 20 mg chaque matin pendant 3 jours.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"20 mg\",\"duration\":\"3 jours\",\"after\":null},{\"source\":1,\"text\":\"Ensuite prenez 10 mg chaque matin pendant 2 jours.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"10 mg\",\"duration\":\"2 jours\",\"after\":0},{\"source\":2,\"text\":\"Ensuite arrêtez.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":1}]}]}",
+      "passed" : false,
+      "plans" : [
+
+      ],
+      "seconds" : 3.7800610065460205,
+      "valid" : false
+    },
+    {
+      "failures" : [
+
+      ],
+      "group" : "exposed-development",
+      "id" : "en-call",
+      "input" : "Call the clinic in 48 hours if the ankle swelling is still present.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"followUp\",\"subject\":\"\",\"action\":\"call\",\"scope\":\"conditional\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Call the clinic in 48 hours if the ankle swelling is still present.\",\"condition\":\"if the ankle swelling is still present\",\"timing\":\"48 hours\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : true,
+      "plans" : [
+        {
+          "action" : "call",
+          "kind" : "followUp",
+          "scope" : "conditional",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "if the ankle swelling is still present",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "Call the clinic in 48 hours if the ankle swelling is still present.",
+              "timing" : "48 hours"
+            }
+          ],
+          "subject" : ""
+        }
+      ],
+      "seconds" : 1.9517329931259155,
+      "valid" : true
+    },
+    {
+      "error" : "unsupportedEvidence",
+      "failures" : [
+        "plan count 0, expected 1",
+        "missing followUp:"
+      ],
+      "group" : "exposed-development",
+      "id" : "fr-call",
+      "input" : "Appelez la clinique dans 48 heures si la cheville est encore enflée.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"followUp\",\"subject\":\"\",\"action\":\"call\",\"scope\":\"conditional\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Appelez la clinique dans 48 heures si la cheville est encore enflée.\",\"condition\":\"si la cheville est encore enflée\",\"timing\":\"48 hours\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+
+      ],
+      "seconds" : 2.1579880714416504,
+      "valid" : false
+    },
+    {
+      "failures" : [
+        "missing medication:metformin"
+      ],
+      "group" : "exposed-development",
+      "id" : "en-question",
+      "input" : "Should I stop metformin before my scan next week?",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"reminder\",\"subject\":\"metformin\",\"action\":\"stop\",\"scope\":\"uncertain\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Should I stop metformin before my scan next week?\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}] }",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "stop",
+          "kind" : "reminder",
+          "scope" : "uncertain",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "Should I stop metformin before my scan next week?",
+              "timing" : ""
+            }
+          ],
+          "subject" : "metformin"
+        }
+      ],
+      "seconds" : 1.8088020086288452,
+      "valid" : true
+    },
+    {
+      "failures" : [
+        "missing medication:metformin"
+      ],
+      "group" : "exposed-development",
+      "id" : "fr-question",
+      "input" : "Est-ce que je devrais arrêter metformin avant mon examen la semaine prochaine?",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"reminder\",\"subject\":\"metformin\",\"action\":\"stop\",\"scope\":\"uncertain\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Est-ce que je devrais arrêter metformin avant mon examen la semaine prochaine?\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "stop",
+          "kind" : "reminder",
+          "scope" : "uncertain",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "Est-ce que je devrais arrêter metformin avant mon examen la semaine prochaine?",
+              "timing" : ""
+            }
+          ],
+          "subject" : "metformin"
+        }
+      ],
+      "seconds" : 2.0521010160446167,
+      "valid" : true
+    },
+    {
+      "failures" : [
+        "plan count 1, expected 0"
+      ],
+      "group" : "exposed-development",
+      "id" : "en-empty",
+      "input" : "Good morning. I brought my umbrella today.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"reminder\",\"subject\":\"\",\"action\":\"call\",\"scope\":\"negated\",\"sources\":[0,1],\"steps\":[{\"source\":0,\"text\":\"Good morning.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null},{\"source\":1,\"text\":\"I brought my umbrella today.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "call",
+          "kind" : "reminder",
+          "scope" : "negated",
+          "sources" : [
+            0,
+            1
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "Good morning.",
+              "timing" : ""
+            },
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 1,
+              "text" : "I brought my umbrella today.",
+              "timing" : ""
+            }
+          ],
+          "subject" : ""
+        }
+      ],
+      "seconds" : 2.537253975868225,
+      "valid" : true
+    },
+    {
+      "failures" : [
+        "plan count 1, expected 0"
+      ],
+      "group" : "exposed-development",
+      "id" : "fr-empty",
+      "input" : "Bonjour. J’ai apporté mon parapluie aujourd’hui.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"reminder\",\"subject\":\"parapluie\",\"action\":\"reminder\",\"scope\":\"affirmed\",\"sources\":[0,1],\"steps\":[{\"source\":0,\"text\":\"Bonjour.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null},{\"source\":1,\"text\":\"J’ai apporté mon parapluie aujourd’hui.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":0}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "reminder",
+          "kind" : "reminder",
+          "scope" : "affirmed",
+          "sources" : [
+            0,
+            1
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "Bonjour.",
+              "timing" : ""
+            },
+            {
+              "after" : 0,
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 1,
+              "text" : "J’ai apporté mon parapluie aujourd’hui.",
+              "timing" : ""
+            }
+          ],
+          "subject" : "parapluie"
+        }
+      ],
+      "seconds" : 2.6037700176239014,
+      "valid" : true
+    },
+    {
+      "failures" : [
+        "losartan: scope affirmed, expected conditional"
+      ],
+      "group" : "fresh-after-prompt-freeze",
+      "id" : "en-fresh-condition",
+      "input" : "Begin losartan 25 mg at bedtime only after the pharmacist confirms that the old prescription is cancelled.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"losartan\",\"action\":\"start\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Begin losartan 25 mg at bedtime only after the pharmacist confirms that the old prescription is cancelled.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "start",
+          "kind" : "medication",
+          "scope" : "affirmed",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "Begin losartan 25 mg at bedtime only after the pharmacist confirms that the old prescription is cancelled.",
+              "timing" : ""
+            }
+          ],
+          "subject" : "losartan"
+        }
+      ],
+      "seconds" : 2.247514009475708,
+      "valid" : true
+    },
+    {
+      "failures" : [
+        "losartan: scope affirmed, expected conditional"
+      ],
+      "group" : "fresh-after-prompt-freeze",
+      "id" : "fr-fresh-condition",
+      "input" : "Commencez losartan 25 mg au coucher seulement après confirmation du pharmacien que l’ancienne ordonnance est annulée.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"losartan\",\"action\":\"start\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Commencez losartan 25 mg au coucher seulement après confirmation du pharmacien que l’ancienne ordonnance est annulée.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "start",
+          "kind" : "medication",
+          "scope" : "affirmed",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "Commencez losartan 25 mg au coucher seulement après confirmation du pharmacien que l’ancienne ordonnance est annulée.",
+              "timing" : ""
+            }
+          ],
+          "subject" : "losartan"
+        }
+      ],
+      "seconds" : 2.677870988845825,
+      "valid" : true
+    },
+    {
+      "error" : "unsupportedEvidence",
+      "failures" : [
+        "plan count 0, expected 1",
+        "missing medication:hydrocortisone"
+      ],
+      "group" : "fresh-after-prompt-freeze",
+      "id" : "en-fresh-course",
+      "input" : "Use hydrocortisone once daily for 4 days. Then use it every second day for 6 days. Then discontinue it.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"hydrocortisone\",\"action\":\"start\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Use hydrocortisone once daily for 4 days.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"once daily\",\"duration\":\"4 days\",\"after\":null},{\"source\":1,\"text\":\"Then use it every second day for 6 days.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"every second day\",\"duration\":\"6 days\",\"after\":0},{\"source\":2,\"text\":\"Then discontinue it.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":1}]}]}",
+      "passed" : false,
+      "plans" : [
+
+      ],
+      "seconds" : 6.247497916221619,
+      "valid" : false
+    },
+    {
+      "error" : "unsupportedEvidence",
+      "failures" : [
+        "plan count 0, expected 1",
+        "missing medication:hydrocortisone"
+      ],
+      "group" : "fresh-after-prompt-freeze",
+      "id" : "fr-fresh-course",
+      "input" : "Utilisez hydrocortisone une fois par jour pendant 4 jours. Ensuite utilisez-la un jour sur deux pendant 6 jours. Ensuite cessez le traitement.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"medication\",\"subject\":\"hydrocortisone\",\"action\":\"start\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Utilisez hydrocortisone une fois par jour pendant 4 jours.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"once daily\",\"duration\":\"4 days\",\"after\":null},{\"source\":1,\"text\":\"Ensuite utilisez-la un jour sur deux pendant 6 jours.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"once every two days\",\"duration\":\"6 days\",\"after\":0},{\"source\":2,\"text\":\"Ensuite cessez le traitement.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":1}]}]}",
+      "passed" : false,
+      "plans" : [
+
+      ],
+      "seconds" : 4.742624998092651,
+      "valid" : false
+    },
+    {
+      "failures" : [
+        "missing followUp:"
+      ],
+      "group" : "fresh-after-prompt-freeze",
+      "id" : "en-fresh-negative",
+      "input" : "Do not cancel the kidney test scheduled for next Monday.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"reminder\",\"subject\":\"kidney test\",\"action\":\"cancel\",\"scope\":\"negated\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"Do not cancel the kidney test scheduled for next Monday.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "cancel",
+          "kind" : "reminder",
+          "scope" : "negated",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "Do not cancel the kidney test scheduled for next Monday.",
+              "timing" : ""
+            }
+          ],
+          "subject" : "kidney test"
+        }
+      ],
+      "seconds" : 1.9445220232009888,
+      "valid" : true
+    },
+    {
+      "failures" : [
+        "missing followUp:"
+      ],
+      "group" : "fresh-after-prompt-freeze",
+      "id" : "fr-fresh-negative",
+      "input" : "N’annulez pas la prise de sang prévue lundi prochain.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"reminder\",\"subject\":\"\",\"action\":\"call\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"N’annulez pas la prise de sang prévue lundi prochain.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "call",
+          "kind" : "reminder",
+          "scope" : "affirmed",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "N’annulez pas la prise de sang prévue lundi prochain.",
+              "timing" : ""
+            }
+          ],
+          "subject" : ""
+        }
+      ],
+      "seconds" : 1.9360990524291992,
+      "valid" : true
+    },
+    {
+      "failures" : [
+        "plan count 1, expected 0"
+      ],
+      "group" : "fresh-after-prompt-freeze",
+      "id" : "en-fresh-empty",
+      "input" : "The waiting room has a blue chair and a window.",
+      "language" : "en",
+      "output" : "{\"plans\":[{\"kind\":\"reminder\",\"subject\":\"\",\"action\":\"reminder\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"The waiting room has a blue chair and a window.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "reminder",
+          "kind" : "reminder",
+          "scope" : "affirmed",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "The waiting room has a blue chair and a window.",
+              "timing" : ""
+            }
+          ],
+          "subject" : ""
+        }
+      ],
+      "seconds" : 1.9898059368133545,
+      "valid" : true
+    },
+    {
+      "failures" : [
+        "plan count 1, expected 0"
+      ],
+      "group" : "fresh-after-prompt-freeze",
+      "id" : "fr-fresh-empty",
+      "input" : "La salle d’attente contient une chaise bleue et une fenêtre.",
+      "language" : "fr",
+      "output" : "{\"plans\":[{\"kind\":\"followUp\",\"subject\":\"\",\"action\":\"visit\",\"scope\":\"affirmed\",\"sources\":[0],\"steps\":[{\"source\":0,\"text\":\"La salle d’attente contient une chaise bleue et une fenêtre.\",\"condition\":\"\",\"timing\":\"\",\"repetition\":\"\",\"duration\":\"\",\"after\":null}]}]}",
+      "passed" : false,
+      "plans" : [
+        {
+          "action" : "visit",
+          "kind" : "followUp",
+          "scope" : "affirmed",
+          "sources" : [
+            0
+          ],
+          "steps" : [
+            {
+              "condition" : "",
+              "duration" : "",
+              "repetition" : "",
+              "source" : 0,
+              "text" : "La salle d’attente contient une chaise bleue et une fenêtre.",
+              "timing" : ""
+            }
+          ],
+          "subject" : ""
+        }
+      ],
+      "seconds" : 2.3143529891967773,
+      "valid" : true
+    }
+  ]
+}

@@ -9,6 +9,7 @@ struct SettingsView: View {
     @EnvironmentObject var health: HealthService
     @EnvironmentObject var lock: AppLock
     @Environment(\.dismiss) private var dismiss
+    @AppStorage("liveActivitiesEnabled") private var liveActivities = true
     @State private var importing = false
     @State private var deleting = false
     var body: some View {
@@ -18,6 +19,7 @@ struct SettingsView: View {
                 NavigationLink { AppearanceView() } label: { Label("Appearance", systemImage: "circle.lefthalf.filled") }
                 NavigationLink { ModelsView() } label: { Label("Models", systemImage: "cpu") }
                 NavigationLink { VoiceSettingsView() } label: { Label("Voice", systemImage: "waveform") }.accessibilityIdentifier("voiceSettings")
+                Toggle(isOn: $liveActivities) { Label("Live Activities", systemImage: "waveform.path") }.onChange(of: liveActivities) { SessionActivities.shared.refreshPreferences() }
                 Button { Task { await health.sync(into: store) } } label: { HStack { Label("Import from Apple Health", systemImage: "heart.fill").foregroundStyle(Palette.ink); Spacer(); if health.busy { ProgressView() } } }.disabled(health.busy)
                 if !health.status.isEmpty { Text(health.status).font(.subheadline).foregroundStyle(Palette.muted) }
             }

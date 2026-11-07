@@ -1,0 +1,76 @@
+{
+  "model": "Qwen2.5-1.5B Q4_K_M",
+  "selectedBeforeInspectingIndependentHoldout": true,
+  "visitTemperature": 0,
+  "toolNarrationCandidateTemperature": 0.2,
+  "ordinaryChatTemperature": 0,
+  "titleTemperature": 0,
+  "defaultSeed": 42,
+  "topP": 0.95,
+  "topK": 40,
+  "results": {
+    "0": {
+      "focused": {
+        "runs": [
+          7
+        ],
+        "median": 7
+      },
+      "narration": {
+        "runs": [
+          5
+        ],
+        "median": 5
+      }
+    },
+    "0.2": {
+      "focused": {
+        "runs": [
+          5,
+          5,
+          7
+        ],
+        "median": 5
+      },
+      "narration": {
+        "runs": [
+          5,
+          6,
+          6
+        ],
+        "median": 6
+      }
+    },
+    "0.5": {
+      "focused": {
+        "runs": [
+          6,
+          6,
+          6
+        ],
+        "median": 6
+      },
+      "narration": {
+        "runs": [
+          6,
+          6,
+          5
+        ],
+        "median": 6
+      }
+    }
+  },
+  "reason": "Nonzero sampling reduced median extraction case agreement. Both 0.2 and 0.5 improved median narration agreement from 5/6 to 6/6; select the lower temperature on this tie, not a lucky seed. An automated miss on unknown interactions at seed 123 correctly said the information was not available; retain the original automatic failure and annotate the lexical false negative rather than changing the score. Independent narration holdout at all three seeds must be reviewed before adopting the candidate.",
+  "releaseGate": {
+    "adoptToolNarrationTemperature": 0.2,
+    "independentHoldout": "../narration-selected-holdout",
+    "seeds": [
+      42,
+      123,
+      2026
+    ],
+    "passedAtEachEffortAndSeed": "9/10",
+    "observedFailure": "French input with English app language produced English narration; retained as failure.",
+    "scope": "Balanced tool-result narration only; ordinary chat, titles, summaries and other models remain greedy."
+  }
+}

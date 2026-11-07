@@ -3,15 +3,27 @@ import UserNotifications
 import UIKit
 import AVFoundation
 import HarbourCore
+import HarbourSpeech
 @testable import Harbour
 
 @MainActor final class HarbourCareServiceTests: XCTestCase {
+    func testKokoroPreferenceDefaultsAndTwoVoicePersistence() {
+        let defaults = UserDefaults.standard, old = defaults.object(forKey: SpeechPreferences.voiceKey)
+        defer { if let old { defaults.set(old, forKey: SpeechPreferences.voiceKey) } else { defaults.removeObject(forKey: SpeechPreferences.voiceKey) } }
+        defaults.removeObject(forKey: SpeechPreferences.voiceKey)
+        XCTAssertEqual(SpeechPreferences.voice, .female)
+        XCTAssertEqual(KokoroVoice.allCases.map(\.rawValue), ["af_heart", "am_liam"])
+        defaults.set("am_liam", forKey: SpeechPreferences.voiceKey)
+        XCTAssertEqual(SpeechPreferences.voice, .male)
+        defaults.set("unavailable-voice", forKey: SpeechPreferences.voiceKey)
+        XCTAssertEqual(SpeechPreferences.voice, .female)
+    }
     func testAppointmentPersistsExportsAndDetachesEditedSource() throws {
         let store = temporaryStore(), target = temporaryStore()
         defer { try? FileManager.default.removeItem(at: store.file.deletingLastPathComponent()); try? FileManager.default.removeItem(at: target.file.deletingLastPathComponent()) }
         let quote = "Follow-up appointment Friday at 3 pm."
         var visit = DoctorVisit(transcript: quote)
-        visit.summary = try VisitReview.parse(#"{"highlights":[],"medicines":[],"followUps":[]}"#, transcript: quote, medicines: [])
+        visit.summary = try VisitReview.parse(#"{"highlights":[],"medicines":[],"followUps":[],"appointments":[{"quote":"Follow-up appointment Friday at 3 pm."}]}"#, transcript: quote, medicines: [])
         XCTAssertTrue(store.saveVisit(visit))
         let draft = AppointmentRules.draft(from: quote, visitID: visit.id)
         XCTAssertTrue(store.saveAppointment(draft))
@@ -19,7 +31,7 @@ import HarbourCore
         store.export(); target.importFile(try XCTUnwrap(store.shareFile?.url))
         XCTAssertNil(target.error); XCTAssertEqual(target.records.appointments, [draft])
         visit.transcript = "Cancelled."; visit.summary = nil; XCTAssertTrue(store.saveVisit(visit))
-        XCTAssertNil(store.records.appointments[0].visitID)
+        XCTAssertNil(try XCTUnwrap(store.records.appointments.first).visitID)
         XCTAssertFalse(store.saveAppointment(draft))
     }
     private func temporaryStore() -> AppStore { AppStore(folder: FileManager.default.temporaryDirectory.appendingPathComponent("care-test-" + UUID().uuidString)) }
@@ -178,7 +190,7 @@ import HarbourCore
     }
     func testNativeVoiceActuallyCompletesShortUtterance() async throws {
         guard UIApplication.shared.applicationState == .active else { throw XCTSkip("The host app is not active, so its playback lifecycle guard blocks speech.") }
-        guard AVSpeechSynthesisVoice(language: "en-CA") != nil else { throw XCTSkip("No English Canadian speech voice is installed on this simulator or device.") }
+        guard KokoroAssets.shared.ready else { throw XCTSkip("Download the Kokoro assets before running the native playback completion check.") }
         let voice = VoiceService(); defer { voice.stop() }
         let completed = expectation(description: "Native speech synthesis completes Hello")
         voice.speak("Hello", finished: { completed.fulfill() })

@@ -2,7 +2,7 @@ import Foundation
 import llama
 
 public enum ModelError: LocalizedError {
-    case load, context, promptTooLong, tokenize, decode, sampler, grammar
+    case load, context, promptTooLong, tokenize, decode, sampler, grammar, sampling
     public var errorDescription: String? {
         switch self {
         case .load: "The model could not be opened. Remove it and download it again."
@@ -11,6 +11,7 @@ public enum ModelError: LocalizedError {
         case .tokenize: "The model could not read this message."
         case .decode: "The model stopped unexpectedly. Please try again."
         case .sampler: "The model could not start generating a response. Please try again."
+        case .sampling: "The model sampling settings are invalid."
         case .grammar: "The model could not prepare the required response format. Please try again."
         }
     }
@@ -51,8 +52,16 @@ public actor LocalModel {
         guard let ctx = llama_init_from_model(loaded, cp) else { llama_model_free(loaded); throw ModelError.context }
         model = loaded; context = ctx; path = file.path
     }
-    public func generate(file: URL, prompt: String, maxTokens: Int = 160, grammar: String? = nil, stopAtJSON: Bool = true) throws -> String {
+    private var prefillBatch: Int {
+        #if targetEnvironment(simulator)
+        return 64
+        #else
+        return useGPU ? 512 : 64
+        #endif
+    }
+    public func generate(file: URL, prompt: String, maxTokens: Int = 160, grammar: String? = nil, stopAtJSON: Bool = true, sampling: ModelSampling = .greedy) throws -> String {
         try Task.checkCancellation()
+        guard sampling.isValid else { throw ModelError.sampling }
         if let grammar, grammar.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || grammar.contains("\0") {
             throw ModelError.grammar
         }
@@ -73,9 +82,19 @@ public actor LocalModel {
             guard let constrained = llama_sampler_init_grammar(vocab, grammar, "root") else { throw ModelError.grammar }
             llama_sampler_chain_add(sampler, constrained)
         }
-        guard let greedy = llama_sampler_init_greedy() else { throw ModelError.sampler }
-        llama_sampler_chain_add(sampler, greedy)
-        var batch = llama_batch_init(512, 0, 1)
+        func addSampler(_ candidate: UnsafeMutablePointer<llama_sampler>?) throws {
+            guard let candidate else { throw ModelError.sampler }
+            llama_sampler_chain_add(sampler, candidate)
+        }
+        if sampling.temperature == 0 {
+            try addSampler(llama_sampler_init_greedy())
+        } else {
+            try addSampler(llama_sampler_init_top_k(sampling.topK))
+            try addSampler(llama_sampler_init_top_p(sampling.topP, 1))
+            try addSampler(llama_sampler_init_temp(sampling.temperature))
+            try addSampler(llama_sampler_init_dist(sampling.seed))
+        }
+        var batch = llama_batch_init(Int32(prefillBatch), 0, 1)
         defer { llama_batch_free(batch) }
         func decode(_ items: [llama_token], start: Int) throws {
             batch.n_tokens = Int32(items.count)
@@ -86,9 +105,9 @@ public actor LocalModel {
             }
             guard llama_decode(context, batch) == 0 else { throw ModelError.decode }
         }
-        for offset in stride(from: 0, to: tokens.count, by: 512) {
+        for offset in stride(from: 0, to: tokens.count, by: prefillBatch) {
             try Task.checkCancellation()
-            try decode(Array(tokens[offset..<min(offset + 512, tokens.count)]), start: offset)
+            try decode(Array(tokens[offset..<min(offset + prefillBatch, tokens.count)]), start: offset)
         }
         var bytes: [UInt8] = [], position = tokens.count
         for _ in 0..<maxTokens {

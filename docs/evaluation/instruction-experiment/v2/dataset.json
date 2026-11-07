@@ -1,0 +1,405 @@
+{
+  "description": "Synthetic English/French contrastive development set; authored before any typed-plan model run. No clinical review. Paired templates are not independent holdout samples.",
+  "cases": [
+    {
+      "id": "en-start",
+      "language": "en",
+      "group": "exposed-development",
+      "input": "Start amlodipine 5 mg every morning for 14 days.",
+      "expected": [
+        {
+          "subject": "amlodipine",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 1,
+          "required": [
+            "5 mg",
+            "every morning",
+            "14 days"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en-no-start",
+      "language": "en",
+      "group": "exposed-development",
+      "input": "Do not start amlodipine 5 mg every morning for 14 days.",
+      "expected": [
+        {
+          "subject": "amlodipine",
+          "kind": "medication",
+          "scope": "negated",
+          "steps": 1,
+          "required": [
+            "Do not"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr-start",
+      "language": "fr",
+      "group": "exposed-development",
+      "input": "Commencez amlodipine 5 mg chaque matin pendant 14 jours.",
+      "expected": [
+        {
+          "subject": "amlodipine",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 1,
+          "required": [
+            "5 mg",
+            "chaque matin",
+            "14 jours"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr-no-start",
+      "language": "fr",
+      "group": "exposed-development",
+      "input": "Ne commencez pas amlodipine 5 mg chaque matin pendant 14 jours.",
+      "expected": [
+        {
+          "subject": "amlodipine",
+          "kind": "medication",
+          "scope": "negated",
+          "steps": 1,
+          "required": [
+            "Ne commencez pas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en-condition",
+      "language": "en",
+      "group": "exposed-development",
+      "input": "Stop ramipril only if your clinician confirms the change after the blood test.",
+      "expected": [
+        {
+          "subject": "ramipril",
+          "kind": "medication",
+          "scope": "conditional",
+          "steps": 1,
+          "required": [
+            "only if your clinician confirms the change after the blood test"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr-condition",
+      "language": "fr",
+      "group": "exposed-development",
+      "input": "Arrêtez ramipril seulement si votre médecin confirme le changement après la prise de sang.",
+      "expected": [
+        {
+          "subject": "ramipril",
+          "kind": "medication",
+          "scope": "conditional",
+          "steps": 1,
+          "required": [
+            "seulement si votre médecin confirme le changement après la prise de sang"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en-history",
+      "language": "en",
+      "group": "exposed-development",
+      "input": "Last year my father stopped ramipril after a blood test.",
+      "expected": [
+        {
+          "subject": "ramipril",
+          "kind": "medication",
+          "scope": "historical",
+          "steps": 1,
+          "required": [
+            "Last year",
+            "my father"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr-history",
+      "language": "fr",
+      "group": "exposed-development",
+      "input": "L’année dernière, mon père a arrêté ramipril après une prise de sang.",
+      "expected": [
+        {
+          "subject": "ramipril",
+          "kind": "medication",
+          "scope": "historical",
+          "steps": 1,
+          "required": [
+            "L’année dernière",
+            "mon père"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en-course",
+      "language": "en",
+      "group": "exposed-development",
+      "input": "Take prednisone 20 mg each morning for 3 days. Then take 10 mg each morning for 2 days. Then stop.",
+      "expected": [
+        {
+          "subject": "prednisone",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 3,
+          "required": [
+            "20 mg",
+            "3 days",
+            "10 mg",
+            "2 days",
+            "Then stop"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr-course",
+      "language": "fr",
+      "group": "exposed-development",
+      "input": "Prenez prednisone 20 mg chaque matin pendant 3 jours. Ensuite prenez 10 mg chaque matin pendant 2 jours. Ensuite arrêtez.",
+      "expected": [
+        {
+          "subject": "prednisone",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 3,
+          "required": [
+            "20 mg",
+            "3 jours",
+            "10 mg",
+            "2 jours",
+            "Ensuite arrêtez"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en-call",
+      "language": "en",
+      "group": "exposed-development",
+      "input": "Call the clinic in 48 hours if the ankle swelling is still present.",
+      "expected": [
+        {
+          "subject": "",
+          "kind": "followUp",
+          "scope": "conditional",
+          "steps": 1,
+          "required": [
+            "in 48 hours",
+            "if the ankle swelling is still present"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr-call",
+      "language": "fr",
+      "group": "exposed-development",
+      "input": "Appelez la clinique dans 48 heures si la cheville est encore enflée.",
+      "expected": [
+        {
+          "subject": "",
+          "kind": "followUp",
+          "scope": "conditional",
+          "steps": 1,
+          "required": [
+            "dans 48 heures",
+            "si la cheville est encore enflée"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en-question",
+      "language": "en",
+      "group": "exposed-development",
+      "input": "Should I stop metformin before my scan next week?",
+      "expected": [
+        {
+          "subject": "metformin",
+          "kind": "medication",
+          "scope": "uncertain",
+          "steps": 1,
+          "required": [
+            "Should I",
+            "next week"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr-question",
+      "language": "fr",
+      "group": "exposed-development",
+      "input": "Est-ce que je devrais arrêter metformin avant mon examen la semaine prochaine?",
+      "expected": [
+        {
+          "subject": "metformin",
+          "kind": "medication",
+          "scope": "uncertain",
+          "steps": 1,
+          "required": [
+            "Est-ce que",
+            "la semaine prochaine"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en-empty",
+      "language": "en",
+      "group": "exposed-development",
+      "input": "Good morning. I brought my umbrella today.",
+      "expected": []
+    },
+    {
+      "id": "fr-empty",
+      "language": "fr",
+      "group": "exposed-development",
+      "input": "Bonjour. J’ai apporté mon parapluie aujourd’hui.",
+      "expected": []
+    },
+    {
+      "id": "en-fresh-condition",
+      "language": "en",
+      "group": "fresh-after-prompt-freeze",
+      "input": "Begin losartan 25 mg at bedtime only after the pharmacist confirms that the old prescription is cancelled.",
+      "expected": [
+        {
+          "subject": "losartan",
+          "kind": "medication",
+          "scope": "conditional",
+          "steps": 1,
+          "required": [
+            "25 mg",
+            "at bedtime",
+            "only after the pharmacist confirms that the old prescription is cancelled"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr-fresh-condition",
+      "language": "fr",
+      "group": "fresh-after-prompt-freeze",
+      "input": "Commencez losartan 25 mg au coucher seulement après confirmation du pharmacien que l’ancienne ordonnance est annulée.",
+      "expected": [
+        {
+          "subject": "losartan",
+          "kind": "medication",
+          "scope": "conditional",
+          "steps": 1,
+          "required": [
+            "25 mg",
+            "au coucher",
+            "seulement après confirmation du pharmacien que l’ancienne ordonnance est annulée"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en-fresh-course",
+      "language": "en",
+      "group": "fresh-after-prompt-freeze",
+      "input": "Use hydrocortisone once daily for 4 days. Then use it every second day for 6 days. Then discontinue it.",
+      "expected": [
+        {
+          "subject": "hydrocortisone",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 3,
+          "required": [
+            "once daily",
+            "4 days",
+            "every second day",
+            "6 days",
+            "discontinue"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr-fresh-course",
+      "language": "fr",
+      "group": "fresh-after-prompt-freeze",
+      "input": "Utilisez hydrocortisone une fois par jour pendant 4 jours. Ensuite utilisez-la un jour sur deux pendant 6 jours. Ensuite cessez le traitement.",
+      "expected": [
+        {
+          "subject": "hydrocortisone",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 3,
+          "required": [
+            "une fois par jour",
+            "4 jours",
+            "un jour sur deux",
+            "6 jours",
+            "cessez"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en-fresh-negative",
+      "language": "en",
+      "group": "fresh-after-prompt-freeze",
+      "input": "Do not cancel the kidney test scheduled for next Monday.",
+      "expected": [
+        {
+          "subject": "",
+          "kind": "followUp",
+          "scope": "negated",
+          "steps": 1,
+          "required": [
+            "Do not cancel",
+            "next Monday"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr-fresh-negative",
+      "language": "fr",
+      "group": "fresh-after-prompt-freeze",
+      "input": "N’annulez pas la prise de sang prévue lundi prochain.",
+      "expected": [
+        {
+          "subject": "",
+          "kind": "followUp",
+          "scope": "negated",
+          "steps": 1,
+          "required": [
+            "N’annulez pas",
+            "lundi prochain"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en-fresh-empty",
+      "language": "en",
+      "group": "fresh-after-prompt-freeze",
+      "input": "The waiting room has a blue chair and a window.",
+      "expected": []
+    },
+    {
+      "id": "fr-fresh-empty",
+      "language": "fr",
+      "group": "fresh-after-prompt-freeze",
+      "input": "La salle d’attente contient une chaise bleue et une fenêtre.",
+      "expected": []
+    }
+  ]
+}

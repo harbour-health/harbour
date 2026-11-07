@@ -1,0 +1,300 @@
+{
+  "version": 2,
+  "description": "Separate authored holdout for focused prompts. Gold labels are engineering references, not clinician-reviewed. Run after prompt freeze; do not tune prompts on these results. No source-recovery additions are allowed.",
+  "medical": [
+    {
+      "name": "two-orders-new-values",
+      "input": "Begin metformin 250 mg with the evening meal. Begin amlodipine 2.5 mg every morning.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "start",
+            "name": "metformin",
+            "instructions": "250 mg with the evening meal"
+          },
+          {
+            "action": "start",
+            "name": "amlodipine",
+            "instructions": "2.5 mg every morning"
+          }
+        ],
+        "followUps": [],
+        "appointments": []
+      }
+    },
+    {
+      "name": "existing-update-plus-stop",
+      "input": "Increase metformin to 850 mg twice daily with meals. Stop aspirin.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "update",
+            "name": "metformin",
+            "instructions": "to 850 mg twice daily with meals"
+          },
+          {
+            "action": "stop",
+            "name": "aspirin",
+            "instructions": ""
+          }
+        ],
+        "followUps": [],
+        "appointments": []
+      },
+      "savedMedicineIDs": [
+        "metformin",
+        "aspirin"
+      ]
+    },
+    {
+      "name": "twice-daily-anticoagulant",
+      "input": "Start apixaban 2.5 mg twice daily at 7 am and 7 pm.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "start",
+            "name": "apixaban",
+            "instructions": "2.5 mg twice daily at 7 am and 7 pm"
+          }
+        ],
+        "followUps": [],
+        "appointments": []
+      }
+    },
+    {
+      "name": "alternating-days-existing",
+      "input": "Take warfarin 2 mg on Tuesday and Thursday and 3 mg on the other days.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "update",
+            "name": "warfarin",
+            "instructions": "2 mg on Tuesday and Thursday and 3 mg on the other days"
+          }
+        ],
+        "followUps": [],
+        "appointments": []
+      },
+      "savedMedicineIDs": [
+        "warfarin"
+      ]
+    },
+    {
+      "name": "topical-product-review",
+      "input": "Start hydrocortisone 1% cream twice daily on the affected area for seven days.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "start",
+            "name": "hydrocortisone",
+            "instructions": "1% cream twice daily on the affected area for seven days"
+          }
+        ],
+        "followUps": [],
+        "appointments": []
+      }
+    },
+    {
+      "name": "inhaler-limits-review",
+      "input": "Start salbutamol 2 puffs every 4 to 6 hours if needed for wheezing, maximum 8 puffs in 24 hours.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "start",
+            "name": "salbutamol",
+            "instructions": "2 puffs every 4 to 6 hours if needed for wheezing, maximum 8 puffs in 24 hours"
+          }
+        ],
+        "followUps": [],
+        "appointments": []
+      }
+    },
+    {
+      "name": "three-phase-taper-review",
+      "input": "Begin prednisone 40 mg each morning for two days then 20 mg each morning for two days then 10 mg each morning for two days then stop.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "start",
+            "name": "prednisone",
+            "instructions": "40 mg each morning for two days then 20 mg each morning for two days then 10 mg each morning for two days then stop"
+          }
+        ],
+        "followUps": [],
+        "appointments": []
+      }
+    },
+    {
+      "name": "gradual-known-regimen",
+      "input": "Start metformin 250 mg once daily for four days then 500 mg once daily for four days.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "start",
+            "name": "metformin",
+            "instructions": "250 mg once daily for four days then 500 mg once daily for four days"
+          }
+        ],
+        "followUps": [],
+        "appointments": []
+      }
+    },
+    {
+      "name": "past-stop-is-not-order",
+      "input": "I stopped warfarin last month. We discussed why it had been prescribed.",
+      "expected": {
+        "medicines": [],
+        "followUps": [],
+        "appointments": []
+      }
+    },
+    {
+      "name": "other-person-prescription",
+      "input": "My brother was prescribed amlodipine 5 mg yesterday. I am here to discuss my sleep.",
+      "expected": {
+        "medicines": [],
+        "followUps": [],
+        "appointments": []
+      }
+    },
+    {
+      "name": "question-is-not-prescription",
+      "input": "Would naproxen 250 mg help my shoulder? No medication changes were agreed.",
+      "expected": {
+        "medicines": [],
+        "followUps": [],
+        "appointments": []
+      }
+    },
+    {
+      "name": "contingent-start-not-current-order",
+      "input": "If your prescriber agrees, start amlodipine 2.5 mg once daily.",
+      "expected": {
+        "medicines": [],
+        "followUps": [],
+        "appointments": []
+      }
+    },
+    {
+      "name": "same-sentence-switch",
+      "input": "Discontinue aspirin and begin apixaban 2.5 mg twice daily.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "stop",
+            "name": "aspirin",
+            "instructions": ""
+          },
+          {
+            "action": "start",
+            "name": "apixaban",
+            "instructions": "2.5 mg twice daily"
+          }
+        ],
+        "followUps": [],
+        "appointments": []
+      },
+      "savedMedicineIDs": [
+        "aspirin"
+      ]
+    },
+    {
+      "name": "unfamiliar-statin-review",
+      "input": "Start rosuvastatin 5 mg at night.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "start",
+            "name": "rosuvastatin",
+            "instructions": "5 mg at night"
+          }
+        ],
+        "followUps": [],
+        "appointments": []
+      }
+    },
+    {
+      "name": "specific-tests-and-conditional-call",
+      "input": "Repeat the kidney blood test in ten days. Call the clinic if the swelling gets worse.",
+      "expected": {
+        "medicines": [],
+        "followUps": [
+          "Repeat the kidney blood test in ten days.",
+          "Call the clinic if the swelling gets worse."
+        ],
+        "appointments": []
+      }
+    },
+    {
+      "name": "consultation-iso-date",
+      "input": "Your cardiology consultation is on 2026-12-03 at 11:30 am at Clinic C.",
+      "expected": {
+        "medicines": [],
+        "followUps": [],
+        "appointments": [
+          "Your cardiology consultation is on 2026-12-03 at 11:30 am at Clinic C."
+        ]
+      }
+    },
+    {
+      "name": "french-decimal-directions",
+      "input": "Commencez amlodipine 2,5 mg une fois par jour au coucher.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "start",
+            "name": "amlodipine",
+            "instructions": "2,5 mg une fois par jour au coucher"
+          }
+        ],
+        "followUps": [],
+        "appointments": []
+      }
+    },
+    {
+      "name": "french-laboratory-follow-up",
+      "input": "Planifiez une analyse sanguine dans quatre semaines.",
+      "expected": {
+        "medicines": [],
+        "followUps": [
+          "Planifiez une analyse sanguine dans quatre semaines."
+        ],
+        "appointments": []
+      }
+    },
+    {
+      "name": "cross-sentence-insulin-plan",
+      "input": "Start insulin glargine 8 units each night. After three days, increase to 10 units each night if fasting glucose remains above 9 mmol/L.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "start",
+            "name": "insulin glargine",
+            "instructions": "8 units each night. After three days, increase to 10 units each night if fasting glucose remains above 9 mmol/L"
+          }
+        ],
+        "followUps": [],
+        "appointments": []
+      }
+    },
+    {
+      "name": "long-discussion-and-orders",
+      "input": "The patient reports shoulder soreness without a fall. Sleep and daily activities were discussed. The patient reports shoulder soreness without a fall. Sleep and daily activities were discussed. The patient reports shoulder soreness without a fall. Sleep and daily activities were discussed. The patient reports shoulder soreness without a fall. Sleep and daily activities were discussed. The patient reports shoulder soreness without a fall. Sleep and daily activities were discussed. The patient reports shoulder soreness without a fall. Sleep and daily activities were discussed. The patient reports shoulder soreness without a fall. Sleep and daily activities were discussed. The patient reports shoulder soreness without a fall. Sleep and daily activities were discussed. The patient reports shoulder soreness without a fall. Sleep and daily activities were discussed. The patient reports shoulder soreness without a fall. Sleep and daily activities were discussed. The patient reports shoulder soreness without a fall. Sleep and daily activities were discussed. The patient reports shoulder soreness without a fall. Sleep and daily activities were discussed. The patient reports shoulder soreness without a fall. Sleep and daily activities were discussed.  Begin acetaminophen 325 mg every 8 hours if needed for pain for two days. Arrange blood work in three weeks.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "start",
+            "name": "acetaminophen",
+            "instructions": "325 mg every 8 hours if needed for pain for two days"
+          }
+        ],
+        "followUps": [
+          "Arrange blood work in three weeks."
+        ],
+        "appointments": []
+      }
+    }
+  ],
+  "conversations": [],
+  "toolResults": []
+}

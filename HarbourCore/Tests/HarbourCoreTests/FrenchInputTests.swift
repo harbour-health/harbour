@@ -97,7 +97,7 @@ final class FrenchInputTests: XCTestCase {
         visit.summary = try VisitReview.parse(output(quote: quote), transcript: source, medicines: [])
         visit.medicineBaseline = []
         XCTAssertEqual(visit.summary?.medicines.count, 1)
-        XCTAssertEqual(visit.summary?.followUps.map(\.quote), ["Prenez rendez-vous pour une prise de sang."])
+        XCTAssertEqual(visit.summary?.followUps.map(\.quote), [], "A model omission must not be replaced by a source-scanning fallback")
         let changes = try XCTUnwrap(visit.summary?.medicines)
         XCTAssertEqual(try VisitReview.applying([changes[0].id], from: visit, to: []).first?.ingredients, ["metformin"])
         XCTAssertThrowsError(try VisitReview.applying([], from: visit, to: []))

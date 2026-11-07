@@ -1,0 +1,9 @@
+{
+  "frozen": "2026-11-06",
+  "policy": "No further prompt selection using the focused or narration holdout results. Engineering-authored labels, not clinical validation.",
+  "sha256": {
+    "HarbourCore/Sources/HarbourCore/VisitExtraction.swift": "45ca6ad2f369b7e850e1ed48ab44a614fc5d0b9a94a18cab25ece7ba78ab786c",
+    "HarbourCore/Sources/HarbourCore/ToolPlanner.swift": "6f4585cf8406e8f960e43c75ff075bb9e54a601df334a84f3458efa577cfb2a0",
+    "HarbourRuntime/Sources/HarbourRuntime/VisitSummaryOutputGrammar.swift": "cc175d613ac3d97b0fe8adb6b2bcb30bdf58fc79777e27ca823d1cf3a26fe071"
+  }
+}

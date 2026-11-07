@@ -18,9 +18,13 @@ struct NavigationDock: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Binding var selection: Int
     var body: some View {
-        NativeNavigationDock(selection: $selection, recording: recorder.active, reduceMotion: reduceMotion)
-            .frame(width: 278, height: 62)
-            .shadow(color: .black.opacity(0.18), radius: 12, y: 6).padding(.bottom, 12)
+        NativeNavigationDock(selection: $selection, recording: recorder.active, reduceMotion: reduceMotion, compact: selection == 1)
+            .frame(width: 254, height: 62)
+            .shadow(color: .black.opacity(0.18), radius: 12, y: 6)
+            .scaleEffect(selection == 1 ? 0.72 : 1, anchor: .bottom)
+            .offset(y: selection == 1 ? 32 : 0)
+            .padding(.bottom, 12)
+            .animation(reduceMotion ? nil : .spring(response: 0.55, dampingFraction: 0.9), value: selection == 1)
     }
 }
 
@@ -29,6 +33,7 @@ private struct NativeNavigationDock: UIViewRepresentable {
     @Binding var selection: Int
     let recording: Bool
     let reduceMotion: Bool
+    let compact: Bool
     func makeCoordinator() -> Coordinator { Coordinator(selection: $selection) }
     func makeUIView(context: Context) -> DockView {
         let view = DockView()
@@ -37,9 +42,9 @@ private struct NativeNavigationDock: UIViewRepresentable {
     }
     func updateUIView(_ view: DockView, context: Context) {
         context.coordinator.selection = $selection
-        view.update(selection: selection, recording: recording, reduceMotion: reduceMotion, dark: colorScheme == .dark)
+        view.update(selection: selection, recording: recording, reduceMotion: reduceMotion, dark: colorScheme == .dark, compact: compact)
     }
-    final class Coordinator: NSObject {
+    @MainActor final class Coordinator: NSObject {
         var selection: Binding<Int>
         init(selection: Binding<Int>) { self.selection = selection }
         @objc func select(_ sender: UIButton) { selection.wrappedValue = sender.tag }
@@ -68,7 +73,8 @@ private final class DockSymbols: UIView {
         let rendered = UIGraphicsImageRenderer(size: bounds.size).image { _ in
             for (index, image) in images.enumerated() {
                 let size = image.size
-                let centre = CGPoint(x: 45.25 + CGFloat(index) * 62.5, y: 31)
+                let cellWidth = (bounds.width - 8) / 4
+                let centre = CGPoint(x: 4 + cellWidth * (CGFloat(index) + 0.5), y: bounds.midY)
                 image.draw(in: CGRect(x: centre.x - size.width / 2, y: centre.y - size.height / 2, width: size.width, height: size.height))
             }
         }
@@ -84,6 +90,7 @@ private final class DockView: UIView {
     private let symbols = DockSymbols()
     private let recordingDot = UIView()
     private var selectedIndex = 0
+    private var isCompact = false
     private var configured = false
     let buttons = (0..<4).map { index in let button = DockButton(type: .custom); button.tag = index; return button }
     override init(frame: CGRect) {
@@ -104,16 +111,23 @@ private final class DockView: UIView {
         recordingDot.isUserInteractionEnabled = false; recordingDot.isAccessibilityElement = false; addSubview(recordingDot)
     }
     required init?(coder: NSCoder) { fatalError("DockView is created programmatically") }
-    override var intrinsicContentSize: CGSize { CGSize(width: 278, height: 62) }
+    override var intrinsicContentSize: CGSize { CGSize(width: 254, height: 62) }
     override func layoutSubviews() {
         super.layoutSubviews()
         symbols.frame = bounds
-        for button in buttons { button.frame = CGRect(x: 14 + CGFloat(button.tag) * 62.5, y: 4, width: 62.5, height: 54) }
+        let cellWidth = (bounds.width - 8) / 4
+        for button in buttons { button.frame = CGRect(x: 4 + CGFloat(button.tag) * cellWidth, y: 4, width: cellWidth, height: isCompact ? bounds.height : bounds.height - 8); if isCompact { button.frame.origin.y = 0 } }
+        layer.cornerRadius = bounds.height / 2; marker.layer.cornerRadius = (bounds.height - 8) / 2
         if marker.layer.animationKeys()?.isEmpty != false { marker.frame = markerFrame(selectedIndex) }
-        recordingDot.frame = CGRect(x: 14 + 3 * 62.5 + 62.5 - 13, y: 11, width: 6, height: 6)
+        recordingDot.frame = CGRect(x: bounds.width - 27, y: compactDotY, width: 6, height: 6)
     }
-    private func markerFrame(_ index: Int) -> CGRect { CGRect(x: 3.75 + CGFloat(index) * 62.5, y: 4, width: 83, height: 54) }
-    func update(selection: Int, recording: Bool, reduceMotion: Bool, dark: Bool) {
+    private var compactDotY: CGFloat { bounds.height < 60 ? 9 : 11 }
+    private func markerFrame(_ index: Int) -> CGRect {
+        let cellWidth = (bounds.width - 8) / 4
+        let width: CGFloat = isCompact ? 54 : 60
+        return CGRect(x: 4 + CGFloat(index) * cellWidth + (cellWidth - width) / 2, y: 4, width: width, height: bounds.height - 8)
+    }
+    func update(selection: Int, recording: Bool, reduceMotion: Bool, dark: Bool, compact: Bool) {
         let traits = UITraitCollection(userInterfaceStyle: dark ? .dark : .light)
         func resolved(_ color: Color) -> UIColor { UIColor(color).resolvedColor(with: traits) }
         backgroundColor = resolved(Palette.dockBackground)
@@ -121,6 +135,7 @@ private final class DockView: UIView {
         layer.borderColor = (dark ? UIColor.white.withAlphaComponent(0.11) : UIColor.black.withAlphaComponent(0.07)).cgColor
         recordingDot.backgroundColor = resolved(Palette.coral)
         let changed = selection != selectedIndex
+        isCompact = compact
         selectedIndex = selection
         let configuration = UIImage.SymbolConfiguration(pointSize: 22, weight: .regular)
         var images: [UIImage] = []
@@ -139,7 +154,7 @@ private final class DockView: UIView {
         symbols.images = images
         recordingDot.isHidden = !recording
         if configured && changed && !reduceMotion {
-            UIView.animate(withDuration: 0.22, delay: 0, options: [.beginFromCurrentState, .curveEaseInOut, .allowUserInteraction]) { self.marker.frame = self.markerFrame(selection) }
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.9, initialSpringVelocity: 0, options: [.beginFromCurrentState, .allowUserInteraction]) { self.marker.frame = self.markerFrame(selection) }
         } else { marker.frame = markerFrame(selection) }
         configured = true
         setNeedsLayout()

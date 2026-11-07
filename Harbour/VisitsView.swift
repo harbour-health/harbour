@@ -10,24 +10,29 @@ struct VisitsView: View {
     @EnvironmentObject private var store: AppStore
     @EnvironmentObject private var recorder: VisitRecorder
     @Environment(\.floatingDockClearance) private var dockClearance
+    @Namespace private var recorderTransition
+    @AppStorage("openRecordingSession") private var openRecordingSession = false
     @State private var destination: UUID?
     @State private var showRecorder = false
+    @State private var returningToSession = false
     @State private var newVisit: DoctorVisit?
     @State private var deleting: DoctorVisit?
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppLayout.sectionSpacing) {
-                Button { showRecorder = true } label: {
+                Text("Visits").font(.largeTitle.bold()).accessibilityAddTraits(.isHeader)
+                Button { returningToSession = false; showRecorder = true } label: {
                     VStack(spacing: 22) {
                         VisitWaveform(levels: Array(repeating: 0.12, count: 38), decorative: true).frame(height: 76).padding(.horizontal, 30)
                         Image(systemName: "mic.fill").font(.system(size: 34)).foregroundStyle(.white)
                             .frame(width: 92, height: 92).background(Palette.coral, in: Circle())
                         Text(L10n.string(recorder.active ? "Recording in progress" : "Record a visit")).font(.system(.title2, design: .rounded, weight: .bold))
                     }.frame(maxWidth: .infinity).padding(.vertical, 36).background(Palette.coralWash, in: RoundedRectangle(cornerRadius: 32))
-                }.buttonStyle(PressFeedback()).accessibilityIdentifier("recordVisit")
+                }.buttonStyle(PressFeedback()).matchedTransitionSource(id: "recorder", in: recorderTransition).accessibilityIdentifier("recordVisit")
                 Button { sheet = .note } label: { FeatureRow(title: "Appointment preparation", subtitle: nil, symbol: "text.bubble", colour: Palette.blue) }.buttonStyle(.plain).accessibilityIdentifier("prepareAppointment")
                 NavigationLink { VisitReportView() } label: { FeatureRow(title: "Doctor visit report", subtitle: nil, symbol: "doc.richtext", colour: Palette.blue) }.buttonStyle(.plain).accessibilityIdentifier("openVisitReport")
-                Text("Recent visits").font(.title2.weight(.semibold))
+                VStack(alignment: .leading, spacing: 0) {
+                Text("Recent visits").font(.title2.weight(.semibold)).padding(.bottom, 12)
                 if store.visits.isEmpty { Text("No visits yet").font(.title3).foregroundStyle(Palette.muted).padding(.vertical, 20) }
                 ForEach(store.visits) { visit in
                     Button {
@@ -47,9 +52,10 @@ struct VisitsView: View {
                     }.buttonStyle(.plain).accessibilityIdentifier("visit-row-" + visit.id.uuidString).contextMenu { Button("Delete visit", role: .destructive) { deleting = visit }.disabled(recorder.active) }
                     Divider().overlay(Palette.line)
                 }
+                }
             }.padding(.horizontal, AppLayout.screenInset).padding(.top, 14).padding(.bottom, 32).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity)
         }.contentMargins(.bottom, dockClearance, for: .scrollContent)
-            .background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle("Visits")
+            .background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle("").navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 if !showRecorder && destination == nil {
                     ToolbarItem(placement: .topBarLeading) {
@@ -59,7 +65,9 @@ struct VisitsView: View {
                     ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) }
                 }
             }
-            .navigationDestination(isPresented: $showRecorder) { VisitRecordingView() }
+            .onAppear { if openRecordingSession { openRecordingSession = false; returningToSession = true; showRecorder = true } }
+            .onChange(of: openRecordingSession) { if openRecordingSession { openRecordingSession = false; returningToSession = true; showRecorder = true } }
+            .navigationDestination(isPresented: $showRecorder) { VisitRecordingView(startImmediately: !recorder.active && !returningToSession).navigationTransition(.zoom(sourceID: "recorder", in: recorderTransition)) }
             .navigationDestination(item: $destination) { VisitDetailView(id: $0) }
             .sheet(item: $newVisit) { visit in
                 NavigationStack { VisitTranscriptEditor(visit: visit, isNew: true) { destination = $0 } }.floatingDrawer(height: 520)
@@ -85,6 +93,8 @@ struct VisitWaveform: View {
     }
 }
 struct VisitRecordingView: View {
+    var startImmediately = false
+    @State private var attemptedStart = false
     @EnvironmentObject private var store: AppStore
     @EnvironmentObject private var recorder: VisitRecorder
     @Environment(\.scenePhase) private var phase
@@ -100,10 +110,6 @@ struct VisitRecordingView: View {
                     Text(visitTime(recorder.duration)).font(.system(size: 64, weight: .medium, design: .rounded)).monospacedDigit().contentTransition(.numericText())
                 }.padding(.top, 32)
                 VisitWaveform(levels: recorder.levels).frame(height: 112).padding(.horizontal, 18)
-                if !recorder.transcript.isEmpty {
-                    Text(recorder.transcript).font(.title3).lineSpacing(6).frame(maxWidth: .infinity, alignment: .leading)
-                        .textSelection(.enabled).accessibilityIdentifier("liveVisitTranscript")
-                }
                 if recorder.state == .preparing || recorder.state == .finishing { ProgressView().controlSize(.large) }
                 if !recorder.status.isEmpty { Text(recorder.status).font(.subheadline).foregroundStyle(Palette.muted).multilineTextAlignment(.center) }
                 HStack(spacing: 36) {
@@ -134,6 +140,7 @@ struct VisitRecordingView: View {
         }.contentMargins(.bottom, dockClearance, for: .scrollContent)
             .background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle("Recorder").navigationBarTitleDisplayMode(.inline)
             .navigationDestination(item: $finished) { VisitDetailView(id: $0, automaticallySummarise: true) }
+            .task { if startImmediately && !attemptedStart { attemptedStart = true; if !recorder.active { await recorder.start(into: store) } } }
             .alert("Recording", isPresented: Binding(get: { recorder.error != nil }, set: { if !$0 { recorder.error = nil } })) { Button("OK") { recorder.error = nil } } message: { Text(recorder.error ?? "") }
     }
 }
@@ -146,7 +153,7 @@ struct VisitDetailView: View {
     @EnvironmentObject private var recorder: VisitRecorder
     @Environment(\.floatingDockClearance) private var dockClearance
     @StateObject private var playback = VisitPlayback()
-    @State private var tab = 0
+    @State private var reminderDraft: CareReminder?
     @State private var editing = false
     @State private var reviewing = false
     @State private var appointmentDraft: Appointment?
@@ -173,28 +180,17 @@ struct VisitDetailView: View {
                             }.accessibilityLabel(L10n.string(playback.playing ? "Pause visit audio" : "Play visit audio")).disabled(recorder.active)
                         }
                     }
-                    Picker("Visit view", selection: $tab) { Text("Summary").tag(0); Text("Transcript").tag(1) }.pickerStyle(.segmented).controlSize(.large).accessibilityIdentifier("visitDetailTabs")
-                    if visit.interrupted { Label("Recording was interrupted. Review the audio and transcript.", systemImage: "exclamationmark.circle").font(.body).foregroundStyle(Palette.coral) }
+                    if visit.interrupted { Label("Recording was interrupted. Review the saved audio.", systemImage: "exclamationmark.circle").font(.body).foregroundStyle(Palette.coral) }
                     if let warning = visit.transcriptionWarning { Label(L10n.string(warning), systemImage: "waveform.badge.exclamationmark").font(.body).foregroundStyle(Palette.coral) }
-                    if tab == 1 {
-                        if visit.transcript.isEmpty { Text("No transcript yet").font(.title3).foregroundStyle(Palette.muted) }
-                        else { Text(visit.transcript).font(.title3).lineSpacing(8).textSelection(.enabled).accessibilityIdentifier("savedVisitTranscript") }
-                        Button { editing = true } label: { Label("Edit transcript", systemImage: "square.and.pencil").font(.body.weight(.semibold)).frame(minHeight: AppLayout.controlSize) }.disabled(busy || recorder.active)
-                        if store.audioURL(for: visit) != nil {
-                            Button { transcribe(visit) } label: { Label("Transcribe audio", systemImage: "waveform").font(.body.weight(.semibold)).frame(minHeight: AppLayout.controlSize) }.disabled(busy || recorder.active)
-                        }
-                    } else if let summary = visit.summary {
-                        if !summary.highlights.isEmpty { quotes(summary.highlights, title: "Notes", symbol: "note.text") }
+                    if let summary = visit.summary {
+                        if !summary.highlights.compactMap(\.text).isEmpty { quotes(summary.highlights, title: "Notes", symbol: "note.text") }
                         if !summary.medicines.isEmpty {
                             VStack(alignment: .leading, spacing: 18) {
                                 Label("Medications", systemImage: "pills").font(.title2.weight(.semibold)).foregroundStyle(Palette.blue)
                                 ForEach(summary.medicines) { change in
                                     VStack(alignment: .leading, spacing: 8) {
                                         Text(L10n.format("%@ %@", L10n.string(change.action.rawValue.capitalized), L10n.medicineName(change.medicine))).font(.title3.weight(.semibold))
-                                        if !change.medicine.instructions.isEmpty { Text(change.medicine.instructions).font(.body) }
-                                        if let frequency = change.frequency { Text(L10n.frequency(frequency)).font(.body.weight(.medium)) }
-                                        if !change.times.isEmpty { Text(L10n.doseTimes(change.times)).font(.body).foregroundStyle(Palette.muted) }
-                                        Text("“" + change.quote + "”").font(.body).foregroundStyle(Palette.muted)
+                                        VisitMedicationDirections(instructions: change.medicine.instructions)
                                     }
                                     Divider()
                                 }
@@ -203,13 +199,28 @@ struct VisitDetailView: View {
                                 } else { Label("Medication changes saved", systemImage: "checkmark.circle.fill").font(.body.weight(.medium)).foregroundStyle(Palette.blue) }
                             }
                         }
-                        if !summary.followUps.isEmpty { quotes(summary.followUps, title: "Follow-up", symbol: "calendar") }
+                        if let unconfirmed = summary.unconfirmedMedicines, !unconfirmed.isEmpty { quotes(unconfirmed, title: "Needs review", symbol: "pills") }
+                        if !summary.followUps.isEmpty {
+                            VStack(alignment: .leading, spacing: 16) {
+                                Label("Follow-up", systemImage: "checklist").font(.title2.weight(.semibold)).foregroundStyle(Palette.coral)
+                                ForEach(summary.followUps) { item in
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text(item.text ?? VisitFollowUp.title(for: item.quote, french: L10n.isFrench)).font(.title3.weight(.medium))
+                                        if let due = VisitFollowUp.dueDate(in: item.quote, relativeTo: visit.date) { Label(due.formatted(.dateTime.month(.abbreviated).day().year().locale(L10n.locale)), systemImage: "calendar").foregroundStyle(Palette.muted) }
+                                        Button("Add reminder", systemImage: "plus.circle") {
+                                            reminderDraft = CareReminder(title: item.text ?? VisitFollowUp.title(for: item.quote, french: L10n.isFrench), due: VisitFollowUp.dueDate(in: item.quote, relativeTo: visit.date) ?? .now, visitID: visit.id, quote: item.quote)
+                                        }.disabled(recorder.active || busy)
+                                    }.padding(.vertical, 4)
+                                    Divider().overlay(Palette.line)
+                                }
+                            }
+                        }
                         if let appointments = summary.appointments, !appointments.isEmpty {
                             VStack(alignment: .leading, spacing: 16) {
                                 Label("Appointments", systemImage: "calendar").font(.title2.weight(.semibold)).foregroundStyle(Palette.blue)
                                 ForEach(appointments) { item in
                                     VStack(alignment: .leading, spacing: 8) {
-                                        Text(item.quote).font(.body)
+                                        Text(item.text ?? L10n.string("Follow-up appointment")).font(.body)
                                         if store.records.appointments.contains(where: { $0.visitID == visit.id && $0.quote == item.quote }) {
                                             Label("Appointment saved", systemImage: "checkmark.circle.fill").foregroundStyle(Palette.blue)
                                         } else {
@@ -220,7 +231,7 @@ struct VisitDetailView: View {
                                 }
                             }
                         }
-                        if summary.highlights.isEmpty && summary.followUps.isEmpty && summary.medicines.isEmpty { Text("No details extracted. Review the transcript.").font(.title3) }
+                        if summary.highlights.compactMap(\.text).isEmpty && summary.followUps.isEmpty && summary.medicines.isEmpty && (summary.appointments ?? []).isEmpty && (summary.unconfirmedMedicines ?? []).isEmpty { Text("No details extracted.").font(.title3) }
                     } else {
                         VStack(alignment: .leading, spacing: 20) {
                             Text(L10n.string(visit.transcript.isEmpty ? "Add a transcript to prepare a summary" : "Ready to summarise")).font(.system(.title2, design: .rounded, weight: .bold))
@@ -228,7 +239,7 @@ struct VisitDetailView: View {
                         }.padding(.vertical, 24)
                     }
                     if busy {
-                        HStack(spacing: 12) { HarbourMark(size: AppLayout.loadingMarkSize, spinning: true).foregroundStyle(Palette.blue); Text(status).font(.body); Spacer(); Button("Cancel") { task?.cancel(); models.cancelDownload() } }
+                        HStack(spacing: 12) { HarbourMark(size: AppLayout.loadingMarkSize, spinning: true).foregroundStyle(Palette.blue); Text(models.downloading == nil ? status : models.status).font(.body); Spacer(); Button("Cancel") { task?.cancel(); models.cancelDownload() } }
                         if models.downloading != nil { ProgressView(value: models.progress).tint(Palette.blue) }
                     } else if !visit.transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                         Button { summarise(visit) } label: { Label(L10n.string(visit.summary == nil ? "Prepare summary" : "Refresh summary"), systemImage: "sparkles") }.buttonStyle(ActionButtonStyle(secondary: visit.summary != nil)).disabled(recorder.active).accessibilityIdentifier("summariseVisit")
@@ -240,11 +251,13 @@ struct VisitDetailView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) { Menu {
                     Button("Edit visit", systemImage: "square.and.pencil") { editing = true }.disabled(busy || recorder.active)
+                    if let visit, store.audioURL(for: visit) != nil { Button("Transcribe audio", systemImage: "waveform") { transcribe(visit) }.disabled(busy || recorder.active) }
                     Button("Share notes", systemImage: "square.and.arrow.up") { if let visit { store.shareVisit(visit) } }
                     Button("Delete visit", systemImage: "trash", role: .destructive) { deleting = true }.disabled(busy || recorder.active)
                 } label: { ToolbarGlyph(symbol: "ellipsis") }.accessibilityLabel("Visit options") }
             }
             .sheet(isPresented: $editing) { if let visit { NavigationStack { VisitTranscriptEditor(visit: visit) }.floatingDrawer(height: 520) } }
+            .sheet(item: $reminderDraft) { draft in NavigationStack { ReminderEditor(initial: draft) }.floatingDrawer(height: 590) }
             .sheet(isPresented: $reviewing) { NavigationStack { VisitMedicineReview(id: id) }.floatingDrawer(height: 520) }
             .sheet(item: $appointmentDraft) { draft in NavigationStack { AppointmentEditor(initial: draft) }.floatingDrawer(height: 620) }
             .confirmationDialog("Delete this visit and its recording?", isPresented: $deleting, titleVisibility: .visible) { Button("Delete visit", role: .destructive) { if let visit { store.deleteVisit(visit) }; dismiss() } }
@@ -258,12 +271,12 @@ struct VisitDetailView: View {
     private func quotes(_ values: [VisitQuote], title: String, symbol: String) -> some View {
         VStack(alignment: .leading, spacing: 18) {
             Label(L10n.string(title), systemImage: symbol).font(.title2.weight(.semibold)).foregroundStyle(Palette.coral)
-            ForEach(values) { item in Text(item.quote).font(.title3).lineSpacing(5).textSelection(.enabled); Divider() }
+            ForEach(values) { item in if let text = item.text { Text(text).font(.body).lineSpacing(4).textSelection(.enabled); Divider().overlay(Palette.line) } }
         }
     }
     private func summarise(_ visit: DoctorVisit) {
         busy = true; status = L10n.string("Preparing summary"); playback.stop()
-        let baseline = store.records.medicines
+        let baseline = store.records.medicines, summaryModel = models.visitModel
         task = Task { @MainActor in
             defer { busy = false }
             do {
@@ -271,9 +284,13 @@ struct VisitDetailView: View {
                 var combined = VisitSummary()
                 for (index, chunk) in chunks.enumerated() {
                     try Task.checkCancellation(); status = L10n.format("Preparing summary · %d of %d", index + 1, chunks.count)
-                    let output = try await models.generate(VisitReview.prompt(chunk, medicines: baseline), maxTokens: 650, responseGrammar: VisitSummaryOutputGrammar.make())
-                    try Task.checkCancellation()
-                    combined.merge(try VisitReview.parse(output, transcript: chunk, medicines: baseline))
+                    for (passIndex, pass) in VisitExtractionPass.allCases.enumerated() {
+                        try Task.checkCancellation()
+                        status = L10n.format("Preparing summary · %d of %d", index * VisitExtractionPass.allCases.count + passIndex + 1, chunks.count * VisitExtractionPass.allCases.count)
+                        let output = try await models.generate(VisitReview.focusedPrompt(pass, transcript: chunk, medicines: baseline), maxTokens: pass.tokenBudget, responseGrammar: VisitSummaryOutputGrammar.make(section: pass.rawValue), model: summaryModel)
+                        try Task.checkCancellation()
+                        combined.merge(try VisitReview.parsePass(output, pass: pass, transcript: chunk, medicines: baseline))
+                    }
                 }
                 store.saveVisitSummary(combined, id: id, transcript: visit.transcript, baseline: baseline)
             } catch is CancellationError { }
@@ -307,10 +324,12 @@ struct VisitTranscriptEditor: View {
         VStack(alignment: .leading, spacing: 20) {
             TextField("Visit title", text: $title).font(.title2.weight(.semibold)).accessibilityIdentifier("visitTitleInput")
             Divider()
+            if visit.audioFilename == nil {
             TextEditor(text: $transcript).font(.title3).scrollContentBackground(.hidden).accessibilityLabel("Notes or transcript").accessibilityIdentifier("visitTranscriptInput")
                 .overlay(alignment: .topLeading) {
                     if transcript.isEmpty { Text("Notes or transcript").font(.title3).foregroundStyle(Palette.muted).padding(.top, 8).padding(.leading, 5).allowsHitTesting(false).accessibilityHidden(true) }
                 }
+            }
         }.padding(24).background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle("Visit notes").navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
@@ -344,10 +363,7 @@ struct VisitMedicineReview: View {
                         HStack(alignment: .top, spacing: 16) {
                             VStack(alignment: .leading, spacing: 10) {
                                 Text(L10n.format("%@ %@", L10n.string(change.action.rawValue.capitalized), L10n.medicineName(change.medicine))).font(.title3.weight(.semibold))
-                                if !change.medicine.instructions.isEmpty { Text(change.medicine.instructions).font(.body) }
-                                if let frequency = change.frequency { Text(L10n.frequency(frequency)).font(.body.weight(.medium)) }
-                                if !change.times.isEmpty { Text(L10n.doseTimes(change.times)).font(.body).foregroundStyle(Palette.muted) }
-                                Text("“" + change.quote + "”").font(.body).foregroundStyle(Palette.muted)
+                                VisitMedicationDirections(instructions: change.medicine.instructions)
                             }.frame(maxWidth: .infinity, alignment: .leading)
                             SelectionIndicator(selected: selected.contains(change.id))
                         }.padding(.vertical, 10).contentShape(Rectangle())
@@ -367,5 +383,26 @@ struct VisitMedicineReview: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) { Button("Save") { if store.applyVisitChanges(id: id, selected: selected) { dismiss() } }.disabled(selected.isEmpty || !acknowledged || visit?.appliedChanges.isEmpty != true).accessibilityIdentifier("saveVisitMedicines") }
             }
+    }
+}
+
+struct VisitMedicationDirections: View {
+    var instructions: String
+    private var directions: VisitDirections { VisitDirections(instructions) }
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if directions.needsIndividualSchedule {
+                Text(instructions).font(.body).fixedSize(horizontal: false, vertical: true)
+            } else {
+                if let dose = directions.dose { Label(dose, systemImage: "pills").font(.body) }
+                if let frequency = directions.frequency { Label(frequency, systemImage: "repeat").font(.body) }
+                if let timing = directions.timing { Label(timing, systemImage: "clock").font(.body) }
+                if let duration = directions.duration { Label(duration, systemImage: "calendar").font(.body) }
+                if !instructions.isEmpty {
+                    if directions.dose == nil && directions.frequency == nil && directions.timing == nil && directions.duration == nil { Text(instructions).font(.body) }
+                    else { DisclosureGroup("Instructions") { Text(instructions).font(.body).padding(.top, 8) }.font(.subheadline).foregroundStyle(Palette.muted) }
+                }
+            }
+        }
     }
 }

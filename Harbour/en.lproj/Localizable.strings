@@ -642,3 +642,31 @@
 "Dots show recorded values. Lines connect consecutive readings; gaps do not imply measurements." = "Dots show recorded values. Lines connect consecutive readings; gaps do not imply measurements.";
 "Blue: systolic. Coral: diastolic." = "Blue: systolic. Coral: diastolic.";
 "No transcript saved." = "No transcript saved.";
+
+"Live Activities" = "Live Activities";
+
+"Chats" = "Chats";
+"No chats" = "No chats";
+
+"Recording was interrupted. Review the saved audio." = "Recording was interrupted. Review the saved audio.";
+"Follow-up appointment" = "Follow-up appointment";
+"Instructions" = "Instructions";
+"Unconfirmed medications" = "Unconfirmed medications";
+"No summary yet" = "No summary yet";
+"%d of %d cases" = "%d of %d cases";
+
+"Response unavailable" = "Response unavailable";
+
+"No details extracted." = "No details extracted.";
+
+"The model sampling settings are invalid." = "The model sampling settings are invalid.";
+
+"Female" = "Female";
+"Male" = "Male";
+"Downloading voice" = "Downloading voice";
+"Cancel download" = "Cancel download";
+"Preparing voice…" = "Preparing voice…";
+"Couldn’t prepare speech pronunciation." = "Couldn’t prepare speech pronunciation.";
+"Couldn’t pronounce this text." = "Couldn’t pronounce this text.";
+"The downloaded voice files are incomplete. Download them again." = "The downloaded voice files are incomplete. Download them again.";
+"Couldn’t generate voice audio." = "Couldn’t generate voice audio.";

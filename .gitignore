@@ -9,3 +9,10 @@ xcuserdata/
 *.xcresult
 Vendor/
 target/
+
+HarbourSpeech/.build/
+HarbourSpeech/Vendor/
+HarbourSpeech/Sources/HarbourSpeech/Resources/espeak-ng-data/
+
+# Runtime console noise is local; JSON reports and frozen prompts are retained.
+docs/evaluation/**/*.log

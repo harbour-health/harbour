@@ -73,7 +73,7 @@ struct VisitReportSnapshot: Encodable {
             case .visits:
                 result.items = visits.filter { included($0.date) }.sorted { $0.date < $1.date }.map {
                     Item(title: L10n.date($0.date) + " · " + $0.title,
-                         detail: $0.transcript.isEmpty ? L10n.string("No transcript saved.") : $0.transcript)
+                         detail: $0.summary.map { summary in (summary.highlights.compactMap(\.text) + summary.medicines.map { L10n.medicineName($0.medicine) + ": " + $0.medicine.instructions } + summary.followUps.map { $0.text ?? VisitFollowUp.title(for: $0.quote, french: L10n.isFrench) }).joined(separator: "\n") } ?? L10n.string("No summary yet"))
                 }
             case .questions:
                 result.items = care.questions.map { Item(title: $0.text, detail: "") }
@@ -95,25 +95,25 @@ struct VisitReportSnapshot: Encodable {
         let padding = max((high - low) * 0.15, kind == .temperature ? 0.5 : 5)
         let minimum = low - padding, maximum = high + padding
         let first = readings.first!.date.timeIntervalSince1970, last = readings.last!.date.timeIntervalSince1970
-        var svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"640\" height=\"205\" viewBox=\"0 0 640 205\"><rect width=\"640\" height=\"205\" fill=\"#f5f5f5\"/>"
+        var svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"640\" height=\"174\" viewBox=\"0 0 640 174\"><rect width=\"640\" height=\"174\" fill=\"#f5f5f5\"/>"
         for tick in 0...4 {
-            let y = 15 + Double(tick) * 36
+            let y = 10 + Double(tick) * 34
             let label = maximum - Double(tick) * (maximum - minimum) / 4
             let axisLabel = String(format: kind == .temperature ? "%.1f" : "%.0f", locale: L10n.locale, label)
-            svg += "<line x1=\"55\" y1=\"\(number(y))\" x2=\"625\" y2=\"\(number(y))\" stroke=\"#e5e5e5\"/><text x=\"47\" y=\"\(number(y + 4))\" text-anchor=\"end\" font-size=\"11\" font-family=\"Lato\">\(xml(axisLabel))</text>"
+            svg += "<line x1=\"34\" y1=\"\(number(y))\" x2=\"630\" y2=\"\(number(y))\" stroke=\"#e5e5e5\"/><text x=\"28\" y=\"\(number(y + 4))\" text-anchor=\"end\" font-size=\"11\" font-family=\"Lato\">\(xml(axisLabel))</text>"
         }
         for (index, points) in series.enumerated() {
             let color = index == 0 ? "#365dce" : "#b94831"
             let coordinates = points.enumerated().map { item -> (String, String) in
-                let x = first == last ? 340 : 55 + (readings[item.offset].date.timeIntervalSince1970 - first) / (last - first) * 570
-                let y = 159 - (item.element - minimum) / (maximum - minimum) * 144
+                let x = first == last ? 332 : 34 + (readings[item.offset].date.timeIntervalSince1970 - first) / (last - first) * 596
+                let y = 146 - (item.element - minimum) / (maximum - minimum) * 136
                 return (number(x), number(y))
             }
             svg += "<polyline points=\"\(coordinates.map { $0.0 + "," + $0.1 }.joined(separator: " "))\" fill=\"none\" stroke=\"\(color)\" stroke-width=\"2\"/>"
             for (x, y) in coordinates { svg += "<circle cx=\"\(x)\" cy=\"\(y)\" r=\"3\" fill=\"\(color)\"/>" }
         }
-        svg += "<text x=\"55\" y=\"185\" font-size=\"11\" font-family=\"Lato\">\(xml(L10n.date(readings.first!.date, time: true)))</text>"
-        if first != last { svg += "<text x=\"625\" y=\"185\" text-anchor=\"end\" font-size=\"11\" font-family=\"Lato\">\(xml(L10n.date(readings.last!.date, time: true)))</text>" }
+        svg += "<text x=\"34\" y=\"167\" font-size=\"11\" font-family=\"Lato\">\(xml(L10n.date(readings.first!.date, time: true)))</text>"
+        if first != last { svg += "<text x=\"630\" y=\"167\" text-anchor=\"end\" font-size=\"11\" font-family=\"Lato\">\(xml(L10n.date(readings.last!.date, time: true)))</text>" }
         return svg + "</svg>"
     }
 }

@@ -642,3 +642,31 @@
 "Dots show recorded values. Lines connect consecutive readings; gaps do not imply measurements." = "Les points représentent les valeurs enregistrées. Les lignes relient les mesures consécutives; les intervalles ne représentent pas des mesures.";
 "Blue: systolic. Coral: diastolic." = "Bleu : systolique. Corail : diastolique.";
 "No transcript saved." = "Aucune transcription enregistrée.";
+
+"Live Activities" = "Activités en direct";
+
+"Chats" = "Conversations";
+"No chats" = "Aucune conversation";
+
+"Recording was interrupted. Review the saved audio." = "L’enregistrement a été interrompu. Vérifiez l’audio sauvegardé.";
+"Follow-up appointment" = "Rendez-vous de suivi";
+"Instructions" = "Instructions";
+"Unconfirmed medications" = "Médicaments non confirmés";
+"No summary yet" = "Aucun résumé pour le moment";
+"%d of %d cases" = "%d cas sur %d";
+
+"Response unavailable" = "Réponse indisponible";
+
+"No details extracted." = "Aucun renseignement extrait.";
+
+"The model sampling settings are invalid." = "Les paramètres d’échantillonnage du modèle sont invalides.";
+
+"Female" = "Féminine";
+"Male" = "Masculine";
+"Downloading voice" = "Téléchargement de la voix";
+"Cancel download" = "Annuler le téléchargement";
+"Preparing voice…" = "Préparation de la voix…";
+"Couldn’t prepare speech pronunciation." = "Impossible de préparer la prononciation.";
+"Couldn’t pronounce this text." = "Impossible de prononcer ce texte.";
+"The downloaded voice files are incomplete. Download them again." = "Les fichiers de voix téléchargés sont incomplets. Téléchargez-les de nouveau.";
+"Couldn’t generate voice audio." = "Impossible de générer la voix.";

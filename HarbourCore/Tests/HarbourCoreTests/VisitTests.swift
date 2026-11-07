@@ -79,7 +79,7 @@ final class VisitTests: XCTestCase {
             XCTAssertTrue(try VisitReview.parse(modified, transcript: source, medicines: []).medicines.isEmpty)
         }
         let invented = output.replacingOccurrences(of: "Book blood work in two weeks.", with: "Your results are normal.")
-        XCTAssertEqual(try VisitReview.parse(invented, transcript: source, medicines: []).followUps.map(\.quote), ["Book blood work in two weeks."])
+        XCTAssertEqual(try VisitReview.parse(invented, transcript: source, medicines: []).followUps.map(\.quote), [])
     }
     func testSpeculationNegationAndQuestionsAreRejected() throws {
         for quote in ["Do not start metformin 500 mg twice daily.", "Could we start metformin 500 mg twice daily?", "Consider metformin 500 mg twice daily.", "If needed, start metformin 500 mg twice daily."] {
@@ -105,9 +105,9 @@ final class VisitTests: XCTestCase {
         visit.transcript = "Do not change medications."
         XCTAssertThrowsError(try VisitReview.applying([visit.summary!.medicines[0].id], from: visit, to: []))
     }
-    func testModelOmittedFollowUpIsPreservedFromSource() throws {
+    func testModelOmittedFollowUpRemainsOmitted() throws {
         let missing = output.replacingOccurrences(of: "\"followUps\":[{\"quote\":\"Book blood work in two weeks.\"}]", with: "\"followUps\":[]")
-        XCTAssertEqual(try VisitReview.parse(missing, transcript: source, medicines: []).followUps.map(\.quote), ["Book blood work in two weeks."])
+        XCTAssertEqual(try VisitReview.parse(missing, transcript: source, medicines: []).followUps.map(\.quote), [])
     }
     func testTruncatedNegationCannotBypassValidation() throws {
         let text = "Do not Start metformin 500 mg twice daily."

@@ -8,6 +8,9 @@ struct RecordsView: View {
     @Binding var category: Int?
     var body: some View {
         List {
+            Text("Records").font(.largeTitle.bold()).accessibilityAddTraits(.isHeader)
+                .listRowInsets(EdgeInsets(top: 8, leading: AppLayout.screenInset, bottom: 14, trailing: AppLayout.screenInset))
+                .listRowSeparator(.hidden).listRowBackground(Color.clear)
             categoryRow("Symptoms", count: store.records.symptoms.count, symbol: "cross.case.fill", colour: Palette.coral, index: 0)
             categoryRow("Medications", count: store.records.medicines.count, symbol: "pills.fill", colour: Palette.blue, index: 1)
             categoryRow("Readings", count: store.records.readings.count, symbol: "waveform.path.ecg", colour: Palette.coral, index: 2)
@@ -15,7 +18,7 @@ struct RecordsView: View {
         }
         .contentMargins(.bottom, dockClearance, for: .scrollContent)
         .listStyle(.plain).scrollContentBackground(.hidden).background(Palette.canvas)
-        .navigationTitle("Records")
+        .navigationTitle("").navigationBarTitleDisplayMode(.inline)
         .toolbar { if category == nil { ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) } } }
         .navigationDestination(item: $category) { selected in
             RecordList(sheet: $sheet, category: selected)
@@ -78,7 +81,7 @@ private struct RecordList: View {
                 if !store.records.medicines.isEmpty { Section { Button { sheet = .interactions(store.records.medicines) } label: { Label("Check interactions", systemImage: "arrow.triangle.branch") } } }
             } else if category == 3 {
                 Section {
-                    if store.records.appointments.isEmpty { Text("No appointments").foregroundStyle(Palette.muted).padding(.vertical, 24) }
+                    if store.records.appointments.isEmpty { RecordEmptyState(kind: .appointments, title: "No appointments") }
                     ForEach(store.records.appointments.sorted { $0.date < $1.date }) { appointment in
                         Button { sheet = .appointment(appointment) } label: { AppointmentRow(appointment: appointment) }.buttonStyle(.plain)
                     }.onDelete { indexes in
@@ -141,7 +144,7 @@ struct SymptomEditor: View {
             ToolbarItem(placement: .confirmationAction) {
                 Button(L10n.string(reviewed ? "Save" : "Review")) {
                     editing = false
-                    if reviewed { store.add(symptom); store.append(ChatMessage(text: L10n.string("Symptom saved.") + " " + L10n.string(HealthRules.guidance(symptom)))); dismiss() }
+                    if reviewed { store.add(symptom); dismiss() }
                     else { withAnimation { reviewed = true } }
                 }.disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || (signs.isEmpty && !none)).accessibilityIdentifier("saveSymptom")
             }

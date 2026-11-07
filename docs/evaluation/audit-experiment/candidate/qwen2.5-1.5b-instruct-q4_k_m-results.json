@@ -1,0 +1,354 @@
+{
+  "memoryBytes" : 17179869184,
+  "model" : "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+  "operatingSystem" : "Version 27.0 (Build 26A428)",
+  "processors" : 10,
+  "protocolDescription" : "Focused model-only extraction: medicines, followUps\/appointments, highlights, per source chunk. Local Metal,4096 context,1536\/1024\/768 token limits. No source recovery; validators only reject candidates. Raw facts and accepted facts are separate. Exact-field scoring is not clinical validation. Development results are not held-out results. Dataset role and description: Bounded model-audit experiment. Four exposed failures are DEVELOPMENT. Eight newly authored variations are a small transfer\/control set created after the audit prompt was written, not an independently expert-reviewed or broad clinical holdout. No source recovery; original grades retained. Audit=true Temperature=0.0,seed=42,topP=0.95,topK=40",
+  "runs" : [
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "audited",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+        "medicine|start|prednisone|40 mg each morning for two days then 20 mg each morning for two days then 10 mg each morning for two days then stop"
+      ],
+      "name" : "exposed-three-phase-taper-review",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Begin prednisone 40 mg each morning for two days.\",\"name\":\"prednisone\",\"action\":\"start\",\"instructions\":\"40 mg each morning for two days\"},{\"quote\":\"Begin prednisone 20 mg each morning for two days.\",\"name\":\"prednisone\",\"action\":\"start\",\"instructions\":\"20 mg each morning for two days\"},{\"quote\":\"Begin prednisone 10 mg each morning for two days.\",\"name\":\"prednisone\",\"action\":\"start\",\"instructions\":\"10 mg each morning for two days\"},{\"quote\":\"Stop prednisone.\",\"name\":\"prednisone\",\"action\":\"stop\",\"instructions\":\"\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Begin prednisone 40 mg each morning for two days then 20 mg each morning for two days then 10 mg each morning for two days then stop.\",\"text\":\"Start prednisone at 40 mg daily for two days, then 20 mg daily for two days, then 10 mg daily for two days, then stop.\"}]}",
+        "{\n  \"highlights\": [\n    \t\t]\n  , \"medicines\": [\n   \t\t\t]\n  , \"followUps\": [\n   \t\t]\n  , \"appointments\": [\n   \t\t]\n}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+
+      ],
+      "seconds" : 11.36807096004486,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "audited",
+      "expectedCompletedFacts" : [
+        "medicine|start|apixaban|2.5 mg twice daily",
+        "medicine|stop|aspirin|"
+      ],
+      "expectedFacts" : [
+        "medicine|start|apixaban|2.5 mg twice daily",
+        "medicine|stop|aspirin|"
+      ],
+      "name" : "exposed-same-sentence-switch",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Discontinue aspirin and begin apixaban 2.5 mg twice daily.\",\"name\":\"apixaban\",\"action\":\"start\",\"instructions\":\"2.5 mg twice daily\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Discontinue aspirin and begin apixaban 2.5 mg twice daily.\",\"text\":\"Stop aspirin, start apixaban 2.5 mg twice daily.\"}]}",
+        "{\n  \"highlights\": [\n    \t\t]\n  ,\n  \"medicines\": [\n    \t\t]\n  ,\n  \"followUps\": [\n    \t\t]\n  ,\n  \"appointments\": [\n    \t\t]\n}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+
+      ],
+      "seconds" : 4.711556911468506,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "audited",
+      "expectedCompletedFacts" : [
+        "followUp|call the clinic if the swelling gets worse",
+        "followUp|repeat the kidney blood test in ten days"
+      ],
+      "expectedFacts" : [
+        "followUp|call the clinic if the swelling gets worse",
+        "followUp|repeat the kidney blood test in ten days"
+      ],
+      "name" : "exposed-specific-tests-and-conditional-call",
+      "output" : [
+        "{\"medicines\":[]}",
+        "{\"followUps\":[{\"quote\":\"Repeat the kidney blood test in ten days.\",\"text\":\"Repeat the kidney blood test in ten days.\"}],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Repeat the kidney blood test in ten days. Call the clinic if the swelling gets worse.\",\"text\":\"Repeat kidney blood test in ten days, call clinic if swelling worsens.\"}]}",
+        "{\n  \"highlights\": [\n    \t\t]\n  ,\n  \"medicines\": [\n    \t\t]\n  ,\n  \"followUps\": [\n    \t\t]\n  ,\n  \"appointments\": [\n    \t\t]\n}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+
+      ],
+      "seconds" : 3.780969977378845,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "audited",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+        "medicine|start|insulin glargine|8 units each night. after three days, increase to 10 units each night if fasting glucose remains above 9 mmol\/l"
+      ],
+      "name" : "exposed-cross-sentence-insulin-plan",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Start insulin glargine 8 units each night.\",\"name\":\"insulin glargine\",\"action\":\"start\",\"instructions\":\"8 units each night\"},{\"quote\":\"After three days, increase to 10 units each night if fasting glucose remains above 9 mmol\/L.\",\"name\":\"insulin glargine\",\"action\":\"update\",\"instructions\":\"10 units each night if fasting glucose remains above 9 mmol\/L\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Start insulin glargine 8 units each night. After three days, increase to 10 units each night if fasting glucose remains above 9 mmol\/L.\",\"text\":\"Start insulin glargine 8 units each night. After three days, increase to 10 units each night if fasting glucose remains above 9 mmol\/L.\"}]}",
+        "{\n  \"highlights\": [\n    \t\t]\n  ,\n  \"medicines\": [\n    \t\t]\n  ,\n  \"followUps\": [\n    \t\t]\n  ,\n  \"appointments\": [\n    \t\t]\n}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+
+      ],
+      "seconds" : 5.914818048477173,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "audited",
+      "expectedCompletedFacts" : [
+        "medicine|start|apixaban|5 mg twice daily",
+        "medicine|stop|warfarin|"
+      ],
+      "expectedFacts" : [
+        "medicine|start|apixaban|5 mg twice daily",
+        "medicine|stop|warfarin|"
+      ],
+      "name" : "fresh-switch",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Stop warfarin and start apixaban 5 mg twice daily.\",\"name\":\"apixaban\",\"action\":\"start\",\"instructions\":\"5 mg twice daily\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Stop warfarin and start apixaban 5 mg twice daily.\",\"text\":\"Stop warfarin and start apixaban 5 mg twice daily.\"}]}",
+        "{\n  \"highlights\": [\n    \t\t]\n  ,\n  \"medicines\": [\n    \t\t]\n  ,\n  \"followUps\": [\n    \t\t]\n  ,\n  \"appointments\": [\n    \t\t]\n}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+
+      ],
+      "seconds" : 3.904235005378723,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "audited",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+        "medicine|start|prednisone|30 mg chaque matin pendant trois jours puis 15 mg chaque matin pendant deux jours puis cessez"
+      ],
+      "name" : "fresh-french-taper",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Commencez la prednisone 30 mg chaque matin pendant trois jours puis 15 mg chaque matin pendant deux jours puis cessez.\",\"name\":\"prednisone\",\"action\":\"start\",\"instructions\":\"30 mg each morning for three days, then 15 mg each morning for two days, then stop\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Commencez la prednisone 30 mg chaque matin pendant trois jours puis 15 mg chaque matin pendant deux jours puis cessez.\",\"text\":\"Start prednisone 30 mg daily for three days, then 15 mg daily for two days, then stop.\"}]}",
+        "{\n  \"highlights\": [\n    \t\t]\n  ,\n  \"medicines\": [\n    \t\t]\n  ,\n  \"followUps\": [\n    \t\t]\n  ,\n  \"appointments\": [\n    \t\t]\n}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+
+      ],
+      "seconds" : 5.3420960903167725,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "audited",
+      "expectedCompletedFacts" : [
+        "followUp|appelez la clinique si les étourdissements reviennent",
+        "followUp|répétez la prise de sang dans cinq jours"
+      ],
+      "expectedFacts" : [
+        "followUp|appelez la clinique si les étourdissements reviennent",
+        "followUp|répétez la prise de sang dans cinq jours"
+      ],
+      "name" : "fresh-french-call",
+      "output" : [
+        "{\"medicines\":[]}",
+        "{\"followUps\":[{\"quote\":\"Répétez la prise de sang dans cinq jours.\",\"text\":\"Répétez la prise de sang dans cinq jours.\"}],\"appointments\":[{\"quote\":\"Appelez la clinique si les étourdissements reviennent.\",\"text\":\"Appelez la clinique si les étourdissements reviennent.\"}]}",
+        "{\"highlights\":[{\"quote\":\"Répétez la prise de sang dans cinq jours. Appelez la clinique si les étourdissements reviennent.\",\"text\":\"Repeat blood test in five days. Contact clinic if dizziness returns.\"}]}",
+        "{\n  \"highlights\": [\n    \t\t]\n  ,\n  \"medicines\": [\n    \t\t]\n  ,\n  \"followUps\": [\n    \t\t]\n  ,\n  \"appointments\": [\n    \t\t]\n}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+
+      ],
+      "seconds" : 5.116858005523682,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "audited",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+        "medicine|start|insulin glargine|6 units at bedtime. in four days, increase to 8 units at bedtime only if the fasting reading remains above 10 mmol\/l"
+      ],
+      "name" : "fresh-linked-insulin",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Begin insulin glargine 6 units at bedtime.\",\"name\":\"insulin glargine\",\"action\":\"start\",\"instructions\":\"6 units at bedtime\"},{\"quote\":\"In four days, increase to 8 units at bedtime only if the fasting reading remains above 10 mmol\/L.\",\"name\":\"insulin glargine\",\"action\":\"update\",\"instructions\":\"8 units at bedtime only if the fasting reading remains above 10 mmol\/L\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Begin insulin glargine 6 units at bedtime. In four days, increase to 8 units at bedtime only if the fasting reading remains above 10 mmol\/L.\",\"text\":\"Start insulin glargine at 6 units at bedtime. Increase to 8 units at bedtime if fasting reading is above 10 mmol\/L after four days.\"}]}",
+        "{\n  \"highlights\": [\n    \t\t]\n  ,\n  \"medicines\": [\n    \t\t]\n  ,\n  \"followUps\": [\n    \t\t]\n  ,\n  \"appointments\": [\n    \t\t]\n}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+
+      ],
+      "seconds" : 6.036475896835327,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "audited",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+
+      ],
+      "name" : "fresh-negated-switch",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Do not stop aspirin or start apixaban today.\",\"name\":\"aspirin\",\"action\":\"stop\",\"instructions\":\"\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Do not stop aspirin or start apixaban today.\",\"text\":\"Do not stop aspirin or start apixaban today.\"}]}",
+        "{\n  \"highlights\": [\n    ]\n  ,\n  \"medicines\": [\n    ]\n  ,\n  \"followUps\": [\n    ]\n  ,\n  \"appointments\": [\n    ]\n}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+
+      ],
+      "seconds" : 3.449066996574402,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "audited",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+
+      ],
+      "name" : "fresh-hypothetical-insulin",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Could we start insulin glargine 6 units at bedtime if the readings stay high.\",\"name\":\"insulin glargine\",\"action\":\"start\",\"instructions\":\"6 units at bedtime if the readings stay high\"}]}",
+        "{\"followUps\":[{\"quote\":\"Could we start insulin glargine 6 units at bedtime if the readings stay high.\",\"text\":\"Could we start insulin glargine 6 units at bedtime if the readings stay high?\"}],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Could we start insulin glargine 6 units at bedtime if the readings stay high?\",\"text\":\"Could we start insulin glargine 6 units at bedtime if blood sugar levels remain high?\"}]}",
+        "{\n  \"highlights\": [\n    \t\t]\n  ,\n  \"medicines\": [\n    \t\t]\n  ,\n  \"followUps\": [\n    \t\t]\n  ,\n  \"appointments\": [\n    \t\t]\n}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+
+      ],
+      "seconds" : 5.184242010116577,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "audited",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+
+      ],
+      "name" : "fresh-french-no-call",
+      "output" : [
+        "{\"medicines\":[]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"N’appelez pas la clinique et ne répétez pas la prise de sang cette semaine.\",\"text\":\"Do not call the clinic and do not repeat the blood test this week.\"}]}",
+        "{\n  \"highlights\": [\n    \t\t\t]\n  ,\n  \"medicines\": [\n    \t\t\t]\n  ,\n  \"followUps\": [\n    \t\t\t]\n  ,\n  \"appointments\": [\n    \t\t\t]\n}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+
+      ],
+      "seconds" : 3.4448100328445435,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "audited",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+
+      ],
+      "name" : "fresh-reported-taper",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"My brother started prednisone 30 mg for three days then 15 mg for two days.\",\"name\":\"prednisone\",\"action\":\"start\",\"instructions\":\"30 mg for three days then 15 mg for two days\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"My brother started prednisone 30 mg for three days then 15 mg for two days.\",\"text\":\"My brother started prednisone 30 mg for three days, then 15 mg for two days.\"}]}",
+        "{\n  \"highlights\": [\n    \t\t]\n  , \"medicines\": [\n   \t\t\t]\n  , \"followUps\": [\n   \t\t]\n  , \"appointments\": [\n   \t\t]\n}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+
+      ],
+      "seconds" : 4.869664907455444,
+      "validatedFacts" : [
+
+      ]
+    }
+  ],
+  "started" : "2026-11-07T04:22:27Z"
+}

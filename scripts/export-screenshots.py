@@ -47,7 +47,7 @@ TITLES = {
     '66-floating-navigation': 'Floating navigation · scrolled',
     '67-visits': 'Visits', '68-visit-recorder': 'Visit recorder',
     '69-visit-notes': 'Visit notes', '70-visit-summary': 'Local visit summary',
-    '71-visit-medicine-review': 'Visit medicine confirmation', '72-visit-transcript': 'Visit transcript',
+    '71-visit-medicine-review': 'Visit medicine confirmation', '72-visit-summary-saved': 'Saved visit summary',
     '142-visit-medicine-review-dark': 'Visit medicine confirmation · Dark',
     '73-visit-recording': 'Recording · audio-only simulator', '74-visit-paused': 'Paused · audio-only simulator',
     '75-visit-audio': 'Playback · audio-only simulator', '76-visits-dark': 'Visits · Dark',
@@ -93,6 +93,14 @@ TITLES = {
     '148-report-preview': 'Doctor visit report · PDF preview',
     '149-report-sharing': 'Doctor visit report · Sharing',
     '150-french-report-preview': 'Rapport · Aperçu PDF',
+    '151-appointments-refresh': 'Appointments',
+    '152-trends-readings': 'Reading trends', '153-trends-symptoms': 'Symptom trends',
+    '154-one-tap-recording': 'Recording a visit', '155-recording-system-activity': 'Recording · Dynamic Island',
+    '156-recording-paused': 'Recording · Paused', '157-evaluation-progress': 'Evaluation · Progress',
+    '158-model-only-visit-summary': 'Model-generated visit summary',
+    '159-model-only-medication-review': 'Extracted medication · Confirmation',
+    '160-chat-compact-navigation': 'Chat · Compact navigation',
+
 
 }
 
@@ -180,15 +188,15 @@ except ImportError:
     print('Pillow not installed; full-resolution gallery exported without overview sheets.')
 if args.update_readme:
     groups = {
-        'Today': {1, 31, 43, 66, 116},
-        'Chat': {10, 11, 12, 13, 28, 32, 36, 42, 44, 45, 46, 47, 53, 58, 89, 146},
-        'Records': {2, 3, 4, 22, 33, 34, 35, 64, 65},
+        'Today': {1, 31, 43, 66, 116, 152, 153},
+        'Chat': {10, 11, 12, 13, 28, 32, 36, 42, 44, 45, 46, 47, 53, 58, 89, 146, 160},
+        'Records': {2, 3, 4, 22, 33, 34, 35, 64, 65, 151},
         'Entry and review': {5, 6, 7, 8, 9, 20, 21, 23, 24, 25, 48, 49, 50, 51, 52, 79, 81, 82, 84, 85, 90},
-        'Doctor visits': set(range(67, 79)) | {83, 87, 88, 142, 147, 148, 149},
+        'Doctor visits': set(range(67, 79)) | {83, 87, 88, 142, 147, 148, 149, 154, 155, 156, 158, 159},
         'Settings, models, and notes': {14, 15, 16, 18, 19, 27, 37, 38, 39, 40, 41, 60},
         'App lock': {54, 55, 56, 57, 59, 61, 62, 80},
         'Health permissions': {26, 30, 63},
-        'Evaluation': {17, 29, 86},
+        'Evaluation': {17, 29, 86, 157},
         'Reminders, schedules, and preparation': set(range(91, 104)),
         'Voice and care tools in chat': set(range(104, 116)) | {143, 144},
         'Canadian French': set(range(117, 142)) | {145, 150},

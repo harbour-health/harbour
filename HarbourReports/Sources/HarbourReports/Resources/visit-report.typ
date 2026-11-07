@@ -38,7 +38,7 @@
   for chart in section.charts {
     block(breakable: false, below: 12pt)[
       #heading(level: 2, chart.title)
-      #block(fill: rgb("f5f5f5"), inset: 10pt, radius: 12pt, width: 100%)[#image(bytes(chart.svg), format: "svg", width: 100%)]
+      #block(fill: rgb("f5f5f5"), inset: 6pt, radius: 12pt, width: 100%)[#image(bytes(chart.svg), format: "svg", width: 100%)]
       #v(5pt)
       #text(size: 9pt, fill: muted, chart.caption)
     ]

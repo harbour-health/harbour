@@ -25,6 +25,12 @@ public struct VisitSummaryEvaluationCase: Sendable {
         self.expectedInstructions = expectedInstructions; self.expectedFrequency = expectedFrequency; self.expectedTimes = expectedTimes
         self.expectedAppointments = expectedAppointments
     }
+    public func matches(_ summary: VisitSummary) -> Bool {
+        guard summary.medicines.count == (expectedMedicineID == nil ? 0 : 1), Set((summary.appointments ?? []).map(\.quote)) == Set(expectedAppointments) else { return false }
+        guard let id = expectedMedicineID else { return true }
+        guard let change = summary.medicines.first else { return false }
+        return change.medicine.id == id && change.medicine.instructions == expectedInstructions && change.frequency == expectedFrequency && change.times == expectedTimes
+    }
     public func matches(_ output: String) -> Bool {
         guard let summary = try? VisitReview.parse(output, transcript: transcript, medicines: Evaluation.records.medicines),
               summary.medicines.count == (expectedMedicineID == nil ? 0 : 1),

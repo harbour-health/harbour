@@ -4,14 +4,12 @@ import Speech
 import AVFoundation
 import HarbourCore
 import UIKit
+import HarbourSpeech
 
 /// Speech stays in the app's language; an unavailable local voice never changes languages.
 enum SpeechLanguage {
     static var identifier: String { L10n.isFrench ? "fr-CA" : "en-CA" }
     static var locale: Locale { Locale(identifier: identifier) }
-    static var voice: AVSpeechSynthesisVoice? {
-        SpeechPreferences.selectedVoice
-    }
 }
 
 @MainActor final class HealthService: ObservableObject {
@@ -58,7 +56,7 @@ enum SpeechLanguage {
     }
 }
 
-@MainActor final class VoiceService: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
+@MainActor final class VoiceService: NSObject, ObservableObject {
     @Published private(set) var listening = false
     @Published private(set) var speaking = false
     @Published private(set) var finishing = false
@@ -70,17 +68,21 @@ enum SpeechLanguage {
     private var hasTap = false
     private var turn = VoiceTurn()
     private var generation = UUID()
-    private var speaker = AVSpeechSynthesizer()
+    @Published private(set) var preparingSpeech = false
+    private var playback = AVAudioEngine()
+    private var player = AVAudioPlayerNode()
+    private var speechTask: Task<Void, Never>?
+    private var queuedBuffers = 0
+    private var allSpeechScheduled = false
     private var audioSessionOwned = false
     private var silence: Task<Void, Never>?
     private var finalTimeout: Task<Void, Never>?
     private var received: ((String) -> Void)?
     private var completed: ((String) -> Void)?
     private var spoken: (() -> Void)?
-    private var activeUtterance: ObjectIdentifier?
     private var observers: [NSObjectProtocol] = []
     override init() {
-        super.init(); speaker.delegate = self
+        super.init()
         let center = NotificationCenter.default
         observers.append(center.addObserver(forName: AVAudioSession.interruptionNotification, object: nil, queue: .main) { [weak self] notification in
             guard let raw = notification.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt,
@@ -97,7 +99,7 @@ enum SpeechLanguage {
                 guard let self else { return }
                 self.interrupt(L10n.string("Audio restarted. Start voice again when you’re ready."))
                 self.engine = AVAudioEngine()
-                self.speaker = AVSpeechSynthesizer(); self.speaker.delegate = self
+                self.playback = AVAudioEngine(); self.player = AVAudioPlayerNode()
             }
         })
         observers.append(center.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { [weak self] _ in
@@ -165,7 +167,7 @@ enum SpeechLanguage {
     private func stopMicrophone() { engine.stop(); if hasTap { engine.inputNode.removeTap(onBus: 0); hasTap = false } }
     func stop() {
         generation = UUID(); turn.cancel(); silence?.cancel(); finalTimeout?.cancel()
-        activeUtterance = nil; spoken = nil; speaker.stopSpeaking(at: .immediate); speaking = false
+        speechTask?.cancel(); speechTask = nil; spoken = nil; player.stop(); playback.stop(); playback.reset(); queuedBuffers = 0; allSpeechScheduled = false; preparingSpeech = false; speaking = false
         stopMicrophone(); request?.endAudio(); recognition?.cancel(); recognition = nil; request = nil
         listening = false; finishing = false; received = nil; completed = nil
         if audioSessionOwned { try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation); audioSessionOwned = false }
@@ -174,29 +176,48 @@ enum SpeechLanguage {
         stop(); error = nil
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { finished?(); return }
         guard UIApplication.shared.applicationState == .active else { return }
-        guard let voice = SpeechLanguage.voice else { error = L10n.string("A voice isn’t available in the app’s language on this phone."); return }
-        spoken = finished
-        do {
-            let session = AVAudioSession.sharedInstance(); try session.setCategory(.playback, mode: .spokenAudio); try session.setActive(true); audioSessionOwned = true
-            let utterance = AVSpeechUtterance(string: text); utterance.voice = voice
-            utterance.rate = AVSpeechUtteranceDefaultSpeechRate * Float(SpeechPreferences.speed)
-            activeUtterance = ObjectIdentifier(utterance); speaking = true; speaker.speak(utterance)
-        } catch { stop(); self.error = L10n.format("Couldn’t play the response. %@", error.localizedDescription) }
-    }
-    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
-        let identifier = ObjectIdentifier(utterance)
-        Task { @MainActor in
-            guard self.activeUtterance == identifier else { return }
-            let callback = self.spoken; self.activeUtterance = nil; self.spoken = nil; self.speaking = false
-            if self.audioSessionOwned { try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation); self.audioSessionOwned = false }
-            callback?()
+        let current = UUID(); generation = current
+        let voice = SpeechPreferences.voice, speed = Float(SpeechPreferences.speed)
+        let language: KokoroLanguage = L10n.isFrench ? .french : .english
+        spoken = finished; speaking = true; preparingSpeech = true
+        speechTask = Task { @MainActor in
+            do {
+                let model = try await KokoroAssets.shared.ensure()
+                try Task.checkCancellation()
+                guard generation == current else { return }
+                let format = AVAudioFormat(standardFormatWithSampleRate: KokoroSpeechEngine.sampleRate, channels: 1)!
+                if player.engine == nil { playback.attach(player); playback.connect(player, to: playback.mainMixerNode, format: format) }
+                let session = AVAudioSession.sharedInstance()
+                try session.setCategory(.playback, mode: .spokenAudio); try session.setActive(true); audioSessionOwned = true
+                try playback.start()
+                for chunk in KokoroText.chunks(text) {
+                    try Task.checkCancellation()
+                    let samples = try await KokoroSpeechEngine.shared.synthesize(chunk, language: language, model: model, voiceFile: KokoroAssets.shared.voiceFile(voice), speed: speed)
+                    try Task.checkCancellation()
+                    guard generation == current else { return }
+                    guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(samples.count)), let channel = buffer.floatChannelData?[0] else { throw KokoroError.output }
+                    buffer.frameLength = buffer.frameCapacity
+                    samples.withUnsafeBufferPointer { channel.update(from: $0.baseAddress!, count: $0.count) }
+                    queuedBuffers += 1
+                    player.scheduleBuffer(buffer, completionCallbackType: .dataPlayedBack) { [weak self] _ in
+                        Task { @MainActor in
+                            guard let self, self.generation == current else { return }
+                            self.queuedBuffers -= 1
+                            self.finishSpeechIfNeeded(current)
+                        }
+                    }
+                    preparingSpeech = false
+                    if !player.isPlaying { player.play() }
+                    // Bound queued audio as well as individual model requests.
+                    while queuedBuffers >= 2 { try await Task.sleep(for: .milliseconds(80)); try Task.checkCancellation() }
+                }
+                allSpeechScheduled = true; finishSpeechIfNeeded(current)
+            } catch is CancellationError { }
+            catch { if generation == current { stop(); self.error = L10n.format("Couldn’t play the response. %@", L10n.string(error.localizedDescription)) } }
         }
     }
-    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
-        let identifier = ObjectIdentifier(utterance)
-        Task { @MainActor in
-            guard self.activeUtterance == identifier else { return }
-            self.stop(); self.error = L10n.string("Voice playback stopped. Start voice again when you’re ready.")
-        }
+    private func finishSpeechIfNeeded(_ current: UUID) {
+        guard generation == current, allSpeechScheduled, queuedBuffers == 0 else { return }
+        let callback = spoken; stop(); callback?()
     }
 }

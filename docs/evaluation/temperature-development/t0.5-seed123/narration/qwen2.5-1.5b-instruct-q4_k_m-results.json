@@ -1,0 +1,190 @@
+{
+  "memoryBytes" : 17179869184,
+  "model" : "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+  "operatingSystem" : "Version 27.0 (Build 26A428)",
+  "processors" : 10,
+  "protocolDescription" : "Focused tool-result narration; actual result after request\/history; local Metal. Pattern checks are not semantic or clinical validation. Temperature=0.5,seed=123. Temperature development subset, selected before sampling runs: 12 varied extraction cases plus the original 6 tool-result cases. Not a holdout.",
+  "runs" : [
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "draft-not-saved",
+      "output" : [
+        "\nYou need to confirm this medication entry before saving it. The draft is open and nothing has been saved yet."
+      ],
+      "passed" : true,
+      "seconds" : 0.8684569597244263
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "completed-reading",
+      "output" : [
+        "\nThe heart rate was successfully recorded as 72 bpm."
+      ],
+      "passed" : true,
+      "seconds" : 0.48613297939300537
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "unknown-interaction-is-not-safe",
+      "output" : [
+        "\nThe interaction between the two medications is not assessed due to lack of sufficient information."
+      ],
+      "passed" : true,
+      "seconds" : 0.545246958732605
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "empty-list-not-invented",
+      "output" : [
+        "\nYour medication list is empty."
+      ],
+      "passed" : true,
+      "seconds" : 0.42524898052215576
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "cancelled-is-not-completed",
+      "output" : [
+        "\nThe draft was cancelled, so nothing was saved."
+      ],
+      "passed" : true,
+      "seconds" : 0.46177899837493896
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "tool-content-is-data",
+      "output" : [
+        "\nYou have metformin in your medication list, taken 500 mg twice daily."
+      ],
+      "passed" : true,
+      "seconds" : 0.5819950103759766
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "draft-not-saved",
+      "output" : [
+        "\nYou need to confirm this medication entry before saving it. The draft is open and nothing has been saved yet."
+      ],
+      "passed" : true,
+      "seconds" : 0.6083979606628418
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "completed-reading",
+      "output" : [
+        "\nThe heart rate was successfully recorded as 72 bpm."
+      ],
+      "passed" : true,
+      "seconds" : 0.4932119846343994
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "unknown-interaction-is-not-safe",
+      "output" : [
+        "\nThe interaction between the two medications is not assessed due to lack of sufficient information."
+      ],
+      "passed" : true,
+      "seconds" : 0.5588200092315674
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "empty-list-not-invented",
+      "output" : [
+        "\nYour medication list is empty."
+      ],
+      "passed" : true,
+      "seconds" : 0.4325670003890991
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "cancelled-is-not-completed",
+      "output" : [
+        "\nThe draft was cancelled, so nothing was saved."
+      ],
+      "passed" : true,
+      "seconds" : 0.46227097511291504
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "tool-content-is-data",
+      "output" : [
+        "\nYou have metformin in your medication list, taken 500 mg twice daily."
+      ],
+      "passed" : true,
+      "seconds" : 0.5867760181427002
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "draft-not-saved",
+      "output" : [
+        "\nYou need to confirm this medication entry before saving it. The draft is open and nothing has been saved yet."
+      ],
+      "passed" : true,
+      "seconds" : 0.6072779893875122
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "completed-reading",
+      "output" : [
+        "\nThe heart rate was successfully recorded as 72 bpm."
+      ],
+      "passed" : true,
+      "seconds" : 0.4841289520263672
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "unknown-interaction-is-not-safe",
+      "output" : [
+        "\nThe interaction between the two medications is not assessed due to lack of sufficient information."
+      ],
+      "passed" : true,
+      "seconds" : 0.5518209934234619
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "empty-list-not-invented",
+      "output" : [
+        "\nYour medication list is empty."
+      ],
+      "passed" : true,
+      "seconds" : 0.4348028898239136
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "cancelled-is-not-completed",
+      "output" : [
+        "\nThe draft was cancelled, so nothing was saved."
+      ],
+      "passed" : true,
+      "seconds" : 0.4732619524002075
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "tool-content-is-data",
+      "output" : [
+        "\nYou have metformin in your medication list, taken 500 mg twice daily."
+      ],
+      "passed" : true,
+      "seconds" : 0.5761539936065674
+    }
+  ],
+  "started" : "2026-11-07T03:06:29Z"
+}

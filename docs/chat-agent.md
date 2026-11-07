@@ -14,7 +14,7 @@ Both stages receive the last six messages, bounded to 500 characters each, and a
 
 Tool JSON still contains an empty argument. Medicine names, measurements, literal times, and dose facts are extracted from the original current message and checked against saved records/catalog data. These are fact validators, not tool-choice rules. Existing mutation validation also rejects explicit negated/hypothetical proposals in English and French. If a proposed tool lacks valid source facts, the conversation path lets the model answer or ask for clarification. A follow-up such as “save that” does not automatically copy an earlier measurement into a record; restating the fact or using its editor is required. Record changes still open their existing confirmation screens. Read-only tools render structured results; no fabricated tool result is added to history.
 
-The pre-inference emergency phrase check is separate from action routing and retains its conditional fixed guidance. Generated prose is governed by the model prompt, not a clinical advice verifier. Small models can select the wrong tool or give inaccurate explanations; changing the conversation implementation does not establish clinical reliability.
+The pre-inference emergency phrase check displays a separate UI alert; it does not insert a canned assistant response or bypass model routing. Generated prose is governed by the model prompt, not a clinical advice verifier. Small models can select the wrong tool or give inaccurate explanations; changing the conversation implementation does not establish clinical reliability.
 
 ## How to change it
 
@@ -29,3 +29,5 @@ The runtime has a 4,096-token context. Chat reply budgets are Quick 256, Standar
 ## Dependencies
 
 `HarbourCore`, `HarbourRuntime`, native llama.cpp, verified local Qwen weights, `AppStore`, and the existing confirmation editors. Voice conversation uses the same pipeline; no prompt or health record is sent to a remote inference service.
+
+Fresh-launch history, model-written tool-result explanations, atomic confirmation outcomes, and cancelled draft statuses are covered in [conversation lifecycle](conversation-lifecycle.md).

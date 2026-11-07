@@ -35,8 +35,14 @@ struct LockShell: View {
         Group { if lock.locked { LockScreen() } else { RootView() } }
             .background(PrivacyCurtain(covered: phase != .active && !(phase == .inactive && lock.presentingAuthentication)))
             .accessibilityHidden(phase != .active)
+            .onAppear { _ = SessionActivities.shared }
             .transaction { if lock.locked { $0.disablesAnimations = true } }
-            .onChange(of: phase) { if phase == .background { Task { await recorder.finish(interrupted: true) }; lock.lock(); store.shareFile = nil } }
+            .onOpenURL { url in
+                guard url.scheme == "harbour" else { return }
+                if url.host == "recording" { UserDefaults.standard.set(true, forKey: "openRecordingSession"); UserDefaults.standard.set(3, forKey: "pendingSessionTab") }
+                else if url.host == "chat" { UserDefaults.standard.set(1, forKey: "pendingSessionTab") }
+            }
+            .onChange(of: phase) { if phase == .active { recorder.checkpointOnForeground(); SessionActivities.shared.refreshPreferences() }; if phase == .background { if recorder.state == .preparing { Task { await recorder.finish(interrupted: true) } }; lock.lock(); store.shareFile = nil } }
     }
 }
 
@@ -46,28 +52,28 @@ struct RootView: View {
     @EnvironmentObject private var alerts: CareNotifications
     @Environment(\.scenePhase) private var scenePhase
     @State private var tab = 0
+    @AppStorage("pendingSessionTab") private var pendingSessionTab = -1
     @State private var sheet: AppSheet?
     @State private var recordCategory: Int?
     @State private var keyboardVisible = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var body: some View {
         TabView(selection: $tab) {
             NavigationStack { TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1; tab = 2 }, openSymptoms: { recordCategory = 0; tab = 2 }, openVisits: { tab = 3 }).toolbar(.hidden, for: .tabBar) }
                 .tabItem { Label("Today", systemImage: tab == 0 ? "house.fill" : "house") }.tag(0)
-            NavigationStack { ChatView(sheet: $sheet).toolbar(.hidden, for: .tabBar) }
+            NavigationStack { ChatView(sheet: $sheet).environment(\.isChatVisible, tab == 1).toolbar(.hidden, for: .tabBar) }
                 .tabItem { Label("Chat", systemImage: tab == 1 ? "bubble.left.and.bubble.right.fill" : "bubble.left.and.bubble.right") }.tag(1)
             NavigationStack { RecordsView(sheet: $sheet, category: $recordCategory).toolbar(.hidden, for: .tabBar) }
                 .tabItem { Label("Records", systemImage: tab == 2 ? "heart.text.clipboard.fill" : "heart.text.clipboard") }.tag(2)
             NavigationStack { VisitsView(sheet: $sheet).toolbar(.hidden, for: .tabBar) }
                 .tabItem { Label("Visits", systemImage: tab == 3 ? "person.2.fill" : "person.2") }.tag(3)
         }
+        .tabViewStyle(.page(indexDisplayMode: .never))
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.32), value: tab)
         .toolbar(.hidden, for: .tabBar)
-        .environment(\.floatingDockClearance, keyboardVisible ? 0 : 86)
+        .environment(\.floatingDockClearance, keyboardVisible ? 0 : (tab == 1 ? 34 : 86))
         .overlay(alignment: .bottom) {
-            NavigationDock(selection: $tab)
-                .opacity(keyboardVisible ? 0 : 1)
-                .allowsHitTesting(!keyboardVisible)
-                .accessibilityHidden(keyboardVisible)
-                .transaction { $0.disablesAnimations = true }
+            if !keyboardVisible { NavigationDock(selection: $tab) }
         }
         .background(Palette.canvas)
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardVisible = true }
@@ -97,6 +103,8 @@ struct RootView: View {
         }
         .sheet(item: Binding(get: { if case nil = sheet { return store.shareFile }; return nil }, set: { store.shareFile = $0 })) { ShareView(url: $0.url) }
         .alert("Couldn’t complete that", isPresented: Binding(get: { store.error != nil }, set: { if !$0 { store.error = nil } })) { Button("OK") { store.error = nil } } message: { Text(store.error ?? "") }
+        .onAppear { if pendingSessionTab >= 0 { tab = pendingSessionTab; pendingSessionTab = -1 } }
+        .onChange(of: pendingSessionTab) { if pendingSessionTab >= 0 { tab = pendingSessionTab; pendingSessionTab = -1 } }
         .task(id: store.archive.care) { await alerts.sync(care: store.care, medicines: store.records.medicines) }
         .onChange(of: store.records.medicines.map(\.id)) { Task { await alerts.sync(care: store.care, medicines: store.records.medicines) } }
         .onChange(of: scenePhase) { if scenePhase == .active { Task { await alerts.sync(care: store.care, medicines: store.records.medicines) } } }

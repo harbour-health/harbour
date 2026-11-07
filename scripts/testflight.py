@@ -38,6 +38,9 @@ def main():
         parser.error('Run bash scripts/prepare-runtime.sh first.')
     if not (ROOT / 'HarbourReports/Vendor/HarbourTypst.xcframework/Info.plist').exists():
         parser.error('Run bash scripts/prepare-reports.sh first.')
+    for artifact in ['EspeakNG', 'OrtStatic']:
+        if not (ROOT / f'HarbourSpeech/Vendor/{artifact}.xcframework/Info.plist').exists():
+            parser.error('Run python3 scripts/prepare-speech.py and python3 scripts/prepare-onnx.py first.')
     output.mkdir(parents=True, exist_ok=True)
 
     def run(command, log_name):

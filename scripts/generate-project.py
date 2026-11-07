@@ -55,7 +55,7 @@ test_group = add('TestGroup', f'isa = PBXGroup; children = {refs(test_refs)}; pa
 products = add('Products', f'isa = PBXGroup; children = {refs([app, test_product])}; name = Products; sourceTree = "<group>";')
 group = add('RootGroup', f'isa = PBXGroup; children = {refs([source_group, test_group, products])}; sourceTree = "<group>";')
 packages, product_deps, package_builds = [], [], []
-for name in ['HarbourCore', 'HarbourRuntime', 'HarbourReports']:
+for name in ['HarbourCore', 'HarbourRuntime', 'HarbourReports', 'HarbourSpeech']:
     package = add('Package-' + name, f'isa = XCLocalSwiftPackageReference; relativePath = {name};')
     packages.append(package)
     product = add('Product-' + name, f'isa = XCSwiftPackageProductDependency; package = {package}; productName = {name};')
@@ -96,7 +96,27 @@ unit_sources = add('UnitSources', f'isa = PBXSourcesBuildPhase; buildActionMask 
 unit_frameworks = add('UnitFrameworks', 'isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0;')
 unit_configs = config_list('Unit', 'PRODUCT_NAME = HarbourTests; PRODUCT_BUNDLE_IDENTIFIER = com.matteopolak.harbour.tests; GENERATE_INFOPLIST_FILE = YES; TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Harbour.app/Harbour"; BUNDLE_LOADER = "$(TEST_HOST)"; TARGETED_DEVICE_FAMILY = "1,2"; CODE_SIGN_STYLE = Automatic;')
 unit_target = add('UnitTarget', f'isa = PBXNativeTarget; buildConfigurationList = {unit_configs}; buildPhases = {refs([unit_sources, unit_frameworks])}; buildRules = (); dependencies = {refs([dependency])}; name = HarbourTests; productName = HarbourTests; productReference = {unit_product}; productType = "com.apple.product-type.bundle.unit-test";')
-add('Project', f'isa = PBXProject; attributes = {{ LastUpgradeCheck = 2700; TargetAttributes = {{ {target} = {{ CreatedOnToolsVersion = 27.0; SystemCapabilities = {{ com.apple.HealthKit = {{ enabled = 1; }}; }}; }}; {test_target} = {{ TestTargetID = {target}; }}; }}; }}; buildConfigurationList = {project_configs}; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = {region_refs}; mainGroup = {group}; productRefGroup = {products}; projectDirPath = ""; projectRoot = ""; packageReferences = {refs(packages)}; targets = {refs([target, test_target, unit_target])};')
+# Shared ActivityKit schema and the embedded WidgetKit extension.
+activity_ref = add('ActivityAttributes', 'isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shared/HarbourActivityAttributes.swift; sourceTree = SOURCE_ROOT;')
+activity_build = add('ActivityAttributesAppBuild', f'isa = PBXBuildFile; fileRef = {activity_ref};')
+objects[sources] = '{ isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = ' + refs(builds + [activity_build]) + '; runOnlyForDeploymentPostprocessing = 0; }'
+widget_ref = add('ActivityWidgetSource', 'isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarbourActivity.swift; sourceTree = "<group>";')
+widget_build = add('ActivityWidgetBuild', f'isa = PBXBuildFile; fileRef = {widget_ref};')
+activity_widget_build = add('ActivityAttributesWidgetBuild', f'isa = PBXBuildFile; fileRef = {activity_ref};')
+widget_group = add('ActivityWidgetGroup', f'isa = PBXGroup; children = {refs([widget_ref])}; path = HarbourActivity; sourceTree = "<group>";')
+widget_product = add('ActivityWidgetProduct', 'isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; path = HarbourActivity.appex; sourceTree = BUILT_PRODUCTS_DIR;')
+widget_sources = add('ActivityWidgetSources', f'isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = {refs([widget_build, activity_widget_build])}; runOnlyForDeploymentPostprocessing = 0;')
+widget_frameworks = add('ActivityWidgetFrameworks', 'isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0;')
+widget_configs = config_list('ActivityWidget', 'PRODUCT_NAME = HarbourActivity; PRODUCT_BUNDLE_IDENTIFIER = com.matteopolak.harbour.activity; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_FILE = HarbourActivity/Info.plist; INFOPLIST_KEY_CFBundleDisplayName = Harbour; TARGETED_DEVICE_FAMILY = "1,2"; CODE_SIGN_STYLE = Automatic; APPLICATION_EXTENSION_API_ONLY = YES; SKIP_INSTALL = YES; CURRENT_PROJECT_VERSION = 1; MARKETING_VERSION = 0.1; LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks"; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";')
+widget_target = add('ActivityWidgetTarget', f'isa = PBXNativeTarget; buildConfigurationList = {widget_configs}; buildPhases = {refs([widget_sources, widget_frameworks])}; buildRules = (); dependencies = (); name = HarbourActivity; productName = HarbourActivity; productReference = {widget_product}; productType = "com.apple.product-type.app-extension";')
+widget_proxy = add('ActivityWidgetProxy', f'isa = PBXContainerItemProxy; containerPortal = {project_id}; proxyType = 1; remoteGlobalIDString = {widget_target}; remoteInfo = HarbourActivity;')
+widget_dependency = add('ActivityWidgetDependency', f'isa = PBXTargetDependency; target = {widget_target}; targetProxy = {widget_proxy};')
+widget_embed = add('ActivityWidgetEmbedBuild', f'isa = PBXBuildFile; fileRef = {widget_product}; settings = {{ ATTRIBUTES = (RemoveHeadersOnCopy,); }};')
+embed_phase = add('ActivityWidgetEmbed', f'isa = PBXCopyFilesBuildPhase; buildActionMask = 2147483647; dstPath = ""; dstSubfolderSpec = 13; files = {refs([widget_embed])}; name = "Embed App Extensions"; runOnlyForDeploymentPostprocessing = 0;')
+objects[target] = '{ isa = PBXNativeTarget; buildConfigurationList = ' + app_configs + '; buildPhases = ' + refs([sources, frameworks, resources, embed_phase]) + '; buildRules = (); dependencies = ' + refs([widget_dependency]) + '; name = Harbour; packageProductDependencies = ' + refs(product_deps) + '; productName = Harbour; productReference = ' + app + '; productType = "com.apple.product-type.application"; }'
+objects[group] = '{ isa = PBXGroup; children = ' + refs([source_group, test_group, unit_group, widget_group, activity_ref, products]) + '; sourceTree = "<group>"; }'
+objects[products] = '{ isa = PBXGroup; children = ' + refs([app, test_product, unit_product, widget_product]) + '; name = Products; sourceTree = "<group>"; }'
+add('Project', f'isa = PBXProject; attributes = {{ LastUpgradeCheck = 2700; TargetAttributes = {{ {target} = {{ CreatedOnToolsVersion = 27.0; SystemCapabilities = {{ com.apple.HealthKit = {{ enabled = 1; }}; }}; }}; {test_target} = {{ TestTargetID = {target}; }}; }}; }}; buildConfigurationList = {project_configs}; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = {region_refs}; mainGroup = {group}; productRefGroup = {products}; projectDirPath = ""; projectRoot = ""; packageReferences = {refs(packages)}; targets = {refs([target, test_target, unit_target, widget_target])};')
 project = root / 'Harbour.xcodeproj'
 project.mkdir(exist_ok=True)
 (project / 'project.pbxproj').write_text('// !$*UTF8*$!\n{ archiveVersion = 1; classes = {}; objectVersion = 56; objects = {\n' + '\n'.join(f'{key} = {value};' for key, value in objects.items()) + f'\n}}; rootObject = {project_id}; }}\n')

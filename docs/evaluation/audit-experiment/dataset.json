@@ -1,0 +1,183 @@
+{
+  "version": 3,
+  "description": "Bounded model-audit experiment. Four exposed failures are DEVELOPMENT. Eight newly authored variations are a small transfer/control set created after the audit prompt was written, not an independently expert-reviewed or broad clinical holdout. No source recovery; original grades retained.",
+  "medical": [
+    {
+      "name": "exposed-three-phase-taper-review",
+      "input": "Begin prednisone 40 mg each morning for two days then 20 mg each morning for two days then 10 mg each morning for two days then stop.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "start",
+            "name": "prednisone",
+            "instructions": "40 mg each morning for two days then 20 mg each morning for two days then 10 mg each morning for two days then stop"
+          }
+        ],
+        "followUps": [],
+        "appointments": []
+      }
+    },
+    {
+      "name": "exposed-same-sentence-switch",
+      "input": "Discontinue aspirin and begin apixaban 2.5 mg twice daily.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "stop",
+            "name": "aspirin",
+            "instructions": ""
+          },
+          {
+            "action": "start",
+            "name": "apixaban",
+            "instructions": "2.5 mg twice daily"
+          }
+        ],
+        "followUps": [],
+        "appointments": []
+      },
+      "savedMedicineIDs": [
+        "aspirin"
+      ]
+    },
+    {
+      "name": "exposed-specific-tests-and-conditional-call",
+      "input": "Repeat the kidney blood test in ten days. Call the clinic if the swelling gets worse.",
+      "expected": {
+        "medicines": [],
+        "followUps": [
+          "Repeat the kidney blood test in ten days.",
+          "Call the clinic if the swelling gets worse."
+        ],
+        "appointments": []
+      }
+    },
+    {
+      "name": "exposed-cross-sentence-insulin-plan",
+      "input": "Start insulin glargine 8 units each night. After three days, increase to 10 units each night if fasting glucose remains above 9 mmol/L.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "start",
+            "name": "insulin glargine",
+            "instructions": "8 units each night. After three days, increase to 10 units each night if fasting glucose remains above 9 mmol/L"
+          }
+        ],
+        "followUps": [],
+        "appointments": []
+      }
+    },
+    {
+      "name": "fresh-switch",
+      "input": "Stop warfarin and start apixaban 5 mg twice daily.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "stop",
+            "name": "warfarin",
+            "instructions": ""
+          },
+          {
+            "action": "start",
+            "name": "apixaban",
+            "instructions": "5 mg twice daily"
+          }
+        ],
+        "followUps": [],
+        "appointments": []
+      },
+      "savedMedicineIDs": [
+        "warfarin"
+      ]
+    },
+    {
+      "name": "fresh-french-taper",
+      "input": "Commencez la prednisone 30 mg chaque matin pendant trois jours puis 15 mg chaque matin pendant deux jours puis cessez.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "start",
+            "name": "prednisone",
+            "instructions": "30 mg chaque matin pendant trois jours puis 15 mg chaque matin pendant deux jours puis cessez"
+          }
+        ],
+        "followUps": [],
+        "appointments": []
+      },
+      "savedMedicineIDs": []
+    },
+    {
+      "name": "fresh-french-call",
+      "input": "Répétez la prise de sang dans cinq jours. Appelez la clinique si les étourdissements reviennent.",
+      "expected": {
+        "medicines": [],
+        "followUps": [
+          "Répétez la prise de sang dans cinq jours.",
+          "Appelez la clinique si les étourdissements reviennent."
+        ],
+        "appointments": []
+      },
+      "savedMedicineIDs": []
+    },
+    {
+      "name": "fresh-linked-insulin",
+      "input": "Begin insulin glargine 6 units at bedtime. In four days, increase to 8 units at bedtime only if the fasting reading remains above 10 mmol/L.",
+      "expected": {
+        "medicines": [
+          {
+            "action": "start",
+            "name": "insulin glargine",
+            "instructions": "6 units at bedtime. In four days, increase to 8 units at bedtime only if the fasting reading remains above 10 mmol/L"
+          }
+        ],
+        "followUps": [],
+        "appointments": []
+      },
+      "savedMedicineIDs": []
+    },
+    {
+      "name": "fresh-negated-switch",
+      "input": "Do not stop aspirin or start apixaban today.",
+      "expected": {
+        "medicines": [],
+        "followUps": [],
+        "appointments": []
+      },
+      "savedMedicineIDs": [
+        "aspirin"
+      ]
+    },
+    {
+      "name": "fresh-hypothetical-insulin",
+      "input": "Could we start insulin glargine 6 units at bedtime if the readings stay high?",
+      "expected": {
+        "medicines": [],
+        "followUps": [],
+        "appointments": []
+      },
+      "savedMedicineIDs": []
+    },
+    {
+      "name": "fresh-french-no-call",
+      "input": "N’appelez pas la clinique et ne répétez pas la prise de sang cette semaine.",
+      "expected": {
+        "medicines": [],
+        "followUps": [],
+        "appointments": []
+      },
+      "savedMedicineIDs": []
+    },
+    {
+      "name": "fresh-reported-taper",
+      "input": "My brother started prednisone 30 mg for three days then 15 mg for two days. We are discussing his experience, not changing my treatment.",
+      "expected": {
+        "medicines": [],
+        "followUps": [],
+        "appointments": []
+      },
+      "savedMedicineIDs": []
+    }
+  ],
+  "conversations": [],
+  "toolResults": []
+}

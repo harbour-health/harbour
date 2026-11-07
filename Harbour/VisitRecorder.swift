@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import AVFoundation
 import Speech
 import HarbourCore
@@ -23,17 +24,19 @@ private final class VisitObservation: @unchecked Sendable {
 private func visitError(_ message: String) -> NSError { NSError(domain: "Visit", code: 1, userInfo: [NSLocalizedDescriptionKey: message]) }
 
 /// The audio tap owns this locked writer. PCM stays off the UI actor; only meter values cross it.
-private final class VisitAudioWriter: @unchecked Sendable {
+final class VisitAudioWriter: @unchecked Sendable {
     private let lock = NSLock()
     private var file: AVAudioFile?
+    private let url: URL
     private let speech: @Sendable (AVAudioPCMBuffer) -> Void
     private let meter: @Sendable (Double) -> Void
     private let failure: @Sendable (String) -> Void
     private var meteredFrames: AVAudioFrameCount = 0
     private var paused = false
     init(url: URL, format: AVAudioFormat, speech: @escaping @Sendable (AVAudioPCMBuffer) -> Void, meter: @escaping @Sendable (Double) -> Void, failure: @escaping @Sendable (String) -> Void) throws {
+        self.url = url
         file = try AVAudioFile(forWriting: url, settings: [AVFormatIDKey: kAudioFormatMPEG4AAC, AVSampleRateKey: format.sampleRate, AVNumberOfChannelsKey: format.channelCount, AVEncoderBitRateKey: 32_000], commonFormat: format.commonFormat, interleaved: format.isInterleaved)
-        try FileManager.default.setAttributes([.protectionKey: FileProtectionType.complete], ofItemAtPath: url.path)
+        try FileManager.default.setAttributes([.protectionKey: FileProtectionType.completeUnlessOpen], ofItemAtPath: url.path)
         self.speech = speech; self.meter = meter; self.failure = failure
     }
     func append(_ buffer: AVAudioPCMBuffer) {
@@ -51,7 +54,7 @@ private final class VisitAudioWriter: @unchecked Sendable {
         }
     }
     func setPaused(_ paused: Bool) { lock.lock(); self.paused = paused; lock.unlock() }
-    func close() { lock.lock(); file = nil; lock.unlock() }
+    func close() { lock.lock(); file = nil; try? FileManager.default.setAttributes([.protectionKey: FileProtectionType.complete], ofItemAtPath: url.path); lock.unlock() }
 }
 
 @MainActor private protocol VisitSpeechSession: AnyObject {
@@ -171,6 +174,7 @@ private final class LegacyAudioBridge: @unchecked Sendable {
         if let previous = task { Task { try? await Task.sleep(for: .seconds(3)); previous.cancel() } }
         index += 1; let current = index
         let request = SFSpeechAudioBufferRecognitionRequest()
+        request.addsPunctuation = true
         request.requiresOnDeviceRecognition = true; request.shouldReportPartialResults = true
         self.request = request; bridge.set(request)
         task = recognizer.recognitionTask(with: request) { [weak self] result, error in
@@ -267,6 +271,7 @@ private final class LegacyAudioBridge: @unchecked Sendable {
             let writer = writer!
             engine.inputNode.installTap(onBus: 0, bufferSize: 4096, format: format) { buffer, _ in writer.append(buffer) }; hasTap = true
             engine.prepare(); try engine.start(); state = .recording; startDate = .now
+            SessionActivities.shared.update(.recording, phase: .recording)
             if speech != nil { status = L10n.string("Transcribing on this iPhone") }
             timer = Task { @MainActor [weak self] in
                 var ticks = 0
@@ -276,6 +281,7 @@ private final class LegacyAudioBridge: @unchecked Sendable {
                     if self.state == .recording { self.duration = self.elapsed + Date.now.timeIntervalSince(self.startDate ?? .now) }
                     ticks += 1
                     if ticks % 40 == 0 { self.checkpoint(interrupted: true) }
+                    if ticks % 240 == 0 && self.state == .recording { SessionActivities.shared.update(.recording, phase: .recording, elapsed: self.duration) }
                     if self.duration >= 5400 { self.status = L10n.string("90-minute recording limit reached"); await self.finish(); return }
                 }
             }
@@ -285,21 +291,23 @@ private final class LegacyAudioBridge: @unchecked Sendable {
         guard state == .recording else { return }
         duration = elapsed + Date.now.timeIntervalSince(startDate ?? .now); elapsed = duration; startDate = nil
         writer?.setPaused(true); engine.pause(); state = .paused; checkpoint(interrupted: true)
+        SessionActivities.shared.update(.recording, phase: .paused, elapsed: duration)
     }
     func resume() {
         guard state == .paused else { return }
-        do { try AVAudioSession.sharedInstance().setActive(true); try engine.start(); writer?.setPaused(false); startDate = .now; state = .recording }
+        do { try AVAudioSession.sharedInstance().setActive(true); try engine.start(); writer?.setPaused(false); startDate = .now; state = .recording; SessionActivities.shared.update(.recording, phase: .recording, elapsed: duration) }
         catch { self.error = L10n.string(error.localizedDescription) }
     }
     func finish(interrupted: Bool = false) async {
         guard state != .idle && state != .finishing else { return }
+        SessionActivities.shared.end(.recording)
         if state == .preparing {
             generation = UUID(); permission?.resolve(false); permission = nil; speech?.cancel(); speech = nil; timer?.cancel(); timer = nil
             engine.stop(); if hasTap { engine.inputNode.removeTap(onBus: 0); hasTap = false }
             writer?.close(); writer = nil; checkpoint(interrupted: true)
             state = .idle; try? AVAudioSession.sharedInstance().setActive(false); return
         }
-        pause(); state = .finishing; timer?.cancel(); timer = nil
+        pause(); SessionActivities.shared.end(.recording); state = .finishing; timer?.cancel(); timer = nil
         engine.stop(); if hasTap { engine.inputNode.removeTap(onBus: 0); hasTap = false }
         writer?.close(); writer = nil; checkpoint(interrupted: interrupted)
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
@@ -315,7 +323,9 @@ private final class LegacyAudioBridge: @unchecked Sendable {
         }
         speech?.cancel(); speech = nil; checkpoint(interrupted: interrupted); state = .idle; visitID = nil; generation = UUID()
     }
+    func checkpointOnForeground() { if active { checkpoint(interrupted: true) } }
     private func checkpoint(interrupted: Bool) {
+        guard UIApplication.shared.isProtectedDataAvailable else { return }
         guard var visit, let store else { return }
         visit.duration = duration; visit.transcript = transcript; visit.interrupted = interrupted; visit.transcriptionWarning = transcriptionWarning
         self.visit = visit

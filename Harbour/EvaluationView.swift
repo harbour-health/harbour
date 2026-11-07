@@ -26,8 +26,14 @@ struct EvaluationReport: Codable {
     static func evaluateVisit(_ fixture: VisitSummaryEvaluationCase, models: ModelManager) async -> ModelRun {
         let start = Date(); var output = ""
         do {
-            output = try await models.generate(VisitReview.prompt(fixture.transcript, medicines: Evaluation.records.medicines), maxTokens: 650, responseGrammar: VisitSummaryOutputGrammar.make())
-            let passed = fixture.matches(output)
+            var summary = VisitSummary()
+            for pass in VisitExtractionPass.allCases {
+                try Task.checkCancellation()
+                let generated = try await models.generate(VisitReview.focusedPrompt(pass, transcript: fixture.transcript, medicines: Evaluation.records.medicines), maxTokens: pass.tokenBudget, responseGrammar: VisitSummaryOutputGrammar.make(section: pass.rawValue))
+                output += pass.rawValue + ": " + generated + "\n"
+                summary.merge(try VisitReview.parsePass(generated, pass: pass, transcript: fixture.transcript, medicines: Evaluation.records.medicines))
+            }
+            let passed = fixture.matches(summary)
             return ModelRun(model: models.resolved.rawValue, effort: models.effort.rawValue, input: fixture.transcript, expected: fixture.expectedJSON, observed: passed ? "Matched transcript facts" : "Transcript mismatch", rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: passed)
         } catch {
             return ModelRun(model: models.resolved.rawValue, effort: models.effort.rawValue, input: fixture.transcript, expected: fixture.expectedJSON, observed: error.localizedDescription, rawOutput: output, elapsedSeconds: Date().timeIntervalSince(start), passed: false)
@@ -76,6 +82,7 @@ struct EvaluationView: View {
     @State private var task: Task<Void, Never>?
     @State private var busy = false
     @State private var allEfforts = true
+    @State private var totalCases = 0
     var body: some View {
         List {
             Section("Checks") {
@@ -85,7 +92,17 @@ struct EvaluationView: View {
             Section {
                 Toggle("Test all effort settings", isOn: $allEfforts).disabled(busy)
                 Button(L10n.string(busy ? "Stop evaluation" : "Evaluate selected model")) { if busy { task?.cancel() } else { run() } }
-                if busy { ProgressView(models.downloading == nil ? L10n.string("Running fictional cases") : models.status) }
+                if busy {
+                    VStack(spacing: 16) {
+                        ProgressView().controlSize(.large)
+                        Text(models.downloading == nil ? L10n.string("Running fictional cases") : models.status).font(.body).multilineTextAlignment(.center)
+                        if models.downloading != nil { ProgressView(value: models.progress).tint(Palette.blue) }
+                        else {
+                            ProgressView(value: Double(report.runs.count), total: Double(max(1, totalCases))).tint(Palette.blue)
+                            Text(L10n.format("%d of %d cases", report.runs.count, totalCases)).font(.subheadline).monospacedDigit().foregroundStyle(Palette.muted)
+                        }
+                    }.frame(maxWidth: .infinity, alignment: .center).padding(.vertical, 24).accessibilityIdentifier("evaluationProgress")
+                }
                 if !report.runs.isEmpty { LabeledContent("Passed", value: "\(report.runs.filter(\.passed).count)/\(report.runs.count)") }
             } header: { Text("Local model") } footer: { Text(L10n.format("%d fictional prompts per effort setting. Results include model routing and latency; they do not measure clinical validity.", Evaluation.routingCases.count + Evaluation.visitSummaryCases.count)) }
             ForEach(report.runs) { result in
@@ -104,6 +121,7 @@ struct EvaluationView: View {
     }
     private func run() {
         busy = true; report = EvaluationReport()
+        totalCases = (Evaluation.routingCases.count + Evaluation.visitSummaryCases.count) * (allEfforts ? Effort.allCases.count : 1)
         let initial = models.effort, selectedModel = models.resolved
         task = Task {
             defer { models.effort = initial; busy = false; task = nil }

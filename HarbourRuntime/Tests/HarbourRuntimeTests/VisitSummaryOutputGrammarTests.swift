@@ -13,7 +13,7 @@ final class VisitSummaryOutputGrammarTests: XCTestCase {
         XCTAssertTrue(grammar.contains(#"active-action ::= "\"start\"" | "\"update\"""#))
         XCTAssertTrue(grammar.contains(#"character{4,600}"#))
         XCTAssertTrue(grammar.contains(#"character{1,100}"#))
-        XCTAssertTrue(grammar.contains(#"character{1,180}"#))
+        XCTAssertTrue(grammar.contains(#"character{1,480}"#))
         XCTAssertTrue(grammar.contains(#""\"stop\"" ws "," ws "\"name\"" ws ":" ws name-string ws "," ws "\"instructions\"" ws ":" ws "\"\"""#))
         XCTAssertFalse(grammar.contains(".*"))
     }
@@ -43,7 +43,7 @@ final class VisitSummaryOutputGrammarTests: XCTestCase {
 
     func testNativeRuntimeParsesAllOutputGrammarsWithoutModelWeights() throws {
         // These character-only grammars need no vocabulary until token sampling.
-        for grammar in [VisitSummaryOutputGrammar.make(), TitleOutputGrammar.make(), try ToolOutputGrammar.make(allowedTools: ["reply"])] {
+        for grammar in [VisitSummaryOutputGrammar.make(), VisitSummaryOutputGrammar.make(section: "medicines"), VisitSummaryOutputGrammar.make(section: "followUps"), VisitSummaryOutputGrammar.make(section: "highlights"), TitleOutputGrammar.make(), try ToolOutputGrammar.make(allowedTools: ["reply"])] {
             let sampler = try XCTUnwrap(llama_sampler_init_grammar(nil, grammar, "root"))
             llama_sampler_free(sampler)
         }

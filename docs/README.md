@@ -32,3 +32,20 @@
 Course context, the project plan, and the preliminary report are maintained separately in the parent CSI4900 coursework folder.
 
 - [Report design](report-design.md) — shared report/app styling, bundled fonts, and rendered fictional previews.
+
+- [Text model evaluation](text-model-evaluation.md) — reproducible local probes, scoring, and evidence boundaries.
+- [Live session activities](live-session-activities.md) — recording, voice, Dynamic Island, and background audio.
+- [Conversation lifecycle](conversation-lifecycle.md) — fresh chats, history, and model-written tool results.
+- [Visit summary extraction](visit-summary-extraction.md) — complete directions, follow-ups, and summary-first presentation.
+- [Health trends](trends.md) — chart layout, sparse data, and range selection.
+
+- [Voice lab](voice-lab.md) — local neural voice comparison on Mac.
+- [Neural speech](neural-speech.md) — Kokoro assets, playback, build dependencies and notices.
+
+- [Chat request lifecycle](chat-request-lifecycle.md) — cancellation ownership and request admission.
+- [Record validation](record-validation.md) — reading punctuation and complete summary emptiness.
+
+- [Page navigation](page-navigation.md) — horizontal swiping, floating dock, keyboard and motion.
+- [Text results](evaluation/results.md) — all-model task, effort and sampling matrices and limitations.
+- [Instruction plans](instruction-plans.md) — experimental typed proposals, source validation and probe workflow.
+- [Prompt experiment results](evaluation/prompt-experiments.md) — rejected audit and structured-output candidates.

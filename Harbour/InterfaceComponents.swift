@@ -43,3 +43,11 @@ struct ActionButtonStyle: ButtonStyle {
             .animation(reduceMotion ? nil : .easeOut(duration: 0.18), value: configuration.isPressed)
     }
 }
+
+private struct ChatVisibilityKey: EnvironmentKey { static let defaultValue = false }
+extension EnvironmentValues {
+    var isChatVisible: Bool {
+        get { self[ChatVisibilityKey.self] }
+        set { self[ChatVisibilityKey.self] = newValue }
+    }
+}

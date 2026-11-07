@@ -1,0 +1,17 @@
+{
+  "model": "Qwen2.5-1.5B-Instruct Q4_K_M (the shipping balanced model)",
+  "temperature": [
+    0,
+    0.2,
+    0.5
+  ],
+  "seedsAtNonzeroTemperature": [
+    42,
+    123,
+    2026
+  ],
+  "greedySeed": 42,
+  "topK": 40,
+  "topP": 0.95,
+  "selection": "Select separately for extraction and narration using development scores only. A nonzero temperature must improve median case pass count, not increase worst-seed accepted extra facts or newly false positive negative cases, and preserve status/unknown safety checks. Otherwise retain greedy. Inspect the independent holdout only after selection; do not choose a lucky seed."
+}

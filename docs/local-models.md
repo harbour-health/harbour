@@ -21,7 +21,7 @@ Ordinary conversation uses a second inference with no output grammar and `stopAt
 
 Downloads come from the official [Qwen Small repository](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF) and [Balanced repository](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF). The hosts receive normal file-download metadata, such as IP address; health content is not included in the requests.
 
-Automatic selection uses Small in the simulator. On a physical device it uses Balanced only with at least 8 GB of memory, nominal thermal state, and low-power mode off; otherwise Small. This is an initial heuristic, not a validated device benchmark policy. Manual selection remains available. Effort sets routing budgets of 96/160/256 tokens and ordinary chat reply budgets of 256/512/768 tokens, not a guarantee of reasoning quality. Only the active model has an inference context; switching frees the previous context.
+Automatic selection uses Balanced in the simulator. On a physical device it uses Balanced only with at least 8 GB of memory, nominal thermal state, and low-power mode off; otherwise Small. This is an initial heuristic, not a validated device benchmark policy. Manual selection remains available. Effort sets routing budgets of 96/160/256 tokens and ordinary chat reply budgets of 256/512/768 tokens, not a guarantee of reasoning quality. Only the active model has an inference context; switching frees the previous context.
 
 `ModelManager.generate` adds an app-language instruction to the existing ChatML system message. Generated titles and user-facing prose request Canadian French when the app's active localization is French, otherwise Canadian English. Required JSON keys, tool names, enum values, empty routing arguments, medicine names, source quotes, and extracted instructions stay exact. This preserves the grammar and source-grounding checks; it does not establish that every generated title will follow the instruction or that French medical extraction has been validated. The model remains subject to the original safety prompt and ordinary review screens.
 
@@ -50,3 +50,8 @@ The active Bundle localization, exposed by `L10n.isFrench`, chooses the generate
 ## Dependencies
 
 Native [llama.cpp](https://github.com/ggml-org/llama.cpp/tree/b10549), CryptoKit, URLSession, and official Qwen weights. See [third-party notices](../THIRD_PARTY_NOTICES.md). Apple Intelligence is not required.
+
+
+Visit summaries resolve Small to Balanced even when chat remains Small. This operation-specific floor follows extraction failures in the [text results](evaluation/results.md); it does not establish sufficient medical accuracy. CPU/simulator prefill batches are 64 tokens for cancellation responsiveness; GPU batches remain 512.
+
+`ModelSampling` defaults to greedy decoding. Opt-in nonzero sampling uses grammar → top-k → top-p → temperature → seeded distribution, with finite bounds checked before model loading. Only Balanced tool-result narration uses temperature 0.2, top-k 40, top-p 0.95 and seed 42 after the recorded temperature study; routing, ordinary conversation, titles, visits and other models stay greedy. `ModelManager.generate` forwards explicit sampling and per-operation model overrides. Do not apply the selected narration temperature globally.

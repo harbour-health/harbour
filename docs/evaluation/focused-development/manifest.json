@@ -1,0 +1,115 @@
+{
+  "mode": "focused",
+  "host": "macOS-27.0-arm64-arm-64bit",
+  "datasetSHA256": "a8261dccfe9cb4071e087624e7fe9a7d707504fb16aee3a2ce7bc489fe72744b",
+  "executableSHA256": "43381755f7eefb95544eff00fcc110019d955fb174a520d54e5264d96be750a9",
+  "sourceSHA256": {
+    "HarbourCore/Sources/HarbourCore/ToolPlanner.swift": "20198960e9a96ae2fba0c24b2a61d94e2bec60f8593cb5a6eae02cfb0ef6ced9",
+    "HarbourCore/Sources/HarbourCore/Visits.swift": "a114aa74b5e7a389ac296a046a87549f4c67ec211771218cde10db36babdb9e2",
+    "HarbourCore/Sources/HarbourCore/VisitDirections.swift": "843114cc53d8ed01ab67e43c82c2f9677ef7f3cf60c5e895de86569d8739b108",
+    "HarbourCore/Sources/HarbourCore/VisitExtraction.swift": "663598f219cce71da7efbf154999c72d5d91bf9473ddb5e702f820f53619a91a",
+    "HarbourRuntime/Sources/ModelProbe/TextEvaluation.swift": "159ec27507e3b1578ba5d20e697dec56063b7dbc8f469c614ba68fbfe6fd4a17",
+    "HarbourRuntime/Sources/ModelProbe/LegacySourceRecovery.swift": "0dcd9e3af0f942b53c261185a89115e756729987c3c7a9b6522cd63bb205c65c",
+    "HarbourRuntime/Sources/ModelProbe/BaselineVisitPrompt.swift": "c9ba9ede281502f9dacd06737eac04090df144352eb97979c9b17c3b06ec75d9",
+    "HarbourRuntime/Sources/ModelProbe/BaselineVisitGrammar.swift": "2f497994b47231e3eb0b9f7f4a91ba5b982ff559d1ffdf58c4864e30ffd43a7e",
+    "HarbourRuntime/Sources/HarbourRuntime/VisitSummaryOutputGrammar.swift": "a5898e75aa319d57043fcefa59ca2d5dd9ac7fbe9f912074c54d595ff5dad629"
+  },
+  "models": [
+    {
+      "file": "qwen2.5-0.5b-instruct-q4_k_m.gguf",
+      "bytes": 491400032,
+      "sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+      "exitCode": 0,
+      "summary": {
+        "medical/focused": {
+          "passed": 7,
+          "total": 35,
+          "errors": 0,
+          "seconds": 41.0370329618454,
+          "rawFacts": {
+            "correctFacts": 0,
+            "expectedFacts": 37,
+            "extraFacts": 3,
+            "exactCases": 7
+          },
+          "validatedFacts": {
+            "correctFacts": 0,
+            "expectedFacts": 34,
+            "extraFacts": 0,
+            "exactCases": 10
+          },
+          "completedFacts": {
+            "correctFacts": 0,
+            "expectedFacts": 34,
+            "extraFacts": 0,
+            "exactCases": 10
+          }
+        }
+      }
+    },
+    {
+      "file": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+      "bytes": 1117320736,
+      "sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+      "exitCode": 0,
+      "summary": {
+        "medical/focused": {
+          "passed": 23,
+          "total": 35,
+          "errors": 0,
+          "seconds": 121.50954699516296,
+          "rawFacts": {
+            "correctFacts": 26,
+            "expectedFacts": 37,
+            "extraFacts": 29,
+            "exactCases": 16
+          },
+          "validatedFacts": {
+            "correctFacts": 22,
+            "expectedFacts": 34,
+            "extraFacts": 4,
+            "exactCases": 25
+          },
+          "completedFacts": {
+            "correctFacts": 22,
+            "expectedFacts": 34,
+            "extraFacts": 4,
+            "exactCases": 25
+          }
+        }
+      }
+    },
+    {
+      "file": "qwen2.5-3b-instruct-q4_k_m.gguf",
+      "bytes": 2104932768,
+      "sha256": "626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d",
+      "exitCode": 0,
+      "summary": {
+        "medical/focused": {
+          "passed": 25,
+          "total": 35,
+          "errors": 0,
+          "seconds": 173.53134894371033,
+          "rawFacts": {
+            "correctFacts": 29,
+            "expectedFacts": 37,
+            "extraFacts": 22,
+            "exactCases": 16
+          },
+          "validatedFacts": {
+            "correctFacts": 26,
+            "expectedFacts": 34,
+            "extraFacts": 1,
+            "exactCases": 27
+          },
+          "completedFacts": {
+            "correctFacts": 26,
+            "expectedFacts": 34,
+            "extraFacts": 1,
+            "exactCases": 27
+          }
+        }
+      }
+    }
+  ]
+}

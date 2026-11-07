@@ -78,6 +78,30 @@ jobs:
         if: steps.reports-cache.outputs.cache-hit != 'true'
         run: bash scripts/prepare-reports.sh
 
+      - name: Save prepared report renderer
+        if: steps.reports-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: HarbourReports/Vendor/HarbourTypst.xcframework
+          key: ${{ runner.os }}-typst-${{ hashFiles('HarbourReports/Renderer/**', 'scripts/prepare-reports.sh') }}
+
+      - name: Cache neural speech dependencies
+        id: speech-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            HarbourSpeech/Vendor
+            HarbourSpeech/Sources/HarbourSpeech/Resources/espeak-ng-data
+          key: ${{ runner.os }}-speech-${{ hashFiles('scripts/prepare-speech.py', 'scripts/prepare-onnx.py', 'HarbourSpeech/Package.swift') }}
+      - name: Prepare neural speech dependencies
+        if: steps.speech-cache.outputs.cache-hit != 'true'
+        run: |
+          brew install cmake ninja
+          python3 scripts/prepare-speech.py
+          python3 scripts/prepare-onnx.py
+      - name: Test speech frontend without model download
+        run: swift test --package-path HarbourSpeech
+
       - name: Run native iOS smoke and visual regression tests
         run: |
           mkdir -p build
@@ -101,8 +125,9 @@ jobs:
             -only-testing:HarbourUITests/HarbourAppearanceTests/testScreensAndAppearancePersistence \
             -only-testing:HarbourUITests/HarbourNavigationTests/testDashboardNavigationAndSystemAppearance \
             -only-testing:HarbourUITests/HarbourVisitTests/testMedicineReviewDrawerScreens \
+            -only-testing:HarbourUITests/HarbourVisitTests/testAppointmentOnlySummaryDoesNotShowEmptyWarning \
             -only-testing:HarbourUITests/HarbourStreamlineTests/testMainActionsDraftRetentionAndVisitCreation \
-            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+            CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-
 
       - name: Export simulator screenshots
         if: always()

@@ -8,14 +8,18 @@ struct ChatView: View {
     @EnvironmentObject var health: HealthService
     @Binding var sheet: AppSheet?
     @StateObject private var voice = VoiceService()
+    @ObservedObject private var voiceAssets = KokoroAssets.shared
     @State private var voiceMode = false
+    @State private var pausedVoiceActivity = false
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.isChatVisible) private var isChatVisible
+    @State private var emergencyMessage: String?
     @State private var draft = ""
     @State private var hint: String?
-    @State private var task: Task<Void, Never>?
     @State private var operationID = UUID()
-    @State private var busy = false
+    private var busy: Bool { models.chatRequestState.isBusy }
     @State private var modelSheet = false
+    @State private var historySheet = false
     @State private var toolSheet = false
     @State private var deleteConfirmation = false
     @State private var removal: Medicine?
@@ -23,25 +27,25 @@ struct ChatView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.verticalSizeClass) private var verticalSize
     @Environment(\.floatingDockClearance) private var dockClearance
-    var body: some View {
+    private var conversationLayout: some View {
         VStack(spacing: 0) {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
                     if store.messages.isEmpty {
                         VStack(spacing: 16) {
-                            HarbourIllustration(kind: .conversation, animated: true).frame(width: 204, height: 160)
+                            HarbourMark(size: 28).foregroundStyle(Palette.blue)
                             Text("What’s on your mind?").font(.largeTitle.weight(.medium)).multilineTextAlignment(.center)
-                        }.frame(maxWidth: .infinity).padding(.top, 12).padding(.bottom, 16)
+                        }.frame(maxWidth: .infinity).padding(.top, 32).padding(.bottom, 8)
                         VStack(alignment: .leading, spacing: 4) {
                             starter("Check medications", symbol: "pills", colour: Palette.blue, hint: "Interactions")
                             starter("Record a symptom", symbol: "cross.case", colour: Palette.coral, hint: "Symptoms")
                             starter("Add a reading", symbol: "waveform.path.ecg", colour: Palette.coral, hint: "Readings")
                         }.frame(maxWidth: 400).frame(maxWidth: .infinity)
                     }
-                    ForEach(store.messages) { message in MessageView(message: message, speak: { if !recorder.active { voice.speak(message.spokenText) } }).id(message.id).transition(.opacity.combined(with: .move(edge: .bottom))) }
+                    ForEach(store.messages) { message in MessageView(message: message, speak: { if !recorder.active { voice.speak(message.spokenText) } }, retry: { store.retryToolEvent(message.id); narratePendingToolEvent(message.id) }).id(message.id).transition(.opacity.combined(with: .move(edge: .bottom))) }
                     if busy {
-                        HStack(spacing: 12) { HarbourMark(size: AppLayout.loadingMarkSize, spinning: true).foregroundStyle(Palette.blue); Text(models.downloading == nil ? L10n.string("Thinking…") : models.status).font(.subheadline).foregroundStyle(Palette.muted) }.id("pending")
+                        HStack(spacing: 12) { HarbourMark(size: AppLayout.loadingMarkSize, spinning: true).foregroundStyle(Palette.blue); Text(models.chatRequestState.isCancelling ? L10n.string("Please wait before trying again.") : models.downloading == nil ? L10n.string("Thinking…") : models.status).font(.subheadline).foregroundStyle(Palette.muted) }.id("pending")
                         if models.downloading != nil { VStack(alignment: .leading, spacing: 8) { ProgressView(value: models.progress); Text(models.isVerifying ? models.status : L10n.format("%lld%% downloaded", Int64(models.progress * 100))).font(.caption).foregroundStyle(Palette.muted) } }
                     }
                     Color.clear.frame(height: 1).id("bottom")
@@ -53,27 +57,79 @@ struct ChatView: View {
         }
             composer
         }
-        .padding(.bottom, dockClearance)
+    }
+    private var presentationContent: some View {
+        conversationLayout.padding(.bottom, dockClearance)
         .background(Palette.canvas).foregroundStyle(Palette.ink)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { focused = false } }
             ToolbarItem(placement: .principal) { Text(store.chatTitle).font(.body.weight(.medium)).lineLimit(1).accessibilityIdentifier("chatTitle") }
+            ToolbarItem(placement: .topBarLeading) { Button { cancel(); focused = false; historySheet = true } label: { ToolbarGlyph(symbol: "sidebar.left") }.accessibilityLabel("Chats") }
             ToolbarItem(placement: .topBarLeading) { Button { cancel(); focused = false; draft = ""; hint = nil; store.newChat() } label: { ToolbarGlyph(symbol: "square.and.pencil") }.accessibilityLabel("New chat") }
             ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) }
         }
+        .sheet(isPresented: $historySheet) { history.floatingDrawer(height: 600) }
         .sheet(isPresented: $modelSheet) { NavigationStack { ModelsView(standalone: true) }.floatingDrawer(height: 680) }
         .sheet(isPresented: $toolSheet) { topicPicker.floatingDrawer(height: 420) }
         .confirmationDialog("Delete all records and chat?", isPresented: $deleteConfirmation, titleVisibility: .visible) { Button("Delete all", role: .destructive) { store.clear() }; Button("Cancel", role: .cancel) {} }
-        .confirmationDialog(L10n.format("Remove %@ from your list?", removal.map(L10n.medicineName) ?? L10n.string("medicine")), isPresented: Binding(get: { removal != nil }, set: { if !$0 { removal = nil } }), titleVisibility: .visible) { Button("Remove", role: .destructive) { if let removal { store.removeMedicine(removal.id); store.append(ChatMessage(text: L10n.format("Removed %@ from your list.", L10n.medicineName(removal)))) }; removal = nil } }
+        .confirmationDialog(L10n.format("Remove %@ from your list?", removal.map(L10n.medicineName) ?? L10n.string("medicine")), isPresented: Binding(get: { removal != nil }, set: { if !$0 { removal = nil } }), titleVisibility: .visible) { Button("Remove", role: .destructive) { if let removal { store.removeMedicine(removal.id); store.appendToolEvent(ChatMessage(text: L10n.format("Removed %@ from your list.", L10n.medicineName(removal)))) }; removal = nil } }
         .alert("Voice input", isPresented: Binding(get: { voice.error != nil }, set: { if !$0 { voice.error = nil } })) { Button("OK") { voice.error = nil } } message: { Text(voice.error ?? "") }
-        .onChange(of: sheet?.id) { voice.stop() }
+        .alert("Emergency signs", isPresented: Binding(get: { emergencyMessage != nil }, set: { if !$0 { emergencyMessage = nil } })) { Button("OK") { emergencyMessage = nil } } message: { Text(emergencyMessage ?? "") }
+    }
+    private var observedContent: some View {
+        presentationContent.onChange(of: store.messages.last?.id) { narratePendingToolEvent() }
+        .onChange(of: store.messages.last?.toolPayload) { narratePendingToolEvent() }
+        .onChange(of: isChatVisible) { if isChatVisible { narratePendingToolEvent() } }
+        .onChange(of: busy) { if !busy { narratePendingToolEvent() } }
+        .onChange(of: voiceActivityPhase) { syncVoiceActivity() }
+        .onChange(of: sheet?.id) { old, new in voice.stop(); if old != nil && new == nil { store.closeToolDraft() } }
         .onChange(of: modelSheet) { if modelSheet { voice.stop() } }
         .onChange(of: toolSheet) { if toolSheet { voice.stop() } }
-        .onChange(of: scenePhase) { if scenePhase == .background || (scenePhase == .inactive && (voice.listening || voice.finishing || voice.speaking)) { cancel() } }
+    }
+    var body: some View {
+        observedContent.onChange(of: scenePhase) { handleScenePhase() }
         .onChange(of: recorder.active) { if recorder.active { cancel() } }
         .onChange(of: voice.error) { if voice.error != nil { voiceMode = false } }
-        .onDisappear { cancel() }
+        .onDisappear { cancel(preservingVoiceActivity: scenePhase != .active) }
+    }
+    private func handleScenePhase() {
+        let audioActive = voice.listening || voice.finishing || voice.speaking
+        if scenePhase == .background || (scenePhase == .inactive && audioActive) { cancel(preservingVoiceActivity: true) }
+        if scenePhase == .active && pausedVoiceActivity { pausedVoiceActivity = false; SessionActivities.shared.end(.voice) }
+    }
+    private var history: some View {
+        NavigationStack {
+            List {
+                if store.conversations.isEmpty { Text("No chats").foregroundStyle(Palette.muted).listRowBackground(Color.clear) }
+                ForEach(store.conversations) { conversation in
+                    Button { cancel(); store.openConversation(conversation.id); historySheet = false } label: {
+                        HStack(spacing: 14) {
+                            Image(systemName: "bubble.left").foregroundStyle(Palette.blue)
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(conversation.title).font(.body.weight(.medium)).foregroundStyle(Palette.ink).lineLimit(2)
+                                Text(conversation.updated, style: .relative).font(.subheadline).foregroundStyle(Palette.muted)
+                            }
+                        }.padding(.vertical, 8).contentShape(Rectangle())
+                    }.listRowBackground(Palette.surface)
+                }
+            }.scrollContentBackground(.hidden).background(Palette.canvas)
+                .navigationTitle("Chats").navigationBarTitleDisplayMode(.inline)
+                .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { historySheet = false } } }
+        }
+    }
+    private var voiceActivityPhase: HarbourActivityAttributes.Phase? {
+        guard voiceMode else { return nil }
+        if voice.listening { return .listening }
+        if voice.finishing { return .finishing }
+        if voice.preparingSpeech { return .thinking }
+        if voice.speaking { return .speaking }
+        if busy { return .thinking }
+        return .paused
+    }
+    private func syncVoiceActivity() {
+        if let phase = voiceActivityPhase { SessionActivities.shared.update(.voice, phase: phase) }
+        else if !pausedVoiceActivity { SessionActivities.shared.end(.voice) }
     }
     private func starter(_ title: String, symbol: String, colour: Color, hint: String) -> some View {
         Button { self.hint = hint; focused = true } label: {
@@ -89,6 +145,15 @@ struct ChatView: View {
                         Label(L10n.string(voice.listening ? "Listening" : voice.finishing ? "Finishing…" : voice.speaking ? "Speaking" : busy ? "Thinking…" : "Voice paused"), systemImage: "waveform").symbolEffect(.variableColor, options: .repeating, isActive: !reduceMotion && (voice.listening || voice.speaking)).foregroundStyle(Palette.coral)
                         Spacer(); Button("End voice") { voiceMode = false; voice.stop() }.font(.body.weight(.medium)).frame(minHeight: AppLayout.controlSize).contentShape(Rectangle())
                     }.accessibilityIdentifier("voiceModeStatus")
+                    if voiceAssets.downloading {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack { Text("Downloading voice"); Spacer(); Text(L10n.format("%lld%% downloaded", Int64(voiceAssets.progress * 100))).foregroundStyle(Palette.muted) }
+                            ProgressView(value: voiceAssets.progress)
+                            Button("Cancel download") { voice.stop(); voiceAssets.cancel() }
+                        }.font(.subheadline)
+                    } else if voice.preparingSpeech {
+                        HStack(spacing: 10) { ProgressView(); Text("Preparing voice…").foregroundStyle(Palette.muted) }.font(.subheadline)
+                    }
                 }
                 TextField("Ask, record, or check something…", text: $draft, prompt: Text("Ask, record, or check something…").foregroundStyle(Palette.muted), axis: .vertical)
                     .lineLimit(2...6).font(.title3).focused($focused).accessibilityIdentifier("chatInput")
@@ -132,7 +197,7 @@ struct ChatView: View {
                     Button { busy ? cancel() : send() } label: {
                         Image(systemName: busy ? "stop.fill" : "arrow.up").font(.body.weight(.semibold))
                             .foregroundStyle(Palette.canvas).frame(width: 44, height: 44).background(Palette.ink, in: Circle())
-                    }.accessibilityLabel(L10n.string(busy ? "Stop" : "Send message")).disabled(!busy && draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    }.accessibilityLabel(L10n.string(busy ? "Stop" : "Send message")).disabled(models.chatRequestState.isCancelling || (!busy && draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty))
                 }
             }
             .padding(16).background(Palette.surface, in: RoundedRectangle(cornerRadius: 28))
@@ -165,76 +230,91 @@ struct ChatView: View {
         guard voiceMode, let reply = store.messages.last, !reply.isUser else { return }
         voice.speak(reply.spokenText, finished: { startVoiceTurn() })
     }
-    private func cancel() { voiceMode = false; operationID = UUID(); task?.cancel(); task = nil; busy = false; voice.stop() }
+    private func cancel(preservingVoiceActivity: Bool = false) { if let pending = store.messages.last, pending.toolPayload != nil && pending.text.isEmpty { store.failToolEvent(pending.id) }; pausedVoiceActivity = preservingVoiceActivity && (voiceMode || pausedVoiceActivity); if pausedVoiceActivity { SessionActivities.shared.update(.voice, phase: .paused) } else { SessionActivities.shared.end(.voice) }; voiceMode = false; operationID = UUID(); models.chatRequests.cancel(); voice.stop() }
     private func send() {
         let input = draft.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !input.isEmpty else { return }
-        voice.stop(); focused = false; draft = ""
+        guard !input.isEmpty, !busy else { return }
         let firstMessage = !store.messages.contains(where: \.isUser)
         let message = ChatMessage(isUser: true, text: input)
-        store.append(message)
-        // Emergency wording is checked before any download or model inference.
-        if HealthRules.emergencyCue(input) {
-            store.append(ChatMessage(text: L10n.string(HealthRules.guidance(Symptom(text: input)))))
-            sheet = .symptom(input); speakReply(); return
-        }
-        busy = true
-        let currentID = UUID(); operationID = currentID
         let chosenHint = hint
-        let history = store.messages.dropLast().map { ConversationTurn(isUser: $0.isUser, text: $0.spokenText) }
-        task = Task {
-            defer { if operationID == currentID { busy = false; task = nil; speakReply() } }
+        let history = store.messages.map { ConversationTurn(isUser: $0.isUser, text: $0.spokenText) }
+        guard let currentID = models.chatRequests.start(operation: { currentID in
             do {
                 let decision = try await models.chatDecision(input, hint: chosenHint, records: store.records, history: history)
                 try Task.checkCancellation()
+                guard models.chatRequests.canApplyResult(for: currentID), operationID == currentID else { return }
                 let action = try ToolPlanner.validate(decision, original: input, records: store.records)
                 execute(action)
-                if firstMessage, let title = try? await models.title(for: input), !Task.isCancelled, operationID == currentID { store.nameChat(title, firstMessage: message.id) }
+                if firstMessage, let title = try? await models.title(for: input), !Task.isCancelled, models.chatRequests.canApplyResult(for: currentID), operationID == currentID { store.nameChat(title, firstMessage: message.id) }
             } catch is CancellationError { }
-            catch { if !Task.isCancelled { store.append(ChatMessage(text: L10n.string(error.localizedDescription))); if firstMessage, let title = try? await models.title(for: input), !Task.isCancelled, operationID == currentID { store.nameChat(title, firstMessage: message.id) } } }
-        }
+            catch { if !Task.isCancelled, models.chatRequests.canApplyResult(for: currentID), operationID == currentID { store.error = L10n.string(error.localizedDescription) } }
+        }, onCompletion: { accepted in if accepted { speakReply() } }) else { return }
+        operationID = currentID
+        voice.stop(); focused = false; draft = ""; store.append(message)
+        if HealthRules.emergencyCue(input) { emergencyMessage = L10n.string(HealthRules.guidance(Symptom(text: input))) }
+    }
+    private func narratePendingToolEvent(_ retryID: UUID? = nil) {
+        guard isChatVisible, !busy, let pending = retryID.flatMap({ id in store.messages.first { $0.id == id } }) ?? store.messages.last, let payload = pending.toolPayload, pending.text.isEmpty, pending.toolFailed != true else { return }
+        let history = store.messages.dropLast().map { ConversationTurn(isUser: $0.isUser, text: $0.spokenText) }
+        guard let currentID = models.chatRequests.start(operation: { currentID in
+            do {
+                let text = try await models.toolResponse(payload, history: history)
+                try Task.checkCancellation()
+                guard models.chatRequests.canApplyResult(for: currentID), operationID == currentID else { return }
+                store.finishToolEvent(pending.id, text: text, expectedPayload: payload)
+            } catch is CancellationError { }
+            catch { if !Task.isCancelled, models.chatRequests.canApplyResult(for: currentID), operationID == currentID { store.failToolEvent(pending.id); store.error = L10n.string(error.localizedDescription) } }
+        }, onCompletion: { accepted in if accepted { speakReply() } }) else { return }
+        operationID = currentID
     }
     private func execute(_ action: ValidatedAction) {
         switch action {
         case .reply(let text): store.append(ChatMessage(text: text))
-        case .appointment(let text): sheet = .appointment(AppointmentRules.draft(from: text))
-        case .appointments: store.append(ChatMessage(text: L10n.string(store.records.appointments.isEmpty ? "No appointments" : "Appointments"), appointments: store.records.appointments.sorted { $0.date < $1.date }))
-        case .symptom(let text): sheet = .symptom(text); store.append(ChatMessage(text: L10n.string("Review the symptom details and emergency signs before saving.")))
+        case .appointment(let text): sheet = .appointment(AppointmentRules.draft(from: text)); store.appendToolEvent(ChatMessage(text: text), status: "requires_confirmation")
+        case .appointments: store.appendToolEvent(ChatMessage(text: L10n.string(store.records.appointments.isEmpty ? "No appointments" : "Appointments"), appointments: store.records.appointments.sorted { $0.date < $1.date }))
+        case .symptom(let text): sheet = .symptom(text); store.appendToolEvent(ChatMessage(text: L10n.string("Review the symptom details and emergency signs before saving.")), status: "requires_confirmation")
         case .add(let medicine, let times, let frequency):
             sheet = times.isEmpty && frequency == nil ? .medicine(medicine) : .medicineDraft(medicine, times, frequency)
-            store.append(ChatMessage(text: L10n.format("Confirm the exact product and instructions for %@.", L10n.medicineName(medicine))))
+            store.appendToolEvent(ChatMessage(text: L10n.format("Confirm the exact product and instructions for %@.", L10n.medicineName(medicine))), status: "requires_confirmation")
         case .remove(let medicine): removal = medicine
-        case .medicines: store.append(ChatMessage(text: L10n.string(store.records.medicines.isEmpty ? "No medications recorded." : "Your medications"), medicines: store.records.medicines))
-        case .interactions(let medicines): store.append(ChatMessage(text: L10n.string("Medication check"), report: HealthRules.check(medicines)))
-        case .reading(let reading): sheet = .reading(reading); store.append(ChatMessage(text: L10n.format("Confirm %@: %@ %@.", L10n.string(reading.kind.rawValue), L10n.readingValue(reading), reading.kind.unit)))
-        case .readings: store.append(ChatMessage(text: L10n.string(store.records.readings.isEmpty ? "No readings recorded." : "Recent readings"), readings: Array(store.records.readings.prefix(10))))
-        case .importHealth: Task { await health.sync(into: store); store.append(ChatMessage(text: health.status)) }
-        case .export: store.export()
-        case .note: sheet = .note
+        case .medicines: store.appendToolEvent(ChatMessage(text: L10n.string(store.records.medicines.isEmpty ? "No medications recorded." : "Your medications"), medicines: store.records.medicines))
+        case .interactions(let medicines): store.appendToolEvent(ChatMessage(text: L10n.string("Medication check"), report: HealthRules.check(medicines)))
+        case .reading(let reading): sheet = .reading(reading); store.appendToolEvent(ChatMessage(text: L10n.format("Confirm %@: %@ %@.", L10n.string(reading.kind.rawValue), L10n.readingValue(reading), reading.kind.unit)), status: "requires_confirmation")
+        case .readings: store.appendToolEvent(ChatMessage(text: L10n.string(store.records.readings.isEmpty ? "No readings recorded." : "Recent readings"), readings: Array(store.records.readings.prefix(10))))
+        case .importHealth:
+            let requestedOperation = operationID
+            Task { await health.sync(into: store); guard operationID == requestedOperation else { return }; store.appendToolEvent(ChatMessage(text: health.status)) }
+        case .export: store.export(); if store.shareFile != nil { store.appendToolEvent(ChatMessage(text: "export_file_ready")) }
+        case .note: sheet = .note; store.appendToolEvent(ChatMessage(text: LocalizedHealthContent.appointmentNote(records: store.records, care: store.care)), status: "requires_confirmation")
         case .clear: deleteConfirmation = true
-        case .reminder(let text): sheet = .reminder(CareReminder(title: text)); store.append(ChatMessage(text: L10n.string("Review the reminder and choose its date.")))
-        case .reminders: store.append(ChatMessage(text: L10n.string(store.care.reminders.isEmpty ? "No reminders saved." : "Reminders"), reminders: store.care.reminders.sorted { $0.due < $1.due }))
-        case .schedule(let medicine, let times, let frequency): sheet = .schedule(medicine, times, frequency); store.append(ChatMessage(text: L10n.string("Confirm the frequency, times, and refill date from your prescription.")))
+        case .reminder(let text): sheet = .reminder(CareReminder(title: text)); store.appendToolEvent(ChatMessage(text: L10n.string("Review the reminder and choose its date.")), status: "requires_confirmation")
+        case .reminders: store.appendToolEvent(ChatMessage(text: L10n.string(store.care.reminders.isEmpty ? "No reminders saved." : "Reminders"), reminders: store.care.reminders.sorted { $0.due < $1.due }))
+        case .schedule(let medicine, let times, let frequency): sheet = .schedule(medicine, times, frequency); store.appendToolEvent(ChatMessage(text: L10n.string("Confirm the frequency, times, and refill date from your prescription.")), status: "requires_confirmation")
         case .dose(let medicine, let status):
-            guard let schedule = store.care.schedules.first(where: { $0.medicineID == medicine.id }), let date = CareRules.doses(on: .now, schedule: schedule).last(where: { $0 <= Date.now }) ?? CareRules.doses(on: .now, schedule: schedule).first else { store.append(ChatMessage(text: L10n.format("Save a schedule for %@ first.", L10n.medicineName(medicine)))); return }
-            sheet = .dose(medicine, date, status); store.append(ChatMessage(text: L10n.format("Confirm the scheduled dose before saving %@.", L10n.string(status.rawValue))))
+            guard let schedule = store.care.schedules.first(where: { $0.medicineID == medicine.id }), let date = CareRules.doses(on: .now, schedule: schedule).last(where: { $0 <= Date.now }) ?? CareRules.doses(on: .now, schedule: schedule).first else { store.appendToolEvent(ChatMessage(text: L10n.format("Save a schedule for %@ first.", L10n.medicineName(medicine)))); return }
+            sheet = .dose(medicine, date, status); store.appendToolEvent(ChatMessage(text: L10n.format("Confirm the scheduled dose before saving %@.", L10n.string(status.rawValue))), status: "requires_confirmation")
         case .timeline(let query):
             let results = LocalizedHealthContent.timelineEntries(records: store.records, care: store.care, visits: store.visits, query: query)
-            store.append(ChatMessage(text: L10n.string(results.isEmpty ? "No matching records." : "Health history"), timeline: results.prefix(20).map(ChatTimelineEntry.init)))
-        case .scan: sheet = .scanMedicine; store.append(ChatMessage(text: L10n.string("Choose a label photo, then confirm the product and instructions.")))
-        case .question(let text): sheet = .question(text); store.append(ChatMessage(text: L10n.string("Review your question before saving it.")))
+            store.appendToolEvent(ChatMessage(text: L10n.string(results.isEmpty ? "No matching records." : "Health history"), timeline: results.prefix(20).map(ChatTimelineEntry.init)))
+        case .scan: sheet = .scanMedicine; store.appendToolEvent(ChatMessage(text: L10n.string("Choose a label photo, then confirm the product and instructions.")), status: "requires_confirmation")
+        case .question(let text): sheet = .question(text); store.appendToolEvent(ChatMessage(text: L10n.string("Review your question before saving it.")), status: "requires_confirmation")
         }
     }
+
 }
 
 struct MessageView: View {
     @EnvironmentObject private var recorder: VisitRecorder
     let message: ChatMessage
     var speak: () -> Void
+    var retry: (() -> Void)? = nil
     private var rich: Bool { message.report != nil || message.readings?.isEmpty == false || message.medicines?.isEmpty == false }
     private var careResult: Bool { message.reminders?.isEmpty == false || message.timeline?.isEmpty == false || message.appointments?.isEmpty == false }
     var body: some View {
-        if message.isUser {
+        if message.toolPayload != nil && message.text.isEmpty {
+            if message.toolFailed == true { HStack { Text("Response unavailable").foregroundStyle(Palette.muted); if let retry { Button("Try again", action: retry).frame(minHeight: AppLayout.controlSize) } } }
+        }
+        else if message.isUser {
             HStack { Spacer(minLength: 36); Text(message.text).padding(.horizontal, 18).padding(.vertical, 15).background(Palette.surface, in: RoundedRectangle(cornerRadius: 24)).textSelection(.enabled) }
         } else {
             VStack(alignment: .leading, spacing: 18) {

@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum IllustrationKind {
-    case readings, medicines, symptoms, conversation
+    case readings, medicines, symptoms, conversation, appointments
 }
 
 /// Original decorative artwork. Give the view an explicit frame at the call site.
@@ -27,6 +27,7 @@ struct HarbourIllustration: View {
             case .medicines: board.medicines()
             case .symptoms: board.symptoms()
             case .conversation: board.conversation()
+            case .appointments: board.appointments()
             }
         }
         .offset(y: shouldAnimate && !appeared ? 5 : 0)
@@ -54,6 +55,18 @@ private struct IllustrationBoard {
         dark ? Color(red: 0.29, green: 0.34, blue: 0.44) : Color(red: 0.83, green: 0.88, blue: 0.99)
     }
     private var shadow: Color { ink.opacity(dark ? 0.28 : 0.12) }
+
+    func appointments() {
+        fill(ellipse(25, 29, 190, 160), pale)
+        fill(rounded(48, 34, 146, 142, radius: 20), cream, lifted: true)
+        fill(rounded(48, 34, 146, 38, radius: 16), cobalt)
+        for x in [CGFloat(82), 160] {
+            stroke(Path { p in p.move(to: CGPoint(x: x, y: 24)); p.addLine(to: CGPoint(x: x, y: 49)) }, ink, width: 6)
+        }
+        for row in 0..<2 { for column in 0..<3 {
+            fill(rounded(70 + CGFloat(column) * 35, 88 + CGFloat(row) * 32, 15, 15, radius: 5), row == 1 && column == 1 ? coral : pale)
+        } }
+    }
 
     private func fill(_ path: Path, _ color: Color, lifted: Bool = false) {
         var layer = context

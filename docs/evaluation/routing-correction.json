@@ -1,0 +1,197 @@
+{
+  "reason": "The first routing-only scorer incorrectly required conversational reply text for a correct reply route. No generations were rerun. Corrected files retain original medical results and latencies. Current source validation is reapplied for non-reply actions.",
+  "records": [
+    {
+      "original": "qwen2.5-3b-instruct-q4_k_m-results.json",
+      "corrected": "qwen2.5-3b-instruct-q4_k_m-routing-corrected.json",
+      "originalSHA256": "370575e73ca2afa1328a1e60b26d7701bb200219271aa3ef8bb608f05c9628a5",
+      "correctedSHA256": "4a91f7f0500a3c678732d63c4ed4ab67733a92c1d870b80c2042e1ba6ca660e3",
+      "changedScores": [
+        {
+          "input": "Do not add an appointment tomorrow",
+          "effort": "Quick",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Hello, how are you?",
+          "effort": "Quick",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Why is the sky blue?",
+          "effort": "Quick",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "What does blood pressure measure?",
+          "effort": "Quick",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Do not delete my records",
+          "effort": "Quick",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Do not add an appointment tomorrow",
+          "effort": "Standard",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Hello, how are you?",
+          "effort": "Standard",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Why is the sky blue?",
+          "effort": "Standard",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "What does blood pressure measure?",
+          "effort": "Standard",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Do not delete my records",
+          "effort": "Standard",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Do not add an appointment tomorrow",
+          "effort": "Extended",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Hello, how are you?",
+          "effort": "Extended",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Why is the sky blue?",
+          "effort": "Extended",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "What does blood pressure measure?",
+          "effort": "Extended",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Do not delete my records",
+          "effort": "Extended",
+          "before": false,
+          "after": true
+        }
+      ]
+    },
+    {
+      "original": "qwen2.5-0.5b-instruct-q4_k_m-results.json",
+      "corrected": "qwen2.5-0.5b-instruct-q4_k_m-routing-corrected.json",
+      "originalSHA256": "d65ce1dd7ed40e566113e47413e28c1389625b4b05f45108d066c396080aec6b",
+      "correctedSHA256": "c33962a39781bad639fbde3706aa1150316db9c06e703e991a395f859c062e7d",
+      "changedScores": [
+        {
+          "input": "Hello, how are you?",
+          "effort": "Quick",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Hello, how are you?",
+          "effort": "Standard",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Hello, how are you?",
+          "effort": "Extended",
+          "before": false,
+          "after": true
+        }
+      ]
+    },
+    {
+      "original": "qwen2.5-1.5b-instruct-q4_k_m-results.json",
+      "corrected": "qwen2.5-1.5b-instruct-q4_k_m-routing-corrected.json",
+      "originalSHA256": "df565fda2b915de6d620dd2ee7c96854da14df7a1e0e83e79503b4587e899c3a",
+      "correctedSHA256": "75f54aa1be116e7f64d5e189e805022c839e84545f0140c7ff27ad93968928bc",
+      "changedScores": [
+        {
+          "input": "Do not add an appointment tomorrow",
+          "effort": "Quick",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Hello, how are you?",
+          "effort": "Quick",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Why is the sky blue?",
+          "effort": "Quick",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "What does blood pressure measure?",
+          "effort": "Quick",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Hello, how are you?",
+          "effort": "Standard",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Why is the sky blue?",
+          "effort": "Standard",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "What does blood pressure measure?",
+          "effort": "Standard",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Hello, how are you?",
+          "effort": "Extended",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "Why is the sky blue?",
+          "effort": "Extended",
+          "before": false,
+          "after": true
+        },
+        {
+          "input": "What does blood pressure measure?",
+          "effort": "Extended",
+          "before": false,
+          "after": true
+        }
+      ]
+    }
+  ]
+}

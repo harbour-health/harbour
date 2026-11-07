@@ -1,0 +1,346 @@
+{
+  "host": "macOS-27.0-arm64-arm-64bit",
+  "datasetSHA256": "b458dcc23610d8373e851b3d1bb9715905e29bddfd6c4fc52dabc22c5786c4e7",
+  "executableSHA256": "c94880c0b7eb9a4965f3e1c1ac7970759ca626f170b58d2fa9c800d01963a2d9",
+  "sourceSHA256": {
+    "HarbourCore/Sources/HarbourCore/ToolPlanner.swift": "20198960e9a96ae2fba0c24b2a61d94e2bec60f8593cb5a6eae02cfb0ef6ced9",
+    "HarbourCore/Sources/HarbourCore/Visits.swift": "dfb7af15cba7487cee3f704dae00dc94d6f333ba376998bba723affe14ae4792",
+    "HarbourCore/Sources/HarbourCore/VisitDirections.swift": "bb8807f9faf00f097ea489ad21f2b70eba8b6c7e5430a9fa5b0eee99115a9264",
+    "HarbourRuntime/Sources/ModelProbe/TextEvaluation.swift": "f6cd6b4ac8d06153714a8d16551a717c403407a5bad28062185f17c3cb8b8771",
+    "HarbourRuntime/Sources/ModelProbe/BaselineVisitPrompt.swift": "c9ba9ede281502f9dacd06737eac04090df144352eb97979c9b17c3b06ec75d9",
+    "HarbourRuntime/Sources/ModelProbe/BaselineVisitGrammar.swift": "2f497994b47231e3eb0b9f7f4a91ba5b982ff559d1ffdf58c4864e30ffd43a7e",
+    "HarbourRuntime/Sources/HarbourRuntime/VisitSummaryOutputGrammar.swift": "04f8bc6ab004db1bf97388492f1f04089e9576020a876237587673410ff3e126"
+  },
+  "models": [
+    {
+      "file": "qwen2.5-0.5b-instruct-q4_k_m.gguf",
+      "bytes": 491400032,
+      "sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+      "exitCode": 0,
+      "summary": {
+        "routing/Quick": {
+          "passed": 20,
+          "total": 31,
+          "errors": 0,
+          "seconds": 11.703825950622559
+        },
+        "conversation/Quick": {
+          "passed": 10,
+          "total": 12,
+          "errors": 0,
+          "seconds": 2.5153958797454834
+        },
+        "tool-result/Quick": {
+          "passed": 2,
+          "total": 6,
+          "errors": 0,
+          "seconds": 1.0206058025360107
+        },
+        "routing/Standard": {
+          "passed": 19,
+          "total": 31,
+          "errors": 0,
+          "seconds": 10.402008056640625
+        },
+        "conversation/Standard": {
+          "passed": 10,
+          "total": 12,
+          "errors": 0,
+          "seconds": 2.5386109352111816
+        },
+        "tool-result/Standard": {
+          "passed": 2,
+          "total": 6,
+          "errors": 0,
+          "seconds": 0.9461379051208496
+        },
+        "routing/Extended": {
+          "passed": 19,
+          "total": 31,
+          "errors": 0,
+          "seconds": 9.85560405254364
+        },
+        "conversation/Extended": {
+          "passed": 10,
+          "total": 12,
+          "errors": 0,
+          "seconds": 2.4218658208847046
+        },
+        "tool-result/Extended": {
+          "passed": 2,
+          "total": 6,
+          "errors": 0,
+          "seconds": 0.8321958780288696
+        },
+        "medical/baseline": {
+          "passed": 12,
+          "total": 35,
+          "errors": 0,
+          "seconds": 14.012309312820435,
+          "rawFacts": {
+            "correctFacts": 1,
+            "expectedFacts": 37,
+            "extraFacts": 5,
+            "exactCases": 8
+          },
+          "validatedFacts": {
+            "correctFacts": 10,
+            "expectedFacts": 34,
+            "extraFacts": 0,
+            "exactCases": 15
+          },
+          "completedFacts": {
+            "correctFacts": 10,
+            "expectedFacts": 34,
+            "extraFacts": 0,
+            "exactCases": 15
+          }
+        },
+        "medical/revised": {
+          "passed": 32,
+          "total": 35,
+          "errors": 0,
+          "seconds": 11.583047032356262,
+          "rawFacts": {
+            "correctFacts": 1,
+            "expectedFacts": 37,
+            "extraFacts": 0,
+            "exactCases": 8
+          },
+          "validatedFacts": {
+            "correctFacts": 10,
+            "expectedFacts": 34,
+            "extraFacts": 0,
+            "exactCases": 15
+          },
+          "completedFacts": {
+            "correctFacts": 34,
+            "expectedFacts": 34,
+            "extraFacts": 0,
+            "exactCases": 35
+          }
+        }
+      }
+    },
+    {
+      "file": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+      "bytes": 1117320736,
+      "sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+      "exitCode": 0,
+      "summary": {
+        "routing/Quick": {
+          "passed": 24,
+          "total": 31,
+          "errors": 0,
+          "seconds": 25.191402912139893
+        },
+        "conversation/Quick": {
+          "passed": 11,
+          "total": 12,
+          "errors": 0,
+          "seconds": 4.417814016342163
+        },
+        "tool-result/Quick": {
+          "passed": 3,
+          "total": 6,
+          "errors": 0,
+          "seconds": 2.338752031326294
+        },
+        "routing/Standard": {
+          "passed": 24,
+          "total": 31,
+          "errors": 0,
+          "seconds": 28.151871919631958
+        },
+        "conversation/Standard": {
+          "passed": 11,
+          "total": 12,
+          "errors": 0,
+          "seconds": 4.6398069858551025
+        },
+        "tool-result/Standard": {
+          "passed": 3,
+          "total": 6,
+          "errors": 0,
+          "seconds": 2.116737961769104
+        },
+        "routing/Extended": {
+          "passed": 24,
+          "total": 31,
+          "errors": 0,
+          "seconds": 25.225266218185425
+        },
+        "conversation/Extended": {
+          "passed": 11,
+          "total": 12,
+          "errors": 0,
+          "seconds": 4.227629899978638
+        },
+        "tool-result/Extended": {
+          "passed": 3,
+          "total": 6,
+          "errors": 0,
+          "seconds": 2.03164803981781
+        },
+        "medical/baseline": {
+          "passed": 20,
+          "total": 35,
+          "errors": 0,
+          "seconds": 57.774654030799866,
+          "rawFacts": {
+            "correctFacts": 13,
+            "expectedFacts": 37,
+            "extraFacts": 7,
+            "exactCases": 15
+          },
+          "validatedFacts": {
+            "correctFacts": 20,
+            "expectedFacts": 34,
+            "extraFacts": 3,
+            "exactCases": 22
+          },
+          "completedFacts": {
+            "correctFacts": 20,
+            "expectedFacts": 34,
+            "extraFacts": 3,
+            "exactCases": 22
+          }
+        },
+        "medical/revised": {
+          "passed": 33,
+          "total": 35,
+          "errors": 0,
+          "seconds": 62.83204984664917,
+          "rawFacts": {
+            "correctFacts": 19,
+            "expectedFacts": 37,
+            "extraFacts": 9,
+            "exactCases": 18
+          },
+          "validatedFacts": {
+            "correctFacts": 25,
+            "expectedFacts": 34,
+            "extraFacts": 1,
+            "exactCases": 26
+          },
+          "completedFacts": {
+            "correctFacts": 34,
+            "expectedFacts": 34,
+            "extraFacts": 1,
+            "exactCases": 34
+          }
+        }
+      }
+    },
+    {
+      "file": "qwen2.5-3b-instruct-q4_k_m.gguf",
+      "bytes": 2104932768,
+      "sha256": "626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d",
+      "exitCode": 0,
+      "summary": {
+        "routing/Quick": {
+          "passed": 24,
+          "total": 31,
+          "errors": 0,
+          "seconds": 53.29083287715912
+        },
+        "conversation/Quick": {
+          "passed": 12,
+          "total": 12,
+          "errors": 0,
+          "seconds": 14.330520987510681
+        },
+        "tool-result/Quick": {
+          "passed": 4,
+          "total": 6,
+          "errors": 0,
+          "seconds": 5.7397578954696655
+        },
+        "routing/Standard": {
+          "passed": 24,
+          "total": 31,
+          "errors": 0,
+          "seconds": 52.38769817352295
+        },
+        "conversation/Standard": {
+          "passed": 12,
+          "total": 12,
+          "errors": 0,
+          "seconds": 14.016829013824463
+        },
+        "tool-result/Standard": {
+          "passed": 4,
+          "total": 6,
+          "errors": 0,
+          "seconds": 5.7692631483078
+        },
+        "routing/Extended": {
+          "passed": 24,
+          "total": 31,
+          "errors": 0,
+          "seconds": 54.530734062194824
+        },
+        "conversation/Extended": {
+          "passed": 12,
+          "total": 12,
+          "errors": 0,
+          "seconds": 14.123815059661865
+        },
+        "tool-result/Extended": {
+          "passed": 4,
+          "total": 6,
+          "errors": 0,
+          "seconds": 5.824576139450073
+        },
+        "medical/baseline": {
+          "passed": 26,
+          "total": 35,
+          "errors": 0,
+          "seconds": 90.35492539405823,
+          "rawFacts": {
+            "correctFacts": 21,
+            "expectedFacts": 37,
+            "extraFacts": 15,
+            "exactCases": 16
+          },
+          "validatedFacts": {
+            "correctFacts": 26,
+            "expectedFacts": 34,
+            "extraFacts": 2,
+            "exactCases": 28
+          },
+          "completedFacts": {
+            "correctFacts": 26,
+            "expectedFacts": 34,
+            "extraFacts": 2,
+            "exactCases": 28
+          }
+        },
+        "medical/revised": {
+          "passed": 33,
+          "total": 35,
+          "errors": 0,
+          "seconds": 181.51677095890045,
+          "rawFacts": {
+            "correctFacts": 22,
+            "expectedFacts": 37,
+            "extraFacts": 36,
+            "exactCases": 8
+          },
+          "validatedFacts": {
+            "correctFacts": 24,
+            "expectedFacts": 34,
+            "extraFacts": 2,
+            "exactCases": 25
+          },
+          "completedFacts": {
+            "correctFacts": 34,
+            "expectedFacts": 34,
+            "extraFacts": 0,
+            "exactCases": 35
+          }
+        }
+      }
+    }
+  ]
+}

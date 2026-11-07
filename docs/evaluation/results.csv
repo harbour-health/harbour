@@ -1,0 +1,8 @@
+Task,qwen2.5-0.5b-instruct-q4_k_m,qwen2.5-1.5b-instruct-q4_k_m,qwen2.5-3b-instruct-q4_k_m
+Routing,20/31,27/31,29/31
+Conversation,10/12,11/12,12/12
+Tool narration · development,4/6,5/6,6/6
+Tool narration · holdout,7/10,9/10,8/10
+Titles,4/5,4/5,3/5
+Visit summary · development,7/35,23/35,28/35
+Visit summary · holdout,4/20,11/20,12/20

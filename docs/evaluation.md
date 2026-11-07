@@ -1,5 +1,7 @@
 # Evaluation
 
+Current expanded text-only measurements and raw artifacts are in [text model evaluation](text-model-evaluation.md). Earlier CI results below are historical, not the November 6 suite.
+
 ## Medication and appointment checks
 
 The current suite adds transcript-to-record cases for twice daily, numeric daily counts, weekly/monthly frequency, multiple explicit clock times, appointment details, Canadian French appointments, and negated changes. `Evaluation.visitSummaryCases` supplies expected JSON and structured facts. Core tests run those fixed outputs on every push/PR; these are parser and validation regressions, not measurements of model accuracy or speech-recognition accuracy.
