@@ -145,7 +145,7 @@ public enum ToolPlanner {
            matches(input, "\\b(?:ne|n')\\s*.{0,60}\\b(?:pas|jamais|plus)\\b|\\b(?:pas|jamais|sans|si|puis-je|dois-je|devrais-je|faudrait-il|pourrais-je|peut-etre|do not|don't|never|without|should i|could i|can i|what if)\\b") { throw PlannerError.forbidden }
         switch decision.tool {
         case .createAppointment:
-            guard AppointmentRules.isAppointment(original) else { throw PlannerError.forbidden }
+            guard AppointmentRules.isCreationRequest(original) else { throw PlannerError.forbidden }
             return .appointment(original)
         case .listAppointments: return .appointments
         case .reply:
@@ -169,6 +169,8 @@ public enum ToolPlanner {
             }
             return .add(medication, times, frequency)
         case .removeMedicine:
+            // A future/approval condition cannot become a present unconditional removal.
+            guard !matches(input, #"\b(?:if|unless|until|when|once|after|before|pending|provided|si|sauf|quand|lorsque|apres|avant|des que|a condition|sous reserve)\b"#) else { throw PlannerError.forbidden }
             let meds = Catalog.mentioned(in: original, saved: records.medicines).filter { candidate in records.medicines.contains { $0.id == candidate.id } }
             guard meds.count == 1 else { throw PlannerError.missingMedicine }; return .remove(meds[0])
         case .listMedicines: return .medicines

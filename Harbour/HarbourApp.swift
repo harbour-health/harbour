@@ -103,6 +103,7 @@ struct RootView: View {
         .task {
             #if DEBUG
             if ProcessInfo.processInfo.arguments.contains("--medicine-review-fixture") { store.prepareMedicineReviewScreenshot() }
+            if ProcessInfo.processInfo.arguments.contains("--appointment-summary-fixture") { store.prepareAppointmentSummaryFixture() }
             if ProcessInfo.processInfo.arguments.contains("--medication-draft-fixture"),
                let action = try? ToolPlanner.validate(.init(tool: .addMedicine), original: "Add Metformin 500 mg 2 times daily", records: store.records),
                case .add(let medication, let times, let frequency) = action { sheet = .medicineDraft(medication, times, frequency) }
@@ -255,9 +256,15 @@ struct SymptomRow: View {
 }
 
 struct ShareView: UIViewControllerRepresentable {
+    @Environment(\.dismiss) private var dismiss
     let url: URL
     func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        let controller = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        let close = dismiss
+        controller.completionWithItemsHandler = { _, _, _, _ in
+            Task { @MainActor in close() }
+        }
+        return controller
     }
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
