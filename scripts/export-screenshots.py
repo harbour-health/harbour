@@ -68,7 +68,7 @@ TITLES = {
     '106-chat-reminders': 'Reminders in chat', '107-chat-schedule-review': 'Chat · Schedule confirmation',
     '108-chat-dose-review': 'Chat · Dose confirmation', '109-chat-history': 'Health history in chat',
     '110-chat-question-review': 'Chat · Appointment question', '111-chat-label-scan': 'Chat · Label entry',
-    '112-label-entry': 'Medicine label entry', '113-voice-mode': 'Voice conversation',
+    '112-label-entry': 'Medicine label entry', '113-voice-mode': 'Voice conversation · Previous interface',
     '114-voice-input-error': 'On-device voice unavailable', '115-notification-setting': 'Reminder notifications', '116-today-large-text': 'Today · Largest text',
     '117-french-today': 'Aujourd’hui · Français', '118-french-chat': 'Conversation · Français',
     '119-french-records': 'Dossier · Français', '120-french-visits': 'Consultations · Français',
@@ -103,6 +103,11 @@ TITLES = {
     '161-trends-dark': 'Reading trends · Dark',
     '162-medications-dark': 'Medications · Dark',
     '163-voice-dark': 'Voice selection · Dark',
+    '164-voice-conversation-light': 'Full-screen voice',
+    '165-voice-conversation-history': 'Chat after voice',
+    '166-voice-conversation-french-dark': 'Conversation vocale · Sombre',
+    '167-voice-conversation-landscape': 'Voice · Landscape',
+    '168-voice-conversation-large-text': 'Voice · Largest text',
 
 
 }

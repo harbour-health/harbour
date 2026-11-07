@@ -69,6 +69,11 @@ def main():
     app = archive / 'Products' / info['ApplicationPath']
     if not (app / 'PrivacyInfo.xcprivacy').exists():
         raise SystemExit('Archive is missing the app privacy manifest; rebuild it.')
+    for framework in sorted((app / 'Frameworks').glob('*.framework')):
+        metadata = plistlib.loads((framework / 'Info.plist').read_bytes())
+        minimum = metadata.get('MinimumOSVersion', '')
+        if not re.fullmatch(r'[0-9]+(?:\.[0-9]+){0,2}', minimum) or int(minimum.split('.')[0]) < 8:
+            raise SystemExit(f'{framework.name} is missing a valid MinimumOSVersion; fix its packaging and rebuild the archive.')
     options = {'method': 'app-store-connect', 'destination': 'upload' if args.upload else 'export',
                'teamID': args.team_id, 'signingStyle': 'automatic', 'uploadSymbols': True,
                'manageAppVersionAndBuildNumber': False, 'testFlightInternalTestingOnly': True}

@@ -112,14 +112,7 @@ struct VisitRecordingView: View {
                 VisitWaveform(levels: recorder.levels).frame(height: 112).padding(.horizontal, 18)
                 if recorder.state == .preparing || recorder.state == .finishing { ProgressView().controlSize(.large) }
                 if !recorder.status.isEmpty { Text(recorder.status).font(.subheadline).foregroundStyle(Palette.muted).multilineTextAlignment(.center) }
-                HStack(spacing: 36) {
-                    if recorder.state == .recording || recorder.state == .paused {
-                        Button {
-                            let id = recorder.visitID; saving = true
-                            Task { await recorder.finish(); saving = false; finished = id }
-                        } label: { Image(systemName: "stop.fill").font(.system(size: 24)).frame(width: 64, height: 64).background(Palette.surface, in: Circle()) }
-                            .accessibilityLabel("Finish recording").accessibilityIdentifier("finishVisitRecording").disabled(saving)
-                    }
+                VStack(spacing: 20) {
                     Button {
                         switch recorder.state {
                         case .idle: Task { await recorder.start(into: store) }
@@ -134,6 +127,18 @@ struct VisitRecordingView: View {
                             .frame(width: 104, height: 104).background(Palette.coral, in: Circle())
                     }.buttonStyle(PressFeedback()).accessibilityLabel(L10n.string(recorder.state == .recording ? "Pause recording" : recorder.state == .paused ? "Resume recording" : recorder.state == .preparing ? "Cancel recording" : "Start recording"))
                         .accessibilityIdentifier("visitRecordingControl").disabled(saving || recorder.state == .finishing)
+                    Button {
+                        let id = recorder.visitID; saving = true
+                        Task { await recorder.finish(); saving = false; finished = id }
+                    } label: {
+                        Image(systemName: "stop.fill").font(.system(size: 24))
+                            .frame(width: 64, height: 64).background(Palette.surface, in: Circle())
+                    }
+                    .buttonStyle(PressFeedback())
+                    .accessibilityLabel("Finish recording").accessibilityIdentifier("finishVisitRecording")
+                    .opacity(recorder.state == .recording || recorder.state == .paused ? 1 : 0)
+                    .disabled(saving || !(recorder.state == .recording || recorder.state == .paused))
+                    .accessibilityHidden(!(recorder.state == .recording || recorder.state == .paused))
                 }.padding(.vertical, 12)
                 Text(L10n.string(recorder.state == .idle ? "Start recording" : recorder.state == .paused ? "Resume or finish" : "")).font(.body.weight(.medium))
             }.padding(.horizontal, 28).padding(.bottom, 32).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity)

@@ -9,7 +9,8 @@ struct ChatView: View {
     @Binding var sheet: AppSheet?
     @StateObject private var voice = VoiceService()
     @ObservedObject private var voiceAssets = KokoroAssets.shared
-    @State private var voiceMode = false
+    @Binding var voiceMode: Bool
+    @State private var voiceDraftBackup: String?
     @State private var pausedVoiceActivity = false
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.isChatVisible) private var isChatVisible
@@ -59,9 +60,21 @@ struct ChatView: View {
         }
     }
     private var presentationContent: some View {
-        conversationLayout.padding(.bottom, dockClearance)
+        ZStack {
+            if voiceMode {
+                VoiceConversationView(phase: voiceScreenPhase, visualization: voice.visualization,
+                    error: voice.error, downloadProgress: voiceAssets.downloading ? voiceAssets.progress : nil,
+                    toggleMicrophone: toggleVoiceMicrophone, end: endVoiceConversation,
+                    cancelDownload: { voice.stop(); voiceAssets.cancel() })
+                    .transition(.opacity.combined(with: .scale(scale: 0.96)))
+            } else {
+                conversationLayout.padding(.bottom, dockClearance).transition(.opacity)
+            }
+        }.frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.28), value: voiceMode)
         .background(Palette.canvas).foregroundStyle(Palette.ink)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(voiceMode ? .hidden : .visible, for: .navigationBar)
         .toolbar {
             if focused { ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { focused = false } } }
             ToolbarItem(placement: .principal) { Text(store.chatTitle).font(.body.weight(.medium)).lineLimit(1).accessibilityIdentifier("chatTitle") }
@@ -74,13 +87,13 @@ struct ChatView: View {
         .sheet(isPresented: $toolSheet) { topicPicker.floatingDrawer(height: 420) }
         .confirmationDialog("Delete all records and chat?", isPresented: $deleteConfirmation, titleVisibility: .visible) { Button("Delete all", role: .destructive) { store.clear() }; Button("Cancel", role: .cancel) {} }
         .confirmationDialog(L10n.format("Remove %@ from your list?", removal.map(L10n.medicineName) ?? L10n.string("medicine")), isPresented: Binding(get: { removal != nil }, set: { if !$0 { removal = nil } }), titleVisibility: .visible) { Button("Remove", role: .destructive) { if let removal { store.removeMedicine(removal.id); store.appendToolEvent(ChatMessage(text: L10n.format("Removed %@ from your list.", L10n.medicineName(removal)))) }; removal = nil } }
-        .alert("Voice input", isPresented: Binding(get: { voice.error != nil }, set: { if !$0 { voice.error = nil } })) { Button("OK") { voice.error = nil } } message: { Text(voice.error ?? "") }
+        .alert("Voice input", isPresented: Binding(get: { voice.error != nil && !voiceMode }, set: { if !$0 { voice.error = nil } })) { Button("OK") { voice.error = nil } } message: { Text(voice.error ?? "") }
         .alert("Emergency signs", isPresented: Binding(get: { emergencyMessage != nil }, set: { if !$0 { emergencyMessage = nil } })) { Button("OK") { emergencyMessage = nil } } message: { Text(emergencyMessage ?? "") }
     }
     private var observedContent: some View {
         presentationContent.onChange(of: store.messages.last?.id) { narratePendingToolEvent() }
         .onChange(of: store.messages.last?.toolPayload) { narratePendingToolEvent() }
-        .onChange(of: isChatVisible) { if isChatVisible { narratePendingToolEvent() } }
+        .onChange(of: isChatVisible) { if isChatVisible { narratePendingToolEvent() } else { cancel() } }
         .onChange(of: busy) { if !busy { narratePendingToolEvent() } }
         .onChange(of: voiceActivityPhase) { syncVoiceActivity() }
         .onChange(of: sheet?.id) { old, new in voice.stop(); if old != nil && new == nil { store.closeToolDraft() } }
@@ -90,7 +103,8 @@ struct ChatView: View {
     var body: some View {
         observedContent.onChange(of: scenePhase) { handleScenePhase() }
         .onChange(of: recorder.active) { if recorder.active { cancel() } }
-        .onChange(of: voice.error) { if voice.error != nil { voiceMode = false } }
+        .onChange(of: store.error) { if voiceMode && store.error != nil { voice.stop() } }
+        .onChange(of: store.shareFile?.id) { if store.shareFile != nil { voice.stop() } }
         .onDisappear { cancel(preservingVoiceActivity: scenePhase != .active) }
     }
     private func handleScenePhase() {
@@ -118,11 +132,49 @@ struct ChatView: View {
                 .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { historySheet = false } } }
         }
     }
+    private var voiceScreenPhase: VoiceConversationPhase {
+        #if DEBUG
+        if voiceUIFixture, let value = ProcessInfo.processInfo.arguments.firstIndex(of: "--voice-ui-state"),
+           value + 1 < ProcessInfo.processInfo.arguments.count,
+           let phase = VoiceConversationPhase(rawValue: ProcessInfo.processInfo.arguments[value + 1]) { return phase }
+        #endif
+        if voice.preparingInput { return .connecting }
+        if voice.listening { return .listening }
+        if voice.finishing { return .finishing }
+        if voice.preparingSpeech || busy { return .thinking }
+        if voice.speaking { return .speaking }
+        return .paused
+    }
+    private var voiceUIFixture: Bool {
+        #if DEBUG
+        ProcessInfo.processInfo.arguments.contains("--voice-conversation-fixture")
+        #else
+        false
+        #endif
+    }
+    private func beginVoiceConversation() {
+        guard !busy, !recorder.active else { return }
+        #if DEBUG
+        if voiceUIFixture && store.messages.isEmpty {
+            store.append(ChatMessage(isUser: true, text: "Fictional voice screen test: prepare for my visit."))
+            store.append(ChatMessage(text: "Fictional voice screen test: we can prepare your questions."))
+        }
+        #endif
+        focused = false; voice.stop(); voiceDraftBackup = draft; draft = ""; voiceMode = true
+        if !voiceUIFixture { startVoiceTurn() }
+    }
+    private func endVoiceConversation() {
+        voiceMode = false; voice.stop(); draft = voiceDraftBackup ?? ""; voiceDraftBackup = nil
+    }
+    private func toggleVoiceMicrophone() {
+        if voice.listening { voice.stop(); draft = "" }
+        else if !busy { voice.stop(); startVoiceTurn() }
+    }
     private var voiceActivityPhase: HarbourActivityAttributes.Phase? {
         guard voiceMode else { return nil }
         if voice.listening { return .listening }
         if voice.finishing { return .finishing }
-        if voice.preparingSpeech { return .thinking }
+        if voice.preparingInput || voice.preparingSpeech { return .thinking }
         if voice.speaking { return .speaking }
         if busy { return .thinking }
         return .paused
@@ -140,21 +192,6 @@ struct ChatView: View {
     private var composer: some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 12) {
-                if voiceMode {
-                    HStack {
-                        Label(L10n.string(voice.listening ? "Listening" : voice.finishing ? "Finishing…" : voice.speaking ? "Speaking" : busy ? "Thinking…" : "Voice paused"), systemImage: "waveform").symbolEffect(.variableColor, options: .repeating, isActive: !reduceMotion && (voice.listening || voice.speaking)).foregroundStyle(Palette.coral)
-                        Spacer(); Button("End voice") { voiceMode = false; voice.stop() }.font(.body.weight(.medium)).frame(minHeight: AppLayout.controlSize).contentShape(Rectangle())
-                    }.accessibilityIdentifier("voiceModeStatus")
-                    if voiceAssets.downloading {
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack { Text("Downloading voice"); Spacer(); Text(L10n.format("%lld%% downloaded", Int64(voiceAssets.progress * 100))).foregroundStyle(Palette.muted) }
-                            ProgressView(value: voiceAssets.progress)
-                            Button("Cancel download") { voice.stop(); voiceAssets.cancel() }
-                        }.font(.subheadline)
-                    } else if voice.preparingSpeech {
-                        HStack(spacing: 10) { ProgressView(); Text("Preparing voice…").foregroundStyle(Palette.muted) }.font(.subheadline)
-                    }
-                }
                 TextField("Ask, record, or check something…", text: $draft, prompt: Text("Ask, record, or check something…").foregroundStyle(Palette.muted), axis: .vertical)
                     .lineLimit(2...6).font(.title3).focused($focused).accessibilityIdentifier("chatInput")
                     .padding(.horizontal, 6).padding(.top, 6)
@@ -179,21 +216,13 @@ struct ChatView: View {
                         }
                             .padding(.horizontal, 10).frame(minHeight: 48).contentShape(RoundedRectangle(cornerRadius: 10))
                     }.layoutPriority(-1).accessibilityLabel("Choose model").accessibilityValue(L10n.string(models.resolved.title) + ", " + models.effort.title).accessibilityIdentifier("modelSelector")
-                    if voiceMode {
-                        Button {
-                            if voice.listening { voice.finishUtterance() }
-                            else if voice.speaking { voice.stop(); startVoiceTurn() }
-                            else if !busy { startVoiceTurn() }
-                        } label: { Image(systemName: voice.listening ? "mic.fill" : "waveform").foregroundStyle(Palette.coral).frame(width: 44, height: 48) }.accessibilityLabel(L10n.string(voice.listening ? "Finish speaking" : "Resume voice"))
-                    } else {
                         Menu {
-                            Button("Voice conversation", systemImage: "waveform") { focused = false; voiceMode = true; startVoiceTurn() }
+                            Button("Voice conversation", systemImage: "waveform", action: beginVoiceConversation).accessibilityIdentifier("startVoiceConversation")
                             Button(L10n.string(voice.listening ? "Finish dictation" : "Dictate message"), systemImage: "mic") {
                                 if voice.listening { voice.finishUtterance() }
                                 else { let original = draft; Task { await voice.start { transcript in draft = original.isEmpty ? transcript : original + " " + transcript } } }
                             }
-                        } label: { Image(systemName: voice.listening ? "mic.fill" : "mic").foregroundStyle(voice.listening ? Palette.coral : Palette.ink).frame(width: 44, height: 48) }.accessibilityLabel("Voice options").disabled(busy || recorder.active)
-                    }
+                        } label: { Image(systemName: voice.listening ? "mic.fill" : "mic").foregroundStyle(voice.listening ? Palette.coral : Palette.ink).frame(width: 44, height: 48) }.accessibilityLabel("Voice options").accessibilityIdentifier("voiceOptions").disabled(busy || recorder.active)
                     Button { busy ? cancel() : send() } label: {
                         Image(systemName: busy ? "stop.fill" : "arrow.up").font(.body.weight(.semibold))
                             .foregroundStyle(Palette.canvas).frame(width: 44, height: 44).background(Palette.ink, in: Circle())
@@ -223,14 +252,14 @@ struct ChatView: View {
         }.background(Palette.canvas)
     }
     private func startVoiceTurn() {
-        guard voiceMode, !busy, sheet == nil, !modelSheet, !toolSheet, !recorder.active, scenePhase == .active else { return }
+        guard !voiceUIFixture, voiceMode, !busy, sheet == nil, !modelSheet, !toolSheet, !recorder.active, scenePhase == .active else { return }
         Task { guard voiceMode, !busy, sheet == nil, !modelSheet, !toolSheet, !recorder.active, scenePhase == .active else { return }; await voice.start(transcript: { draft = $0 }, finished: { text in draft = text; send() }) }
     }
     private func speakReply() {
-        guard voiceMode, let reply = store.messages.last, !reply.isUser else { return }
+        guard voiceMode, sheet == nil, removal == nil, !deleteConfirmation, store.shareFile == nil, let reply = store.messages.last, !reply.isUser else { return }
         voice.speak(reply.spokenText, finished: { startVoiceTurn() })
     }
-    private func cancel(preservingVoiceActivity: Bool = false) { if let pending = store.messages.last, pending.toolPayload != nil && pending.text.isEmpty { store.failToolEvent(pending.id) }; pausedVoiceActivity = preservingVoiceActivity && (voiceMode || pausedVoiceActivity); if pausedVoiceActivity { SessionActivities.shared.update(.voice, phase: .paused) } else { SessionActivities.shared.end(.voice) }; voiceMode = false; operationID = UUID(); models.chatRequests.cancel(); voice.stop() }
+    private func cancel(preservingVoiceActivity: Bool = false) { if let pending = store.messages.last, pending.toolPayload != nil && pending.text.isEmpty { store.failToolEvent(pending.id) }; pausedVoiceActivity = preservingVoiceActivity && (voiceMode || pausedVoiceActivity); if pausedVoiceActivity { SessionActivities.shared.update(.voice, phase: .paused) } else { SessionActivities.shared.end(.voice) }; endVoiceConversation(); operationID = UUID(); models.chatRequests.cancel(); voice.stop() }
     private func send() {
         let input = draft.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !input.isEmpty, !busy else { return }

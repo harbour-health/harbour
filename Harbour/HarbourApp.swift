@@ -52,32 +52,56 @@ struct RootView: View {
     @EnvironmentObject private var alerts: CareNotifications
     @Environment(\.scenePhase) private var scenePhase
     @State private var tab = 0
+    @State private var voiceMode = false
+    @State private var pageDrag: CGFloat = 0
     @AppStorage("pendingSessionTab") private var pendingSessionTab = -1
     @State private var sheet: AppSheet?
     @State private var recordCategory: Int?
     @State private var keyboardVisible = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var body: some View {
-        TabView(selection: $tab) {
-            NavigationStack { TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1; tab = 2 }, openSymptoms: { recordCategory = 0; tab = 2 }, openVisits: { tab = 3 }).toolbar(.hidden, for: .tabBar) }
-                .tabItem { Label("Today", systemImage: tab == 0 ? "house.fill" : "house") }.tag(0)
-            NavigationStack { ChatView(sheet: $sheet).environment(\.isChatVisible, tab == 1).toolbar(.hidden, for: .tabBar) }
-                .tabItem { Label("Chat", systemImage: tab == 1 ? "bubble.left.and.bubble.right.fill" : "bubble.left.and.bubble.right") }.tag(1)
-            NavigationStack { RecordsView(sheet: $sheet, category: $recordCategory).toolbar(.hidden, for: .tabBar) }
-                .tabItem { Label("Records", systemImage: tab == 2 ? "heart.text.clipboard.fill" : "heart.text.clipboard") }.tag(2)
-            NavigationStack { VisitsView(sheet: $sheet).toolbar(.hidden, for: .tabBar) }
-                .tabItem { Label("Visits", systemImage: tab == 3 ? "person.2.fill" : "person.2") }.tag(3)
+        GeometryReader { geometry in
+            let pageSize = CGSize(width: max(0, geometry.size.width), height: max(0, geometry.size.height))
+            HStack(spacing: 0) {
+                NavigationStack { TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1; tab = 2 }, openSymptoms: { recordCategory = 0; tab = 2 }, openVisits: { tab = 3 }) }
+                    .frame(width: pageSize.width, height: pageSize.height)
+                    .accessibilityHidden(tab != 0)
+                NavigationStack { ChatView(sheet: $sheet, voiceMode: $voiceMode).environment(\.isChatVisible, tab == 1) }
+                    .frame(width: pageSize.width, height: pageSize.height)
+                    .accessibilityHidden(tab != 1)
+                NavigationStack { RecordsView(sheet: $sheet, category: $recordCategory) }
+                    .frame(width: pageSize.width, height: pageSize.height)
+                    .accessibilityHidden(tab != 2)
+                NavigationStack { VisitsView(sheet: $sheet) }
+                    .frame(width: pageSize.width, height: pageSize.height)
+                    .accessibilityHidden(tab != 3)
+            }
+            .offset(x: -CGFloat(tab) * pageSize.width + pageDrag)
+            .animation(reduceMotion ? nil : .spring(response: 0.34, dampingFraction: 0.9), value: tab)
+            .environment(\.mainPageSwipeAction, MainPageSwipeAction(canBegin: { index in
+                tab == index && !voiceMode && (index != 2 || recordCategory == nil) && !keyboardVisible && sheet == nil && store.shareFile == nil
+            }, update: { index, translation in
+                guard tab == index else { return }
+                let atEdge = (index == 0 && translation > 0) || (index == 3 && translation < 0)
+                var transaction = Transaction(); transaction.disablesAnimations = true
+                withTransaction(transaction) {
+                    pageDrag = atEdge ? translation * 0.2 : min(pageSize.width, max(-pageSize.width, translation))
+                }
+            }, finish: { index, translation, velocity, cancelled in
+                guard tab == index else { return }
+                let projected = translation + velocity * 0.16
+                let threshold = pageSize.width * 0.25
+                let step = !cancelled && abs(projected) > threshold ? (projected < 0 ? 1 : -1) : 0
+                withAnimation(reduceMotion ? nil : .spring(response: 0.34, dampingFraction: 0.9)) {
+                    tab = min(3, max(0, index + step))
+                    pageDrag = 0
+                }
+            }))
         }
-        .toolbar(.hidden, for: .tabBar)
+        .clipped()
         .environment(\.floatingDockClearance, keyboardVisible ? 0 : (tab == 1 ? 34 : 86))
-        .environment(\.mainPageSwipeAction, MainPageSwipeAction(canBegin: { index in
-            tab == index && (index != 2 || recordCategory == nil) && !keyboardVisible && sheet == nil && store.shareFile == nil
-        }, perform: { index, step in
-            guard tab == index, (index != 2 || recordCategory == nil), !keyboardVisible, sheet == nil, store.shareFile == nil else { return }
-            tab = min(3, max(0, index + step))
-        }))
         .overlay(alignment: .bottom) {
-            if !keyboardVisible { NavigationDock(selection: $tab) }
+            if !keyboardVisible && !voiceMode { NavigationDock(selection: $tab) }
         }
         .background(Palette.canvas)
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardVisible = true }

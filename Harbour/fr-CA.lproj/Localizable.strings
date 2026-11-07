@@ -670,3 +670,17 @@
 "Couldn’t pronounce this text." = "Impossible de prononcer ce texte.";
 "The downloaded voice files are incomplete. Download them again." = "Les fichiers de voix téléchargés sont incomplets. Téléchargez-les de nouveau.";
 "Couldn’t generate voice audio." = "Impossible de générer la voix.";
+
+"Connecting…" = "Connexion…";
+
+"Pause microphone" = "Mettre le microphone en pause";
+
+"Interrupt response" = "Interrompre la réponse";
+
+"Speak" = "Parler";
+
+"Resume" = "Reprendre";
+
+"Pause" = "Pause";
+
+"End" = "Terminer";

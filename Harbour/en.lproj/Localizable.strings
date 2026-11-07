@@ -670,3 +670,17 @@
 "Couldn’t pronounce this text." = "Couldn’t pronounce this text.";
 "The downloaded voice files are incomplete. Download them again." = "The downloaded voice files are incomplete. Download them again.";
 "Couldn’t generate voice audio." = "Couldn’t generate voice audio.";
+
+"Connecting…" = "Connecting…";
+
+"Pause microphone" = "Pause microphone";
+
+"Interrupt response" = "Interrupt response";
+
+"Speak" = "Speak";
+
+"Resume" = "Resume";
+
+"Pause" = "Pause";
+
+"End" = "End";

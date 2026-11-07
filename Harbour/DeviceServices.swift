@@ -57,6 +57,8 @@ enum SpeechLanguage {
 }
 
 @MainActor final class VoiceService: NSObject, ObservableObject {
+    let visualization = VoiceVisualization()
+    @Published private(set) var preparingInput = false
     @Published private(set) var listening = false
     @Published private(set) var speaking = false
     @Published private(set) var finishing = false
@@ -69,6 +71,7 @@ enum SpeechLanguage {
     private var turn = VoiceTurn()
     private var generation = UUID()
     @Published private(set) var preparingSpeech = false
+    private var hasPlaybackTap = false
     private var playback = AVAudioEngine()
     private var player = AVAudioPlayerNode()
     private var speechTask: Task<Void, Never>?
@@ -113,7 +116,7 @@ enum SpeechLanguage {
     }
     func start(transcript: @escaping (String) -> Void, finished: ((String) -> Void)? = nil) async {
         stop(); let current = turn.begin(); generation = current
-        received = transcript; completed = finished; self.transcript = ""; error = nil
+        received = transcript; completed = finished; self.transcript = ""; error = nil; preparingInput = true
         guard UIApplication.shared.applicationState == .active else { stop(); return }
         let speech = await withCheckedContinuation { continuation in SFSpeechRecognizer.requestAuthorization { continuation.resume(returning: $0) } }
         guard generation == current else { return }
@@ -131,7 +134,14 @@ enum SpeechLanguage {
             self.request = request
             let input = engine.inputNode, format = input.outputFormat(forBus: 0)
             guard format.sampleRate > 0 else { throw NSError(domain: "Audio", code: 1, userInfo: [NSLocalizedDescriptionKey: L10n.string("No microphone is available.")]) }
-            input.installTap(onBus: 0, bufferSize: 1024, format: format) { buffer, _ in request.append(buffer) }; hasTap = true
+            input.installTap(onBus: 0, bufferSize: 1024, format: format) { [weak self] buffer, _ in
+                request.append(buffer)
+                let level = Self.audioLevel(buffer)
+                Task { @MainActor in
+                    guard let self, self.generation == current, self.listening else { return }
+                    self.visualization.update(level)
+                }
+            }; hasTap = true
             recognition = recognizer.recognitionTask(with: request) { [weak self] result, failure in
                 Task { @MainActor in
                     guard let self, self.generation == current else { return }
@@ -148,7 +158,7 @@ enum SpeechLanguage {
                     if failure != nil && !self.finishing { self.stop(); self.error = L10n.string("Voice input stopped. Please try again.") }
                 }
             }
-            engine.prepare(); try engine.start(); listening = true
+            engine.prepare(); try engine.start(); preparingInput = false; listening = true
         } catch { stop(); self.error = L10n.string(error.localizedDescription) }
     }
     func finishUtterance() {
@@ -164,12 +174,12 @@ enum SpeechLanguage {
         if let value { callback?(value) }
         else if callback != nil { error = L10n.string("No speech was recognized. Please try again.") }
     }
-    private func stopMicrophone() { engine.stop(); if hasTap { engine.inputNode.removeTap(onBus: 0); hasTap = false } }
+    private func stopMicrophone() { visualization.reset(); engine.stop(); if hasTap { engine.inputNode.removeTap(onBus: 0); hasTap = false } }
     func stop() {
         generation = UUID(); turn.cancel(); silence?.cancel(); finalTimeout?.cancel()
-        speechTask?.cancel(); speechTask = nil; spoken = nil; player.stop(); playback.stop(); playback.reset(); queuedBuffers = 0; allSpeechScheduled = false; preparingSpeech = false; speaking = false
+        speechTask?.cancel(); speechTask = nil; spoken = nil; player.stop(); playback.stop(); if hasPlaybackTap { playback.mainMixerNode.removeTap(onBus: 0); hasPlaybackTap = false }; playback.reset(); queuedBuffers = 0; allSpeechScheduled = false; preparingSpeech = false; speaking = false
         stopMicrophone(); request?.endAudio(); recognition?.cancel(); recognition = nil; request = nil
-        listening = false; finishing = false; received = nil; completed = nil
+        preparingInput = false; listening = false; finishing = false; received = nil; completed = nil
         if audioSessionOwned { try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation); audioSessionOwned = false }
     }
     func speak(_ text: String, finished: (() -> Void)? = nil) {
@@ -189,6 +199,14 @@ enum SpeechLanguage {
                 if player.engine == nil { playback.attach(player); playback.connect(player, to: playback.mainMixerNode, format: format) }
                 let session = AVAudioSession.sharedInstance()
                 try session.setCategory(.playback, mode: .spokenAudio); try session.setActive(true); audioSessionOwned = true
+                playback.mainMixerNode.installTap(onBus: 0, bufferSize: 1024, format: nil) { [weak self] buffer, _ in
+                    let level = Self.audioLevel(buffer)
+                    Task { @MainActor in
+                        guard let self, self.generation == current, self.speaking else { return }
+                        self.visualization.update(level)
+                    }
+                }
+                hasPlaybackTap = true
                 try playback.start()
                 for chunk in KokoroText.chunks(text) {
                     try Task.checkCancellation()
@@ -215,6 +233,12 @@ enum SpeechLanguage {
             } catch is CancellationError { }
             catch { if generation == current { stop(); self.error = L10n.format("Couldn’t play the response. %@", L10n.string(error.localizedDescription)) } }
         }
+    }
+    nonisolated private static func audioLevel(_ buffer: AVAudioPCMBuffer) -> Double {
+        guard let samples = buffer.floatChannelData?[0], buffer.frameLength > 0 else { return 0 }
+        var sum: Double = 0
+        for index in 0..<Int(buffer.frameLength) { let value = Double(samples[index]); sum += value * value }
+        return sqrt(sum / Double(buffer.frameLength))
     }
     private func finishSpeechIfNeeded(_ current: UUID) {
         guard generation == current, allSpeechScheduled, queuedBuffers == 0 else { return }

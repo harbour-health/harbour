@@ -62,7 +62,7 @@ for name, sdk in [('mac', 'macosx'), ('sim', 'iphonesimulator'), ('device', 'iph
         '-Wl,-force_load,' + str(combined), '-install_name', '@rpath/EspeakNG.framework/EspeakNG', '-o', framework / 'EspeakNG')
     shutil.copyfile(headers / 'speak_lib.h', framework / 'Headers/speak_lib.h')
     (framework / 'Modules/module.modulemap').write_text('framework module EspeakNG { umbrella header "speak_lib.h" export * }\n')
-    (framework / 'Info.plist').write_bytes(plistlib.dumps({'CFBundleIdentifier': 'org.espeak.harbour.phonemizer', 'CFBundleName': 'EspeakNG', 'CFBundleExecutable': 'EspeakNG', 'CFBundlePackageType': 'FMWK', 'CFBundleVersion': '1', 'CFBundleShortVersionString': '1.52.0'}))
+    (framework / 'Info.plist').write_bytes(plistlib.dumps({'CFBundleIdentifier': 'org.espeak.harbour.phonemizer', 'CFBundleName': 'EspeakNG', 'CFBundleExecutable': 'EspeakNG', 'CFBundlePackageType': 'FMWK', 'CFBundleVersion': '1', 'CFBundleShortVersionString': '1.52.0', **({'LSMinimumSystemVersion': '14.0'} if name == 'mac' else {'MinimumOSVersion': '18.0'})}))
     libraries += ['-framework', str(framework)]
 vendor.mkdir(parents=True, exist_ok=True)
 if artifact.exists(): shutil.rmtree(artifact)

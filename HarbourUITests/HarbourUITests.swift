@@ -1460,6 +1460,19 @@ import XCTest
         app.buttons["Done"].tap()
         XCTAssertTrue(app.buttons["nav-chat"].waitForExistence(timeout: 5))
     }
+    func testShortPageDragReturnsToCurrentPage() {
+        let app = XCUIApplication(); app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]; app.launch()
+        XCTAssertTrue(app.buttons["nav-today"].waitForExistence(timeout: 10))
+        let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.65, dy: 0.4))
+        // Slow and short: the finger moves the page, but release should cancel navigation.
+        start.press(forDuration: 0.05, thenDragTo: start.withOffset(CGVector(dx: -40, dy: 0)), withVelocity: .slow, thenHoldForDuration: 0.3)
+        XCTAssertTrue(app.buttons["nav-today"].isSelected)
+        XCTAssertTrue(app.buttons["openTrends"].isHittable)
+        // The first page also resists dragging beyond the beginning.
+        start.press(forDuration: 0.05, thenDragTo: start.withOffset(CGVector(dx: 100, dy: 0)), withVelocity: .slow, thenHoldForDuration: 0.3)
+        XCTAssertTrue(app.buttons["nav-today"].isSelected)
+        XCTAssertTrue(app.buttons["openTrends"].isHittable)
+    }
     func testSwipeBetweenMainPagesKeepsDockSelectionInSync() {
         let app = XCUIApplication(); app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]; app.launch()
         XCTAssertTrue(app.buttons["nav-today"].waitForExistence(timeout: 10))
@@ -1524,6 +1537,11 @@ import XCTest
             RunLoop.current.run(until: Date().addingTimeInterval(1))
         }
         XCTAssertTrue(app.buttons["Pause recording"].waitForExistence(timeout: 30), app.debugDescription); capture("154-one-tap-recording")
+        let mainControl = app.buttons["visitRecordingControl"].frame
+        let finishControl = app.buttons["finishVisitRecording"].frame
+        XCTAssertEqual(mainControl.midX, app.frame.midX, accuracy: 2)
+        XCTAssertEqual(finishControl.midX, mainControl.midX, accuracy: 2)
+        XCTAssertGreaterThan(finishControl.minY, mainControl.maxY)
         XCUIDevice.shared.press(.home)
         RunLoop.current.run(until: Date().addingTimeInterval(3)); capture("155-recording-system-activity")
         app.activate(); XCTAssertTrue(app.buttons["Pause recording"].waitForExistence(timeout: 10))

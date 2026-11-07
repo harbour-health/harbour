@@ -94,7 +94,7 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 <!-- screenshot-gallery:start -->
 ## All screens
 
-162 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
+167 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
 
 ### Today
 
@@ -244,6 +244,8 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | | |
 | :---: | :---: |
 | <strong>Reading trends · Dark</strong><br>[<img src="docs/screenshots/161-trends-dark.png" alt="Reading trends · Dark" width="220">](docs/screenshots/161-trends-dark.png) | <strong>Medications · Dark</strong><br>[<img src="docs/screenshots/162-medications-dark.png" alt="Medications · Dark" width="220">](docs/screenshots/162-medications-dark.png) |
-| <strong>Voice selection · Dark</strong><br>[<img src="docs/screenshots/163-voice-dark.png" alt="Voice selection · Dark" width="220">](docs/screenshots/163-voice-dark.png) |  |
+| <strong>Voice selection · Dark</strong><br>[<img src="docs/screenshots/163-voice-dark.png" alt="Voice selection · Dark" width="220">](docs/screenshots/163-voice-dark.png) | <strong>Full-screen voice</strong><br>[<img src="docs/screenshots/164-voice-conversation-light.png" alt="Full-screen voice" width="220">](docs/screenshots/164-voice-conversation-light.png) |
+| <strong>Chat after voice</strong><br>[<img src="docs/screenshots/165-voice-conversation-history.png" alt="Chat after voice" width="220">](docs/screenshots/165-voice-conversation-history.png) | <strong>Conversation vocale · Sombre</strong><br>[<img src="docs/screenshots/166-voice-conversation-french-dark.png" alt="Conversation vocale · Sombre" width="220">](docs/screenshots/166-voice-conversation-french-dark.png) |
+| <strong>Voice · Landscape</strong><br>[<img src="docs/screenshots/167-voice-conversation-landscape.png" alt="Voice · Landscape" width="220">](docs/screenshots/167-voice-conversation-landscape.png) | <strong>Voice · Largest text</strong><br>[<img src="docs/screenshots/168-voice-conversation-large-text.png" alt="Voice · Largest text" width="220">](docs/screenshots/168-voice-conversation-large-text.png) |
 
 <!-- screenshot-gallery:end -->

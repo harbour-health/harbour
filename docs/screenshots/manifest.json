@@ -1294,5 +1294,45 @@
     "suggestedHumanReadableName": "161-trends-dark_0_8E8F7C06-9033-442B-8A4C-D27F70389892.png",
     "test": "HarbourNativeRefreshTests/testDarkMainScreens()",
     "resultBundle": "harbour-release-ui.xcresult"
+  },
+  "165-voice-conversation-history": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794082355.688,
+    "suggestedHumanReadableName": "165-voice-conversation-history_0_39625A74-C00F-4D20-8BC8-131ED5694499.png",
+    "test": "VoiceConversationUITests/testFullScreenVoiceKeepsConversationOnExit()",
+    "resultBundle": "test_sim_2026-11-07T20-12-13-338Z_pid2645_520d3602.xcresult"
+  },
+  "164-voice-conversation-light": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794082354.02,
+    "suggestedHumanReadableName": "164-voice-conversation-light_0_06C180E3-53DD-47E9-8151-208959F6F066.png",
+    "test": "VoiceConversationUITests/testFullScreenVoiceKeepsConversationOnExit()",
+    "resultBundle": "test_sim_2026-11-07T20-12-13-338Z_pid2645_520d3602.xcresult"
+  },
+  "167-voice-conversation-landscape": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794082172.59,
+    "suggestedHumanReadableName": "167-voice-conversation-landscape_0_7CC5A137-0191-43C2-925A-813389C2A342.png",
+    "test": "VoiceConversationUITests/testVoicePresentationFrenchDarkAndLandscape()",
+    "resultBundle": "test_sim_2026-11-07T20-08-55-510Z_pid2645_5f028b9c.xcresult"
+  },
+  "166-voice-conversation-french-dark": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794082171.373,
+    "suggestedHumanReadableName": "166-voice-conversation-french-dark_0_AB7EC08E-71DA-438F-8EC5-DD34AF9249FE.png",
+    "test": "VoiceConversationUITests/testVoicePresentationFrenchDarkAndLandscape()",
+    "resultBundle": "test_sim_2026-11-07T20-08-55-510Z_pid2645_5f028b9c.xcresult"
+  },
+  "168-voice-conversation-large-text": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794082153.856,
+    "suggestedHumanReadableName": "168-voice-conversation-large-text_0_83861FE4-05A0-4109-8A13-8E378E9AC6C4.png",
+    "test": "VoiceConversationUITests/testLargeTextVoiceControlsRemainReachable()",
+    "resultBundle": "test_sim_2026-11-07T20-08-55-510Z_pid2645_5f028b9c.xcresult"
   }
 }

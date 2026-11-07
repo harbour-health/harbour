@@ -3,7 +3,8 @@ import UIKit
 
 struct MainPageSwipeAction: Sendable {
     var canBegin: @MainActor @Sendable (Int) -> Bool = { _ in false }
-    var perform: @MainActor @Sendable (Int, Int) -> Void = { _, _ in }
+    var update: @MainActor @Sendable (Int, CGFloat) -> Void = { _, _ in }
+    var finish: @MainActor @Sendable (Int, CGFloat, CGFloat, Bool) -> Void = { _, _, _, _ in }
 }
 private struct MainPageSwipeKey: EnvironmentKey {
     static let defaultValue = MainPageSwipeAction()
@@ -63,10 +64,15 @@ private final class SwipeAnchorView: UIView, UIGestureRecognizerDelegate {
         otherGestureRecognizer === scroll?.panGestureRecognizer
     }
     @objc private func moved(_ recognizer: UIPanGestureRecognizer) {
-        guard recognizer.state == .ended else { return }
-        let delta = recognizer.translation(in: scroll)
-        guard abs(delta.x) > 70, abs(delta.x) > abs(delta.y) * 1.6 else { return }
-        action.perform(page, delta.x < 0 ? 1 : -1)
+        // Window coordinates stay stable while the page itself follows the finger.
+        let translation = recognizer.translation(in: window).x
+        switch recognizer.state {
+        case .began, .changed:
+            action.update(page, translation)
+        case .ended, .cancelled, .failed:
+            action.finish(page, translation, recognizer.velocity(in: window).x, recognizer.state != .ended)
+        default: break
+        }
     }
 }
 extension View {
