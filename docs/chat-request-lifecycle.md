@@ -15,3 +15,5 @@ Keep operation admission before composer mutations. Check `canApplyResult(for:)`
 ## Configuration and dependencies
 
 No flags or environment variables. Depends on Foundation concurrency, `HarbourCore`, and the app-owned `ModelManager`. It changes request ownership only; model selection, prompts and generated responses are unchanged.
+
+Native CI uses ad-hoc simulator signing (`CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-`) so Keychain-backed app locking is exercised with a usable identity. Unsigned report UI launches reached the app-lock retry screen. Tests remain enabled; the workflow also saves the compiled report renderer before UI tests so a test failure does not discard that independent build cache.
