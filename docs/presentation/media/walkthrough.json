@@ -1,0 +1,260 @@
+{
+  "source": "Real native iOS Simulator video driven by XCTest",
+  "fixture": "Fictional saved records and authored visit summaries; real local chat tool inference",
+  "audio": "Silent; microphone and speech output are not evaluated",
+  "timing": "Real time, no accelerated waits; timestamp origin is MOV file creation",
+  "video": "harbour-walkthrough.mp4",
+  "chapters": [
+    {
+      "name": "233-guided-simple-home",
+      "sourceSeconds": 21.257364511489868,
+      "videoSeconds": 1.0
+    },
+    {
+      "name": "236-guided-real-request",
+      "sourceSeconds": 25.693800449371338,
+      "videoSeconds": 5.43643593788147
+    },
+    {
+      "name": "237-guided-readings",
+      "sourceSeconds": 45.244120359420776,
+      "videoSeconds": 24.986755847930908
+    },
+    {
+      "name": "240-guided-caregiver-records",
+      "sourceSeconds": 54.45682239532471,
+      "videoSeconds": 34.19945788383484
+    },
+    {
+      "name": "242-guided-medicines",
+      "sourceSeconds": 58.26948046684265,
+      "videoSeconds": 38.01211595535278
+    },
+    {
+      "name": "243-guided-phonetic-suggestions",
+      "sourceSeconds": 66.4318425655365,
+      "videoSeconds": 46.17447805404663
+    },
+    {
+      "name": "244-guided-medicine-confirmation",
+      "sourceSeconds": 71.72329354286194,
+      "videoSeconds": 51.46592903137207
+    },
+    {
+      "name": "245-guided-visit-summary",
+      "sourceSeconds": 80.12004137039185,
+      "videoSeconds": 59.86267685890198
+    },
+    {
+      "name": "246-guided-visit-followups",
+      "sourceSeconds": 84.15655541419983,
+      "videoSeconds": 63.89919090270996
+    },
+    {
+      "name": "247-guided-visit-review",
+      "sourceSeconds": 89.99802851676941,
+      "videoSeconds": 69.74066400527954
+    }
+  ],
+  "nativeRegions": [
+    {
+      "chapter": "233-guided-simple-home",
+      "regions": {
+        "simpleMessage": {
+          "height": 84,
+          "width": 354,
+          "x": 24,
+          "y": 362.6666666666667
+        },
+        "simpleRecordVisit": {
+          "height": 83.99999999999994,
+          "width": 354,
+          "x": 24,
+          "y": 466.6666666666667
+        },
+        "simpleTalk": {
+          "height": 171.00001525878906,
+          "width": 392,
+          "x": 24,
+          "y": 196.6666717529297
+        }
+      },
+      "screen": {
+        "height": 874,
+        "width": 402
+      }
+    },
+    {
+      "chapter": "236-guided-real-request",
+      "regions": {
+        "chatInput": {
+          "height": 50,
+          "width": 334,
+          "x": 34,
+          "y": 319
+        },
+        "simpleTalk": {
+          "height": 171.00001525878906,
+          "width": 392,
+          "x": -378,
+          "y": 196.6666717529297
+        }
+      },
+      "screen": {
+        "height": 874,
+        "width": 402
+      }
+    },
+    {
+      "chapter": "237-guided-readings",
+      "regions": {
+        "chatInput": {
+          "height": 49,
+          "width": 334,
+          "x": 34,
+          "y": 668
+        },
+        "chatReadingsTable": {
+          "height": 349.9999694824219,
+          "width": 162.6666717529297,
+          "x": 24,
+          "y": 258.3333435058594
+        },
+        "simpleTalk": {
+          "height": 171.00001525878906,
+          "width": 392,
+          "x": -378,
+          "y": 196.6666717529297
+        }
+      },
+      "screen": {
+        "height": 874,
+        "width": 402
+      }
+    },
+    {
+      "chapter": "240-guided-caregiver-records",
+      "regions": {},
+      "screen": {
+        "height": 874,
+        "width": 402
+      }
+    },
+    {
+      "chapter": "242-guided-medicines",
+      "regions": {},
+      "screen": {
+        "height": 874,
+        "width": 402
+      }
+    },
+    {
+      "chapter": "243-guided-phonetic-suggestions",
+      "regions": {
+        "saveMedicine": {
+          "height": 34.56716417910445,
+          "width": 59.85240464344946,
+          "x": 314.9436152570481,
+          "y": 276.4378109452736
+        }
+      },
+      "screen": {
+        "height": 874,
+        "width": 402
+      }
+    },
+    {
+      "chapter": "244-guided-medicine-confirmation",
+      "regions": {
+        "confirmMedicine": {
+          "height": 84.81757877280262,
+          "width": 355.27363184079604,
+          "x": 23.36318407960199,
+          "y": 456.955223880597
+        },
+        "medicineInstructions": {
+          "height": 40.64842454394693,
+          "width": 324.547263681592,
+          "x": 38.72636815920398,
+          "y": 638.7529021558871
+        },
+        "saveMedicine": {
+          "height": 34.56716417910451,
+          "width": 59.85240464344946,
+          "x": 314.9436152570481,
+          "y": 190.0199004975124
+        }
+      },
+      "screen": {
+        "height": 874,
+        "width": 402
+      }
+    },
+    {
+      "chapter": "245-guided-visit-summary",
+      "regions": {
+        "reviewVisitMedicines": {
+          "height": 60,
+          "width": 354,
+          "x": 24,
+          "y": 568.6666666666666
+        }
+      },
+      "screen": {
+        "height": 874,
+        "width": 402
+      }
+    },
+    {
+      "chapter": "246-guided-visit-followups",
+      "regions": {
+        "reviewVisitMedicines": {
+          "height": 60.00000000000006,
+          "width": 354,
+          "x": 24,
+          "y": 298.66666666666663
+        }
+      },
+      "screen": {
+        "height": 874,
+        "width": 402
+      }
+    },
+    {
+      "chapter": "247-guided-visit-review",
+      "regions": {
+        "confirmVisitMedicines": {
+          "height": 96.3399658203125,
+          "width": 339.91046142578125,
+          "x": 31.044776916503906,
+          "y": 685.1625366210938
+        },
+        "reviewVisitMedicines": {
+          "height": 60,
+          "width": 354,
+          "x": 24,
+          "y": 568.6666666666666
+        },
+        "saveVisitMedicines": {
+          "height": 34.567164179104395,
+          "width": 59.85240464344946,
+          "x": 314.9436152570481,
+          "y": 399.6633499170812
+        }
+      },
+      "screen": {
+        "height": 874,
+        "width": 402
+      }
+    }
+  ],
+  "edits": [
+    {
+      "sourceStart": 20.257364511489868,
+      "sourceEnd": 91.99802851676941,
+      "speed": 1,
+      "outputStart": 0
+    }
+  ],
+  "durationSeconds": 71.74066400527954
+}

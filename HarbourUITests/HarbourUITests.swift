@@ -35,7 +35,7 @@ import XCTest
 @MainActor final class HarbourConfirmationTests: XCTestCase {
     func testDeleteCancellationPreservesRecords() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-records"].tap()
         selectRecords(app, "Medications")
         XCTAssertTrue(app.staticTexts["Warfarin"].firstMatch.exists)
@@ -63,7 +63,7 @@ import XCTest
     func testMedicineConfirmationAndExport() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-unlocked"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-records"].tap()
         selectRecords(app, "Medications")
         for medicine in ["warfarin", "advil"] {
@@ -89,7 +89,7 @@ import XCTest
 
     func testLocalModelChat() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-chat"].tap()
         app.buttons["New chat"].tap()
         let input = app.textFields["chatInput"]
@@ -122,7 +122,7 @@ import XCTest
     func testRecordsAndPersistence() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-unlocked"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-records"].tap()
         selectRecords(app, "Readings")
         app.buttons["Add record"].tap()
@@ -146,7 +146,7 @@ import XCTest
         app.buttons["saveSymptom"].tap()
         XCTAssertTrue(app.staticTexts["Sore knee since Tuesday"].firstMatch.waitForExistence(timeout: 5))
         app.terminate()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-today"].tap()
         XCTAssertTrue(app.staticTexts["72"].firstMatch.waitForExistence(timeout: 5))
         app.buttons["nav-records"].tap()
@@ -157,7 +157,7 @@ import XCTest
     func testChatHintPreservesDraftAndModelSelector() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-unlocked"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-chat"].tap()
         let input = app.textFields["chatInput"]
         XCTAssertTrue(input.waitForExistence(timeout: 5))
@@ -183,7 +183,7 @@ import XCTest
 
     func testScreenshots() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-today"].tap()
         capture(app, "01-today")
         app.buttons["nav-records"].tap()
@@ -270,7 +270,7 @@ import XCTest
 
     func testHealthPermissionScreenshot() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-today"].tap()
         app.buttons["Settings"].tap()
         app.buttons["Import from Apple Health"].tap()
@@ -281,7 +281,7 @@ import XCTest
 
     func testScreenshotDetails() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-records"].tap()
         selectRecords(app, "Medications")
         openInteractions(app)
@@ -336,14 +336,14 @@ import XCTest
         app.buttons["Import from Apple Health"].tap()
         capture(app, "26-health-access")
         app.terminate()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-today"].tap()
         app.buttons["Settings"].tap()
         app.buttons["Delete all records and chat"].tap()
         XCTAssertTrue(app.buttons["Delete all"].waitForExistence(timeout: 5))
         capture(app, "27-delete-confirmation")
         app.terminate()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-chat"].tap()
         app.buttons["New chat"].tap()
         app.textFields["chatInput"].tap()
@@ -379,7 +379,7 @@ import XCTest
 
     func testRichToolResults() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         for dark in [false, true] {
             appearance(app, dark ? "Dark" : "Light")
             app.buttons["nav-chat"].tap()
@@ -435,11 +435,11 @@ import XCTest
     func testScreensAndAppearancePersistence() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-unlocked"]
-        app.launch()
+        app.launchCaregiver()
         for dark in [false, true] {
             appearance(app, dark ? "Dark" : "Light")
             app.terminate()
-            app.launch()
+            app.launchCaregiver()
             app.buttons["Settings"].tap()
             app.buttons["Appearance"].tap()
             XCTAssertTrue(app.buttons[dark ? "appearance-dark" : "appearance-light"].isSelected)
@@ -539,7 +539,7 @@ import XCTest
 
     func testEntryAndReviewScreens() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["Settings"].tap()
         app.buttons["Appearance"].tap()
         app.buttons["appearance-light"].tap()
@@ -607,7 +607,7 @@ import XCTest
     func testDashboardNavigationAndSystemAppearance() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-unlocked"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["openMedicines"].tap()
         if !app.staticTexts["Warfarin"].firstMatch.exists {
             app.buttons["Add record"].tap()
@@ -642,7 +642,7 @@ import XCTest
         app.buttons["Done"].tap()
         app.buttons["nav-today"].tap()
         app.terminate()
-        app.launch()
+        app.launchCaregiver()
         let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         attachment.name = "43-system-dark"
         attachment.lifetime = .keepAlways
@@ -658,7 +658,7 @@ import XCTest
     func testReadingsAndSymptomsTrendsScreens() {
         let app = XCUIApplication()
         app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
-        app.launch()
+        app.launchCaregiver()
 
         let openTrends = app.buttons["openTrends"]
         XCTAssertTrue(openTrends.waitForExistence(timeout: 10), app.debugDescription)
@@ -703,7 +703,7 @@ import XCTest
 
     func testPINLifecycleAndThrottle() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["Settings"].tap()
         app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "App lock")).firstMatch.tap()
         capture("54-app-lock-settings")
@@ -748,7 +748,7 @@ import XCTest
         capture("57-pin-retry-delay")
         XCTAssertFalse(app.buttons["pin-key-5"].isEnabled)
         app.terminate()
-        app.launch()
+        app.launchCaregiver()
         XCTAssertFalse(app.buttons["pin-key-5"].isEnabled)
         expectation(for: NSPredicate(format: "enabled == true"), evaluatedWith: app.buttons["pin-key-5"])
         waitForExpectations(timeout: 35)
@@ -766,7 +766,7 @@ import XCTest
         XCTAssertTrue(app.buttons["lock-option-off"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["lock-option-off"].isSelected)
         app.terminate()
-        app.launch()
+        app.launchCaregiver()
         XCTAssertTrue(app.buttons["nav-today"].waitForExistence(timeout: 5))
     }
 }
@@ -786,7 +786,7 @@ import XCTest
     // Run on a fresh, disposable simulator so downloads and permissions need no reset.
     func testDownloadPermissionsAndImportScreens() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["Settings"].tap()
         app.buttons["Appearance"].tap()
         app.buttons["appearance-light"].tap()
@@ -835,7 +835,7 @@ import XCTest
 @MainActor final class HarbourEvaluationScreenTests: XCTestCase {
     func testEvaluationResultsScreenshot() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["Settings"].tap()
         app.buttons["Evaluation"].tap()
         let all = app.switches["Test all effort settings"]
@@ -866,7 +866,7 @@ import XCTest
 
     func testDashboardAndGeneratedTitle() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["Settings"].tap()
         app.buttons["Appearance"].tap()
         app.buttons["appearance-light"].tap()
@@ -911,7 +911,7 @@ import XCTest
         XCTAssertNotEqual(title, "Could you show me the medications")
         capture("58-generated-chat-title")
         app.terminate()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-chat"].tap()
         XCTAssertEqual(app.staticTexts["chatTitle"].label, title)
         app.buttons["New chat"].tap()
@@ -934,7 +934,7 @@ import XCTest
 
     func testSupplementaryCapturePages() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["Settings"].tap()
         app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "App lock")).firstMatch.tap()
         app.buttons["lock-option-biometrics"].tap()
@@ -957,7 +957,7 @@ import XCTest
 
     func testScrollableContentAndKeyboardClearance() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["Settings"].tap()
         app.buttons["Appearance"].tap()
         app.buttons["appearance-light"].tap()
@@ -1024,7 +1024,7 @@ import XCTest
                 "-AppleLocale",
                 french ? "fr_CA" : "en_CA"
             ]
-            app.launch()
+            app.launchCaregiver()
             app.buttons["nav-visits"].tap()
             let visit = app.buttons.containing(NSPredicate(
                 format: "label CONTAINS %@",
@@ -1052,7 +1052,7 @@ import XCTest
             "-AppleLocale",
             "en_CA"
         ]
-        app.launch()
+        app.launchCaregiver()
         let title = "Medication drawer review"
         for dark in [false, true] {
             app.buttons["nav-today"].tap()
@@ -1097,7 +1097,7 @@ import XCTest
 
     func testVisitNotesLocalSummaryAndConfirmedMedicineChanges() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-visits"].tap()
         capture("67-visits")
         app.buttons["recordVisit"].tap()
@@ -1136,7 +1136,7 @@ import XCTest
         app.buttons["saveVisitMedicines"].tap()
         XCTAssertTrue(app.staticTexts["Medication changes saved"].waitForExistence(timeout: 5))
         app.terminate()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-visits"].tap()
         XCTAssertTrue(app.buttons.containing(NSPredicate(format: "label CONTAINS %@", "Medication review")).firstMatch
             .waitForExistence(timeout: 5))
@@ -1151,7 +1151,7 @@ import XCTest
 
     func testRecorderPauseResumeAndAudioPersistence() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-visits"].tap()
         app.buttons["recordVisit"].tap()
         addUIInterruptionMonitor(withDescription: "Microphone and speech") { alert in
@@ -1195,7 +1195,7 @@ import XCTest
         capture("75-visit-audio")
         app.buttons["Pause visit audio"].tap()
         app.terminate()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-visits"].tap()
         XCTAssertTrue(app.buttons.containing(NSPredicate(format: "label CONTAINS %@", "Doctor visit")).firstMatch
             .waitForExistence(timeout: 5))
@@ -1203,7 +1203,7 @@ import XCTest
 
     func testZUpdatedMainScreensAndDarkVisits() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-today"].tap()
         app.buttons["Settings"].tap()
         app.buttons["Appearance"].tap()
@@ -1288,7 +1288,7 @@ import XCTest
         XCUIDevice.shared.orientation = .portrait
         let app = XCUIApplication()
         app.launchArguments = ["--verify-drawers"]
-        app.launch()
+        app.launchCaregiver()
         for dark in [false, true] {
             app.buttons["nav-today"].tap()
             app.buttons["Settings"].tap()
@@ -1373,7 +1373,7 @@ import XCTest
         XCUIDevice.shared.orientation = .portrait
         let app = XCUIApplication()
         app.launchArguments = ["--verify-drawers"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-today"].tap()
         openSymptomCapture(app)
         let symptom = app.textFields["symptomText"]
@@ -1430,7 +1430,7 @@ import XCTest
         XCUIDevice.shared.orientation = .portrait
         let app = XCUIApplication()
         app.launchArguments = ["--verify-drawers"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-today"].tap()
         app.swipeDown()
         app.swipeDown()
@@ -1479,7 +1479,7 @@ import XCTest
     func testRemainingDrawers() {
         XCUIDevice.shared.orientation = .portrait
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         for dark in [false, true] {
             app.buttons["nav-today"].tap()
             app.buttons["Settings"].tap()
@@ -1546,7 +1546,7 @@ import XCTest
         XCUIDevice.shared.orientation = .portrait
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-unlocked"]
-        app.launch()
+        app.launchCaregiver()
         for dark in [false, true] {
             appearance(app, dark: dark)
             app.swipeDown()
@@ -1631,7 +1631,7 @@ import XCTest
         )
         app.buttons["Cancel"].tap()
         app.terminate()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-visits"].tap()
         app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "visit-row-")).firstMatch.tap()
         XCTAssertTrue(app.buttons["summariseVisit"].waitForExistence(timeout: 5))
@@ -1662,7 +1662,7 @@ import XCTest
         XCUIDevice.shared.orientation = .portrait
         let app = XCUIApplication()
         app.launchArguments = ["--verify-drawers"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-chat"].tap()
         app.buttons["modelSelector"].tap()
         app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Sam")).firstMatch.tap()
@@ -1733,7 +1733,7 @@ import XCTest
     func testCareFlowsAndScreenshots() {
         let app = XCUIApplication()
         app.launchArguments = ["--qa-label-fixture"]
-        app.launch()
+        app.launchCaregiver()
         appearance(app, dark: false)
         app.buttons["nav-records"].tap()
         selectRecords(app, "Medications")
@@ -1798,7 +1798,7 @@ import XCTest
         capture("98-appointment-preparation")
         app.buttons["Done"].tap()
         app.terminate()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-visits"].tap()
         app.buttons["prepareAppointment"].tap()
         XCTAssertTrue(app.buttons["Should I repeat my blood test?"].exists)
@@ -1846,7 +1846,7 @@ import XCTest
     func testAgentCareToolsAndConfirmation() {
         let app = XCUIApplication()
         app.launchArguments = ["--qa-label-fixture"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-records"].tap()
         selectRecords(app, "Medications")
         app.buttons["Add record"].tap()
@@ -1898,7 +1898,7 @@ import XCTest
 
     func testZCareLayoutScreenshots() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         appearance(app, dark: true)
         app.swipeDown()
         app.swipeDown()
@@ -1937,7 +1937,7 @@ import XCTest
     func testStableLightMainScreens() {
         let app = XCUIApplication()
         app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
-        app.launch()
+        app.launchCaregiver()
         for dark in [true, false] {
             app.buttons["nav-today"].tap()
             app.buttons["Settings"].tap()
@@ -2027,7 +2027,7 @@ import XCTest
 
     func testNotificationPermissionAndVoiceAvailability() {
         let app = XCUIApplication()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-today"].tap()
         let add = app.buttons["Add reminder"]
         for _ in 0 ..< 5 {
@@ -2117,7 +2117,7 @@ import XCTest
         XCUIDevice.shared.orientation = .portrait
         let app = XCUIApplication()
         app.launchArguments += ["-AppleLanguages", "(fr-CA)", "-AppleLocale", "fr_CA"]
-        app.launch()
+        app.launchCaregiver()
         XCTAssertTrue(app.buttons["nav-today"].waitForExistence(timeout: 10), app.debugDescription)
         XCTAssertEqual(app.buttons["nav-today"].label, "Aujourd’hui")
         XCTAssertEqual(app.buttons["nav-chat"].label, "Conversation")
@@ -2343,7 +2343,7 @@ import XCTest
     func testCachedSmallModelRoutesFrenchRequestsAndNamesTheConversation() {
         let app = XCUIApplication()
         app.launchArguments += ["-AppleLanguages", "(fr-CA)", "-AppleLocale", "fr_CA"]
-        app.launch()
+        app.launchCaregiver()
         XCTAssertTrue(app.buttons["nav-chat"].waitForExistence(timeout: 10))
         let before = recordLabels(app)
         app.buttons["nav-chat"].tap()
@@ -2463,7 +2463,7 @@ import XCTest
             french ? "fr_CA" : "en_CA"
         ]
         XCUIDevice.shared.orientation = .portrait
-        app.launch()
+        app.launchCaregiver()
         func word(_ en: String, _ fr: String) -> String {
             french ? fr : en
         }
@@ -2541,7 +2541,7 @@ import XCTest
     func testFreeformConversationAndToolReview() {
         let app = XCUIApplication()
         app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-chat"].tap()
         app.buttons["modelSelector"].tap()
         app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Sam")).firstMatch.tap()
@@ -2577,7 +2577,7 @@ import XCTest
                 "-AppleLocale",
                 french ? "fr_CA" : "en_CA"
             ]
-            app.launch()
+            app.launchCaregiver()
             app.buttons["nav-today"].tap()
             app.buttons[french ? "Réglages" : "Settings"].tap()
             app.buttons["voiceSettings"].tap()
@@ -2620,7 +2620,7 @@ import XCTest
     func testDarkMainScreens() {
         let app = XCUIApplication()
         app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["Settings"].tap()
         app.buttons["Appearance"].tap()
         app.buttons["appearance-dark"].tap()
@@ -2647,7 +2647,7 @@ import XCTest
     func testChatDockShrinksLowersAndRetainsNavigation() {
         let app = XCUIApplication()
         app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
-        app.launch()
+        app.launchCaregiver()
         let normal = app.buttons["nav-chat"].frame
         app.buttons["nav-chat"].tap()
         XCTAssertTrue(app.textFields["chatInput"].waitForExistence(timeout: 5))
@@ -2675,7 +2675,7 @@ import XCTest
     func testShortPageDragReturnsToCurrentPage() {
         let app = XCUIApplication()
         app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
-        app.launch()
+        app.launchCaregiver()
         XCTAssertTrue(app.buttons["nav-today"].waitForExistence(timeout: 10))
         let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.65, dy: 0.4))
         // Slow and short: the finger moves the page, but release should cancel navigation.
@@ -2701,7 +2701,7 @@ import XCTest
     func testSwipeBetweenMainPagesKeepsDockSelectionInSync() {
         let app = XCUIApplication()
         app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
-        app.launch()
+        app.launchCaregiver()
         XCTAssertTrue(app.buttons["nav-today"].waitForExistence(timeout: 10))
         app.swipeUp()
         XCTAssertTrue(app.buttons["Timeline"].isHittable)
@@ -2765,7 +2765,7 @@ import XCTest
     func testMainScreensAndEmptyAppointments() {
         let app = XCUIApplication()
         app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
-        app.launch()
+        app.launchCaregiver()
         XCTAssertTrue(app.buttons["nav-today"].waitForExistence(timeout: 10))
         capture("01-today")
         app.buttons["nav-chat"].tap()
@@ -2788,7 +2788,7 @@ import XCTest
     func testOneTapRecordingAndBackgroundReturn() {
         let app = XCUIApplication()
         app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-visits"].tap()
         app.buttons["recordVisit"].tap()
         for _ in 0 ..< 8 {
@@ -2826,7 +2826,7 @@ extension HarbourNativeRefreshTests {
     func testEvaluationShowsRealCenteredProgress() {
         let app = XCUIApplication()
         app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["Settings"].tap()
         app.buttons["Evaluation"].tap()
         let run = app.buttons["Evaluate selected model"]
@@ -2861,7 +2861,7 @@ extension HarbourNativeRefreshTests {
     func testNativeModelMedicationSummaryAndReview() {
         let app = XCUIApplication()
         app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-visits"].tap()
         app.buttons["addVisitNotes"].tap()
         let input = app.textViews["visitTranscriptInput"]
@@ -2892,5 +2892,12 @@ extension HarbourNativeRefreshTests {
         shot.name = "72-visit-summary-saved"
         shot.lifetime = .keepAlways
         add(shot)
+    }
+}
+
+@MainActor extension XCUIApplication {
+    func launchCaregiver() {
+        launchEnvironment["HARBOUR_INITIAL_INTERFACE"] = "caregiver"
+        launch()
     }
 }

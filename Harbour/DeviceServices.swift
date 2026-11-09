@@ -126,6 +126,11 @@ enum SpeechLanguage {
     @Published private(set) var finishing = false
     @Published private(set) var transcript = ""
     @Published var error: String?
+    private var medicationHints: [String] = []
+    func setMedicationContext(_ medicines: [Medicine]) {
+        medicationHints = MedicationVocabulary.shared.speechHints(saved: medicines, french: L10n.isFrench)
+    }
+
     private var engine = AVAudioEngine()
     private var recognition: SFSpeechRecognitionTask?
     private var request: SFSpeechAudioBufferRecognitionRequest?
@@ -281,6 +286,10 @@ enum SpeechLanguage {
             try session.setActive(true)
             audioSessionOwned = true
             let request = SFSpeechAudioBufferRecognitionRequest()
+            request.contextualStrings = medicationHints.isEmpty ? MedicationVocabulary.shared.speechHints(
+                saved: [],
+                french: L10n.isFrench
+            ) : medicationHints
             request.requiresOnDeviceRecognition = true
             request.shouldReportPartialResults = true
             self.request = request

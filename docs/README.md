@@ -75,3 +75,11 @@ Course context, the project plan, and the preliminary report are maintained sepa
 - [Swift formatting](swift-formatting.md) — pinned layout rules, compiler-aware statement spacing and blame exclusions.
 
 - [Interface polish release](releases/interface-polish.md) — build 12 changes, validation and internal distribution evidence.
+
+- [Simple and caregiver interfaces](simple-and-caregiver.md) — large actions, shared records and settings.
+- [Medication vocabulary](medication-vocabulary.md) — official bilingual DPD import, exact identities, suggestions and speech context.
+- [User stories](user-stories.md) — goals and acceptance paths.
+- [Message flows](message-flows.md) — inference, source validation and review.
+- [Presentation walkthrough](presentation-walkthrough.md) — actual UI magnification, live state and reproducible video.
+- [Medication-name text checks](evaluation/medication-names.md) — bilingual difficult names, fictional identities and separate routing/validation results.
+- [Simple interface and presentation verification](releases/simple-interface-and-presentation.md) — native checks, model subset results and evidence limits.

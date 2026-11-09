@@ -1,0 +1,24 @@
+{
+  "source": "Health Canada Drug Product Database",
+  "publicationDate": "2026-11-02",
+  "scope": "Marketed human drugs only; names and ingredient vocabulary, not interaction or prescribing guidance",
+  "files": {
+    "drug": {
+      "url": "https://www.canada.ca/content/dam/hc-sc/documents/services/drug-product-database/drug.zip",
+      "sha256": "efbec397350a34563e017f68312d73b8bbfcb5b724c7a9a4075240f3e635f5fd",
+      "bytes": 320025
+    },
+    "ingred": {
+      "url": "https://www.canada.ca/content/dam/hc-sc/documents/services/drug-product-database/ingred.zip",
+      "sha256": "d6a9f48922439c2215be08b63d477a75792e8ae42370bf86d0e0d165a51880af",
+      "bytes": 384111
+    }
+  },
+  "humanProducts": 11487,
+  "ingredientEntries": 1738,
+  "uniqueCompositionBrandEntries": 6561,
+  "ambiguousBrandNamesExcluded": 28,
+  "entries": 8299,
+  "resourceBytes": 1456311,
+  "resourceSHA256": "3c56959be772021eab6eef72fd22e356737678ebd4c919b6ac914d71003a9830"
+}

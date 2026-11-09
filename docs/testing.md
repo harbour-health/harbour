@@ -40,3 +40,9 @@ The speech environment variables above enable neural synthesis only. Native comp
 ## Dependencies
 
 Xcode and an installed iOS simulator runtime, prepared llama/Typst/speech libraries, Swift and Python. Speech preparation needs CMake/Ninja and report preparation needs Rust. Physical-device checks remain necessary for microphone accuracy, locked-device encryption, interruptions, thermal/memory behaviour and sustained real-time voice performance.
+
+## Interface launch setup
+
+`HARBOUR_INITIAL_INTERFACE=simple|caregiver` seeds the persisted layout once at app launch for developer/test workflows. It does not shadow later Settings changes. UI tests use `launchCaregiver()` to preserve their detailed-record paths; Simple tests explicitly seed Simple. Avoid `-interfaceMode` UserDefaults argument-domain overrides when testing in-app switches: they take precedence over subsequent persisted writes for the whole process.
+
+The presentation test uses real local model routing, saved fictional demo data and actual UI snapshots. It is deliberately excluded from cheap deterministic checks and is driven by `scripts/record-presentation.py`; see [presentation walkthrough](presentation-walkthrough.md).

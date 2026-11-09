@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Harbour — Honours project</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="viewport">
+      <main id="stage" aria-label="Presentation slide">
+        <img id="slide" alt="" />
+        <section id="scene" aria-label="Actual app interface"></section>
+      </main>
+    </div>
+    <nav class="transport" aria-label="Presentation controls">
+      <button id="previous" aria-label="Previous slide">←</button
+      ><span id="count"></span
+      ><button id="next" aria-label="Next slide">→</button
+      ><button id="play">Play video</button><button id="explain">Explain</button
+      ><button id="live">Live</button><button id="capture">Capture</button
+      ><button id="simulator">Simulator</button
+      ><button id="notesButton">Notes</button
+      ><button id="fullscreen">Full screen</button>
+    </nav>
+    <aside id="notes" hidden></aside>
+    <div id="notice" role="status"></div>
+    <script id="manifest" type="application/json">
+      __MANIFEST__
+    </script>
+    <script src="player.js"></script>
+  </body>
+</html>

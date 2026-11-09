@@ -1,0 +1,570 @@
+{
+  "slides": [
+    {
+      "title": "Harbour",
+      "seconds": 35,
+      "notes": "Introduce the honours prototype. The question is whether local models plus explicit source checks can support everyday health-record tasks on a phone."
+    },
+    {
+      "title": "Interfaces",
+      "seconds": 55,
+      "scene": "interfaces",
+      "notes": "Simple mode is the default for an independent older adult. A caregiver can expose records and review tools in Settings. Both modes use the same local account and records; this is not remote caregiver access."
+    },
+    {
+      "title": "Request processing",
+      "seconds": 70,
+      "notes": "The local LLM chooses the tool. The app validates the request against original input, resolves names from saved records and the database, and uses existing editors. It does not let generated text directly overwrite medications. Unknown interaction pairs remain unassessed; the medication-name vocabulary is not a comprehensive interaction dataset."
+    },
+    {
+      "title": "App walkthrough",
+      "seconds": 150,
+      "scene": "walkthrough",
+      "source": "237-guided-readings",
+      "target": "chatReadingsTable",
+      "callouts": [
+        "Actual saved readings",
+        "The local model chose list_readings",
+        "Values come from records, not generated prose"
+      ],
+      "notes": "Play the genuine native video, or choose Live and operate the QA simulator. Pause and select Explain to lift the actual rendered table out of the phone. The recording uses Alex. Saved records are fictional; the chat tool call is actual local inference."
+    },
+    {
+      "title": "Medication names",
+      "seconds": 80,
+      "scene": "medication",
+      "source": "244-guided-medicine-confirmation",
+      "target": "saveMedicine",
+      "callouts": [
+        "Source-backed name and ingredients",
+        "A similar-sounding name remains a candidate",
+        "Confirmation is required before saving"
+      ],
+      "notes": "The extract includes 8299 generic and unambiguous brand entries, around 1.46 MB on disk. Salt-qualified ingredients are retained. Apple recognition hints prioritize saved names and a short common-name list, capped at 100 phrases. Acoustic improvement has not yet been measured."
+    },
+    {
+      "title": "Visit review",
+      "seconds": 90,
+      "scene": "visit",
+      "source": "247-guided-visit-review",
+      "target": "confirmVisitMedicines",
+      "callouts": [
+        "Proposed medication changes",
+        "Original directions remain visible",
+        "Review and acknowledgement precede saving"
+      ],
+      "notes": "Use the saved authored fixture to demonstrate the review UI, not to imply this example was correctly extracted live. More complex timing, negation and follow-up summaries need held-out evaluation."
+    },
+    {
+      "title": "Text evaluation",
+      "seconds": 65,
+      "notes": "This is the new 16-case medication-name subset, not the full medical evaluation. Both models scored 14/16; both failed the two negation routes, and validation blocked each attempted write. Diverse fictional names were paired across otherwise identical Canadian English/French requests. 153 deterministic core tests passed. A small fixture set is not demographic or clinical validation."
+    },
+    {
+      "title": "Further evaluation",
+      "seconds": 40,
+      "notes": "Priorities are actual older-adult usability, bilingual acoustic tests, held-out complex visit transcripts and real-device latency/memory. No fine-tuning benefit or clinical accuracy claim is established here."
+    },
+    {
+      "title": "Sources",
+      "seconds": 15,
+      "notes": "Health Canada DPD extract: https://www.canada.ca/en/health-canada/services/drugs-health-products/drug-products/drug-product-database/what-data-extract-drug-product-database.html ; Apple contextualStrings: https://developer.apple.com/documentation/speech/sfspeechrecognitionrequest/contextualstrings ; Apple AnalysisContext: https://developer.apple.com/documentation/speech/analysiscontext ; Local evidence: docs/evaluation/medication-names.md, docs/medication-vocabulary-manifest.json, docs/testing.md. The requested 10-minute version totals 600 seconds; the supplied course brief separately specifies a 13-minute final talk."
+    }
+  ],
+  "recording": {
+    "source": "Real native iOS Simulator video driven by XCTest",
+    "fixture": "Fictional saved records and authored visit summaries; real local chat tool inference",
+    "audio": "Silent; microphone and speech output are not evaluated",
+    "timing": "Real time, no accelerated waits; timestamp origin is MOV file creation",
+    "video": "harbour-walkthrough.mp4",
+    "chapters": [
+      {
+        "name": "233-guided-simple-home",
+        "sourceSeconds": 21.257364511489868,
+        "videoSeconds": 1.0
+      },
+      {
+        "name": "236-guided-real-request",
+        "sourceSeconds": 25.693800449371338,
+        "videoSeconds": 5.43643593788147
+      },
+      {
+        "name": "237-guided-readings",
+        "sourceSeconds": 45.244120359420776,
+        "videoSeconds": 24.986755847930908
+      },
+      {
+        "name": "240-guided-caregiver-records",
+        "sourceSeconds": 54.45682239532471,
+        "videoSeconds": 34.19945788383484
+      },
+      {
+        "name": "242-guided-medicines",
+        "sourceSeconds": 58.26948046684265,
+        "videoSeconds": 38.01211595535278
+      },
+      {
+        "name": "243-guided-phonetic-suggestions",
+        "sourceSeconds": 66.4318425655365,
+        "videoSeconds": 46.17447805404663
+      },
+      {
+        "name": "244-guided-medicine-confirmation",
+        "sourceSeconds": 71.72329354286194,
+        "videoSeconds": 51.46592903137207
+      },
+      {
+        "name": "245-guided-visit-summary",
+        "sourceSeconds": 80.12004137039185,
+        "videoSeconds": 59.86267685890198
+      },
+      {
+        "name": "246-guided-visit-followups",
+        "sourceSeconds": 84.15655541419983,
+        "videoSeconds": 63.89919090270996
+      },
+      {
+        "name": "247-guided-visit-review",
+        "sourceSeconds": 89.99802851676941,
+        "videoSeconds": 69.74066400527954
+      }
+    ],
+    "nativeRegions": [
+      {
+        "chapter": "233-guided-simple-home",
+        "regions": {
+          "simpleMessage": {
+            "height": 84,
+            "width": 354,
+            "x": 24,
+            "y": 362.6666666666667
+          },
+          "simpleRecordVisit": {
+            "height": 83.99999999999994,
+            "width": 354,
+            "x": 24,
+            "y": 466.6666666666667
+          },
+          "simpleTalk": {
+            "height": 171.00001525878906,
+            "width": 392,
+            "x": 24,
+            "y": 196.6666717529297
+          }
+        },
+        "screen": {
+          "height": 874,
+          "width": 402
+        }
+      },
+      {
+        "chapter": "236-guided-real-request",
+        "regions": {
+          "chatInput": {
+            "height": 50,
+            "width": 334,
+            "x": 34,
+            "y": 319
+          },
+          "simpleTalk": {
+            "height": 171.00001525878906,
+            "width": 392,
+            "x": -378,
+            "y": 196.6666717529297
+          }
+        },
+        "screen": {
+          "height": 874,
+          "width": 402
+        }
+      },
+      {
+        "chapter": "237-guided-readings",
+        "regions": {
+          "chatInput": {
+            "height": 49,
+            "width": 334,
+            "x": 34,
+            "y": 668
+          },
+          "chatReadingsTable": {
+            "height": 349.9999694824219,
+            "width": 162.6666717529297,
+            "x": 24,
+            "y": 258.3333435058594
+          },
+          "simpleTalk": {
+            "height": 171.00001525878906,
+            "width": 392,
+            "x": -378,
+            "y": 196.6666717529297
+          }
+        },
+        "screen": {
+          "height": 874,
+          "width": 402
+        }
+      },
+      {
+        "chapter": "240-guided-caregiver-records",
+        "regions": {},
+        "screen": {
+          "height": 874,
+          "width": 402
+        }
+      },
+      {
+        "chapter": "242-guided-medicines",
+        "regions": {},
+        "screen": {
+          "height": 874,
+          "width": 402
+        }
+      },
+      {
+        "chapter": "243-guided-phonetic-suggestions",
+        "regions": {
+          "saveMedicine": {
+            "height": 34.56716417910445,
+            "width": 59.85240464344946,
+            "x": 314.9436152570481,
+            "y": 276.4378109452736
+          }
+        },
+        "screen": {
+          "height": 874,
+          "width": 402
+        }
+      },
+      {
+        "chapter": "244-guided-medicine-confirmation",
+        "regions": {
+          "confirmMedicine": {
+            "height": 84.81757877280262,
+            "width": 355.27363184079604,
+            "x": 23.36318407960199,
+            "y": 456.955223880597
+          },
+          "medicineInstructions": {
+            "height": 40.64842454394693,
+            "width": 324.547263681592,
+            "x": 38.72636815920398,
+            "y": 638.7529021558871
+          },
+          "saveMedicine": {
+            "height": 34.56716417910451,
+            "width": 59.85240464344946,
+            "x": 314.9436152570481,
+            "y": 190.0199004975124
+          }
+        },
+        "screen": {
+          "height": 874,
+          "width": 402
+        }
+      },
+      {
+        "chapter": "245-guided-visit-summary",
+        "regions": {
+          "reviewVisitMedicines": {
+            "height": 60,
+            "width": 354,
+            "x": 24,
+            "y": 568.6666666666666
+          }
+        },
+        "screen": {
+          "height": 874,
+          "width": 402
+        }
+      },
+      {
+        "chapter": "246-guided-visit-followups",
+        "regions": {
+          "reviewVisitMedicines": {
+            "height": 60.00000000000006,
+            "width": 354,
+            "x": 24,
+            "y": 298.66666666666663
+          }
+        },
+        "screen": {
+          "height": 874,
+          "width": 402
+        }
+      },
+      {
+        "chapter": "247-guided-visit-review",
+        "regions": {
+          "confirmVisitMedicines": {
+            "height": 96.3399658203125,
+            "width": 339.91046142578125,
+            "x": 31.044776916503906,
+            "y": 685.1625366210938
+          },
+          "reviewVisitMedicines": {
+            "height": 60,
+            "width": 354,
+            "x": 24,
+            "y": 568.6666666666666
+          },
+          "saveVisitMedicines": {
+            "height": 34.567164179104395,
+            "width": 59.85240464344946,
+            "x": 314.9436152570481,
+            "y": 399.6633499170812
+          }
+        },
+        "screen": {
+          "height": 874,
+          "width": 402
+        }
+      }
+    ],
+    "edits": [
+      {
+        "sourceStart": 20.257364511489868,
+        "sourceEnd": 91.99802851676941,
+        "speed": 1,
+        "outputStart": 0
+      }
+    ],
+    "durationSeconds": 71.74066400527954
+  },
+  "scenes": {
+    "home": {
+      "image": "captures/233-guided-simple-home.png",
+      "screen": {
+        "width": 402,
+        "height": 874
+      },
+      "layers": [
+        {
+          "rect": {
+            "x": 24,
+            "y": 196.667,
+            "w": 354,
+            "h": 146
+          },
+          "to": {
+            "x": 650,
+            "y": 300,
+            "w": 640,
+            "h": 264
+          },
+          "title": "Voice conversation",
+          "detail": "A large entry point for spoken requests.",
+          "radius": 30
+        },
+        {
+          "rect": {
+            "x": 24,
+            "y": 362.667,
+            "w": 354,
+            "h": 84
+          },
+          "to": {
+            "x": 710,
+            "y": 620,
+            "w": 590,
+            "h": 140
+          },
+          "title": "Freeform chat",
+          "detail": "The local model chooses the appropriate tool.",
+          "radius": 26
+        },
+        {
+          "rect": {
+            "x": 24,
+            "y": 466.667,
+            "w": 354,
+            "h": 84
+          },
+          "to": {
+            "x": 760,
+            "y": 820,
+            "w": 540,
+            "h": 128
+          },
+          "title": "Doctor visit",
+          "detail": "Record once, then review the proposed changes.",
+          "radius": 26
+        }
+      ]
+    },
+    "readings": {
+      "image": "captures/237-guided-readings.png",
+      "screen": {
+        "width": 402,
+        "height": 874
+      },
+      "layers": [
+        {
+          "rect": {
+            "x": 24,
+            "y": 258.333,
+            "w": 164,
+            "h": 58
+          },
+          "to": {
+            "x": 720,
+            "y": 290,
+            "w": 480,
+            "h": 170
+          },
+          "title": "Read-only tool",
+          "detail": "The model selected list_readings."
+        },
+        {
+          "rect": {
+            "x": 24,
+            "y": 316.333,
+            "w": 164,
+            "h": 114
+          },
+          "to": {
+            "x": 650,
+            "y": 500,
+            "w": 420,
+            "h": 292
+          },
+          "title": "Stored measurements",
+          "detail": "Dates and values are fetched from saved records."
+        },
+        {
+          "rect": {
+            "x": 24,
+            "y": 555,
+            "w": 164,
+            "h": 28
+          },
+          "to": {
+            "x": 730,
+            "y": 850,
+            "w": 420,
+            "h": 72
+          },
+          "title": "Shared records",
+          "detail": "The caregiver interface uses the same readings."
+        }
+      ]
+    },
+    "medication": {
+      "image": "captures/244-guided-medicine-confirmation.png",
+      "screen": {
+        "width": 402,
+        "height": 874
+      },
+      "layers": [
+        {
+          "rect": {
+            "x": 25,
+            "y": 278,
+            "w": 352,
+            "h": 100
+          },
+          "to": {
+            "x": 670,
+            "y": 300,
+            "w": 600,
+            "h": 170
+          },
+          "title": "Name and ingredients",
+          "detail": "An exact database identity follows a deliberate choice."
+        },
+        {
+          "rect": {
+            "x": 23.363,
+            "y": 456.955,
+            "w": 355.274,
+            "h": 84.818
+          },
+          "to": {
+            "x": 710,
+            "y": 570,
+            "w": 570,
+            "h": 136
+          },
+          "title": "Product check",
+          "detail": "The user checks the product before it can be saved."
+        },
+        {
+          "rect": {
+            "x": 314.944,
+            "y": 190.02,
+            "w": 59.852,
+            "h": 34.567
+          },
+          "to": {
+            "x": 930,
+            "y": 820,
+            "w": 160,
+            "h": 92
+          },
+          "title": "Nothing saved yet",
+          "detail": "Save remains disabled until the product is checked."
+        }
+      ]
+    },
+    "visit": {
+      "image": "captures/247-guided-visit-review.png",
+      "screen": {
+        "width": 402,
+        "height": 874
+      },
+      "layers": [
+        {
+          "rect": {
+            "x": 31,
+            "y": 478,
+            "w": 340,
+            "h": 30
+          },
+          "to": {
+            "x": 670,
+            "y": 300,
+            "w": 600,
+            "h": 53
+          },
+          "title": "Proposed change",
+          "detail": "A saved demo proposal, not a live extraction claim."
+        },
+        {
+          "rect": {
+            "x": 31,
+            "y": 510,
+            "w": 340,
+            "h": 115
+          },
+          "to": {
+            "x": 650,
+            "y": 450,
+            "w": 600,
+            "h": 203
+          },
+          "title": "Directions",
+          "detail": "Dose, frequency and time remain separate."
+        },
+        {
+          "rect": {
+            "x": 31,
+            "y": 685,
+            "w": 340,
+            "h": 96
+          },
+          "to": {
+            "x": 700,
+            "y": 760,
+            "w": 600,
+            "h": 169
+          },
+          "title": "Confirmation",
+          "detail": "The proposal stays unsaved until reviewed.",
+          "radius": 22
+        }
+      ]
+    }
+  },
+  "source": "Touying 0.7.3, native XCTest screenshots and unaccelerated Simulator footage",
+  "cropUnits": "Logical points on the captured 402 × 874 screen. Visible card bounds are clipped to their real edges; AX bounds can include clipped decorative artwork."
+}

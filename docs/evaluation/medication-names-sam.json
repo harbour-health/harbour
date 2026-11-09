@@ -1,0 +1,226 @@
+{
+  "created" : "2026-11-09T21:53:27Z",
+  "modelFile" : "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+  "protocolDescription" : "Actual local greedy grammar-constrained routing, followed by the app's source validator and exact DPD lookup. Empty records. No reply narration, audio, acoustic accuracy, visit summary or dose correctness is evaluated. Phonetic names must be rejected, never automatically substituted.",
+  "results" : [
+    {
+      "chosenTool" : "add_medication",
+      "fixture" : {
+        "input" : "My name is Amira Hassan. Add hydrochlorothiazide to my medication list.",
+        "medicine" : "Hydrochlorothiazide",
+        "mustReject" : false,
+        "name" : "Amira Hassan EN",
+        "tool" : "add_medication"
+      },
+      "passed" : true,
+      "rawOutput" : "{\"tool\":\"add_medication\",\"arg\":\"\"}",
+      "seconds" : 2.708193063735962,
+      "validatedMedicine" : "Hydrochlorothiazide"
+    },
+    {
+      "chosenTool" : "add_medication",
+      "fixture" : {
+        "input" : "Je m’appelle Amira Hassan. Ajoute la rosuvastatine à ma liste de médicaments.",
+        "medicine" : "Rosuvastatin",
+        "mustReject" : false,
+        "name" : "Amira Hassan FR",
+        "tool" : "add_medication"
+      },
+      "passed" : true,
+      "rawOutput" : "{\"tool\":\"add_medication\",\"arg\":\"\"}",
+      "seconds" : 1.2508209943771362,
+      "validatedMedicine" : "Rosuvastatin"
+    },
+    {
+      "chosenTool" : "add_medication",
+      "fixture" : {
+        "input" : "My name is Jean-François Nguyen. Add hydrochlorothiazide to my medication list.",
+        "medicine" : "Hydrochlorothiazide",
+        "mustReject" : false,
+        "name" : "Jean-François Nguyen EN",
+        "tool" : "add_medication"
+      },
+      "passed" : true,
+      "rawOutput" : "{\"tool\":\"add_medication\",\"arg\":\"\"}",
+      "seconds" : 1.0240540504455566,
+      "validatedMedicine" : "Hydrochlorothiazide"
+    },
+    {
+      "chosenTool" : "add_medication",
+      "fixture" : {
+        "input" : "Je m’appelle Jean-François Nguyen. Ajoute la rosuvastatine à ma liste de médicaments.",
+        "medicine" : "Rosuvastatin",
+        "mustReject" : false,
+        "name" : "Jean-François Nguyen FR",
+        "tool" : "add_medication"
+      },
+      "passed" : true,
+      "rawOutput" : "{\"tool\":\"add_medication\",\"arg\":\"\"}",
+      "seconds" : 1.0387369394302368,
+      "validatedMedicine" : "Rosuvastatin"
+    },
+    {
+      "chosenTool" : "add_medication",
+      "fixture" : {
+        "input" : "My name is Gurpreet Singh. Add hydrochlorothiazide to my medication list.",
+        "medicine" : "Hydrochlorothiazide",
+        "mustReject" : false,
+        "name" : "Gurpreet Singh EN",
+        "tool" : "add_medication"
+      },
+      "passed" : true,
+      "rawOutput" : "{\"tool\":\"add_medication\",\"arg\":\"\"}",
+      "seconds" : 1.0832149982452393,
+      "validatedMedicine" : "Hydrochlorothiazide"
+    },
+    {
+      "chosenTool" : "add_medication",
+      "fixture" : {
+        "input" : "Je m’appelle Gurpreet Singh. Ajoute la rosuvastatine à ma liste de médicaments.",
+        "medicine" : "Rosuvastatin",
+        "mustReject" : false,
+        "name" : "Gurpreet Singh FR",
+        "tool" : "add_medication"
+      },
+      "passed" : true,
+      "rawOutput" : "{\"tool\":\"add_medication\",\"arg\":\"\"}",
+      "seconds" : 1.0402719974517822,
+      "validatedMedicine" : "Rosuvastatin"
+    },
+    {
+      "chosenTool" : "add_medication",
+      "fixture" : {
+        "input" : "My name is Aïcha Diallo. Add hydrochlorothiazide to my medication list.",
+        "medicine" : "Hydrochlorothiazide",
+        "mustReject" : false,
+        "name" : "Aïcha Diallo EN",
+        "tool" : "add_medication"
+      },
+      "passed" : true,
+      "rawOutput" : "{\"tool\":\"add_medication\",\"arg\":\"\"}",
+      "seconds" : 1.0779169797897339,
+      "validatedMedicine" : "Hydrochlorothiazide"
+    },
+    {
+      "chosenTool" : "add_medication",
+      "fixture" : {
+        "input" : "Je m’appelle Aïcha Diallo. Ajoute la rosuvastatine à ma liste de médicaments.",
+        "medicine" : "Rosuvastatin",
+        "mustReject" : false,
+        "name" : "Aïcha Diallo FR",
+        "tool" : "add_medication"
+      },
+      "passed" : true,
+      "rawOutput" : "{\"tool\":\"add_medication\",\"arg\":\"\"}",
+      "seconds" : 1.065269947052002,
+      "validatedMedicine" : "Rosuvastatin"
+    },
+    {
+      "chosenTool" : "add_medication",
+      "fixture" : {
+        "input" : "Add levothyroxine to my medication list.",
+        "medicine" : "Levothyroxine Sodium",
+        "mustReject" : false,
+        "name" : "levothyroxine EN",
+        "tool" : "add_medication"
+      },
+      "passed" : true,
+      "rawOutput" : "{\"tool\":\"add_medication\",\"arg\":\"\"}",
+      "seconds" : 0.9949089288711548,
+      "validatedMedicine" : "Levothyroxine Sodium"
+    },
+    {
+      "chosenTool" : "add_medication",
+      "fixture" : {
+        "input" : "Ajoute l’empagliflozine à ma liste de médicaments.",
+        "medicine" : "Empagliflozin",
+        "mustReject" : false,
+        "name" : "empagliflozin FR",
+        "tool" : "add_medication"
+      },
+      "passed" : true,
+      "rawOutput" : "{\"tool\":\"add_medication\",\"arg\":\"\"}",
+      "seconds" : 1.0018160343170166,
+      "validatedMedicine" : "Empagliflozin"
+    },
+    {
+      "chosenTool" : "add_medication",
+      "fixture" : {
+        "input" : "Put rivaroxaban on my medication list.",
+        "medicine" : "Rivaroxaban",
+        "mustReject" : false,
+        "name" : "rivaroxaban EN",
+        "tool" : "add_medication"
+      },
+      "passed" : true,
+      "rawOutput" : "{\"tool\":\"add_medication\",\"arg\":\"\"}",
+      "seconds" : 1.0206129550933838,
+      "validatedMedicine" : "Rivaroxaban"
+    },
+    {
+      "chosenTool" : "add_medication",
+      "fixture" : {
+        "input" : "Ajoute le pantoprazole à ma liste de médicaments.",
+        "medicine" : "Pantoprazole",
+        "mustReject" : false,
+        "name" : "pantoprazole FR",
+        "tool" : "add_medication"
+      },
+      "passed" : true,
+      "rawOutput" : "{\"tool\":\"add_medication\",\"arg\":\"\"}",
+      "seconds" : 1.1000789403915405,
+      "validatedMedicine" : "Pantoprazole"
+    },
+    {
+      "chosenTool" : "remove_medication",
+      "fixture" : {
+        "input" : "Do not add gliclazide to my medicine list.",
+        "mustReject" : false,
+        "name" : "negative EN",
+        "tool" : "reply"
+      },
+      "passed" : false,
+      "rawOutput" : "{\"tool\":\"remove_medication\",\"arg\":\"\"}",
+      "seconds" : 1.050475001335144,
+      "validationError" : "forbidden"
+    },
+    {
+      "chosenTool" : "remove_medication",
+      "fixture" : {
+        "input" : "N’ajoute pas de candésartan à ma liste de médicaments.",
+        "mustReject" : false,
+        "name" : "negative FR",
+        "tool" : "reply"
+      },
+      "passed" : false,
+      "rawOutput" : "{\"tool\":\"remove_medication\",\"arg\":\"\"}",
+      "seconds" : 1.2154390811920166,
+      "validationError" : "forbidden"
+    },
+    {
+      "chosenTool" : "add_medication",
+      "fixture" : {
+        "input" : "Add hydroclorothiazide to my medication list.",
+        "mustReject" : true,
+        "name" : "uncertain phonetic EN",
+        "tool" : "add_medication"
+      },
+      "passed" : true,
+      "rawOutput" : "{\"tool\":\"add_medication\",\"arg\":\"\"}",
+      "seconds" : 1.1972730159759521,
+      "validationError" : "missingMedicine"
+    },
+    {
+      "chosenTool" : "reply",
+      "fixture" : {
+        "input" : "Je m’appelle Wei Chen.",
+        "mustReject" : false,
+        "name" : "personal name only FR",
+        "tool" : "reply"
+      },
+      "passed" : true,
+      "rawOutput" : "{\"tool\":\"reply\",\"arg\":\"\"}",
+      "seconds" : 1.0307519435882568
+    }
+  ]
+}

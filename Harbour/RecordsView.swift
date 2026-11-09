@@ -48,6 +48,7 @@ struct RecordsView: View {
         }
         .contentMargins(.bottom, dockClearance, for: .scrollContent)
         .listStyle(.plain).scrollContentBackground(.hidden).background(Palette.canvas)
+        .presentationTarget("records.browser")
         .navigationTitle("").navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if category == nil {
@@ -403,6 +404,7 @@ struct MedicineEditor: View {
     @Environment(\.dismiss) private var dismiss
     @State private var query = ""
     @State private var chosen: Medicine?
+    @State private var initialized = false
     @State private var instructions = ""
     @State private var confirmed = false
     @FocusState private var editing: Bool
@@ -422,7 +424,7 @@ struct MedicineEditor: View {
 
     var body: some View {
         Form {
-            if initial == nil && reviewSource == nil {
+            if initial == nil && reviewSource == nil && chosen == nil {
                 Section("Medication label") {
                     MedicineScanButtons(scanner: scanner)
                     if scanner.busy {
@@ -494,9 +496,19 @@ struct MedicineEditor: View {
                         prompt: Text("Medication name").foregroundStyle(Palette.muted)
                     ).autocorrectionDisabled().focused($editing).accessibilityIdentifier("medicineSearch")
                 }
+                if Catalog.search(query).isEmpty && !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Section("Similar names") {
+                        ForEach(MedicationVocabulary.shared.suggestions(query)) { candidate in
+                            Button { chosen = candidate
+                                editing = false
+                                confirmed = false } label: { Text(L10n.medicineName(candidate)).font(.title3) }
+                                .accessibilityIdentifier("medicineSuggestion-" + candidate.id)
+                        }
+                    }
+                }
                 Section("Medications") {
                     ForEach(Catalog.search(query)) { medicine in
-                        Button { chosen = medicine } label: {
+                        Button { chosen = medicine; editing = false; confirmed = false } label: {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(L10n.medicineName(medicine)).foregroundStyle(Palette.ink)
                                 Text(L10n.ingredientNames(medicine.ingredients)).font(.body)
@@ -516,6 +528,8 @@ struct MedicineEditor: View {
         .navigationTitle(L10n.string(initial == nil ? "Add medicine" : "Medication"))
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
+            guard !initialized else { return }
+            initialized = true
             chosen = initial
             instructions = initial?.instructions ?? reviewSource?.instructions ?? ""
             query = reviewSource?.name ?? ""

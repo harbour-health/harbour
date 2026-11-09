@@ -18,6 +18,7 @@ struct ChatMessage: Codable, Identifiable {
     var isUser = false
     var text: String
     var toolPayload: String?
+    var toolName: String?
     var toolFailed: Bool?
     var report: InteractionReport?
     var readings: [Reading]?

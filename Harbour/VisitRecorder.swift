@@ -195,6 +195,7 @@ private final class ModernAudioBridge: @unchecked Sendable {
 
     static func prepare(
         format: AVAudioFormat,
+        medicationHints: [String],
         transcript: @escaping (String) -> Void,
         status: @escaping (String) -> Void,
         failure: @escaping @Sendable (String) -> Void
@@ -233,6 +234,9 @@ private final class ModernAudioBridge: @unchecked Sendable {
 
         let (stream, continuation) = AsyncStream<AnalyzerInput>.makeStream(bufferingPolicy: .bufferingOldest(128))
         let analyzer = SpeechAnalyzer(modules: [transcriber])
+        let context = AnalysisContext()
+        context.contextualStrings[.general] = medicationHints
+        try await analyzer.setContext(context)
         let session = ModernVisitSpeech(analyzer: analyzer, transcriber: transcriber, continuation: continuation)
         let bridge = try ModernAudioBridge(input: format, output: output, continuation: continuation, failure: failure)
         session.append = { buffer in bridge.append(buffer) }
@@ -289,6 +293,7 @@ private final class LegacyAudioBridge: @unchecked Sendable {
 
 @MainActor private final class LegacyVisitSpeech: VisitSpeechSession {
     private let recognizer: SFSpeechRecognizer
+    private let medicationHints: [String]
     private let bridge = LegacyAudioBridge()
     private var task: SFSpeechRecognitionTask?
     private var request: SFSpeechAudioBufferRecognitionRequest?
@@ -303,7 +308,11 @@ private final class LegacyAudioBridge: @unchecked Sendable {
 
         return { bridge.append($0) } }
 
-    init(transcript: @escaping (String) -> Void, failure: @escaping @Sendable (String) -> Void) throws {
+    init(
+        medicationHints: [String],
+        transcript: @escaping (String) -> Void,
+        failure: @escaping @Sendable (String) -> Void
+    ) throws {
         guard
             let recognizer = SFSpeechRecognizer(locale: SpeechLanguage.locale), recognizer.isAvailable,
             recognizer.supportsOnDeviceRecognition
@@ -313,6 +322,7 @@ private final class LegacyAudioBridge: @unchecked Sendable {
         }
 
         self.recognizer = recognizer
+        self.medicationHints = medicationHints
         self.transcript = transcript
         self.failure = failure
         beginSegment()
@@ -337,6 +347,7 @@ private final class LegacyAudioBridge: @unchecked Sendable {
         index += 1
         let current = index
         let request = SFSpeechAudioBufferRecognitionRequest()
+        request.contextualStrings = medicationHints
         request.addsPunctuation = true
         request.requiresOnDeviceRecognition = true
         request.shouldReportPartialResults = true
@@ -492,6 +503,10 @@ private final class LegacyAudioBridge: @unchecked Sendable {
                     if #available(iOS 26, *) {
                         preparedSpeech = try await ModernVisitSpeech.prepare(
                             format: format,
+                            medicationHints: MedicationVocabulary.shared.speechHints(
+                                saved: store.records.medicines,
+                                french: L10n.isFrench
+                            ),
                             transcript: received,
                             status: { [weak self] value in guard self?.generation == current else {
                                 return
@@ -501,7 +516,12 @@ private final class LegacyAudioBridge: @unchecked Sendable {
                             failure: failed
                         ) }
                     else {
-                        preparedSpeech = try LegacyVisitSpeech(transcript: received, failure: failed)
+                        preparedSpeech = try LegacyVisitSpeech(
+                            medicationHints: MedicationVocabulary.shared
+                                .speechHints(saved: store.records.medicines, french: L10n.isFrench),
+                            transcript: received,
+                            failure: failed
+                        )
                     }
                 } catch {
                     if generation == current {

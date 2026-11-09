@@ -2,7 +2,7 @@
 
 ## What it is
 
-A native SwiftUI health companion with Today, Chat, Records, and Visits destinations. The summary hierarchy and floating navigation take inspiration from the supplied Wealthsimple reference, with original Harbour artwork and familiar iOS controls.
+A native SwiftUI health companion. The default [Simple interface](simple-and-caregiver.md) has large Talk, Message and Record a visit actions. Caregiver mode provides Today, Chat, Records and Visits destinations. The summary hierarchy and floating navigation take inspiration from the supplied Wealthsimple reference, with original Harbour artwork and familiar iOS controls.
 
 ## How it works
 

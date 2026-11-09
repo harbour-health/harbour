@@ -15,7 +15,7 @@ import XCTest
     func testPopulatedListsInBothAppearances() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-unlocked", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-today"].tap()
         app.buttons["Settings"].tap()
         if !app.buttons["developerSettings"].isHittable {

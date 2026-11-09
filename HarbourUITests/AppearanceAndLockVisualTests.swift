@@ -9,7 +9,7 @@ import UIKit
     func testAppearanceSelectionMovesBetweenRowsImmediately() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-unlocked", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
-        app.launch()
+        app.launchCaregiver()
 
         app.buttons["nav-today"].tap()
         app.buttons["Settings"].tap()
@@ -43,7 +43,7 @@ import UIKit
             "-AppleLanguages", "(en)",
             "-AppleLocale", "en_CA"
         ]
-        app.launch()
+        app.launchCaregiver()
 
         let unlock = app.buttons["biometricUnlockButton"]
         XCTAssertTrue(unlock.waitForExistence(timeout: 5), app.debugDescription)

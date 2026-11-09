@@ -30,7 +30,7 @@ import XCTest
             "-AppleLocale",
             "en_CA"
         ]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-today"].tap()
         app.buttons["Settings"].tap()
         if !app.buttons["developerSettings"].isHittable {
@@ -82,7 +82,7 @@ import XCTest
             "-AppleLocale",
             "en_CA"
         ]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-today"].tap()
         app.buttons["Settings"].tap()
         if !app.buttons["developerSettings"].isHittable {
@@ -138,7 +138,7 @@ import XCTest
             "-AppleLocale",
             "en_CA"
         ]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-chat"].tap()
         app.buttons["modelSelector"].tap()
         let choice = app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Camille")).firstMatch
@@ -190,7 +190,7 @@ import XCTest
             "-AppleLocale",
             "en_CA"
         ]
-        app.launch()
+        app.launchCaregiver()
 
         return app
     }

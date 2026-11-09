@@ -3,7 +3,7 @@ import HarbourCore
 @testable import Harbour
 
 @MainActor final class UnconfirmedMedicineReviewTests: XCTestCase {
-    func testReviewSavesUnknownMedicineAndSourceMarkerTogether() throws {
+    func testReviewResolvesDatabaseMedicineAndSavesSourceMarkerTogether() throws {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: folder) }
         let store = AppStore(folder: folder)
@@ -12,8 +12,8 @@ import HarbourCore
         let item = try XCTUnwrap(visit.summary?.unconfirmedMedicines?.first)
         let source = VisitMedicineReviewSource(visit: visit, item: item)
         let medicine = try XCTUnwrap(source.medicine(saved: store.records.medicines))
-        XCTAssertEqual(medicine.name, "salbutamol")
-        XCTAssertTrue(medicine.ingredients.isEmpty)
+        XCTAssertEqual(medicine.name, "Salbutamol")
+        XCTAssertEqual(medicine.ingredients, try XCTUnwrap(Catalog.resolve("salbutamol")).ingredients)
         XCTAssertTrue(medicine.instructions.contains("maximum 8 puffs in 24 hours"))
         XCTAssertTrue(store.saveMedicine(medicine, schedule: nil, reviewSource: source))
         XCTAssertEqual(store.visits.first { $0.id == visit.id }?.reviewedUnconfirmedQuotes, [item.quote])
@@ -21,6 +21,16 @@ import HarbourCore
         let reloaded = AppStore(folder: folder)
         XCTAssertTrue(reloaded.records.medicines.contains { $0.id == medicine.id })
         XCTAssertEqual(reloaded.visits.first { $0.id == visit.id }?.reviewedUnconfirmedQuotes, [item.quote])
+    }
+
+    func testTrulyUnknownProductKeepsIngredientsUnconfirmed() throws {
+        let quote = "Start FictionalStudyMedicine 5 mg once daily."
+        let visit = DoctorVisit(transcript: quote)
+        let source = VisitMedicineReviewSource(visit: visit, item: VisitQuote(quote: quote, text: "FictionalStudyMedicine: 5 mg once daily."))
+        let medicine = try XCTUnwrap(source.medicine(saved: []))
+        XCTAssertEqual(medicine.name, "FictionalStudyMedicine")
+        XCTAssertTrue(medicine.ingredients.isEmpty)
+        XCTAssertEqual(medicine.instructions, "5 mg once daily.")
     }
 
     func testChangedSourceRejectsSaveAndLegacyProseDoesNotGuessIngredients() throws {

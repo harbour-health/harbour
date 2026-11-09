@@ -135,7 +135,7 @@ struct VisitsView: View {
                         sourceID: "recorder",
                         in: recorderTransition
                     )) }
-            .navigationDestination(item: $destination) { VisitDetailView(id: $0) }
+            .navigationDestination(item: $destination) { VisitDetailView(id: $0).presentationTarget("visit.summary") }
             .sheet(item: $newVisit) { visit in
                 NavigationStack { VisitTranscriptEditor(visit: visit, isNew: true) { destination = $0 } }
                     .floatingDrawer(height: 520)
@@ -259,7 +259,8 @@ struct VisitRecordingView: View {
         }.contentMargins(.bottom, dockClearance, for: .scrollContent)
             .background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle("Recorder")
             .navigationBarTitleDisplayMode(.inline)
-            .navigationDestination(item: $finished) { VisitDetailView(id: $0, automaticallySummarise: true) }
+            .navigationDestination(item: $finished) {
+                VisitDetailView(id: $0, automaticallySummarise: true).presentationTarget("visit.summary") }
             .task {
                 if startImmediately && !attemptedStart {
                     attemptedStart = true

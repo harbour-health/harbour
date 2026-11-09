@@ -8,7 +8,7 @@ import XCTest
     func testClosingExportReturnsToSettingsWithoutRepresenting() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-unlocked"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-today"].tap()
         app.buttons["Settings"].tap()
         for _ in 0 ..< 2 {

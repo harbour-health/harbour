@@ -336,18 +336,8 @@ struct ReadingSummary: View {
                                 L10n.string(latest.kind.rawValue)
                             ))
                 }
-                let count = readings.filter { $0.kind == latest.kind }.count
-                ViewThatFits(in: .horizontal) {
-                    HStack(spacing: 16) {
-                        Text(latest.date, format: .dateTime.month(.abbreviated).day().hour().minute()).fixedSize()
-                        Spacer(minLength: 0)
-                        Text(L10n.format(count == 1 ? "%lld reading" : "%lld readings", Int64(count))).fixedSize()
-                    }
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(latest.date, format: .dateTime.month(.abbreviated).day().hour().minute())
-                        Text(L10n.format(count == 1 ? "%lld reading" : "%lld readings", Int64(count)))
-                    }
-                }.font(.subheadline).foregroundStyle(Palette.muted)
+                Text(latest.date, format: .dateTime.month(.abbreviated).day().hour().minute()).font(.body)
+                    .foregroundStyle(Palette.muted)
             } else {
                 Text("No readings yet").font(.title2.weight(.medium))
             }

@@ -53,6 +53,18 @@ import HarbourRuntime
         #endif
         let file = URL(fileURLWithPath: CommandLine.arguments[1]),
             runtime = LocalModel(useGPU: !CommandLine.arguments.contains("--cpu"))
+        if CommandLine.arguments.contains("--medication-name-suite") {
+            func argument(_ flag: String) -> URL {
+                URL(fileURLWithPath: CommandLine.arguments[CommandLine.arguments.firstIndex(of: flag)! + 1])
+            }
+            try await MedicationNameEvaluation.run(
+                file: file,
+                dataset: argument("--dataset"),
+                destination: argument("--output")
+            )
+
+            return
+        }
         if CommandLine.arguments.contains("--linked-suite") {
             func argument(_ flag: String)
                 -> URL {

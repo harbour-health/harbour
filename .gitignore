@@ -16,3 +16,6 @@ HarbourSpeech/Sources/HarbourSpeech/Resources/espeak-ng-data/
 
 # Runtime console noise is local; JSON reports and frozen prompts are retained.
 docs/evaluation/**/*.log
+
+# Presentation authoring dependencies
+presentation/node_modules/

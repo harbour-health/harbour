@@ -8,7 +8,7 @@ import XCTest
     func testManualAppointmentRequiresConfirmationAndPersists() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-unlocked", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-records"].tap()
         let category = app.buttons["record-category-3"]
         for _ in 0 ..< 3 {
@@ -37,7 +37,7 @@ import XCTest
         save.tap()
         XCTAssertTrue(app.staticTexts["Fictional clinic appointment"].waitForExistence(timeout: 5))
         app.terminate()
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-records"].tap()
         app.buttons["record-category-3"].tap()
         XCTAssertTrue(app.staticTexts["Fictional clinic appointment"].waitForExistence(timeout: 5))
@@ -62,7 +62,7 @@ import XCTest
                 "-AppleLocale",
                 "en_CA"
             ]
-            app.launch()
+            app.launchCaregiver()
             let approve = app.buttons["approveMedication"]
             XCTAssertTrue(approve.waitForExistence(timeout: 5))
             XCTAssertTrue(approve.isEnabled)

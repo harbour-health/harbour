@@ -40,6 +40,16 @@ enum AppSheet: Identifiable {
 }
 
 @main struct HarbourApp: App {
+    init() {
+        // Developer launch setup seeds the preference once; unlike -UserDefaults arguments,
+        // it does not shadow subsequent in-app interface changes.
+        if
+            let initial = ProcessInfo.processInfo.environment["HARBOUR_INITIAL_INTERFACE"],
+            AppInterface(rawValue: initial) != nil {
+            UserDefaults.standard.set(initial, forKey: "interfaceMode")
+        }
+    }
+
     @StateObject private var store = AppStore()
     @StateObject private var models = ModelManager()
     @StateObject private var health = HealthService()
@@ -104,10 +114,13 @@ struct LockShell: View {
 }
 
 struct RootView: View {
+    @EnvironmentObject private var recorder: VisitRecorder
     @EnvironmentObject var store: AppStore
     @EnvironmentObject var models: ModelManager
     @EnvironmentObject private var alerts: CareNotifications
     @Environment(\.scenePhase) private var scenePhase
+    @AppStorage("interfaceMode") private var interfaceMode = AppInterface.simple.rawValue
+    @State private var simpleRecording = false
     @State private var tab = 0
     @State private var voiceMode = false
     @State private var pageDrag: CGFloat = 0
@@ -120,26 +133,40 @@ struct RootView: View {
         GeometryReader { geometry in
             let pageSize = CGSize(width: max(0, geometry.size.width), height: max(0, geometry.size.height))
             HStack(spacing: 0) {
-                NavigationStack { TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1
-                    tab = 2 }, openSymptoms: { recordCategory = 0
-                    tab = 2 }, openVisits: { tab = 3 }) }
-                    .frame(width: pageSize.width, height: pageSize.height)
-                    .accessibilityHidden(tab != 0)
-                NavigationStack { ChatView(sheet: $sheet, voiceMode: $voiceMode).environment(\.isChatVisible, tab == 1)
+                NavigationStack {
+                    if interfaceMode == AppInterface.simple.rawValue {
+                        SimpleHomeView(sheet: $sheet, message: { tab = 1 }, talk: {
+                            UserDefaults.standard.set(true, forKey: "startVoiceOnOpen")
+                            tab = 1
+                        }, record: { simpleRecording = true })
+                    } else {
+                        TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1
+                            tab = 2 }, openSymptoms: { recordCategory = 0
+                            tab = 2 }, openVisits: { tab = 3 })
+                    }
                 }
                 .frame(width: pageSize.width, height: pageSize.height)
-                .accessibilityHidden(tab != 1)
+                .accessibilityHidden(tab != 0).allowsHitTesting(tab == 0)
+                NavigationStack { ChatView(sheet: $sheet, voiceMode: $voiceMode, goHome: { tab = 0 }).environment(
+                    \.isChatVisible,
+                    tab == 1
+                )
+                }
+                .frame(width: pageSize.width, height: pageSize.height)
+                .accessibilityHidden(tab != 1).allowsHitTesting(tab == 1)
                 NavigationStack { RecordsView(sheet: $sheet, category: $recordCategory) }
                     .frame(width: pageSize.width, height: pageSize.height)
-                    .accessibilityHidden(tab != 2)
+                    .accessibilityHidden(tab != 2).allowsHitTesting(tab == 2)
                 NavigationStack { VisitsView(sheet: $sheet) }
                     .frame(width: pageSize.width, height: pageSize.height)
-                    .accessibilityHidden(tab != 3)
+                    .accessibilityHidden(tab != 3).allowsHitTesting(tab == 3)
             }
             .offset(x: -CGFloat(tab) * pageSize.width + pageDrag)
             .animation(reduceMotion ? nil : .spring(response: 0.34, dampingFraction: 0.9), value: tab)
             .environment(\.mainPageSwipeAction, MainPageSwipeAction(canBegin: { index in
-                tab == index && !voiceMode && (index != 2 || recordCategory == nil) && !keyboardVisible && sheet ==
+                interfaceMode == AppInterface.caregiver
+                    .rawValue && tab == index && !voiceMode && (index != 2 || recordCategory == nil) &&
+                    !keyboardVisible && sheet ==
                     nil &&
                     store.shareFile == nil
             }, update: { index, translation in
@@ -170,13 +197,28 @@ struct RootView: View {
             }))
         }
         .clipped()
-        .environment(\.floatingDockClearance, keyboardVisible ? 0 : (tab == 1 ? 34 : 86))
+        .environment(
+            \.floatingDockClearance,
+            interfaceMode == AppInterface.simple.rawValue ? 0 : keyboardVisible ? 0 : (tab == 1 ? 34 : 86)
+        )
         .overlay(alignment: .bottom) {
-            if !keyboardVisible && !voiceMode {
+            if interfaceMode == AppInterface.caregiver.rawValue && !keyboardVisible && !voiceMode {
                 NavigationDock(selection: $tab)
             }
         }
         .background(Palette.canvas)
+        .presentationStage()
+        .onChange(of: interfaceMode) {
+            if !recorder.active {
+                tab = 0
+            }
+        }
+        .fullScreenCover(isPresented: $simpleRecording) {
+            NavigationStack {
+                VisitRecordingView(startImmediately: true)
+                    .toolbar { ToolbarItem(placement: .topBarLeading) { Button("Home") { simpleRecording = false } } }
+            }.presentationStage()
+        }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
             keyboardVisible = true }
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
@@ -238,16 +280,8 @@ struct RootView: View {
                 }
             })
         ) { Button("OK") { store.error = nil } } message: { Text(store.error ?? "") }
-        .onAppear {
-            if pendingSessionTab >= 0 {
-                tab = pendingSessionTab
-                pendingSessionTab = -1 }
-        }
-        .onChange(of: pendingSessionTab) {
-            if pendingSessionTab >= 0 {
-                tab = pendingSessionTab
-                pendingSessionTab = -1 }
-        }
+        .onAppear { openPendingSession() }
+        .onChange(of: pendingSessionTab) { openPendingSession() }
         .task(id: store.archive.care) { await alerts.sync(care: store.care, medicines: store.records.medicines) }
         .onChange(of: store.records.medicines.map(\.id)) { Task { await alerts.sync(
             care: store.care,
@@ -291,6 +325,19 @@ struct RootView: View {
                     models: models,
                     store: store
                 ) }
+        }
+    }
+
+    private func openPendingSession() {
+        guard pendingSessionTab >= 0 else { return }
+        let requested = pendingSessionTab
+        pendingSessionTab = -1
+        if interfaceMode == AppInterface.simple.rawValue && requested == 3 {
+            tab = 0
+            UserDefaults.standard.set(false, forKey: "openRecordingSession")
+            if recorder.active { simpleRecording = true }
+        } else {
+            tab = min(3, max(0, requested))
         }
     }
 
@@ -445,14 +492,12 @@ struct TodayView: View {
     @ViewBuilder private var shortcuts: some View {
         illustratedShortcut(
             "Medications",
-            detail: L10n.format("%lld recorded", Int64(store.records.medicines.count)),
             kind: .medicines,
             colour: Palette.blueWash,
             action: openMedicines
         ).accessibilityIdentifier("openMedicines")
         illustratedShortcut(
             "Symptoms",
-            detail: L10n.format("%lld recorded", Int64(store.records.symptoms.count)),
             kind: .symptoms,
             colour: Palette.coralWash,
             action: openSymptoms
@@ -462,7 +507,6 @@ struct TodayView: View {
 
     private func illustratedShortcut(
         _ title: String,
-        detail: String,
         kind: IllustrationKind,
         colour: Color,
         action: @escaping () -> Void
@@ -472,7 +516,6 @@ struct TodayView: View {
                 colour
                 VStack(alignment: .leading, spacing: 8) {
                     Text(L10n.string(title)).font(.system(.title3, design: .rounded, weight: .bold))
-                    Text(detail).font(.body).lineLimit(2)
                 }.padding(18)
             }.frame(maxWidth: .infinity).frame(height: typeSize.isAccessibilitySize ? 320 : 190)
                 .overlay(alignment: .bottomTrailing) {

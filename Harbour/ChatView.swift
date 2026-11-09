@@ -17,6 +17,9 @@ struct ChatView: View {
     @StateObject private var voice = VoiceService()
     @ObservedObject private var voiceAssets = KokoroAssets.shared
     @Binding var voiceMode: Bool
+    var goHome: () -> Void = {}
+    @AppStorage("interfaceMode") private var interfaceMode = AppInterface.simple.rawValue
+    @AppStorage("startVoiceOnOpen") private var startVoiceOnOpen = false
     @State private var voiceDraftBackup: String?
     @State private var pausedVoiceActivity = false
     @Environment(\.scenePhase) private var scenePhase
@@ -154,6 +157,11 @@ struct ChatView: View {
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.28), value: voiceMode)
             .background(Palette.canvas).foregroundStyle(Palette.ink)
+            .onAppear { voice.setMedicationContext(store.records.medicines)
+                consumeVoiceRequest() }
+            .onChange(of: store.records.medicines) { voice.setMedicationContext(store.records.medicines) }
+            .onChange(of: startVoiceOnOpen) { consumeVoiceRequest() }
+            .onChange(of: isChatVisible) { consumeVoiceRequest() }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(voiceMode ? .hidden : .visible, for: .navigationBar)
             .toolbar {
@@ -165,10 +173,16 @@ struct ChatView: View {
                 }
                 ToolbarItem(placement: .topBarLeading) {
                     HStack(spacing: 0) {
-                        Button { cancel()
-                            focused = false
-                            historySheet = true } label: { ToolbarGlyph(symbol: "sidebar.left") }
-                            .accessibilityLabel("Chats")
+                        if interfaceMode == AppInterface.simple.rawValue {
+                            Button(action: goHome) {
+                                Label("Home", systemImage: "chevron.left").font(.title3.weight(.medium))
+                                    .frame(minHeight: 56) }
+                        } else {
+                            Button { cancel()
+                                focused = false
+                                historySheet = true } label: { ToolbarGlyph(symbol: "sidebar.left") }
+                                .accessibilityLabel("Chats")
+                        }
                         Button { cancel()
                             focused = false
                             draft = ""
@@ -461,26 +475,32 @@ struct ChatView: View {
                     ))
                 }
                 HStack(spacing: 4) {
-                    Button { focused = false
-                        toolSheet = true } label: { ToolbarGlyph(symbol: "plus") }.accessibilityLabel("Choose a topic")
+                    if interfaceMode == AppInterface.caregiver.rawValue {
+                        Button { focused = false
+                            toolSheet = true } label: { ToolbarGlyph(symbol: "plus") }
+                            .accessibilityLabel("Choose a topic")
+                    }
                     Spacer(minLength: 0)
-                    Button { focused = false
-                        modelSheet = true } label: {
-                        HStack(spacing: 5) {
-                            ViewThatFits(in: .horizontal) {
-                                modelLabel(compact: false).fixedSize(horizontal: true, vertical: false)
-                                modelLabel(compact: true).fixedSize(horizontal: true, vertical: false)
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(models.resolved.compactTitle).font(.body.weight(.medium))
-                                    Text(models.effort.title).font(.body).foregroundStyle(Palette.muted)
+                    if interfaceMode == AppInterface.caregiver.rawValue {
+                        Button { focused = false
+                            modelSheet = true } label: {
+                            HStack(spacing: 5) {
+                                ViewThatFits(in: .horizontal) {
+                                    modelLabel(compact: false).fixedSize(horizontal: true, vertical: false)
+                                    modelLabel(compact: true).fixedSize(horizontal: true, vertical: false)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(models.resolved.compactTitle).font(.body.weight(.medium))
+                                        Text(models.effort.title).font(.body).foregroundStyle(Palette.muted)
+                                    }
                                 }
+                                Image(systemName: "chevron.down").font(.caption2)
                             }
-                            Image(systemName: "chevron.down").font(.caption2)
-                        }
-                        .padding(.horizontal, 10).frame(minHeight: 48).contentShape(RoundedRectangle(cornerRadius: 10))
-                    }.layoutPriority(-1).accessibilityLabel("Choose model")
-                        .accessibilityValue(L10n.string(models.resolved.title) + ", " + models.effort.title)
-                        .accessibilityIdentifier("modelSelector")
+                            .padding(.horizontal, 10).frame(minHeight: 48)
+                            .contentShape(RoundedRectangle(cornerRadius: 10))
+                        }.layoutPriority(-1).accessibilityLabel("Choose model")
+                            .accessibilityValue(L10n.string(models.resolved.title) + ", " + models.effort.title)
+                            .accessibilityIdentifier("modelSelector")
+                    }
                     Button {
                         if voice.listening {
                             voice.finishUtterance()
@@ -492,8 +512,8 @@ struct ChatView: View {
                     } label: {
                         Image(systemName: voice.listening ? "mic.fill" : "mic")
                             .foregroundStyle(voice.listening ? Palette.coral : Palette.ink).frame(
-                                width: 44,
-                                height: 48
+                                width: interfaceMode == AppInterface.simple.rawValue ? 56 : 44,
+                                height: 56
                             )
                     }.accessibilityLabel(L10n.string(voice.listening ? "Finish dictation" : "Dictate message"))
                         .accessibilityIdentifier("dictateMessage")
@@ -507,7 +527,10 @@ struct ChatView: View {
                     } label: {
                         Image(systemName: busy ? "stop.fill" : draft.trimmingCharacters(in: .whitespacesAndNewlines)
                             .isEmpty ? "waveform" : "arrow.up").font(.body.weight(.semibold))
-                            .foregroundStyle(Palette.canvas).frame(width: 44, height: 44).background(
+                            .foregroundStyle(Palette.canvas).frame(
+                                width: interfaceMode == AppInterface.simple.rawValue ? 60 : 48,
+                                height: interfaceMode == AppInterface.simple.rawValue ? 60 : 48
+                            ).background(
                                 Palette.ink,
                                 in: Circle()
                             )
@@ -538,7 +561,16 @@ struct ChatView: View {
                         .mask(LinearGradient(colors: [.clear, .black, .black], startPoint: .top, endPoint: .bottom))
                         .padding(.top, -24)
                 }
-            }.foregroundStyle(Palette.ink)
+            }.foregroundStyle(Palette.ink).presentationTarget("chat.composer")
+    }
+
+    private func consumeVoiceRequest() {
+        guard startVoiceOnOpen, isChatVisible, !busy, !recorder.active else {
+            return
+        }
+
+        startVoiceOnOpen = false
+        beginVoiceConversation()
     }
 
     private func modelLabel(compact: Bool) -> some View {
@@ -650,7 +682,7 @@ struct ChatView: View {
                 }
 
                 let action = try ToolPlanner.validate(decision, original: input, records: store.records)
-                execute(action, original: input)
+                execute(action, original: input, toolName: decision.tool.rawValue)
                 if
                     firstMessage, let title = try? await models.title(for: input), !Task.isCancelled,
                     models.chatRequests.canApplyResult(for: currentID), operationID == currentID {
@@ -725,23 +757,28 @@ struct ChatView: View {
         operationID = currentID
     }
 
-    private func execute(_ action: ValidatedAction, original: String) {
+    private func execute(_ action: ValidatedAction, original: String, toolName: String) {
+        func appendTool(_ result: ChatMessage, status: String = "completed") {
+            var result = result
+            result.toolName = toolName
+            store.appendToolEvent(result, status: status)
+        }
         switch action {
         case .reply(let text): store.append(ChatMessage(text: text))
         case .appointment(let text): sheet = .appointment(AppointmentRules.draft(from: text))
-            store.appendToolEvent(ChatMessage(text: text), status: "requires_confirmation")
-        case .appointments: store.appendToolEvent(ChatMessage(
+            appendTool(ChatMessage(text: text), status: "requires_confirmation")
+        case .appointments: appendTool(ChatMessage(
                 text: L10n.string(store.records.appointments.isEmpty ? "No appointments" : "Appointments"),
                 appointments: store.records.appointments.sorted { $0.date < $1.date }
             ))
         case .symptom(let text): sheet = .symptom(text)
-            store.appendToolEvent(
+            appendTool(
                 ChatMessage(text: L10n.string("Review the symptom details and emergency signs before saving.")),
                 status: "requires_confirmation"
             )
         case .add(let medicine, let times, let frequency):
             sheet = times.isEmpty && frequency == nil ? .medicine(medicine) : .medicineDraft(medicine, times, frequency)
-            store.appendToolEvent(
+            appendTool(
                 ChatMessage(text: L10n.format(
                     "Confirm the exact product and instructions for %@.",
                     L10n.medicineName(medicine)
@@ -749,21 +786,21 @@ struct ChatView: View {
                 status: "requires_confirmation"
             )
         case .remove(let medicine):
-            store.appendToolEvent(
+            appendTool(
                 ChatMessage(text: L10n.format("Remove %@ from your list?", L10n.medicineName(medicine))),
                 status: "requires_confirmation"
             )
             removal = medicine
-        case .medicines: store.appendToolEvent(ChatMessage(
+        case .medicines: appendTool(ChatMessage(
                 text: L10n.string(store.records.medicines.isEmpty ? "No medications recorded." : "Your medications"),
                 medicines: store.records.medicines
             ))
-        case .interactions(let medicines): store.appendToolEvent(ChatMessage(
+        case .interactions(let medicines): appendTool(ChatMessage(
                 text: L10n.string("Medication check"),
                 report: HealthRules.check(medicines)
             ))
         case .reading(let reading): sheet = .reading(reading)
-            store.appendToolEvent(
+            appendTool(
                 ChatMessage(text: L10n.format(
                     "Confirm %@: %@ %@.",
                     L10n.string(reading.kind.rawValue),
@@ -775,7 +812,7 @@ struct ChatView: View {
         case .readings:
             let kind = ReadingParser.requestedKind(original)
             let values = store.records.readings.filter { kind == nil || $0.kind == kind }.sorted { $0.date > $1.date }
-            store.appendToolEvent(ChatMessage(
+            appendTool(ChatMessage(
                 text: L10n.string(values.isEmpty ? "No readings recorded." : "Recent readings"),
                 readings: Array(values.prefix(10))
             ))
@@ -787,33 +824,33 @@ struct ChatView: View {
                     return
                 }
 
-                store.appendToolEvent(ChatMessage(text: health.status)) }
+                appendTool(ChatMessage(text: health.status)) }
         case .export: store.export()
             if store.shareFile != nil {
-                store.appendToolEvent(ChatMessage(text: "export_file_ready"))
+                appendTool(ChatMessage(text: "export_file_ready"))
             }
         case .note: sheet = .note
-            store.appendToolEvent(
+            appendTool(
                 ChatMessage(text: LocalizedHealthContent.appointmentNote(records: store.records, care: store.care)),
                 status: "requires_confirmation"
             )
         case .clear:
-            store.appendToolEvent(
+            appendTool(
                 ChatMessage(text: L10n.string("Delete all records and chat?")),
                 status: "requires_confirmation"
             )
             deleteConfirmation = true
         case .reminder(let text): sheet = .reminder(CareReminder(title: text))
-            store.appendToolEvent(
+            appendTool(
                 ChatMessage(text: L10n.string("Review the reminder and choose its date.")),
                 status: "requires_confirmation"
             )
-        case .reminders: store.appendToolEvent(ChatMessage(
+        case .reminders: appendTool(ChatMessage(
                 text: L10n.string(store.care.reminders.isEmpty ? "No reminders saved." : "Reminders"),
                 reminders: store.care.reminders.sorted { $0.due < $1.due }
             ))
         case .schedule(let medicine, let times, let frequency): sheet = .schedule(medicine, times, frequency)
-            store.appendToolEvent(
+            appendTool(
                 ChatMessage(text: L10n.string("Confirm the frequency, times, and refill date from your prescription.")),
                 status: "requires_confirmation"
             )
@@ -825,7 +862,7 @@ struct ChatView: View {
                     schedule: schedule
                 ).last(where: { $0 <= Date.now }) ?? CareRules.doses(on: .now, schedule: schedule).first
             else {
-                store.appendToolEvent(ChatMessage(text: L10n.format(
+                appendTool(ChatMessage(text: L10n.format(
                     "Save a schedule for %@ first.",
                     L10n.medicineName(medicine)
                 )))
@@ -833,7 +870,7 @@ struct ChatView: View {
                 return }
 
             sheet = .dose(medicine, date, status)
-            store.appendToolEvent(
+            appendTool(
                 ChatMessage(text: L10n.format(
                     "Confirm the scheduled dose before saving %@.",
                     L10n.string(status.rawValue)
@@ -847,17 +884,17 @@ struct ChatView: View {
                 visits: store.visits,
                 query: query
             )
-            store.appendToolEvent(ChatMessage(
+            appendTool(ChatMessage(
                 text: L10n.string(results.isEmpty ? "No matching records." : "Health history"),
                 timeline: results.prefix(20).map(ChatTimelineEntry.init)
             ))
         case .scan: sheet = .scanMedicine
-            store.appendToolEvent(
+            appendTool(
                 ChatMessage(text: L10n.string("Choose a label photo, then confirm the product and instructions.")),
                 status: "requires_confirmation"
             )
         case .question(let text): sheet = .question(text)
-            store.appendToolEvent(
+            appendTool(
                 ChatMessage(text: L10n.string("Review your question before saving it.")),
                 status: "requires_confirmation"
             )
@@ -1104,6 +1141,6 @@ struct ChatReadingsTable: View {
                 }
             }.textSelection(.enabled)
         }.frame(maxWidth: .infinity, alignment: .leading).accessibilityElement(children: .contain)
-            .accessibilityIdentifier("chatReadingsTable")
+            .accessibilityIdentifier("chatReadingsTable").presentationTarget("chat.readings")
     }
 }

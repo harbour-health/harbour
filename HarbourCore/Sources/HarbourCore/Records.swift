@@ -143,7 +143,7 @@ public enum Catalog {
     ]
     private static let aliases: [String: [String]] = [
         "warfarin": ["warfarine"], "ibuprofen": ["ibuprofène"],
-        "aspirin": ["ASA", "aspirine", "AAS", "acide acétylsalicylique"],
+        "aspirin": ["ASA", "aspirine", "AAS", "acide acétylsalicylique", "acetylsalicylic acid"],
         "naproxen": ["naproxène"], "acetaminophen": ["acétaminophène"],
         "metformin": ["metformine"]
     ]
@@ -176,29 +176,45 @@ public enum Catalog {
             return nil
         }
 
-        return (saved + medicines).first { names(for: $0).contains { folded($0) == query } }
+        return (saved + medicines).first { names(for: $0).contains { folded($0) == query } } ?? MedicationVocabulary
+            .shared.resolve(name)
     }
 
     public static func search(_ query: String) -> [Medicine] {
         let query = folded(query.trimmingCharacters(in: .whitespacesAndNewlines))
 
-        return medicines.filter { medicine in
+        let curated = medicines.filter { medicine in
             query.isEmpty || (names(for: medicine) + medicine.ingredients.flatMap { ingredientNames(for: $0) })
                 .contains { folded($0).contains(query) }
         }
+
+        guard !query.isEmpty else {
+            return curated
+        }
+
+        var ids = Set(curated.map(\.id))
+
+        return curated + MedicationVocabulary.shared.search(query).filter { ids.insert($0.id).inserted }
     }
 
     public static func mentioned(in text: String, saved: [Medicine] = []) -> [Medicine] {
         var found = Set<String>()
         let text = folded(text)
 
-        return (saved + medicines).filter { medicine in
+        let curated = (saved + medicines).filter { medicine in
             names(for: medicine).contains { text.range(
-                of: "(?<![\\p{L}\\p{M}\\p{N}_])" + NSRegularExpression
-                    .escapedPattern(for: folded($0)) + "(?![\\p{L}\\p{M}\\p{N}_])",
+                of: "(?<![\\p{L}\\p{M}\\p{N}_\\p{Pd}])" + NSRegularExpression
+                    .escapedPattern(for: folded($0)) + "(?![\\p{L}\\p{M}\\p{N}_\\p{Pd}])",
                 options: .regularExpression
             ) != nil } && found.insert(medicine.id).inserted
         }
+        // A known saved/curated identity keeps precedence over database aliases.
+        let database = MedicationVocabulary.shared.mentioned(in: text).map { candidate in
+            (saved + medicines)
+                .first { known in names(for: known).contains { folded($0) == folded(candidate.name) } } ?? candidate
+        }
+
+        return curated + database.filter { found.insert($0.id).inserted }
     }
 }
 

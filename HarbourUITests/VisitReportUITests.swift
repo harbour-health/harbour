@@ -8,7 +8,7 @@ import XCTest
     func testReportPreviewAndSharing() {
         let app = XCUIApplication()
         app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-visits"].tap()
         app.buttons["openVisitReport"].tap()
         XCTAssertTrue(app.navigationBars["Doctor visit report"].waitForExistence(timeout: 5))
@@ -35,7 +35,7 @@ import XCTest
     func testFrenchReportPreview() {
         let app = XCUIApplication()
         app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(fr-CA)", "-AppleLocale", "fr_CA"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-visits"].tap()
         app.buttons["openVisitReport"].tap()
         XCTAssertTrue(app.buttons["reportAllTime"].waitForExistence(timeout: 5))

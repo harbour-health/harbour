@@ -29,7 +29,7 @@ enum L10n {
     static func medicineName(_ medicine: Medicine) -> String {
         guard Catalog.medicines.contains(where: { $0.id == medicine.id && $0.name == medicine.name })
         else {
-            return medicine.name
+            return MedicationVocabulary.shared.localizedName(for: medicine, french: isFrench) ?? medicine.name
         }
 
         return string(medicine.name)

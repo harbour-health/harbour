@@ -5,7 +5,7 @@ enum AppLayout {
     static let sectionSpacing: CGFloat = 28
     static let surfaceInset: CGFloat = 22
     static let loadingMarkSize: CGFloat = 20
-    static let controlSize: CGFloat = 44
+    static let controlSize: CGFloat = 56
     static let contentWidth: CGFloat = 760
 }
 
@@ -33,8 +33,8 @@ struct ActionButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var enabled
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label.font(.body.weight(.semibold))
-            .frame(maxWidth: .infinity, minHeight: 24)
+        configuration.label.font(.title3.weight(.semibold))
+            .frame(maxWidth: .infinity, minHeight: 32)
             .padding(.horizontal, 18).padding(.vertical, 14)
             .foregroundStyle(secondary ? Palette.ink : Palette.canvas)
             .background(secondary ? Palette.surface : Palette.ink, in: Capsule())

@@ -10,6 +10,29 @@ import subprocess
 import tempfile
 
 TITLES = {
+    '248-simple-largest-text': 'Simple home · Largest text',
+    '249-guided-visit-magnified': 'Actual visit summary · Magnified',
+
+    '226-simple-home': 'Simple home', '227-simple-guide': 'Simple guide',
+    '228-simple-chat': 'Simple chat', '229-simple-settings': 'Simple settings',
+    '230-caregiver-home': 'Caregiver home', '231-simple-french': 'Accueil simple · Français',
+    '232-simple-guide-french': 'Guide · Français',
+    '233-guided-simple-home': 'Guided walkthrough · Home',
+    '234-guided-home-magnified': 'Actual home · Magnified',
+    '235-guided-talk-magnified': 'Actual voice entry · Magnified',
+    '236-guided-real-request': 'Walkthrough · Real chat request',
+    '237-guided-readings': 'Walkthrough · Saved readings',
+    '238-guided-readings-magnified': 'Actual readings · Magnified',
+    '239-guided-live-state': 'Walkthrough · Live model and tool state',
+    '240-guided-caregiver-records': 'Walkthrough · Caregiver records',
+    '241-guided-records-magnified': 'Actual record browser · Magnified',
+    '242-guided-medicines': 'Walkthrough · Medications',
+    '243-guided-phonetic-suggestions': 'Medication name suggestions',
+    '244-guided-medicine-confirmation': 'Suggested medicine · Confirmation required',
+    '245-guided-visit-summary': 'Walkthrough · Saved visit summary',
+    '246-guided-visit-followups': 'Walkthrough · Follow-ups',
+    '247-guided-visit-review': 'Walkthrough · Medication review',
+
     '01-today': 'Today', '02-symptoms': 'Symptoms', '03-medicines': 'Medicines',
     '04-readings': 'Readings', '05-add-reading': 'Add a reading',
     '06-medicine-catalog': 'Medicine catalogue', '07-medicine-details': 'Medicine confirmation',
@@ -258,6 +281,7 @@ except ImportError:
     print('Pillow not installed; full-resolution gallery exported without overview sheets.')
 if args.update_readme:
     groups = {
+        'Simple interface and live walkthrough': set(range(226, 250)),
         'Chat, voice and report refinements': set(range(211, 226)),
         'Open records and medicine review': set(range(188, 209)),
         'Flat record lists': set(range(174, 188)),

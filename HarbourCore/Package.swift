@@ -5,5 +5,8 @@ let package = Package(
     name: "HarbourCore",
     platforms: [.iOS("18.0"), .macOS(.v13)],
     products: [.library(name: "HarbourCore", targets: ["HarbourCore"])],
-    targets: [.target(name: "HarbourCore"), .testTarget(name: "HarbourCoreTests", dependencies: ["HarbourCore"])]
+    targets: [
+        .target(name: "HarbourCore", resources: [.process("Resources")]),
+        .testTarget(name: "HarbourCoreTests", dependencies: ["HarbourCore"])
+    ]
 )

@@ -24,7 +24,7 @@ import XCTest
             "-AppleLocale",
             "en_CA"
         ]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-chat"].tap()
         app.buttons["startVoiceConversation"].tap()
         XCTAssertTrue(app.buttons["endVoiceConversation"].waitForExistence(timeout: 5))
@@ -54,7 +54,7 @@ import XCTest
             "-UIPreferredContentSizeCategoryName",
             "UICTContentSizeCategoryAccessibilityXXXL"
         ]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-chat"].tap()
         app.buttons["startVoiceConversation"].tap()
         XCTAssertTrue(app.buttons["endVoiceConversation"].waitForExistence(timeout: 5))
@@ -79,7 +79,7 @@ import XCTest
             "-AppleLocale",
             "fr_CA"
         ]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["Réglages"].tap()
         // Use stable identifiers for appearance and navigation in either language.
         app.buttons["Apparence"].tap()

@@ -91,10 +91,30 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | --- | --- | --- | --- |
 | [<img src="docs/screenshots/05-add-reading.png" width="220" alt="Compact floating reading drawer">](docs/screenshots/05-add-reading.png) | [<img src="docs/screenshots/12-topics.png" width="220" alt="Floating topic picker">](docs/screenshots/12-topics.png) | [<img src="docs/screenshots/41-appearance-dark.png" width="220" alt="Compact appearance drawer in dark mode">](docs/screenshots/41-appearance-dark.png) | [<img src="docs/screenshots/71-visit-medicine-review.png" width="220" alt="Floating visit medicine confirmation">](docs/screenshots/71-visit-medicine-review.png) |
 
+## Presentation
+
+[Open the 10-minute presentation](docs/presentation/index.html) · [Widescreen app walkthrough](docs/presentation/harbour-demo.mp4) · [Static PDF backup](docs/presentation/harbour.pdf)
+
+The HTML presentation lifts actual captured UI sections out of the phone with explanation lines. It plays offline and includes a local live-capture option. Edit [the Touying source](presentation/harbour.typ), [notes and timing](presentation/slides.json), and [the animation source](presentation/player.js), then run the [build script](scripts/build-presentation.py). See [presentation instructions](docs/presentation-walkthrough.md).
+
 <!-- screenshot-gallery:start -->
 ## All screens
 
-222 app captures and rendered report pages. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
+240 app captures and rendered report pages. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
+
+### Simple interface and live walkthrough
+
+| | |
+| :---: | :---: |
+| <strong>Simple home</strong><br>[<img src="docs/screenshots/226-simple-home.png" alt="Simple home" width="220">](docs/screenshots/226-simple-home.png) | <strong>Simple guide</strong><br>[<img src="docs/screenshots/227-simple-guide.png" alt="Simple guide" width="220">](docs/screenshots/227-simple-guide.png) |
+| <strong>Simple chat</strong><br>[<img src="docs/screenshots/228-simple-chat.png" alt="Simple chat" width="220">](docs/screenshots/228-simple-chat.png) | <strong>Simple settings</strong><br>[<img src="docs/screenshots/229-simple-settings.png" alt="Simple settings" width="220">](docs/screenshots/229-simple-settings.png) |
+| <strong>Caregiver home</strong><br>[<img src="docs/screenshots/230-caregiver-home.png" alt="Caregiver home" width="220">](docs/screenshots/230-caregiver-home.png) | <strong>Accueil simple · Français</strong><br>[<img src="docs/screenshots/231-simple-french.png" alt="Accueil simple · Français" width="220">](docs/screenshots/231-simple-french.png) |
+| <strong>Guide · Français</strong><br>[<img src="docs/screenshots/232-simple-guide-french.png" alt="Guide · Français" width="220">](docs/screenshots/232-simple-guide-french.png) | <strong>Guided walkthrough · Home</strong><br>[<img src="docs/screenshots/233-guided-simple-home.png" alt="Guided walkthrough · Home" width="220">](docs/screenshots/233-guided-simple-home.png) |
+| <strong>Walkthrough · Real chat request</strong><br>[<img src="docs/screenshots/236-guided-real-request.png" alt="Walkthrough · Real chat request" width="220">](docs/screenshots/236-guided-real-request.png) | <strong>Walkthrough · Saved readings</strong><br>[<img src="docs/screenshots/237-guided-readings.png" alt="Walkthrough · Saved readings" width="220">](docs/screenshots/237-guided-readings.png) |
+| <strong>Walkthrough · Caregiver records</strong><br>[<img src="docs/screenshots/240-guided-caregiver-records.png" alt="Walkthrough · Caregiver records" width="220">](docs/screenshots/240-guided-caregiver-records.png) | <strong>Walkthrough · Medications</strong><br>[<img src="docs/screenshots/242-guided-medicines.png" alt="Walkthrough · Medications" width="220">](docs/screenshots/242-guided-medicines.png) |
+| <strong>Medication name suggestions</strong><br>[<img src="docs/screenshots/243-guided-phonetic-suggestions.png" alt="Medication name suggestions" width="220">](docs/screenshots/243-guided-phonetic-suggestions.png) | <strong>Suggested medicine · Confirmation required</strong><br>[<img src="docs/screenshots/244-guided-medicine-confirmation.png" alt="Suggested medicine · Confirmation required" width="220">](docs/screenshots/244-guided-medicine-confirmation.png) |
+| <strong>Walkthrough · Saved visit summary</strong><br>[<img src="docs/screenshots/245-guided-visit-summary.png" alt="Walkthrough · Saved visit summary" width="220">](docs/screenshots/245-guided-visit-summary.png) | <strong>Walkthrough · Follow-ups</strong><br>[<img src="docs/screenshots/246-guided-visit-followups.png" alt="Walkthrough · Follow-ups" width="220">](docs/screenshots/246-guided-visit-followups.png) |
+| <strong>Walkthrough · Medication review</strong><br>[<img src="docs/screenshots/247-guided-visit-review.png" alt="Walkthrough · Medication review" width="220">](docs/screenshots/247-guided-visit-review.png) | <strong>Simple home · Largest text</strong><br>[<img src="docs/screenshots/248-simple-largest-text.png" alt="Simple home · Largest text" width="220">](docs/screenshots/248-simple-largest-text.png) |
 
 ### Chat, voice and report refinements
 

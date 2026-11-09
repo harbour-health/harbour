@@ -1,0 +1,230 @@
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #151515;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #111;
+}
+#viewport {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#stage {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  flex-shrink: 0;
+  transform-origin: center;
+  background: white;
+  overflow: hidden;
+}
+#slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+#scene {
+  position: absolute;
+  inset: 0;
+  perspective: 1800px;
+}
+.phone {
+  box-sizing: content-box;
+  position: absolute;
+  left: 140px;
+  top: 300px;
+  width: 300px;
+  height: 652.24px;
+  border: 4px solid #191919;
+  border-radius: 43px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 20px 45px #0002;
+}
+.phone video,
+.phone > .still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  transition: opacity 0.35s;
+}
+.phone iframe {
+  border: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 402px;
+  height: 874px;
+  transform: scale(0.7462686567);
+  transform-origin: top left;
+}
+.phone.exploded > .still {
+  opacity: 0.58;
+}
+.layer {
+  overflow: hidden;
+  position: absolute;
+  object-fit: fill;
+  box-shadow: 0 20px 50px #0002;
+  transform-origin: center;
+  border-radius: 12px;
+  z-index: 5;
+}
+.leaders {
+  position: absolute;
+  inset: 0;
+  width: 1920px;
+  height: 1080px;
+  pointer-events: none;
+  z-index: 6;
+}
+.leaders path {
+  fill: none;
+  stroke: #777;
+  stroke-width: 2;
+}
+.leaders circle {
+  fill: #111;
+}
+.explanation {
+  position: absolute;
+  width: 365px;
+  z-index: 7;
+}
+.explanation h3 {
+  font-size: 31px;
+  line-height: 1.2;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+.explanation p {
+  font-size: 25px;
+  line-height: 1.35;
+  color: #454545;
+  margin: 0;
+}
+.scene-note {
+  position: absolute;
+  left: 650px;
+  top: 470px;
+  width: 1050px;
+  font-size: 40px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+.scene-note small {
+  display: block;
+  font-size: 27px;
+  line-height: 1.5;
+  color: #555;
+  margin-top: 24px;
+}
+.selection {
+  position: absolute;
+  border: 2px dashed #111;
+  background: #fff2;
+  pointer-events: none;
+  z-index: 12;
+}
+.phone.selecting {
+  cursor: crosshair;
+  touch-action: none;
+}
+.transport {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  background: #202020;
+  color: #fff;
+  padding: 8px;
+  border-radius: 14px;
+  z-index: 30;
+  box-shadow: 0 2px 15px #0003;
+}
+.transport button {
+  border: 0;
+  background: none;
+  color: #fff;
+  padding: 12px 16px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.transport button:hover,
+.transport button:focus-visible {
+  background: #444;
+  outline: 2px solid #fff;
+  outline-offset: 1px;
+}
+.transport span {
+  font-size: 15px;
+  min-width: 42px;
+  text-align: center;
+}
+#notes {
+  position: fixed;
+  right: 20px;
+  top: 20px;
+  max-width: 460px;
+  background: #fff;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 15px 80px #0005;
+  z-index: 40;
+  font-size: 18px;
+  line-height: 1.5;
+}
+#notes[hidden] {
+  display: none;
+}
+#notice {
+  position: fixed;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 760px;
+  background: #202020;
+  color: #fff;
+  padding: 14px 22px;
+  border-radius: 12px;
+  z-index: 50;
+  font-size: 17px;
+  line-height: 1.4;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.record .transport,
+.record #notice {
+  display: none;
+}
+.record #stage {
+  cursor: none;
+}
+[hidden] {
+  display: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

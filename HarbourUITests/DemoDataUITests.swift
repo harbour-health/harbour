@@ -15,7 +15,7 @@ import XCTest
     func testDemoReplacementConfirmationAndVisitSummary() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-unlocked", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-today"].tap()
         app.buttons["Settings"].tap()
         if !app.buttons["developerSettings"].isHittable {
@@ -46,14 +46,14 @@ import XCTest
         XCTAssertTrue(app.staticTexts["Demo visit · preset transcript, no audio"].exists)
         capture("172-demo-visit-summary")
         app.terminate()
-        app.launch()
+        app.launchCaregiver()
         XCTAssertFalse(app.staticTexts["demoDataBadge"].exists)
     }
 
     func testFrenchDemoSettings() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-unlocked", "-AppleLanguages", "(fr-CA)", "-AppleLocale", "fr_CA"]
-        app.launch()
+        app.launchCaregiver()
         app.buttons["nav-today"].tap()
         app.buttons["Réglages"].tap()
         if !app.buttons["developerSettings"].isHittable {

@@ -1,7 +1,7 @@
 import Foundation
 import HarbourCore
 
-/// Human review of an unresolved source item; never supplies ingredient mappings.
+/// Human review of a source item; resolves known catalog identities without guessing ingredients.
 struct VisitMedicineReviewSource: Identifiable {
     let visitID: UUID
     let transcript: String
