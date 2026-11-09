@@ -456,15 +456,15 @@ struct PreparationView: View {
                 HStack(alignment: .top) {
                     TextField("Question for your doctor", text: $question, prompt: Text("Question for your doctor").foregroundStyle(Palette.muted), axis: .vertical).focused($editing).lineLimit(2...5).accessibilityIdentifier("appointmentQuestion")
                     Button { let q = AppointmentQuestion(id: editingID ?? UUID(), text: question.trimmingCharacters(in: .whitespacesAndNewlines)); if store.saveQuestion(q) { question = ""; editingID = nil; editing = false } } label: { ToolbarGlyph(symbol: "checkmark") }.disabled(question.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty).accessibilityLabel("Save question")
-                }
-                ForEach(store.care.questions) { q in Button { question = q.text; editingID = q.id } label: { Text(q.text).foregroundStyle(Palette.ink).padding(.vertical, 8) } }.onDelete { offsets in
+                }.listRowBackground(Color.clear)
+                ForEach(store.care.questions) { q in Button { question = q.text; editingID = q.id } label: { Text(q.text).foregroundStyle(Palette.ink).padding(.vertical, 8) }.listRowBackground(Color.clear) }.onDelete { offsets in
                     let ids = offsets.map { store.care.questions[$0].id }
                     for id in ids { store.removeQuestion(id) }
                 }
             }
-            Section { NavigationLink { VisitReportView() } label: { FeatureRow(title: "Doctor visit report", subtitle: nil, symbol: "doc.richtext", colour: Palette.blue) } }
-            Section("Appointment note") { Text(note).textSelection(.enabled).accessibilityIdentifier("appointmentNoteContent") }
-            Section { ShareLink(item: note) { Label("Share note", systemImage: "square.and.arrow.up") }; Button { UIPasteboard.general.string = note } label: { Label("Copy note", systemImage: "doc.on.doc") } }
+            Section { NavigationLink { VisitReportView() } label: { FeatureRow(title: "Doctor visit report", subtitle: nil, symbol: "doc.richtext", colour: Palette.blue) }.listRowBackground(Color.clear) }
+            Section("Appointment note") { Text(note).textSelection(.enabled).accessibilityIdentifier("appointmentNoteContent").listRowBackground(Color.clear) }
+            Section { ShareLink(item: note) { Label("Share note", systemImage: "square.and.arrow.up") }.listRowBackground(Color.clear); Button { UIPasteboard.general.string = note } label: { Label("Copy note", systemImage: "doc.on.doc") }.listRowBackground(Color.clear) }
         }.listStyle(.plain).scrollContentBackground(.hidden).background(Palette.canvas)
             .navigationTitle("Appointment preparation").navigationBarTitleDisplayMode(.inline).onAppear { question = initialQuestion }
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }

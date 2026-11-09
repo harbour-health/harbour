@@ -57,3 +57,11 @@ Display text and accessibility labels use the bundled [localization](localizatio
 The category browser follows the browse-then-open pattern in [Apple Health](https://support.apple.com/en-ie/guide/iphone/iphe3d379c32/ios). The chat composer uses the supplied ChatGPT reference: a multiline draft above a separate control row. These are navigation/layout references, not copied artwork or third-party components.
 
 Main pages use native horizontal paging and share the same selection binding as the floating dock. See [page navigation](page-navigation.md). The dock is removed while the keyboard is open; opacity alone was insufficient for its native accessibility buttons.
+
+## Flat record lists
+
+Symptoms, Medications, Readings and Appointments use transparent native rows over `Palette.canvas`, including the full outer NavigationLink or Button. Applying the background only inside a row label does not reliably style its enclosing list cell. Native separators, swipe-to-delete, disclosure and pressed feedback remain. Read-only symptom details, chat history and appointment preparation use the same open surface; input Forms and intentionally selected controls keep their existing surfaces.
+
+When adding a row to one of these lists, apply `.listRowBackground(Color.clear)` to the outer row element. Do not remove native separators to disguise a cell/background mismatch or put a background on only the label. Verify populated lists in both light and dark appearances. `RecordListAppearanceUITests` exercises the four categories, opens symptom and medicine details, and captures both appearances using the authored demo dataset. No persistence or medical rules change.
+
+The populated-list review passed on the iOS 26.5 QA simulator on November 9, 2026 (`test_sim_2026-11-09T17-45-09-435Z_pid62996_ebead182.xcresult`), with zero failures/skips. Screenshots 174–187 cover all four categories, symptom details, preparation and chat history in both appearances; native medicine editing and saved-chat reopening were also exercised. The catalogue audit remained at 680 interface keys and 6 permission keys per language. These presentation checks do not establish physical-device accessibility or medical inference accuracy.

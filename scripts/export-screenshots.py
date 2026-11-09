@@ -113,6 +113,20 @@ TITLES = {
     '171-demo-today': 'Demo · Today',
     '172-demo-visit-summary': 'Demo · Visit summary',
     '173-developer-french': 'Développement · Données de démo',
+    '174-flat-symptoms-light': 'Symptoms · Flat list · Light',
+    '175-flat-medications-light': 'Medications · Flat list · Light',
+    '176-flat-readings-light': 'Readings · Flat list · Light',
+    '177-flat-appointments-light': 'Appointments · Flat list · Light',
+    '178-flat-preparation-light': 'Preparation · Flat list · Light',
+    '179-flat-chat-history-light': 'Chat history · Flat list · Light',
+    '180-flat-symptom-detail-light': 'Symptom detail · Flat list · Light',
+    '181-flat-symptoms-dark': 'Symptoms · Flat list · Dark',
+    '182-flat-medications-dark': 'Medications · Flat list · Dark',
+    '183-flat-readings-dark': 'Readings · Flat list · Dark',
+    '184-flat-appointments-dark': 'Appointments · Flat list · Dark',
+    '185-flat-preparation-dark': 'Preparation · Flat list · Dark',
+    '186-flat-chat-history-dark': 'Chat history · Flat list · Dark',
+    '187-flat-symptom-detail-dark': 'Symptom detail · Flat list · Dark',
 
 
 }
@@ -201,6 +215,7 @@ except ImportError:
     print('Pillow not installed; full-resolution gallery exported without overview sheets.')
 if args.update_readme:
     groups = {
+        'Flat record lists': set(range(174, 188)),
         'Today': {1, 31, 43, 66, 116, 152, 153},
         'Chat': {10, 11, 12, 13, 28, 32, 36, 42, 44, 45, 46, 47, 53, 58, 89, 146, 160},
         'Records': {2, 3, 4, 22, 33, 34, 35, 64, 65, 151},

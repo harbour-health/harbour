@@ -125,9 +125,9 @@ struct ChatView: View {
                                 Text(conversation.updated, style: .relative).font(.subheadline).foregroundStyle(Palette.muted)
                             }
                         }.padding(.vertical, 8).contentShape(Rectangle())
-                    }.listRowBackground(Palette.surface)
+                    }.listRowBackground(Color.clear)
                 }
-            }.scrollContentBackground(.hidden).background(Palette.canvas)
+            }.listStyle(.plain).scrollContentBackground(.hidden).background(Palette.canvas)
                 .navigationTitle("Chats").navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { historySheet = false } } }
         }

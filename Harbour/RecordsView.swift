@@ -55,6 +55,7 @@ private struct RecordList: View {
                     if store.records.symptoms.isEmpty { RecordEmptyState(kind: .symptoms, title: "No symptoms") }
                     ForEach(store.records.symptoms) { symptom in
                         NavigationLink { SymptomDetail(symptom: symptom) } label: { SymptomRow(symptom: symptom) }
+                            .listRowBackground(Color.clear)
                     }.onDelete { indexes in let ids = indexes.map { store.records.symptoms[$0].id }; for id in ids { store.removeSymptom(id) } }
                 }
             } else if category == 1 {
@@ -76,15 +77,15 @@ private struct RecordList: View {
                                 Spacer(minLength: 8)
                                 Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Palette.muted)
                             }.padding(.vertical, 12)
-                        }
+                        }.listRowBackground(Color.clear).accessibilityIdentifier("medicine-row-\(medicine.id)")
                     }.onDelete { indexes in let ids = indexes.map { store.records.medicines[$0].id }; for id in ids { store.removeMedicine(id) } }
                 }
-                if !store.records.medicines.isEmpty { Section { Button { sheet = .interactions(store.records.medicines) } label: { Label("Check interactions", systemImage: "arrow.triangle.branch") } } }
+                if !store.records.medicines.isEmpty { Section { Button { sheet = .interactions(store.records.medicines) } label: { Label("Check interactions", systemImage: "arrow.triangle.branch") }.listRowBackground(Color.clear) } }
             } else if category == 3 {
                 Section {
                     if store.records.appointments.isEmpty { RecordEmptyState(kind: .appointments, title: "No appointments") }
                     ForEach(store.records.appointments.sorted { $0.date < $1.date }) { appointment in
-                        Button { sheet = .appointment(appointment) } label: { AppointmentRow(appointment: appointment) }.buttonStyle(.plain)
+                        Button { sheet = .appointment(appointment) } label: { AppointmentRow(appointment: appointment) }.buttonStyle(.plain).listRowBackground(Color.clear)
                     }.onDelete { indexes in
                         let sorted = store.records.appointments.sorted { $0.date < $1.date }
                         for index in indexes { store.removeAppointment(sorted[index].id) }
@@ -93,7 +94,7 @@ private struct RecordList: View {
             } else {
                 Section {
                     if store.records.readings.isEmpty { RecordEmptyState(kind: .readings, title: "No readings") }
-                    ForEach(store.records.readings) { reading in ReadingRow(reading: reading) }
+                    ForEach(store.records.readings) { reading in ReadingRow(reading: reading).listRowBackground(Color.clear) }
                         .onDelete { indexes in let ids = indexes.map { store.records.readings[$0].id }; for id in ids { store.removeReading(id) } }
                 }
             }
@@ -177,10 +178,14 @@ struct SymptomDetail: View {
     @Environment(\.floatingDockClearance) private var dockClearance
     var body: some View {
         List {
-            Section { SymptomRow(symptom: symptom); LabeledContent("Started", value: symptom.onset.isEmpty ? L10n.string("Not recorded") : symptom.onset); LabeledContent("Severity", value: L10n.string(symptom.severity)) }
-            if !symptom.signs.isEmpty { Section("Signs recorded") { ForEach(symptom.signs) { Text(L10n.string($0.rawValue)) } } }
-            Section("Next step") { GuidanceView(symptom: symptom) }
-        }.contentMargins(.bottom, dockClearance, for: .scrollContent)
+            Section {
+                SymptomRow(symptom: symptom).listRowBackground(Color.clear)
+                LabeledContent("Started", value: symptom.onset.isEmpty ? L10n.string("Not recorded") : symptom.onset).listRowBackground(Color.clear)
+                LabeledContent("Severity", value: L10n.string(symptom.severity)).listRowBackground(Color.clear)
+            }
+            if !symptom.signs.isEmpty { Section("Signs recorded") { ForEach(symptom.signs) { Text(L10n.string($0.rawValue)).listRowBackground(Color.clear) } } }
+            Section("Next step") { GuidanceView(symptom: symptom).listRowBackground(Color.clear) }
+        }.listStyle(.plain).contentMargins(.bottom, dockClearance, for: .scrollContent)
             .scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle("Symptom").navigationBarTitleDisplayMode(.inline)
     }
 }

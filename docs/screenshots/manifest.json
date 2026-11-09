@@ -1374,5 +1374,117 @@
     "suggestedHumanReadableName": "173-developer-french_0_6338C738-E929-455A-AD9E-55AF6EB18FD2.png",
     "test": "DemoDataUITests/testFrenchDemoSettings()",
     "resultBundle": "test_sim_2026-11-09T17-26-26-310Z_pid62996_08a8eb0c.xcresult"
+  },
+  "186-flat-chat-history-dark": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794246441.195,
+    "suggestedHumanReadableName": "186-flat-chat-history-dark_0_D07FD829-DD1C-4BE1-8AB8-B76E0F442158.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "test_sim_2026-11-09T17-45-09-435Z_pid62996_ebead182.xcresult"
+  },
+  "185-flat-preparation-dark": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794246436.41,
+    "suggestedHumanReadableName": "185-flat-preparation-dark_0_C9028758-F59F-4EB2-A0D5-51C1DE2B1FEA.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "test_sim_2026-11-09T17-45-09-435Z_pid62996_ebead182.xcresult"
+  },
+  "184-flat-appointments-dark": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794246432.618,
+    "suggestedHumanReadableName": "184-flat-appointments-dark_0_243FEA9A-1EBC-4BE7-88C4-5F440E62FC7B.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "test_sim_2026-11-09T17-45-09-435Z_pid62996_ebead182.xcresult"
+  },
+  "183-flat-readings-dark": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794246429.46,
+    "suggestedHumanReadableName": "183-flat-readings-dark_0_94C4A97F-D512-4AAC-8DA7-2CE411777F04.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "test_sim_2026-11-09T17-45-09-435Z_pid62996_ebead182.xcresult"
+  },
+  "182-flat-medications-dark": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794246422.732,
+    "suggestedHumanReadableName": "182-flat-medications-dark_0_2A200D44-0F98-4F00-B00A-469A4AA3AF0D.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "test_sim_2026-11-09T17-45-09-435Z_pid62996_ebead182.xcresult"
+  },
+  "187-flat-symptom-detail-dark": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794246418.691,
+    "suggestedHumanReadableName": "187-flat-symptom-detail-dark_0_5F3D71DE-F6A1-4D1C-9FBB-A6050688DABA.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "test_sim_2026-11-09T17-45-09-435Z_pid62996_ebead182.xcresult"
+  },
+  "181-flat-symptoms-dark": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794246416.396,
+    "suggestedHumanReadableName": "181-flat-symptoms-dark_0_1F39DB71-8677-4404-BB02-6E2B5B554882.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "test_sim_2026-11-09T17-45-09-435Z_pid62996_ebead182.xcresult"
+  },
+  "179-flat-chat-history-light": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794246400.057,
+    "suggestedHumanReadableName": "179-flat-chat-history-light_0_064AFBBB-9C31-4D48-8F2E-44B18D65BF46.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "test_sim_2026-11-09T17-45-09-435Z_pid62996_ebead182.xcresult"
+  },
+  "178-flat-preparation-light": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794246395.379,
+    "suggestedHumanReadableName": "178-flat-preparation-light_0_9A88864E-9C0B-4882-8E35-1A1CC60095B2.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "test_sim_2026-11-09T17-45-09-435Z_pid62996_ebead182.xcresult"
+  },
+  "177-flat-appointments-light": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794246391.449,
+    "suggestedHumanReadableName": "177-flat-appointments-light_0_33A6A0EB-2439-4C72-B250-1E54FC30F576.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "test_sim_2026-11-09T17-45-09-435Z_pid62996_ebead182.xcresult"
+  },
+  "176-flat-readings-light": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794246388.167,
+    "suggestedHumanReadableName": "176-flat-readings-light_0_A8EA690E-1ABF-406A-B1DE-FA8F76B50190.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "test_sim_2026-11-09T17-45-09-435Z_pid62996_ebead182.xcresult"
+  },
+  "175-flat-medications-light": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794246381.461,
+    "suggestedHumanReadableName": "175-flat-medications-light_0_A7C3727B-7525-4DD4-AEB1-69051C19F457.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "test_sim_2026-11-09T17-45-09-435Z_pid62996_ebead182.xcresult"
+  },
+  "180-flat-symptom-detail-light": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794246377.674,
+    "suggestedHumanReadableName": "180-flat-symptom-detail-light_0_2CD6B4C5-8E0C-4FDB-B369-9A10D200011A.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "test_sim_2026-11-09T17-45-09-435Z_pid62996_ebead182.xcresult"
+  },
+  "174-flat-symptoms-light": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794246375.615,
+    "suggestedHumanReadableName": "174-flat-symptoms-light_0_54172C21-6F2D-4EF4-81C8-86747514652B.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "test_sim_2026-11-09T17-45-09-435Z_pid62996_ebead182.xcresult"
   }
 }

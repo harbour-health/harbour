@@ -94,7 +94,19 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 <!-- screenshot-gallery:start -->
 ## All screens
 
-172 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
+186 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
+
+### Flat record lists
+
+| | |
+| :---: | :---: |
+| <strong>Symptoms · Flat list · Light</strong><br>[<img src="docs/screenshots/174-flat-symptoms-light.png" alt="Symptoms · Flat list · Light" width="220">](docs/screenshots/174-flat-symptoms-light.png) | <strong>Medications · Flat list · Light</strong><br>[<img src="docs/screenshots/175-flat-medications-light.png" alt="Medications · Flat list · Light" width="220">](docs/screenshots/175-flat-medications-light.png) |
+| <strong>Readings · Flat list · Light</strong><br>[<img src="docs/screenshots/176-flat-readings-light.png" alt="Readings · Flat list · Light" width="220">](docs/screenshots/176-flat-readings-light.png) | <strong>Appointments · Flat list · Light</strong><br>[<img src="docs/screenshots/177-flat-appointments-light.png" alt="Appointments · Flat list · Light" width="220">](docs/screenshots/177-flat-appointments-light.png) |
+| <strong>Preparation · Flat list · Light</strong><br>[<img src="docs/screenshots/178-flat-preparation-light.png" alt="Preparation · Flat list · Light" width="220">](docs/screenshots/178-flat-preparation-light.png) | <strong>Chat history · Flat list · Light</strong><br>[<img src="docs/screenshots/179-flat-chat-history-light.png" alt="Chat history · Flat list · Light" width="220">](docs/screenshots/179-flat-chat-history-light.png) |
+| <strong>Symptom detail · Flat list · Light</strong><br>[<img src="docs/screenshots/180-flat-symptom-detail-light.png" alt="Symptom detail · Flat list · Light" width="220">](docs/screenshots/180-flat-symptom-detail-light.png) | <strong>Symptoms · Flat list · Dark</strong><br>[<img src="docs/screenshots/181-flat-symptoms-dark.png" alt="Symptoms · Flat list · Dark" width="220">](docs/screenshots/181-flat-symptoms-dark.png) |
+| <strong>Medications · Flat list · Dark</strong><br>[<img src="docs/screenshots/182-flat-medications-dark.png" alt="Medications · Flat list · Dark" width="220">](docs/screenshots/182-flat-medications-dark.png) | <strong>Readings · Flat list · Dark</strong><br>[<img src="docs/screenshots/183-flat-readings-dark.png" alt="Readings · Flat list · Dark" width="220">](docs/screenshots/183-flat-readings-dark.png) |
+| <strong>Appointments · Flat list · Dark</strong><br>[<img src="docs/screenshots/184-flat-appointments-dark.png" alt="Appointments · Flat list · Dark" width="220">](docs/screenshots/184-flat-appointments-dark.png) | <strong>Preparation · Flat list · Dark</strong><br>[<img src="docs/screenshots/185-flat-preparation-dark.png" alt="Preparation · Flat list · Dark" width="220">](docs/screenshots/185-flat-preparation-dark.png) |
+| <strong>Chat history · Flat list · Dark</strong><br>[<img src="docs/screenshots/186-flat-chat-history-dark.png" alt="Chat history · Flat list · Dark" width="220">](docs/screenshots/186-flat-chat-history-dark.png) | <strong>Symptom detail · Flat list · Dark</strong><br>[<img src="docs/screenshots/187-flat-symptom-detail-dark.png" alt="Symptom detail · Flat list · Dark" width="220">](docs/screenshots/187-flat-symptom-detail-dark.png) |
 
 ### Today
 
