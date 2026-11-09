@@ -45,7 +45,9 @@ public struct MedicationVocabulary: Sendable {
                     Set(entries[prior].ingredients) != Set(entry.ingredients) {
                     ambiguous.insert(key)
                 }
-                else if exact[key] == nil || (entry.id.hasPrefix("dpd-ingredient:") && !(entries[exact[key]!].id.hasPrefix("dpd-ingredient:"))) {
+                else if
+                    exact[key] == nil ||
+                    (entry.id.hasPrefix("dpd-ingredient:") && !(entries[exact[key]!].id.hasPrefix("dpd-ingredient:"))) {
                     exact[key] = index
                 }
                 search.append((index, key, Self.sound(name)))
@@ -61,9 +63,16 @@ public struct MedicationVocabulary: Sendable {
 
     /// Translate only an unchanged database label; preserve custom user-entered names.
     public func localizedName(for medicine: Medicine, french: Bool) -> String? {
-        guard let index = identities[medicine.id] else { return nil }
+        guard let index = identities[medicine.id] else {
+            return nil
+        }
+
         let entry = entries[index]
-        guard Self.key(medicine.name) == Self.key(entry.name) else { return nil }
+
+        guard Self.key(medicine.name) == Self.key(entry.name) else {
+            return nil
+        }
+
         return (french && !entry.fr.isEmpty ? entry.fr : entry.name).capitalized
     }
 
@@ -134,7 +143,8 @@ public struct MedicationVocabulary: Sendable {
 
             let medicine = entries[item.index].medicine
             let identity = Self.key(medicine.name) + "|" + medicine.ingredients.sorted().joined(separator: "|")
-            if score > (best[identity]?.1 ?? 0) ||
+            if
+                score > (best[identity]?.1 ?? 0) ||
                 (score == best[identity]?.1 && medicine.id.hasPrefix("dpd-ingredient:")) {
                 best[identity] = (medicine, score)
             }

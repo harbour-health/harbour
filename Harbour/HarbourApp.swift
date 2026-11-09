@@ -329,13 +329,18 @@ struct RootView: View {
     }
 
     private func openPendingSession() {
-        guard pendingSessionTab >= 0 else { return }
+        guard pendingSessionTab >= 0 else {
+            return
+        }
+
         let requested = pendingSessionTab
         pendingSessionTab = -1
         if interfaceMode == AppInterface.simple.rawValue && requested == 3 {
             tab = 0
             UserDefaults.standard.set(false, forKey: "openRecordingSession")
-            if recorder.active { simpleRecording = true }
+            if recorder.active {
+                simpleRecording = true
+            }
         } else {
             tab = min(3, max(0, requested))
         }

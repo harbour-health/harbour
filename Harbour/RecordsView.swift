@@ -508,7 +508,9 @@ struct MedicineEditor: View {
                 }
                 Section("Medications") {
                     ForEach(Catalog.search(query)) { medicine in
-                        Button { chosen = medicine; editing = false; confirmed = false } label: {
+                        Button { chosen = medicine
+                            editing = false
+                            confirmed = false } label: {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(L10n.medicineName(medicine)).foregroundStyle(Palette.ink)
                                 Text(L10n.ingredientNames(medicine.ingredients)).font(.body)
@@ -528,7 +530,10 @@ struct MedicineEditor: View {
         .navigationTitle(L10n.string(initial == nil ? "Add medicine" : "Medication"))
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            guard !initialized else { return }
+            guard !initialized else {
+                return
+            }
+
             initialized = true
             chosen = initial
             instructions = initial?.instructions ?? reviewSource?.instructions ?? ""

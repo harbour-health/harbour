@@ -7,17 +7,23 @@ private struct PresentationAnchors: PreferenceKey {
         value.merge(nextValue(), uniquingKeysWith: { _, new in new })
     }
 }
+
 extension View {
     func presentationTarget(_ id: String) -> some View {
-        transformAnchorPreference(key: PresentationAnchors.self, value: .bounds) { values, anchor in values[id] = anchor }
+        transformAnchorPreference(key: PresentationAnchors.self, value: .bounds) { values, anchor in
+            values[id] = anchor }
     }
-    func presentationStage() -> some View { modifier(PresentationCapture()) }
+
+    func presentationStage() -> some View {
+        modifier(PresentationCapture())
+    }
 }
+
 private struct PresentationCapture: ViewModifier {
     #if DEBUG
-    private let enabled = ProcessInfo.processInfo.environment["HARBOUR_PRESENTATION_CAPTURE"] == "1"
+        private let enabled = ProcessInfo.processInfo.environment["HARBOUR_PRESENTATION_CAPTURE"] == "1"
     #else
-    private let enabled = false
+        private let enabled = false
     #endif
     func body(content: Content) -> some View {
         content.overlayPreferenceValue(PresentationAnchors.self) { anchors in
@@ -31,14 +37,27 @@ private struct PresentationCapture: ViewModifier {
             }
         }
     }
+
     private func snapshotKey(_ rectangles: [String: CGRect]) -> String {
         rectangles.keys.sorted().map { "\($0):\(rectangles[$0]!)" }.joined(separator: "|")
     }
+
     private func save(_ rectangles: [String: CGRect]) {
-        guard enabled else { return }
+        guard enabled else {
+            return
+        }
+
         let values = rectangles.mapValues { ["x": $0.minX, "y": $0.minY, "width": $0.width, "height": $0.height] }
-        guard let bytes = try? JSONSerialization.data(withJSONObject: ["regions": values, "capturedAt": Date().timeIntervalSince1970]),
-              let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+
+        guard
+            let bytes = try? JSONSerialization.data(withJSONObject: [
+                "regions": values,
+                "capturedAt": Date().timeIntervalSince1970
+            ]),
+            let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return
+        }
+
         try? bytes.write(to: documents.appendingPathComponent("presentation-regions.json"), options: .atomic)
     }
 }

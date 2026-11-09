@@ -26,7 +26,10 @@ import HarbourCore
     func testTrulyUnknownProductKeepsIngredientsUnconfirmed() throws {
         let quote = "Start FictionalStudyMedicine 5 mg once daily."
         let visit = DoctorVisit(transcript: quote)
-        let source = VisitMedicineReviewSource(visit: visit, item: VisitQuote(quote: quote, text: "FictionalStudyMedicine: 5 mg once daily."))
+        let source = VisitMedicineReviewSource(
+            visit: visit,
+            item: VisitQuote(quote: quote, text: "FictionalStudyMedicine: 5 mg once daily.")
+        )
         let medicine = try XCTUnwrap(source.medicine(saved: []))
         XCTAssertEqual(medicine.name, "FictionalStudyMedicine")
         XCTAssertTrue(medicine.ingredients.isEmpty)

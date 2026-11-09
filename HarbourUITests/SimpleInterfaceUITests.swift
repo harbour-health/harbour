@@ -59,7 +59,17 @@ import XCTest
 
     func testSimpleLargestTextKeepsPrimaryActionsReachable() {
         let app = XCUIApplication()
-        app.launchArguments = ["--ui-test-unlocked", "-appearance", "Light", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launchArguments = [
+            "--ui-test-unlocked",
+            "-appearance",
+            "Light",
+            "-AppleLanguages",
+            "(en)",
+            "-AppleLocale",
+            "en_CA",
+            "-UIPreferredContentSizeCategoryName",
+            "UICTContentSizeCategoryAccessibilityXXXL"
+        ]
         app.launchEnvironment["HARBOUR_INITIAL_INTERFACE"] = "simple"
         app.launch()
         XCTAssertTrue(app.buttons["simpleTalk"].waitForExistence(timeout: 8))
@@ -67,7 +77,9 @@ import XCTest
         capture("248-simple-largest-text")
         for id in ["simpleMessage", "simpleRecordVisit", "simpleGuide"] {
             let button = app.buttons[id]
-            for _ in 0..<5 where !button.isHittable { app.swipeUp() }
+            for _ in 0 ..< 5 where !button.isHittable {
+                app.swipeUp()
+            }
             XCTAssertTrue(button.isHittable, id)
             XCTAssertGreaterThanOrEqual(button.frame.height, 56, id)
         }

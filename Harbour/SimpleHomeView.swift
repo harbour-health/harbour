@@ -110,8 +110,14 @@ struct SimpleGuideView: View {
                             if !textSize.isAccessibilitySize {
                                 HarbourIllustration(kind: index == 2 ? .medicines : .conversation).frame(height: 160)
                             }
-                            Text(L10n.string(titles[index])).font(.title2.weight(.semibold)).fixedSize(horizontal: false, vertical: true)
-                            Text(L10n.string(details[index])).font(.title3).multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+                            Text(L10n.string(titles[index])).font(.title2.weight(.semibold)).fixedSize(
+                                horizontal: false,
+                                vertical: true
+                            )
+                            Text(L10n.string(details[index])).font(.title3).multilineTextAlignment(.center).fixedSize(
+                                horizontal: false,
+                                vertical: true
+                            )
                         }.padding(.horizontal, 28).padding(.vertical, 16).frame(maxWidth: .infinity)
                     }.scrollBounceBehavior(.basedOnSize).tag(index)
                 }
