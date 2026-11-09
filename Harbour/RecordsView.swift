@@ -38,7 +38,7 @@ struct RecordsView: View {
             }.padding(.vertical, 22).contentShape(Rectangle())
         }.buttonStyle(.plain).accessibilityIdentifier("record-category-\(index)")
             .listRowInsets(EdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24))
-            .listRowBackground(Color.clear)
+            .listRowBackground(Color.clear).listRowSeparator(.hidden)
     }
 }
 
@@ -48,6 +48,15 @@ private struct RecordList: View {
     @Binding var sheet: AppSheet?
     let category: Int
     private var title: String { L10n.string(["Symptoms", "Medications", "Readings", "Appointments"][category]) }
+    private struct ReadingDay: Identifiable {
+        let date: Date
+        let readings: [Reading]
+        var id: Date { date }
+    }
+    private var readingDays: [ReadingDay] {
+        Dictionary(grouping: store.records.readings, by: { Calendar.current.startOfDay(for: $0.date) })
+            .sorted { $0.key > $1.key }.map { ReadingDay(date: $0.key, readings: $0.value) }
+    }
     var body: some View {
         List {
             if category == 0 {
@@ -55,55 +64,81 @@ private struct RecordList: View {
                     if store.records.symptoms.isEmpty { RecordEmptyState(kind: .symptoms, title: "No symptoms") }
                     ForEach(store.records.symptoms) { symptom in
                         NavigationLink { SymptomDetail(symptom: symptom) } label: { SymptomRow(symptom: symptom) }
-                            .listRowBackground(Color.clear)
-                    }.onDelete { indexes in let ids = indexes.map { store.records.symptoms[$0].id }; for id in ids { store.removeSymptom(id) } }
-                }
+                            .openRecordRow()
+                    }.onDelete { indexes in for id in indexes.map({ store.records.symptoms[$0].id }) { store.removeSymptom(id) } }
+                }.listSectionSeparator(.hidden)
             } else if category == 1 {
+                if !store.records.medicines.isEmpty {
+                    Section {
+                        Button { sheet = .interactions(store.records.medicines) } label: {
+                            HStack(spacing: 12) {
+                                Image(systemName: "arrow.triangle.branch").font(.title3)
+                                Text("Check interactions").font(.body.weight(.semibold))
+                                Spacer(minLength: 8)
+                                Image(systemName: "chevron.right").font(.caption.weight(.semibold))
+                            }.foregroundStyle(Palette.blue).padding(18)
+                                .background(Palette.blueWash, in: RoundedRectangle(cornerRadius: 22))
+                        }.buttonStyle(PressFeedback()).accessibilityIdentifier("checkMedicineInteractions")
+                            .padding(.top, 8).padding(.bottom, 12).openRecordRow()
+                    }.listSectionSeparator(.hidden)
+                }
                 Section {
                     if store.records.medicines.isEmpty { RecordEmptyState(kind: .medicines, title: "No medications") }
                     ForEach(store.records.medicines) { medicine in
-                        Button { sheet = .medicine(medicine) } label: {
-                            HStack(spacing: 14) {
-                                FeatureIcon(symbol: "pills.fill", colour: Palette.blue)
-                                VStack(alignment: .leading, spacing: 5) {
-                                    Text(L10n.medicineName(medicine)).foregroundStyle(Palette.ink).fontWeight(.medium)
-                                    Text(medicine.ingredients.isEmpty ? L10n.string("Ingredients unconfirmed") : L10n.ingredientNames(medicine.ingredients)).font(.body).foregroundStyle(Palette.muted)
-                                    if !medicine.instructions.isEmpty { Text(medicine.instructions).font(.body).foregroundStyle(Palette.muted) }
-                                    if let schedule = store.care.schedules.first(where: { $0.medicineID == medicine.id }),
-                                       let frequency = schedule.frequency ?? (schedule.times.isEmpty ? nil : MedicationFrequency(count: schedule.times.count, period: .day)) {
-                                        Text(L10n.frequency(frequency)).font(.body).foregroundStyle(Palette.muted)
-                                    }
-                                }
-                                Spacer(minLength: 8)
-                                Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Palette.muted)
-                            }.padding(.vertical, 12)
-                        }.listRowBackground(Color.clear).accessibilityIdentifier("medicine-row-\(medicine.id)")
-                    }.onDelete { indexes in let ids = indexes.map { store.records.medicines[$0].id }; for id in ids { store.removeMedicine(id) } }
-                }
-                if !store.records.medicines.isEmpty { Section { Button { sheet = .interactions(store.records.medicines) } label: { Label("Check interactions", systemImage: "arrow.triangle.branch") }.listRowBackground(Color.clear) } }
+                        Button { sheet = .medicine(medicine) } label: { MedicineRecordRow(medicine: medicine) }
+                            .buttonStyle(.plain).openRecordRow().accessibilityIdentifier("medicine-row-\(medicine.id)")
+                    }.onDelete { indexes in for id in indexes.map({ store.records.medicines[$0].id }) { store.removeMedicine(id) } }
+                }.listSectionSeparator(.hidden)
             } else if category == 3 {
                 Section {
                     if store.records.appointments.isEmpty { RecordEmptyState(kind: .appointments, title: "No appointments") }
                     ForEach(store.records.appointments.sorted { $0.date < $1.date }) { appointment in
-                        Button { sheet = .appointment(appointment) } label: { AppointmentRow(appointment: appointment) }.buttonStyle(.plain).listRowBackground(Color.clear)
+                        Button { sheet = .appointment(appointment) } label: { AppointmentRow(appointment: appointment) }
+                            .buttonStyle(.plain).openRecordRow()
                     }.onDelete { indexes in
                         let sorted = store.records.appointments.sorted { $0.date < $1.date }
                         for index in indexes { store.removeAppointment(sorted[index].id) }
                     }
-                }
+                }.listSectionSeparator(.hidden)
             } else {
-                Section {
-                    if store.records.readings.isEmpty { RecordEmptyState(kind: .readings, title: "No readings") }
-                    ForEach(store.records.readings) { reading in ReadingRow(reading: reading).listRowBackground(Color.clear) }
-                        .onDelete { indexes in let ids = indexes.map { store.records.readings[$0].id }; for id in ids { store.removeReading(id) } }
+                if store.records.readings.isEmpty { RecordEmptyState(kind: .readings, title: "No readings") }
+                let days = readingDays
+                ForEach(days) { day in
+                    Section {
+                        let readings = day.readings
+                        ForEach(readings) { reading in ReadingRow(reading: reading, showsDate: false).openRecordRow() }
+                            .onDelete { indexes in for index in indexes { store.removeReading(readings[index].id) } }
+                    } header: { Text(day.date, format: .dateTime.month(.abbreviated).day()).font(.subheadline.weight(.semibold)).textCase(nil).foregroundStyle(Palette.muted).padding(.leading, 8).padding(.top, day.id == days.first?.id ? 0 : 12).padding(.bottom, 4) }
+                        .listSectionSeparator(.hidden)
                 }
             }
         }
         .contentMargins(.bottom, dockClearance, for: .scrollContent)
-        .listStyle(.plain).listSectionSpacing(24).scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle(title)
+        .listStyle(.plain).listSectionSpacing(8).scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle(title)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) { Button { switch category { case 0: sheet = .symptom(""); case 1: sheet = .medicine(nil); case 3: sheet = .appointment(Appointment()); default: sheet = .reading(nil) } } label: { ToolbarGlyph(symbol: "plus") }.accessibilityLabel("Add record") }
         }
+    }
+}
+
+private struct MedicineRecordRow: View {
+    let medicine: Medicine
+    private var ingredients: String? {
+        guard !medicine.ingredients.isEmpty else { return L10n.string("Ingredients unconfirmed") }
+        let value = L10n.ingredientNames(medicine.ingredients)
+        return value.compare(L10n.medicineName(medicine), options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame ? nil : value
+    }
+    var body: some View {
+        HStack(alignment: .top, spacing: 16) {
+            Image(systemName: "pills.fill").font(.system(size: 24, weight: .medium)).foregroundStyle(Palette.blue).frame(width: 28, height: 30)
+            VStack(alignment: .leading, spacing: 7) {
+                Text(L10n.medicineName(medicine)).font(.title3.weight(.semibold)).foregroundStyle(Palette.ink)
+                if let ingredients { Text(ingredients).font(.subheadline).foregroundStyle(Palette.muted) }
+                if !medicine.instructions.isEmpty { Text(medicine.instructions).font(.body).foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true) }
+            }
+            Spacer(minLength: 0)
+            Image(systemName: "chevron.right").font(.caption.weight(.medium)).foregroundStyle(Palette.muted).padding(.top, 7)
+        }.padding(.vertical, 20).contentShape(Rectangle())
     }
 }
 
@@ -179,12 +214,12 @@ struct SymptomDetail: View {
     var body: some View {
         List {
             Section {
-                SymptomRow(symptom: symptom).listRowBackground(Color.clear)
-                LabeledContent("Started", value: symptom.onset.isEmpty ? L10n.string("Not recorded") : symptom.onset).listRowBackground(Color.clear)
-                LabeledContent("Severity", value: L10n.string(symptom.severity)).listRowBackground(Color.clear)
-            }
-            if !symptom.signs.isEmpty { Section("Signs recorded") { ForEach(symptom.signs) { Text(L10n.string($0.rawValue)).listRowBackground(Color.clear) } } }
-            Section("Next step") { GuidanceView(symptom: symptom).listRowBackground(Color.clear) }
+                SymptomRow(symptom: symptom).openRecordRow()
+                LabeledContent("Started", value: symptom.onset.isEmpty ? L10n.string("Not recorded") : symptom.onset).openRecordRow()
+                LabeledContent("Severity", value: L10n.string(symptom.severity)).openRecordRow()
+            }.listSectionSeparator(.hidden)
+            if !symptom.signs.isEmpty { Section { ForEach(symptom.signs) { Text(L10n.string($0.rawValue)).openRecordRow() } } header: { OpenRecordHeader(title: "Signs recorded") }.listSectionSeparator(.hidden) }
+            Section { GuidanceView(symptom: symptom).padding(.vertical, 16).openRecordRow() } header: { OpenRecordHeader(title: "Next step") }.listSectionSeparator(.hidden)
         }.listStyle(.plain).contentMargins(.bottom, dockClearance, for: .scrollContent)
             .scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle("Symptom").navigationBarTitleDisplayMode(.inline)
     }
@@ -192,6 +227,7 @@ struct SymptomDetail: View {
 
 struct MedicineEditor: View {
     let initial: Medicine?
+    var reviewSource: VisitMedicineReviewSource? = nil
     var suggestedTimes: [DoseTime] = []
     var suggestedFrequency: MedicationFrequency? = nil
     @StateObject private var scanner = MedicineScanner()
@@ -219,6 +255,7 @@ struct MedicineEditor: View {
     }
     var body: some View {
         Form {
+            if initial == nil && reviewSource == nil {
             Section("Medication label") {
                 MedicineScanButtons(scanner: scanner)
                 if scanner.busy { ProgressView("Reading label…") }
@@ -228,11 +265,12 @@ struct MedicineEditor: View {
                     DisclosureGroup("Label text") { Text(scanner.text).textSelection(.enabled) }
                 }
             }
+            }
             if let chosen {
                 Section {
                     Text(L10n.medicineName(chosen)).font(.title3.weight(.semibold))
                     LabeledContent("Active ingredients", value: chosen.ingredients.isEmpty ? L10n.string("Unconfirmed") : L10n.ingredientNames(chosen.ingredients))
-                    if initial == nil { Button("Choose another medicine") { self.chosen = nil; confirmed = false } }
+                    if initial == nil || reviewSource != nil { Button("Choose another medicine") { self.chosen = nil; confirmed = false } }
                 }
                 Section {
                     Button { confirmed.toggle() } label: {
@@ -243,7 +281,7 @@ struct MedicineEditor: View {
                         }.padding(.vertical, 8).contentShape(Rectangle())
                     }.buttonStyle(.plain).accessibilityIdentifier("confirmMedicine").accessibilityValue(L10n.string(confirmed ? "Confirmed" : "Not confirmed")).accessibilityAddTraits(confirmed ? .isSelected : [])
                 } footer: { Text(L10n.string(chosen.ingredients.isEmpty ? "This medicine will be saved with unconfirmed ingredients. Its interactions cannot be assessed." : "Brand formulations can differ. Check the active ingredients on your package.")) }
-                Section("Instructions from your label") { TextField("Dose or notes (optional)", text: $instructions, prompt: Text("Dose or notes (optional)").foregroundStyle(Palette.muted), axis: .vertical).lineLimit(2...4).focused($editing) }
+                Section(L10n.string(initial == nil && reviewSource == nil ? "Instructions from your label" : "Recorded instructions")) { TextField("Dose or notes (optional)", text: $instructions, prompt: Text("Dose or notes (optional)").foregroundStyle(Palette.muted), axis: .vertical).lineLimit(2...4).focused($editing).accessibilityIdentifier("medicineInstructions") }
                 ScheduleFields(times: $times, frequencyEnabled: $frequencyEnabled, frequencyCount: $frequencyCount, frequencyPeriod: $frequencyPeriod, notify: $notify, refillEnabled: $refillEnabled, refill: $refill)
             } else {
                 Section {
@@ -263,7 +301,7 @@ struct MedicineEditor: View {
         .drawerHeight(chosen == nil ? 600 : 690)
         .navigationTitle(L10n.string(initial == nil ? "Add medicine" : "Medication")).navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            chosen = initial; instructions = initial?.instructions ?? ""; times = suggestedTimes
+            chosen = initial; instructions = initial?.instructions ?? reviewSource?.instructions ?? ""; query = reviewSource?.name ?? ""; times = suggestedTimes
             if let suggestedFrequency { frequencyEnabled = true; frequencyCount = suggestedFrequency.count; frequencyPeriod = suggestedFrequency.period }
             if let schedule = store.care.schedules.first(where: { $0.medicineID == initial?.id }) {
                 if suggestedTimes.isEmpty { times = schedule.times }
@@ -276,7 +314,7 @@ struct MedicineEditor: View {
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { editing = false } }
             ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
-            ToolbarItem(placement: .confirmationAction) { Button("Save") { if var chosen { chosen.instructions = instructions; Task { if notify { await alerts.requestAccess() }; if store.saveMedicine(chosen, schedule: MedicineSchedule(medicineID: chosen.id, times: times, frequency: savedFrequency, notify: notify, refill: refillEnabled ? refill : nil)) { dismiss() } } } }.disabled(chosen == nil || !confirmed || !frequencyMatchesTimes).accessibilityIdentifier("saveMedicine") }
+            ToolbarItem(placement: .confirmationAction) { Button("Save") { if var chosen { chosen.instructions = instructions; Task { if notify { await alerts.requestAccess() }; if store.saveMedicine(chosen, schedule: MedicineSchedule(medicineID: chosen.id, times: times, frequency: savedFrequency, notify: notify, refill: refillEnabled ? refill : nil), reviewSource: reviewSource) { dismiss() } } } }.disabled(chosen == nil || !confirmed || !frequencyMatchesTimes).accessibilityIdentifier("saveMedicine") }
         }
     }
 }

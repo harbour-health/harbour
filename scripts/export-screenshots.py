@@ -127,6 +127,27 @@ TITLES = {
     '185-flat-preparation-dark': 'Preparation · Flat list · Dark',
     '186-flat-chat-history-dark': 'Chat history · Flat list · Dark',
     '187-flat-symptom-detail-dark': 'Symptom detail · Flat list · Dark',
+    '188-open-symptoms-light': 'Symptoms · Open layout · Light',
+    '189-open-medications-light': 'Medications · Open layout · Light',
+    '190-open-readings-light': 'Readings · Open layout · Light',
+    '191-open-appointments-light': 'Appointments · Open layout · Light',
+    '192-flat-preparation-light': 'Preparation · Open layout · Light',
+    '193-flat-chat-history-light': 'Chat history · Open layout · Light',
+    '194-flat-symptom-detail-light': 'Symptom detail · Open layout · Light',
+    '195-open-symptoms-dark': 'Symptoms · Open layout · Dark',
+    '196-open-medications-dark': 'Medications · Open layout · Dark',
+    '197-open-readings-dark': 'Readings · Open layout · Dark',
+    '198-open-appointments-dark': 'Appointments · Open layout · Dark',
+    '199-flat-preparation-dark': 'Preparation · Open layout · Dark',
+    '200-flat-chat-history-dark': 'Chat history · Open layout · Dark',
+    '201-flat-symptom-detail-dark': 'Symptom detail · Open layout · Dark',
+    '202-unconfirmed-review-action': 'Visit medication · Review action',
+    '203-unconfirmed-review-draft': 'Visit medication · Confirmation',
+    '204-unconfirmed-review-saved': 'Visit medication · Saved',
+    '205-chat-dose-correction-review': 'Chat dose correction · Previous editor layout',
+    '206-chat-removal-confirmation': 'Chat · Removal confirmation',
+    '207-existing-medication-editor': 'Medication editor',
+    '208-open-timeline': 'Timeline · Open layout',
 
 
 }
@@ -215,6 +236,7 @@ except ImportError:
     print('Pillow not installed; full-resolution gallery exported without overview sheets.')
 if args.update_readme:
     groups = {
+        'Open records and medicine review': set(range(188, 209)),
         'Flat record lists': set(range(174, 188)),
         'Today': {1, 31, 43, 66, 116, 152, 153},
         'Chat': {10, 11, 12, 13, 28, 32, 36, 42, 44, 45, 46, 47, 53, 58, 89, 146, 160},

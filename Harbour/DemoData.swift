@@ -60,7 +60,7 @@ enum DemoData {
         var review = DoctorVisit(title: t("Demo · Medication review", "Démo · Révision des médicaments"), date: day(-8), transcript: unknown)
         var reviewSummary = VisitSummary()
         reviewSummary.highlights = [VisitQuote(quote: unknown, text: t("Inhaler instructions recorded for review.", "Consignes de l’inhalateur notées pour révision."))]
-        reviewSummary.unconfirmedMedicines = [VisitQuote(quote: unknown, text: unknown)]
+        reviewSummary.unconfirmedMedicines = [VisitQuote(quote: unknown, text: "salbutamol: " + t("2 puffs every 4 to 6 hours if needed for wheezing, maximum 8 puffs in 24 hours", "2 bouffées toutes les 4 à 6 heures au besoin pour une respiration sifflante, maximum 8 bouffées en 24 heures"))]
         review.summary = reviewSummary; review.medicineBaseline = archive.records.medicines
         archive.visits = [visit, review, previous]
         archive.records.appointments = [

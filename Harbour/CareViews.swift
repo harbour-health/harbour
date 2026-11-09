@@ -190,7 +190,7 @@ struct HealthHistoryView: View {
                     }
                     Text(entry.date, format: .dateTime.month(.abbreviated).day().year().hour().minute()).padding(.leading, 36).font(.subheadline).foregroundStyle(Palette.muted)
                     if !entry.detail.isEmpty { Text(entry.detail).font(.body).foregroundStyle(Palette.muted).lineLimit(3).padding(.leading, 36) }
-                }.padding(.vertical, 14).listRowBackground(Color.clear)
+                }.padding(.vertical, 14).openRecordRow()
             }
         }.listStyle(.plain).scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle("Timeline")
             .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search your health history").onAppear { query = initialQuery }
@@ -452,19 +452,19 @@ struct PreparationView: View {
     private var note: String { LocalizedHealthContent.appointmentNote(records: store.records, care: store.care) }
     var body: some View {
         List {
-            Section("Questions") {
+            Section {
                 HStack(alignment: .top) {
                     TextField("Question for your doctor", text: $question, prompt: Text("Question for your doctor").foregroundStyle(Palette.muted), axis: .vertical).focused($editing).lineLimit(2...5).accessibilityIdentifier("appointmentQuestion")
                     Button { let q = AppointmentQuestion(id: editingID ?? UUID(), text: question.trimmingCharacters(in: .whitespacesAndNewlines)); if store.saveQuestion(q) { question = ""; editingID = nil; editing = false } } label: { ToolbarGlyph(symbol: "checkmark") }.disabled(question.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty).accessibilityLabel("Save question")
-                }.listRowBackground(Color.clear)
-                ForEach(store.care.questions) { q in Button { question = q.text; editingID = q.id } label: { Text(q.text).foregroundStyle(Palette.ink).padding(.vertical, 8) }.listRowBackground(Color.clear) }.onDelete { offsets in
+                }.openRecordRow()
+                ForEach(store.care.questions) { q in Button { question = q.text; editingID = q.id } label: { Text(q.text).foregroundStyle(Palette.ink).padding(.vertical, 8) }.openRecordRow() }.onDelete { offsets in
                     let ids = offsets.map { store.care.questions[$0].id }
                     for id in ids { store.removeQuestion(id) }
                 }
-            }
-            Section { NavigationLink { VisitReportView() } label: { FeatureRow(title: "Doctor visit report", subtitle: nil, symbol: "doc.richtext", colour: Palette.blue) }.listRowBackground(Color.clear) }
-            Section("Appointment note") { Text(note).textSelection(.enabled).accessibilityIdentifier("appointmentNoteContent").listRowBackground(Color.clear) }
-            Section { ShareLink(item: note) { Label("Share note", systemImage: "square.and.arrow.up") }.listRowBackground(Color.clear); Button { UIPasteboard.general.string = note } label: { Label("Copy note", systemImage: "doc.on.doc") }.listRowBackground(Color.clear) }
+            } header: { OpenRecordHeader(title: "Questions") }.listSectionSeparator(.hidden)
+            Section { NavigationLink { VisitReportView() } label: { FeatureRow(title: "Doctor visit report", subtitle: nil, symbol: "doc.richtext", colour: Palette.blue) }.openRecordRow() }
+            Section { Text(note).textSelection(.enabled).accessibilityIdentifier("appointmentNoteContent").openRecordRow() } header: { OpenRecordHeader(title: "Appointment note") }.listSectionSeparator(.hidden)
+            Section { ShareLink(item: note) { Label("Share note", systemImage: "square.and.arrow.up") }.openRecordRow(); Button { UIPasteboard.general.string = note } label: { Label("Copy note", systemImage: "doc.on.doc") }.openRecordRow() }
         }.listStyle(.plain).scrollContentBackground(.hidden).background(Palette.canvas)
             .navigationTitle("Appointment preparation").navigationBarTitleDisplayMode(.inline).onAppear { question = initialQuestion }
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }

@@ -17,7 +17,7 @@ import XCTest
         app.navigationBars["Developer"].buttons.firstMatch.tap()
         app.navigationBars["Settings"].buttons["Done"].tap()
         for (themeIndex, theme) in ["light", "dark"].enumerated() {
-            let first = themeIndex == 0 ? 174 : 181
+            let first = themeIndex == 0 ? 188 : 195
             app.buttons["nav-today"].tap(); app.buttons["Settings"].tap(); app.buttons["Appearance"].tap()
             app.buttons["appearance-" + theme].tap()
             app.navigationBars["Appearance"].buttons.firstMatch.tap()
@@ -26,7 +26,12 @@ import XCTest
             for (index, title) in ["Symptoms", "Medications", "Readings", "Appointments"].enumerated() {
                 app.buttons["record-category-\(index)"].tap()
                 XCTAssertTrue(app.navigationBars[title].waitForExistence(timeout: 5))
-                capture(first + index, "flat-" + title.lowercased() + "-" + theme)
+                capture(first + index, "open-" + title.lowercased() + "-" + theme)
+                if index == 1 {
+                    app.buttons["checkMedicineInteractions"].tap()
+                    XCTAssertTrue(app.staticTexts["Medication check"].exists || app.buttons["Done"].exists)
+                    app.buttons["Done"].firstMatch.tap()
+                }
                 if index == 0 {
                     app.buttons.containing(NSPredicate(format: "label CONTAINS %@", "Sore right knee after a walk")).firstMatch.tap()
                     XCTAssertTrue(app.navigationBars["Symptom"].waitForExistence(timeout: 5))

@@ -1486,5 +1486,173 @@
     "suggestedHumanReadableName": "174-flat-symptoms-light_0_54172C21-6F2D-4EF4-81C8-86747514652B.png",
     "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
     "resultBundle": "test_sim_2026-11-09T17-45-09-435Z_pid62996_ebead182.xcresult"
+  },
+  "200-flat-chat-history-dark": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794250926.605,
+    "suggestedHumanReadableName": "200-flat-chat-history-dark_0_0B6CD22D-8254-400E-8E8E-26F7719E62CA.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "harbour-final-records-20261109.xcresult"
+  },
+  "199-flat-preparation-dark": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794250922.246,
+    "suggestedHumanReadableName": "199-flat-preparation-dark_0_93BC6B79-4387-465A-9969-11E2A8FFF827.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "harbour-final-records-20261109.xcresult"
+  },
+  "198-open-appointments-dark": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794250918.37,
+    "suggestedHumanReadableName": "198-open-appointments-dark_0_F6EA4CEB-8255-487D-A010-492D85842E4B.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "harbour-final-records-20261109.xcresult"
+  },
+  "197-open-readings-dark": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794250914.675,
+    "suggestedHumanReadableName": "197-open-readings-dark_0_392BA811-EA26-4A56-80B4-C2D505D249E8.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "harbour-final-records-20261109.xcresult"
+  },
+  "196-open-medications-dark": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794250906.038,
+    "suggestedHumanReadableName": "196-open-medications-dark_0_0E8BB220-31D5-4C6C-B5BD-F49B630504F6.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "harbour-final-records-20261109.xcresult"
+  },
+  "201-flat-symptom-detail-dark": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794250902.231,
+    "suggestedHumanReadableName": "201-flat-symptom-detail-dark_0_580ADFD1-9C02-4CF6-B879-B358D5399862.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "harbour-final-records-20261109.xcresult"
+  },
+  "195-open-symptoms-dark": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794250900.192,
+    "suggestedHumanReadableName": "195-open-symptoms-dark_0_512D574B-300A-4F3E-AD6C-4226DB80BDD2.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "harbour-final-records-20261109.xcresult"
+  },
+  "193-flat-chat-history-light": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794250882.671,
+    "suggestedHumanReadableName": "193-flat-chat-history-light_0_944D309D-A86B-44F1-80A5-674240893031.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "harbour-final-records-20261109.xcresult"
+  },
+  "192-flat-preparation-light": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794250877.683,
+    "suggestedHumanReadableName": "192-flat-preparation-light_0_400ED6A4-0A30-4D49-AE27-9EBB148028DE.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "harbour-final-records-20261109.xcresult"
+  },
+  "191-open-appointments-light": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794250873.732,
+    "suggestedHumanReadableName": "191-open-appointments-light_0_F7F92CB8-F5D4-46E9-BA73-1FB490B3ACB1.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "harbour-final-records-20261109.xcresult"
+  },
+  "190-open-readings-light": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794250869.886,
+    "suggestedHumanReadableName": "190-open-readings-light_0_0B486FD9-EE40-42F5-9740-C4FD177F1BD7.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "harbour-final-records-20261109.xcresult"
+  },
+  "189-open-medications-light": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794250857.756,
+    "suggestedHumanReadableName": "189-open-medications-light_0_E16525EB-597C-46C1-8DD0-1B758F097091.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "harbour-final-records-20261109.xcresult"
+  },
+  "194-flat-symptom-detail-light": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794250853.259,
+    "suggestedHumanReadableName": "194-flat-symptom-detail-light_0_D1615CCB-429C-444A-8331-7D64E67F1033.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "harbour-final-records-20261109.xcresult"
+  },
+  "188-open-symptoms-light": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794250850.934,
+    "suggestedHumanReadableName": "188-open-symptoms-light_0_4719B19E-5A51-45E8-A875-3AAC921AAC86.png",
+    "test": "RecordListAppearanceUITests/testPopulatedListsInBothAppearances()",
+    "resultBundle": "harbour-final-records-20261109.xcresult"
+  },
+  "204-unconfirmed-review-saved": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794251558.445,
+    "suggestedHumanReadableName": "204-unconfirmed-review-saved_0_C3FC58E9-72C1-448D-83E9-4F6BC86301FD.png",
+    "test": "UnconfirmedMedicineUITests/testUnconfirmedMedicineCanBeReviewedCancelledAndSaved()",
+    "resultBundle": "harbour-review-completion-20261109.xcresult"
+  },
+  "203-unconfirmed-review-draft": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794251551.983,
+    "suggestedHumanReadableName": "203-unconfirmed-review-draft_0_996FFBC2-DB36-4F19-9B6D-2C255FECD746.png",
+    "test": "UnconfirmedMedicineUITests/testUnconfirmedMedicineCanBeReviewedCancelledAndSaved()",
+    "resultBundle": "harbour-review-completion-20261109.xcresult"
+  },
+  "202-unconfirmed-review-action": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794251550.189,
+    "suggestedHumanReadableName": "202-unconfirmed-review-action_0_53A8F825-62AB-40F8-847C-32C34A664309.png",
+    "test": "UnconfirmedMedicineUITests/testUnconfirmedMedicineCanBeReviewedCancelledAndSaved()",
+    "resultBundle": "harbour-review-completion-20261109.xcresult"
+  },
+  "206-chat-removal-confirmation": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794251514.902,
+    "suggestedHumanReadableName": "206-chat-removal-confirmation_0_074597DE-6129-409C-828D-0FAA88D3C9FE.png",
+    "test": "MedicationChatUITests/testExplicitRemovalAlertHasStablePendingStatus()",
+    "resultBundle": "harbour-review-completion-20261109.xcresult"
+  },
+  "205-chat-dose-correction-review": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794250365.405,
+    "suggestedHumanReadableName": "205-chat-dose-correction-review_0_D73774AD-41AD-4D38-B034-2F1145158314.png",
+    "test": "MedicationChatUITests/testRealChatDoseCorrectionAndLabelledRemovalAlert()",
+    "resultBundle": "harbour-chat-review-20261109.xcresult"
+  },
+  "208-open-timeline": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794251532.435,
+    "suggestedHumanReadableName": "208-open-timeline_0_318C2225-12B4-4BF8-BA05-371A4763461D.png",
+    "test": "MedicationChatUITests/testExplicitRemovalAlertHasStablePendingStatus()",
+    "resultBundle": "harbour-review-completion-20261109.xcresult"
+  },
+  "207-existing-medication-editor": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794251521.015,
+    "suggestedHumanReadableName": "207-existing-medication-editor_0_001F293E-384D-48FB-ACD1-C2EAC6B31AD9.png",
+    "test": "MedicationChatUITests/testExplicitRemovalAlertHasStablePendingStatus()",
+    "resultBundle": "harbour-review-completion-20261109.xcresult"
   }
 }

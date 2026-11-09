@@ -697,3 +697,13 @@
 "Replace all local data?" = "Replace all local data?";
 "Your records, chat history and visit recordings will be deleted and replaced with fictional demo data. This cannot be undone." = "Your records, chat history and visit recordings will be deleted and replaced with fictional demo data. This cannot be undone.";
 "Couldn’t finish replacing local data. %@" = "Couldn’t finish replacing local data. %@";
+
+/* Visit review and chat confirmation */
+"Review medication" = "Review medication";
+"Medication saved" = "Medication saved";
+"Review requested change" = "Review requested change";
+"This visit item changed or was already reviewed. Reopen the visit before saving." = "This visit item changed or was already reviewed. Reopen the visit before saving.";
+
+"Correct my saved metformin dose to 250 mg" = "Correct my saved metformin dose to 250 mg";
+
+"Recorded instructions" = "Recorded instructions";

@@ -110,7 +110,14 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
         } catch { self.error = L10n.format("Couldn’t save this change. %@", L10n.string(error.localizedDescription)); return false }
     }
     func add(_ medicine: Medicine) { _ = saveMedicine(medicine, schedule: care.schedules.first { $0.medicineID == medicine.id }) }
-    @discardableResult func saveMedicine(_ medicine: Medicine, schedule: MedicineSchedule?) -> Bool {
+    @discardableResult func saveMedicine(_ medicine: Medicine, schedule: MedicineSchedule?, reviewSource: VisitMedicineReviewSource? = nil) -> Bool {
+        if let source = reviewSource {
+            guard let visit = visits.first(where: { $0.id == source.visitID }), visit.transcript == source.transcript,
+                  visit.summary?.unconfirmedMedicines?.contains(where: { $0.quote == source.quote }) == true,
+                  !(visit.reviewedUnconfirmedQuotes ?? []).contains(source.quote) else {
+                error = L10n.string("This visit item changed or was already reviewed. Reopen the visit before saving."); return false
+            }
+        }
         let name = medicine.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         guard !medicine.id.isEmpty, !name.isEmpty, medicine.name.count <= 500 else { error = L10n.string("Enter a medicine name of up to 500 characters."); return false }
         guard !records.medicines.contains(where: { $0.id != medicine.id && $0.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == name }) else { error = L10n.string("This medicine is already saved. Open it in Medications to make changes."); return false }
@@ -125,6 +132,10 @@ struct ShareFile: Identifiable { let id = UUID(); let url: URL }
             care.schedules.removeAll { $0.medicineID == medicine.id }
             if let schedule, !schedule.times.isEmpty || schedule.frequency != nil || schedule.refill != nil { care.schedules.append(schedule) }
             value.care = care
+            if let source = reviewSource, let index = value.visits?.firstIndex(where: { $0.id == source.visitID }) {
+                if value.visits![index].reviewedUnconfirmedQuotes == nil { value.visits![index].reviewedUnconfirmedQuotes = [] }
+                value.visits![index].reviewedUnconfirmedQuotes!.append(source.quote)
+            }
         }
     }
     func removeMedicine(_ id: String) { update {

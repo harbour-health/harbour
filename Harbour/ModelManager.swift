@@ -143,7 +143,17 @@ final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchecked Send
     func chatDecision(_ input: String, hint: String? = nil, records: Records, history: [ConversationTurn] = []) async throws -> ToolDecision {
         let output = try await generate(ToolPlanner.prompt(input, hint: hint, records: records, history: history), allowedTools: ToolPlanner.availableTools.map(\.rawValue))
         let decision = try ToolPlanner.parse(output)
-        if decision.tool != .reply, (try? ToolPlanner.validate(decision, original: input, records: records)) != nil { return decision }
+        if decision.tool != .reply {
+            do { _ = try ToolPlanner.validate(decision, original: input, records: records); return decision }
+            catch {
+                if [.addMedicine, .updateMedicine, .removeMedicine, .scheduleMedicine, .clearData].contains(decision.tool) {
+                    let answer = try await generate(ToolPlanner.medicineClarificationPrompt(tool: decision.tool, records: records), maxTokens: 96, stopAtJSON: false)
+                    let reply = ToolDecision(tool: .reply, arg: answer)
+                    _ = try ToolPlanner.validate(reply, original: input, records: records)
+                    return reply
+                }
+            }
+        }
         // A tool with missing source facts cannot run. Let the model answer or clarify normally.
         try Task.checkCancellation()
         let answer = try await generate(ToolPlanner.conversationPrompt(input, records: records, history: history), maxTokens: effort.chatTokens, stopAtJSON: false)

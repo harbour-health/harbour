@@ -162,6 +162,7 @@ struct VisitDetailView: View {
     @State private var editing = false
     @State private var reviewing = false
     @State private var appointmentDraft: Appointment?
+    @State private var unconfirmedDraft: VisitMedicineReviewSource?
     @State private var deleting = false
     @State private var task: Task<Void, Never>?
     @State private var busy = false
@@ -205,7 +206,22 @@ struct VisitDetailView: View {
                                 } else { Label("Medication changes saved", systemImage: "checkmark.circle.fill").font(.body.weight(.medium)).foregroundStyle(Palette.blue) }
                             }
                         }
-                        if let unconfirmed = summary.unconfirmedMedicines, !unconfirmed.isEmpty { quotes(unconfirmed, title: "Needs review", symbol: "pills") }
+                        if let unconfirmed = summary.unconfirmedMedicines, !unconfirmed.isEmpty {
+                            VStack(alignment: .leading, spacing: 18) {
+                                Label(L10n.string(unconfirmed.allSatisfy { (visit.reviewedUnconfirmedQuotes ?? []).contains($0.quote) } ? "Medications" : "Needs review"), systemImage: "pills").font(.title2.weight(.semibold)).foregroundStyle(Palette.coral)
+                                ForEach(unconfirmed) { item in
+                                    VStack(alignment: .leading, spacing: 14) {
+                                        Text(item.text ?? item.quote).font(.body).lineSpacing(4)
+                                        if (visit.reviewedUnconfirmedQuotes ?? []).contains(item.quote) {
+                                            Label("Medication saved", systemImage: "checkmark.circle.fill").foregroundStyle(Palette.blue)
+                                        } else {
+                                            Button { unconfirmedDraft = VisitMedicineReviewSource(visit: visit, item: item) } label: { Label("Review medication", systemImage: "pills") }
+                                                .buttonStyle(ActionButtonStyle(secondary: true)).disabled(recorder.active || busy).accessibilityIdentifier("reviewUnconfirmedMedicine")
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         if !summary.followUps.isEmpty {
                             VStack(alignment: .leading, spacing: 16) {
                                 Label("Follow-up", systemImage: "checklist").font(.title2.weight(.semibold)).foregroundStyle(Palette.coral)
@@ -265,6 +281,7 @@ struct VisitDetailView: View {
             .sheet(isPresented: $editing) { if let visit { NavigationStack { VisitTranscriptEditor(visit: visit) }.floatingDrawer(height: 520) } }
             .sheet(item: $reminderDraft) { draft in NavigationStack { ReminderEditor(initial: draft) }.floatingDrawer(height: 590) }
             .sheet(isPresented: $reviewing) { NavigationStack { VisitMedicineReview(id: id) }.floatingDrawer(height: 520) }
+            .sheet(item: $unconfirmedDraft) { source in NavigationStack { MedicineEditor(initial: source.medicine(saved: store.records.medicines), reviewSource: source) }.floatingDrawer(height: 690) }
             .sheet(item: $appointmentDraft) { draft in NavigationStack { AppointmentEditor(initial: draft) }.floatingDrawer(height: 620) }
             .confirmationDialog("Delete this visit and its recording?", isPresented: $deleting, titleVisibility: .visible) { Button("Delete visit", role: .destructive) { if let visit { store.deleteVisit(visit) }; dismiss() } }
             .alert("Visit", isPresented: Binding(get: { error != nil || playback.error != nil }, set: { if !$0 { error = nil; playback.error = nil } })) { Button("OK") { error = nil; playback.error = nil } } message: { Text(error ?? playback.error ?? "") }
@@ -311,7 +328,7 @@ struct VisitDetailView: View {
                 let text = try await VisitTranscription.transcribe(url) { status = $0 }; try Task.checkCancellation()
                 guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw NSError(domain: "Visit", code: 5, userInfo: [NSLocalizedDescriptionKey: L10n.string("No speech was recognised. The saved transcript and audio have been kept.")]) }
                 guard var current = store.visits.first(where: { $0.id == id }), current.transcript == visit.transcript else { return }
-                current.transcript = text; current.transcriptionWarning = nil; current.summary = nil; current.medicineBaseline = nil; store.saveVisit(current)
+                current.transcript = text; current.transcriptionWarning = nil; current.reviewedUnconfirmedQuotes = nil; current.summary = nil; current.medicineBaseline = nil; store.saveVisit(current)
             } catch is CancellationError { }
             catch { self.error = L10n.string(error.localizedDescription) }
         }
@@ -343,7 +360,7 @@ struct VisitTranscriptEditor: View {
                     guard isNew || store.visits.contains(where: { $0.id == visit.id }) else { dismiss(); return }
                     var current = store.visits.first(where: { $0.id == visit.id }) ?? visit
                     current.title = title.trimmingCharacters(in: .whitespacesAndNewlines)
-                    if current.transcript != transcript { current.transcript = transcript; current.summary = nil; current.medicineBaseline = nil }
+                    if current.transcript != transcript { current.transcript = transcript; current.reviewedUnconfirmedQuotes = nil; current.summary = nil; current.medicineBaseline = nil }
                     if store.saveVisit(current) { dismiss(); onSave?(current.id) }
                 }.disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || transcript.count > 200_000 || (isNew && transcript.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)).accessibilityIdentifier("saveVisitTranscript") }
                 ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil) } }

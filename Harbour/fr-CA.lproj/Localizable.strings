@@ -697,3 +697,13 @@
 "Replace all local data?" = "Remplacer toutes les données locales?";
 "Your records, chat history and visit recordings will be deleted and replaced with fictional demo data. This cannot be undone." = "Vos dossiers, votre historique de clavardage et vos enregistrements de consultation seront supprimés et remplacés par des données de démo fictives. Cette action est irréversible.";
 "Couldn’t finish replacing local data. %@" = "Impossible de terminer le remplacement des données locales. %@";
+
+/* Visit review and chat confirmation */
+"Review medication" = "Réviser le médicament";
+"Medication saved" = "Médicament enregistré";
+"Review requested change" = "Vérifier la modification demandée";
+"This visit item changed or was already reviewed. Reopen the visit before saving." = "Cet élément de consultation a changé ou a déjà été révisé. Rouvrez la consultation avant d’enregistrer.";
+
+"Correct my saved metformin dose to 250 mg" = "Corrige la dose de metformine enregistrée à 250 mg";
+
+"Recorded instructions" = "Consignes enregistrées";

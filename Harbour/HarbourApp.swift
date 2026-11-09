@@ -246,7 +246,7 @@ struct TodayView: View {
                     }
                 }
                 AgendaView(sheet: $sheet)
-                Button { showHistory = true } label: { FeatureRow(title: "Timeline", subtitle: nil, symbol: "clock.arrow.circlepath", colour: Palette.blue) }.buttonStyle(.plain)
+                Button { showHistory = true } label: { FeatureRow(title: "Timeline", subtitle: nil, symbol: "clock.arrow.circlepath", colour: Palette.blue) }.buttonStyle(.plain).accessibilityIdentifier("openTimeline")
             }.padding(.horizontal, AppLayout.screenInset).padding(.bottom, 32).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity).mainPageSwipes(0)
         }.contentMargins(.bottom, dockClearance, for: .scrollContent)
             .background(Palette.canvas).foregroundStyle(Palette.ink)
@@ -282,10 +282,11 @@ struct TodayView: View {
 }
 struct ReadingRow: View {
     let reading: Reading
+    var showsDate = true
     var body: some View {
         HStack(spacing: 14) {
             Image(systemName: reading.kind.symbol).foregroundStyle(.red).frame(width: 24)
-            VStack(alignment: .leading, spacing: 5) { Text(L10n.string(reading.kind.rawValue)).font(.body.weight(.medium)); Text(reading.date, format: .dateTime.month(.abbreviated).day().hour().minute()).font(.subheadline).foregroundStyle(Palette.muted) }
+            VStack(alignment: .leading, spacing: 5) { Text(L10n.string(reading.kind.rawValue)).font(.body.weight(.medium)); Text(reading.date, format: showsDate ? .dateTime.month(.abbreviated).day().hour().minute() : .dateTime.hour().minute()).font(.subheadline).foregroundStyle(Palette.muted) }
             Spacer()
             HStack(alignment: .firstTextBaseline, spacing: 4) { Text(L10n.readingValue(reading)).font(.title2.weight(.semibold)); Text(reading.kind.unit).font(.subheadline).foregroundStyle(Palette.muted) }
         }.foregroundStyle(Palette.ink).padding(.vertical, 12).listRowBackground(Color.clear).accessibilityElement(children: .combine)

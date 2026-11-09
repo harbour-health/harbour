@@ -62,3 +62,6 @@ Course context, the project plan, and the preliminary report are maintained sepa
 - [Developer demo release](releases/developer-demo-data.md) — build 8 verification and internal TestFlight delivery.
 
 - [Flat record lists release](releases/flat-record-lists.md) — build 9 styling, native UI verification and internal TestFlight delivery.
+
+- [Unconfirmed medicine review](unconfirmed-medicine-review.md) — human confirmation of unresolved visit items and atomic save status.
+- [Medication chat changes](medication-chat-changes.md) — dose corrections, destructive-action checks and visible confirmation state.

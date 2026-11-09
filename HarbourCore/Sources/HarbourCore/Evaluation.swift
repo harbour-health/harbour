@@ -74,6 +74,7 @@ public enum Evaluation {
         .init("Please save my heart rate of 72", .logReading),
         .init("Add metformin to my medications", .addMedicine),
         .init("Remove metformin from my medications", .removeMedicine),
+        .init("Correct my saved metformin dose to 250 mg", .updateMedicine),
         .init("Show my readings", .listReadings),
         .init("Make an appointment note", .appointmentNote),
         .init("My temperature is 36.8", .logReading),

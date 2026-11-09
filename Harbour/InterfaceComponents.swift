@@ -51,3 +51,20 @@ extension EnvironmentValues {
         set { self[ChatVisibilityKey.self] = newValue }
     }
 }
+
+/// Open record rows use one shared gutter; native swipe actions remain available.
+extension View {
+    func openRecordRow() -> some View {
+        listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
+            .listRowInsets(EdgeInsets(top: 0, leading: AppLayout.screenInset, bottom: 0, trailing: AppLayout.screenInset))
+    }
+}
+
+struct OpenRecordHeader: View {
+    let title: String
+    var body: some View {
+        Text(L10n.string(title)).font(.subheadline.weight(.semibold)).foregroundStyle(Palette.muted)
+            .textCase(nil).padding(.leading, 8)
+    }
+}

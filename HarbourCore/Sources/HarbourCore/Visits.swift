@@ -65,6 +65,7 @@ public struct DoctorVisit: Codable, Equatable, Sendable, Identifiable {
     public var summary: VisitSummary?
     public var medicineBaseline: [Medicine]?
     public var appliedChanges: [VisitMedicineChange]
+    public var reviewedUnconfirmedQuotes: [String]?
     public init(id: UUID = UUID(), title: String = "Doctor visit", date: Date = .now, duration: TimeInterval = 0, transcript: String = "", audioFilename: String? = nil, interrupted: Bool = false) {
         self.id = id; self.title = title; self.date = date; self.duration = duration
         self.transcript = transcript; self.audioFilename = audioFilename; self.interrupted = interrupted

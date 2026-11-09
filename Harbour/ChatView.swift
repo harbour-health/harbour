@@ -19,6 +19,7 @@ struct ChatView: View {
     @State private var hint: String?
     @State private var operationID = UUID()
     private var busy: Bool { models.chatRequestState.isBusy }
+    private var awaitingReview: Bool { store.messages.last?.toolPayload?.hasPrefix("status=requires_confirmation\n") == true }
     @State private var modelSheet = false
     @State private var historySheet = false
     @State private var toolSheet = false
@@ -44,17 +45,17 @@ struct ChatView: View {
                             starter("Add a reading", symbol: "waveform.path.ecg", colour: Palette.coral, hint: "Readings")
                         }.frame(maxWidth: 400).frame(maxWidth: .infinity)
                     }
-                    ForEach(store.messages) { message in MessageView(message: message, speak: { if !recorder.active { voice.speak(message.spokenText) } }, retry: { store.retryToolEvent(message.id); narratePendingToolEvent(message.id) }).id(message.id).transition(.opacity.combined(with: .move(edge: .bottom))) }
-                    if busy {
+                    ForEach(store.messages) { message in MessageView(message: message, speak: { if !recorder.active { voice.speak(message.spokenText) } }, retry: { store.retryToolEvent(message.id); narratePendingToolEvent(message.id) }).id(message.id).transition(message.toolPayload?.hasPrefix("status=requires_confirmation\n") == true ? .identity : .opacity.combined(with: .move(edge: .bottom))) }
+                    if busy && !awaitingReview {
                         HStack(spacing: 12) { HarbourMark(size: AppLayout.loadingMarkSize, spinning: true).foregroundStyle(Palette.blue); Text(models.chatRequestState.isCancelling ? L10n.string("Please wait before trying again.") : models.downloading == nil ? L10n.string("Thinking…") : models.status).font(.subheadline).foregroundStyle(Palette.muted) }.id("pending")
                         if models.downloading != nil { VStack(alignment: .leading, spacing: 8) { ProgressView(value: models.progress); Text(models.isVerifying ? models.status : L10n.format("%lld%% downloaded", Int64(models.progress * 100))).font(.caption).foregroundStyle(Palette.muted) } }
                     }
                     Color.clear.frame(height: 1).id("bottom")
-                }.animation(reduceMotion ? nil : .easeOut(duration: 0.3), value: store.messages.count).padding(.horizontal, AppLayout.screenInset).padding(.bottom, 16).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity).mainPageSwipes(1)
+                }.animation(reduceMotion || awaitingReview ? nil : .easeOut(duration: 0.3), value: store.messages.count).padding(.horizontal, AppLayout.screenInset).padding(.bottom, 16).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity).mainPageSwipes(1)
             }
             .scrollDismissesKeyboard(.interactively)
-            .onChange(of: store.messages.count) { withAnimation(reduceMotion ? nil : .easeOut(duration: 0.3)) { proxy.scrollTo("bottom", anchor: .bottom) } }
-            .onChange(of: busy) { withAnimation(reduceMotion ? nil : .easeOut(duration: 0.3)) { proxy.scrollTo("bottom", anchor: .bottom) } }
+            .onChange(of: store.messages.count) { withAnimation(reduceMotion || awaitingReview ? nil : .easeOut(duration: 0.3)) { proxy.scrollTo("bottom", anchor: .bottom) } }
+            .onChange(of: busy) { withAnimation(reduceMotion || awaitingReview ? nil : .easeOut(duration: 0.3)) { proxy.scrollTo("bottom", anchor: .bottom) } }
         }
             composer
         }
@@ -82,11 +83,11 @@ struct ChatView: View {
             ToolbarItem(placement: .topBarLeading) { Button { cancel(); focused = false; draft = ""; hint = nil; store.newChat() } label: { ToolbarGlyph(symbol: "square.and.pencil") }.accessibilityLabel("New chat") }
             ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) }
         }
-        .sheet(isPresented: $historySheet) { history.floatingDrawer(height: 600) }
+        .sheet(isPresented: $historySheet) { history.floatingDrawer(height: min(600, CGFloat(max(1, store.conversations.count)) * 90 + 180)) }
         .sheet(isPresented: $modelSheet) { NavigationStack { ModelsView(standalone: true) }.floatingDrawer(height: 680) }
         .sheet(isPresented: $toolSheet) { topicPicker.floatingDrawer(height: 420) }
-        .confirmationDialog("Delete all records and chat?", isPresented: $deleteConfirmation, titleVisibility: .visible) { Button("Delete all", role: .destructive) { store.clear() }; Button("Cancel", role: .cancel) {} }
-        .confirmationDialog(L10n.format("Remove %@ from your list?", removal.map(L10n.medicineName) ?? L10n.string("medicine")), isPresented: Binding(get: { removal != nil }, set: { if !$0 { removal = nil } }), titleVisibility: .visible) { Button("Remove", role: .destructive) { if let removal { store.removeMedicine(removal.id); store.appendToolEvent(ChatMessage(text: L10n.format("Removed %@ from your list.", L10n.medicineName(removal)))) }; removal = nil } }
+        .alert("Delete all records and chat?", isPresented: $deleteConfirmation) { Button("Delete all", role: .destructive) { store.clear() }; Button("Cancel", role: .cancel) {} }
+        .alert(L10n.format("Remove %@ from your list?", removal.map(L10n.medicineName) ?? L10n.string("medicine")), isPresented: Binding(get: { removal != nil }, set: { if !$0 { removal = nil } })) { Button("Remove", role: .destructive) { if let removal { store.removeMedicine(removal.id); store.appendToolEvent(ChatMessage(text: L10n.format("Removed %@ from your list.", L10n.medicineName(removal)))) }; removal = nil } }
         .alert("Voice input", isPresented: Binding(get: { voice.error != nil && !voiceMode }, set: { if !$0 { voice.error = nil } })) { Button("OK") { voice.error = nil } } message: { Text(voice.error ?? "") }
         .alert("Emergency signs", isPresented: Binding(get: { emergencyMessage != nil }, set: { if !$0 { emergencyMessage = nil } })) { Button("OK") { emergencyMessage = nil } } message: { Text(emergencyMessage ?? "") }
     }
@@ -98,6 +99,8 @@ struct ChatView: View {
         .onChange(of: voiceActivityPhase) { syncVoiceActivity() }
         .onChange(of: sheet?.id) { old, new in voice.stop(); if old != nil && new == nil { store.closeToolDraft() } }
         .onChange(of: modelSheet) { if modelSheet { voice.stop() } }
+        .onChange(of: removal?.id) { old, new in if old != nil && new == nil { store.closeToolDraft() } }
+        .onChange(of: deleteConfirmation) { old, new in if old && !new { store.closeToolDraft() } }
         .onChange(of: toolSheet) { if toolSheet { voice.stop() } }
     }
     var body: some View {
@@ -125,7 +128,7 @@ struct ChatView: View {
                                 Text(conversation.updated, style: .relative).font(.subheadline).foregroundStyle(Palette.muted)
                             }
                         }.padding(.vertical, 8).contentShape(Rectangle())
-                    }.listRowBackground(Color.clear)
+                    }.openRecordRow()
                 }
             }.listStyle(.plain).scrollContentBackground(.hidden).background(Palette.canvas)
                 .navigationTitle("Chats").navigationBarTitleDisplayMode(.inline)
@@ -305,7 +308,9 @@ struct ChatView: View {
         case .add(let medicine, let times, let frequency):
             sheet = times.isEmpty && frequency == nil ? .medicine(medicine) : .medicineDraft(medicine, times, frequency)
             store.appendToolEvent(ChatMessage(text: L10n.format("Confirm the exact product and instructions for %@.", L10n.medicineName(medicine))), status: "requires_confirmation")
-        case .remove(let medicine): removal = medicine
+        case .remove(let medicine):
+            store.appendToolEvent(ChatMessage(text: L10n.format("Remove %@ from your list?", L10n.medicineName(medicine))), status: "requires_confirmation")
+            removal = medicine
         case .medicines: store.appendToolEvent(ChatMessage(text: L10n.string(store.records.medicines.isEmpty ? "No medications recorded." : "Your medications"), medicines: store.records.medicines))
         case .interactions(let medicines): store.appendToolEvent(ChatMessage(text: L10n.string("Medication check"), report: HealthRules.check(medicines)))
         case .reading(let reading): sheet = .reading(reading); store.appendToolEvent(ChatMessage(text: L10n.format("Confirm %@: %@ %@.", L10n.string(reading.kind.rawValue), L10n.readingValue(reading), reading.kind.unit)), status: "requires_confirmation")
@@ -315,7 +320,9 @@ struct ChatView: View {
             Task { await health.sync(into: store); guard operationID == requestedOperation else { return }; store.appendToolEvent(ChatMessage(text: health.status)) }
         case .export: store.export(); if store.shareFile != nil { store.appendToolEvent(ChatMessage(text: "export_file_ready")) }
         case .note: sheet = .note; store.appendToolEvent(ChatMessage(text: LocalizedHealthContent.appointmentNote(records: store.records, care: store.care)), status: "requires_confirmation")
-        case .clear: deleteConfirmation = true
+        case .clear:
+            store.appendToolEvent(ChatMessage(text: L10n.string("Delete all records and chat?")), status: "requires_confirmation")
+            deleteConfirmation = true
         case .reminder(let text): sheet = .reminder(CareReminder(title: text)); store.appendToolEvent(ChatMessage(text: L10n.string("Review the reminder and choose its date.")), status: "requires_confirmation")
         case .reminders: store.appendToolEvent(ChatMessage(text: L10n.string(store.care.reminders.isEmpty ? "No reminders saved." : "Reminders"), reminders: store.care.reminders.sorted { $0.due < $1.due }))
         case .schedule(let medicine, let times, let frequency): sheet = .schedule(medicine, times, frequency); store.appendToolEvent(ChatMessage(text: L10n.string("Confirm the frequency, times, and refill date from your prescription.")), status: "requires_confirmation")
@@ -341,7 +348,8 @@ struct MessageView: View {
     private var careResult: Bool { message.reminders?.isEmpty == false || message.timeline?.isEmpty == false || message.appointments?.isEmpty == false }
     var body: some View {
         if message.toolPayload != nil && message.text.isEmpty {
-            if message.toolFailed == true { HStack { Text("Response unavailable").foregroundStyle(Palette.muted); if let retry { Button("Try again", action: retry).frame(minHeight: AppLayout.controlSize) } } }
+            if message.toolPayload?.hasPrefix("status=requires_confirmation\n") == true { Label("Review requested change", systemImage: "checkmark.shield").font(.body).foregroundStyle(Palette.muted).accessibilityIdentifier("chatPendingReview") }
+            else if message.toolFailed == true { HStack { Text("Response unavailable").foregroundStyle(Palette.muted); if let retry { Button("Try again", action: retry).frame(minHeight: AppLayout.controlSize) } } }
         }
         else if message.isUser {
             HStack { Spacer(minLength: 36); Text(message.text).padding(.horizontal, 18).padding(.vertical, 15).background(Palette.surface, in: RoundedRectangle(cornerRadius: 24)).textSelection(.enabled) }
