@@ -2,3 +2,6 @@
 
 # SwiftFormat 0.64.6 and compiler-aware statement spacing; no functional changes.
 9fbc3a0a5893eb6889bde41bd5af011acf93ac3b
+
+# Layout-only formatting after the simple interface and presentation work.
+b7b18db7a9ce8a1b8aa88a6e80493b07cf4af7f0
