@@ -58,3 +58,5 @@ Course context, the project plan, and the preliminary report are maintained sepa
 - [Full-screen voice release](releases/full-screen-voice.md) — build 7 distribution, verification and known summary limitation.
 
 - [Developer demo data](demo-data.md) — explicit fictional dataset replacement, transcripts, summaries and reset boundaries.
+
+- [Developer demo release](releases/developer-demo-data.md) — build 8 verification and internal TestFlight delivery.
