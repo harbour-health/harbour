@@ -707,3 +707,5 @@
 "Correct my saved metformin dose to 250 mg" = "Correct my saved metformin dose to 250 mg";
 
 "Recorded instructions" = "Recorded instructions";
+
+"Qwen 7B uses more memory and may not run on every device." = "Qwen 7B uses more memory and may not run on every device.";

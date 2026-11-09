@@ -332,3 +332,53 @@ import HarbourSpeech
         XCTAssertTrue(spoken.hasPrefix("My source / mon texte")); XCTAssertTrue(spoken.contains(L10n.isFrench ? "36,8" : "36.8"))
     }
 }
+
+@MainActor final class ModelAssetTests: XCTestCase {
+    func testLargeModelHasBothPinnedShardsAndPreservesAutomaticPolicy() throws {
+        let model = ModelChoice.large
+        XCTAssertEqual(model.size, 4_683_073_632)
+        XCTAssertEqual(model.assets.count, 2)
+        XCTAssertEqual(model.filename, "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf")
+        XCTAssertTrue(model.assets.allSatisfy { $0.url.absoluteString.contains("bb5d59e06d9551d752d08b292a50eb208b07ab1f") })
+        let manager = ModelManager(), previous = manager.selection
+        defer { manager.selection = previous }
+        manager.selection = .automatic
+        XCTAssertNotEqual(manager.resolved, .large)
+        manager.selection = .large
+        XCTAssertEqual(manager.resolved, .large); XCTAssertEqual(manager.visitModel, .large)
+        XCTAssertEqual(manager.resolved.parameterTitle, "Qwen 7B")
+    }
+    func testVerificationRejectsCorruptionAndTruncation() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let url = directory.appendingPathComponent("fixture.gguf")
+        let asset = ModelAsset("fixture.gguf", size: 3, hash: "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", repository: "fixture", revision: "fixture")
+        try Data("abc".utf8).write(to: url); try asset.verify(url)
+        XCTAssertFalse(asset.verified(in: directory))
+        try Data(asset.hash.utf8).write(to: url.appendingPathExtension("verified"))
+        XCTAssertTrue(asset.verified(in: directory))
+        try Data("abd".utf8).write(to: url); XCTAssertThrowsError(try asset.verify(url))
+        try Data("ab".utf8).write(to: url); XCTAssertThrowsError(try asset.verify(url)); XCTAssertFalse(asset.verified(in: directory))
+        try Data("abc".utf8).write(to: url)
+        try Data("stale hash".utf8).write(to: url.appendingPathExtension("verified"))
+        XCTAssertFalse(asset.verified(in: directory))
+    }
+    func testLargeInstallationRequiresBothShardsAndRemovalDeletesBoth() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let manager = ModelManager(directory: directory)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        for (index, asset) in ModelChoice.large.assets.enumerated() {
+            XCTAssertFalse(manager.installed(.large))
+            let url = directory.appendingPathComponent(asset.filename)
+            XCTAssertTrue(FileManager.default.createFile(atPath: url.path, contents: nil))
+            // Sparse fixtures exercise installation bookkeeping without downloading 4.7 GB.
+            let handle = try FileHandle(forWritingTo: url); try handle.truncate(atOffset: UInt64(asset.size)); try handle.close()
+            XCTAssertFalse(manager.installed(.large))
+            try Data(asset.hash.utf8).write(to: url.appendingPathExtension("verified"))
+            XCTAssertEqual(manager.installed(.large), index == 1)
+        }
+        try await manager.remove(.large)
+        XCTAssertFalse(manager.installed(.large)); XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath: directory.path).isEmpty)
+    }
+}

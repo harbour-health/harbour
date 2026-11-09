@@ -1654,5 +1654,21 @@
     "suggestedHumanReadableName": "207-existing-medication-editor_0_001F293E-384D-48FB-ACD1-C2EAC6B31AD9.png",
     "test": "MedicationChatUITests/testExplicitRemovalAlertHasStablePendingStatus()",
     "resultBundle": "harbour-review-completion-20261109.xcresult"
+  },
+  "210-7b-chat-selector": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794253540.812,
+    "suggestedHumanReadableName": "210-7b-chat-selector_0_71552272-5C40-4453-92E2-942669F0C0CA.png",
+    "test": "LargeModelUITests/testOptionalLargeModelSelection()",
+    "resultBundle": "harbour-7b-options-final-20261109.xcresult"
+  },
+  "209-optional-7b-model": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794253539.349,
+    "suggestedHumanReadableName": "209-optional-7b-model_0_528983E8-FDB8-40F7-9EDD-B919894F707A.png",
+    "test": "LargeModelUITests/testOptionalLargeModelSelection()",
+    "resultBundle": "harbour-7b-options-final-20261109.xcresult"
   }
 }

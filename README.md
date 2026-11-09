@@ -94,7 +94,7 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 <!-- screenshot-gallery:start -->
 ## All screens
 
-207 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
+209 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
 
 ### Open records and medicine review
 
@@ -202,7 +202,8 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | <strong>Appearance · Dark</strong><br>[<img src="docs/screenshots/41-appearance-dark.png" alt="Appearance · Dark" width="220">](docs/screenshots/41-appearance-dark.png) | <strong>Import records</strong><br>[<img src="docs/screenshots/60-import-records.png" alt="Import records" width="220">](docs/screenshots/60-import-records.png) |
 | <strong>Developer settings</strong><br>[<img src="docs/screenshots/169-developer-settings.png" alt="Developer settings" width="220">](docs/screenshots/169-developer-settings.png) | <strong>Replace demo data · Confirmation</strong><br>[<img src="docs/screenshots/170-demo-replacement-confirmation.png" alt="Replace demo data · Confirmation" width="220">](docs/screenshots/170-demo-replacement-confirmation.png) |
 | <strong>Demo · Today</strong><br>[<img src="docs/screenshots/171-demo-today.png" alt="Demo · Today" width="220">](docs/screenshots/171-demo-today.png) | <strong>Demo · Visit summary</strong><br>[<img src="docs/screenshots/172-demo-visit-summary.png" alt="Demo · Visit summary" width="220">](docs/screenshots/172-demo-visit-summary.png) |
-| <strong>Développement · Données de démo</strong><br>[<img src="docs/screenshots/173-developer-french.png" alt="Développement · Données de démo" width="220">](docs/screenshots/173-developer-french.png) |  |
+| <strong>Développement · Données de démo</strong><br>[<img src="docs/screenshots/173-developer-french.png" alt="Développement · Données de démo" width="220">](docs/screenshots/173-developer-french.png) | <strong>Optional Qwen 7B model</strong><br>[<img src="docs/screenshots/209-optional-7b-model.png" alt="Optional Qwen 7B model" width="220">](docs/screenshots/209-optional-7b-model.png) |
+| <strong>Chat · Qwen 7B selection</strong><br>[<img src="docs/screenshots/210-7b-chat-selector.png" alt="Chat · Qwen 7B selection" width="220">](docs/screenshots/210-7b-chat-selector.png) |  |
 
 ### App lock
 

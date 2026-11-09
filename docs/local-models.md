@@ -12,12 +12,23 @@ Tool routing passes a GBNF grammar made by `ToolOutputGrammar.make(allowedTools:
 
 Ordinary conversation uses a second inference with no output grammar and `stopAtJSON: false`. It produces the actual assistant text instead of an empty routing argument or a fixed error response. Both stages use bounded recent history; see [Chat agent](chat-agent.md). Titles and visit summaries retain their separate output formats.
 
-`ModelManager` chooses weights and streams a foreground URLSession download to a temporary file. The UI receives byte progress and an `isVerifying` state flag; it does not infer verification state from translated status text. A streaming SHA-256 and exact-size check must pass before atomic installation and creation of a verified marker. The flag clears when the operation completes, fails, or observes cancellation. Cancelled and failed downloads remove temporary files. A later retry starts from the beginning; background transfer and resume data are not implemented. There is no automatic network fallback for a failed inference.
+`ModelManager` chooses weights and streams a foreground URLSession download to a temporary staging folder. The UI receives byte progress and an `isVerifying` state flag; it does not infer verification state from translated status text. A streaming SHA-256 and exact-size check must pass before installation and creation of verified markers. Multi-file models remain unavailable until every shard is present, has its expected size, and has its matching verification marker. The flag clears when the operation completes, fails, or observes cancellation. Cancelled and failed downloads remove the staging folder. A later retry starts from the beginning; background transfer and resume data are not implemented. There is no automatic network fallback for a failed inference.
 
 | Model | Revision | Bytes | SHA-256 |
 | --- | --- | ---: | --- |
 | Qwen2.5 0.5B Instruct Q4_K_M | `9217f5db79a29953eb74d5343926648285ec7e67` | 491400032 | `74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db` |
 | Qwen2.5 1.5B Instruct Q4_K_M | `91cad51170dc346986eccefdc2dd33a9da36ead9` | 1117320736 | `6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e` |
+
+Qwen2.5 7B Instruct Q4_K_M is an optional **4,683,073,632-byte** download at revision `bb5d59e06d9551d752d08b292a50eb208b07ab1f`:
+
+| Shard | Bytes | SHA-256 |
+| --- | ---: | --- |
+| `qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf` | 3993201344 | `dfce12e3862a5283ccfb88221b48480e58745165de856439950d0f22590580db` |
+| `qwen2.5-7b-instruct-q4_k_m-00002-of-00002.gguf` | 689872288 | `539cf93f78e887edea1c04e2d7d8cdaca9d01dae9c9025bcb8accbe29df3d72a` |
+
+Both files come from the official [7B repository](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct-GGUF/tree/bb5d59e06d9551d752d08b292a50eb208b07ab1f). Download progress weights each shard by its bytes; verification is shown separately. Removal deletes both files and their markers. A corrupt/missing shard makes the complete model unavailable. Selecting 7B does not download until Download or an inference request; chat, titles, and visit summaries then use that explicit selection. No model weights are embedded in the app bundle.
+
+Automatic selection continues to choose only Small or Balanced. The app requests Apple's [increased memory limit entitlement](https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.kernel.increased-memory-limit), which may raise the process limit on supported devices; it does not guarantee that 7B fits or performs adequately. There is no new claim of physical-iPhone validation. The previous Mac evaluation is separate from phone inference. Test real-device memory pressure, sustained latency and thermal behaviour before considering automatic 7B selection.
 
 Downloads come from the official [Qwen Small repository](https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF) and [Balanced repository](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF). The hosts receive normal file-download metadata, such as IP address; health content is not included in the requests.
 
@@ -31,7 +42,7 @@ With the default `stopAtJSON: true`, generation stops after the outer JSON objec
 
 Keep tool names in lowercase ASCII identifier form (`[a-z][a-z0-9_]*`); empty lists and unsafe names fail before a grammar is returned. Extend the caller's tool enum, full catalog, and execution validator together. Grammar restrictions ensure output shape and tool membership, but selection still requires core validation against the original message. Do not add generated arguments to the routing grammar. Factory regression tests cover the exact envelope and grammar injection rejection. The installed `llama.h` documents that `llama_sampler_sample` already calls `llama_sampler_accept`; accepting a second time would incorrectly advance grammar state.
 
-Update filename, immutable revision, byte count, and checksum together in `ModelChoice`. A different model family also requires the correct prompt template; the current template is Qwen ChatML. Extend the CPU/Metal tests before changing the runtime. Never adapt arbitrary tool names into executable operations.
+Update every filename, immutable revision, byte count, and checksum together in `ModelChoice.assets`. Preserve shard names and colocate the shards: llama.cpp opens the first and discovers subsequent files by name. `ModelAsset.verify` streams checksums; `verified(in:)` checks marker content and file size before reporting installation. Never write a marker for an unverified download. A different model family also requires the correct prompt template; the current template is Qwen ChatML. Extend the CPU/Metal tests before changing the runtime. Never adapt arbitrary tool names into executable operations.
 
 Change output-language policy in `ModelManager.localizedPrompt` and localized display labels in the app resources. Keep `ModelChoice` and `Effort` raw values stable because they are persisted in user defaults. `Effort.title` supplies the translated display name. Never translate schema identifiers or source evidence to satisfy the language instruction.
 
@@ -41,7 +52,7 @@ The first older runtime failed Metal startup on this Mac, and the first newer CL
 
 `scripts/prepare-runtime.sh` requires Xcode, CMake, curl, unzip, and shasum. `HARBOUR_RUNTIME_VENDOR` can override the output directory for clean setup testing. Runtime archive SHA-256: `636709d4a7b49ac7f2ed6dc8a4de3f278c257cac7248fe40d6a513f671e4bff4`. Source tarball SHA-256: `418ef98f058952c4f2e1fba0f77a73cbbfac2e5bf4146a0dc3202777ed5d9c1f`.
 
-Download timeout: 30 minutes total, 60 seconds per request. Model storage is Application Support/Models and is excluded from iOS backup. Context is 4,096 tokens; threads are capped at four. Large inputs fail explicitly.
+Download timeout: two hours per file, 60 seconds per request. Model storage is Application Support/Models and is excluded from iOS backup. Context is 4,096 tokens; threads are capped at four. Large inputs fail explicitly.
 
 The active Bundle localization, exposed by `L10n.isFrench`, chooses the generated prose language. No model or language preference changes the pinned download URLs, model verification, grammar, or local inference path.
 

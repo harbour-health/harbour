@@ -3,17 +3,82 @@ import CryptoKit
 import HarbourRuntime
 import HarbourCore
 
+struct ModelAsset: Sendable {
+    let filename: String
+    let size: Int64
+    let hash: String
+    let url: URL
+
+    init(_ filename: String, size: Int64, hash: String, repository: String, revision: String) {
+        self.filename = filename; self.size = size; self.hash = hash
+        url = URL(string: "https://huggingface.co/Qwen/\(repository)/resolve/\(revision)/\(filename)")!
+    }
+    func verified(in directory: URL) -> Bool {
+        let file = directory.appendingPathComponent(filename)
+        guard let attributes = try? FileManager.default.attributesOfItem(atPath: file.path),
+              (attributes[.size] as? NSNumber)?.int64Value == size,
+              let marker = try? Data(contentsOf: file.appendingPathExtension("verified")) else { return false }
+        return marker == Data(hash.utf8)
+    }
+    func verify(_ file: URL) throws {
+        let handle = try FileHandle(forReadingFrom: file)
+        defer { try? handle.close() }
+        var digest = SHA256(), count: Int64 = 0
+        while let chunk = try handle.read(upToCount: 1_048_576), !chunk.isEmpty {
+            try Task.checkCancellation()
+            digest.update(data: chunk); count += Int64(chunk.count)
+        }
+        let actual = digest.finalize().map { String(format: "%02x", $0) }.joined()
+        guard actual == hash, count == size else {
+            throw NSError(domain: "Download", code: 2, userInfo: [NSLocalizedDescriptionKey: L10n.string("The downloaded model failed verification. Please try again.")])
+        }
+    }
+}
+
 enum ModelChoice: String, CaseIterable, Identifiable, Codable {
-    case automatic, small, balanced
+    case automatic, small, balanced, large
+    static let downloadable: [ModelChoice] = [.small, .balanced, .large]
     var id: String { rawValue }
-    var title: String { switch self { case .automatic: L10n.string("Automatic"); case .small: L10n.string("Qwen Small"); case .balanced: L10n.string("Qwen Balanced") } }
-    var size: Int64 { self == .balanced ? 1_117_320_736 : 491_400_032 }
-    var hash: String { self == .balanced ? "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e" : "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db" }
-    var filename: String { self == .balanced ? "qwen2.5-1.5b-instruct-q4_k_m.gguf" : "qwen2.5-0.5b-instruct-q4_k_m.gguf" }
-    var url: URL {
-        let repo = self == .balanced ? "Qwen2.5-1.5B-Instruct-GGUF" : "Qwen2.5-0.5B-Instruct-GGUF"
-        let revision = self == .balanced ? "91cad51170dc346986eccefdc2dd33a9da36ead9" : "9217f5db79a29953eb74d5343926648285ec7e67"
-        return URL(string: "https://huggingface.co/Qwen/\(repo)/resolve/\(revision)/\(filename)")!
+    var title: String { switch self {
+        case .automatic: L10n.string("Automatic")
+        case .small: L10n.string("Qwen Small")
+        case .balanced: L10n.string("Qwen Balanced")
+        case .large: "Qwen 7B"
+    } }
+    var compactTitle: String { switch self {
+        case .automatic: L10n.string("Automatic")
+        case .small: L10n.string("Small")
+        case .balanced: L10n.string("Balanced")
+        case .large: "7B"
+    } }
+    var parameterTitle: String { switch self {
+        case .automatic: L10n.string("Automatic")
+        case .small: "Qwen 0.5B"
+        case .balanced: "Qwen 1.5B"
+        case .large: "Qwen 7B"
+    } }
+    var size: Int64 { assets.reduce(0) { $0 + $1.size } }
+    // llama.cpp discovers the second shard beside the first using these original names.
+    var filename: String { assets[0].filename }
+    var assets: [ModelAsset] {
+        switch self {
+        case .automatic, .small:
+            return [ModelAsset("qwen2.5-0.5b-instruct-q4_k_m.gguf", size: 491_400_032,
+                hash: "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+                repository: "Qwen2.5-0.5B-Instruct-GGUF", revision: "9217f5db79a29953eb74d5343926648285ec7e67")]
+        case .balanced:
+            return [ModelAsset("qwen2.5-1.5b-instruct-q4_k_m.gguf", size: 1_117_320_736,
+                hash: "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+                repository: "Qwen2.5-1.5B-Instruct-GGUF", revision: "91cad51170dc346986eccefdc2dd33a9da36ead9")]
+        case .large:
+            let repository = "Qwen2.5-7B-Instruct-GGUF", revision = "bb5d59e06d9551d752d08b292a50eb208b07ab1f"
+            return [
+                ModelAsset("qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf", size: 3_993_201_344,
+                    hash: "dfce12e3862a5283ccfb88221b48480e58745165de856439950d0f22590580db", repository: repository, revision: revision),
+                ModelAsset("qwen2.5-7b-instruct-q4_k_m-00002-of-00002.gguf", size: 689_872_288,
+                    hash: "539cf93f78e887edea1c04e2d7d8cdaca9d01dae9c9025bcb8accbe29df3d72a", repository: repository, revision: revision)
+            ]
+        }
     }
 }
 enum Effort: String, CaseIterable, Identifiable {
@@ -36,7 +101,7 @@ final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchecked Send
             try await withCheckedThrowingContinuation { continuation in
                 self.continuation = continuation
                 let config = URLSessionConfiguration.ephemeral
-                config.timeoutIntervalForRequest = 60; config.timeoutIntervalForResource = 1800
+                config.timeoutIntervalForRequest = 60; config.timeoutIntervalForResource = 7200
                 self.session = URLSession(configuration: config, delegate: self, delegateQueue: .main)
                 self.session!.downloadTask(with: url).resume()
             }
@@ -73,10 +138,10 @@ final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchecked Send
     private var activeDownload: ModelDownload?
     private var downloadCancelled = false
     let directory: URL
-    init() {
+    init(directory overrideDirectory: URL? = nil) {
         selection = ModelChoice(rawValue: UserDefaults.standard.string(forKey: "model") ?? "") ?? .automatic
         effort = Effort(rawValue: UserDefaults.standard.string(forKey: "effort") ?? "") ?? .standard
-        directory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("Models")
+        directory = overrideDirectory ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("Models")
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         var excluded = directory
         var values = URLResourceValues(); values.isExcludedFromBackup = true
@@ -84,7 +149,9 @@ final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchecked Send
         chatRequests.onStateChange = { [weak self] state in self?.chatRequestState = state }
     }
     var resolved: ModelChoice {
-        guard selection == .automatic else { return selection }
+        selection == .automatic ? automaticModel : selection
+    }
+    var automaticModel: ModelChoice {
         #if targetEnvironment(simulator)
         return .balanced
         #else
@@ -94,40 +161,55 @@ final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchecked Send
     var visitModel: ModelChoice { resolved == .small ? .balanced : resolved }
     func file(_ model: ModelChoice) -> URL { directory.appendingPathComponent(model.filename) }
     func installed(_ model: ModelChoice) -> Bool {
-        // The marker is only created after a full streaming SHA-256 check.
-        FileManager.default.fileExists(atPath: file(model).path) && FileManager.default.fileExists(atPath: file(model).appendingPathExtension("verified").path)
+        let chosen = model == .automatic ? resolved : model
+        return chosen.assets.allSatisfy { $0.verified(in: directory) }
     }
     func ensure(_ model: ModelChoice) async throws -> URL {
+        let model = model == .automatic ? resolved : model
         if installed(model) { return file(model) }
         guard downloading == nil else { throw NSError(domain: "Download", code: 1, userInfo: [NSLocalizedDescriptionKey: L10n.string("A model is already downloading.")]) }
-        downloading = model; progress = 0; status = L10n.format("Downloading %@", model.title)
-        downloadCancelled = false
+        downloading = model; progress = 0; downloadCancelled = false
         defer { downloading = nil; isVerifying = false; activeDownload = nil; revision += 1 }
-        let temporary = directory.appendingPathComponent(UUID().uuidString + ".partial")
-        defer { try? FileManager.default.removeItem(at: temporary) }
-        let download = ModelDownload(destination: temporary) { [weak self] value in Task { @MainActor in self?.progress = value } }
-        activeDownload = download
-        do { _ = try await download.start(model.url) }
-        catch { if downloadCancelled { throw CancellationError() }; throw error }
-        if downloadCancelled { throw CancellationError() }
+        // Keep the original shard names together, but never expose a partial model as installed.
+        let staging = directory.appendingPathComponent(UUID().uuidString + ".partial", isDirectory: true)
+        try FileManager.default.createDirectory(at: staging, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: staging) }
+        var completed: Int64 = 0
+        for asset in model.assets {
+            try Task.checkCancellation()
+            if downloadCancelled { throw CancellationError() }
+            isVerifying = false; status = L10n.format("Downloading %@", model.title)
+            let offset = completed, total = model.size
+            let temporary = staging.appendingPathComponent(asset.filename)
+            let download = ModelDownload(destination: temporary) { [weak self] value in
+                Task { @MainActor in self?.progress = (Double(offset) + min(1, max(0, value)) * Double(asset.size)) / Double(total) }
+            }
+            activeDownload = download
+            do { _ = try await download.start(asset.url) }
+            catch { if downloadCancelled { throw CancellationError() }; throw error }
+            if downloadCancelled { throw CancellationError() }
+            try Task.checkCancellation()
+            status = L10n.string("Verifying download"); isVerifying = true
+            let verification = Task.detached(priority: .utility) { try asset.verify(temporary) }
+            try await withTaskCancellationHandler { try await verification.value } onCancel: { verification.cancel() }
+            if downloadCancelled { throw CancellationError() }
+            completed += asset.size; progress = Double(completed) / Double(total)
+        }
         try Task.checkCancellation()
-        status = L10n.string("Verifying download")
-        isVerifying = true
-        try await Task.detached(priority: .utility) {
-            let handle = try FileHandle(forReadingFrom: temporary)
-            defer { try? handle.close() }
-            var digest = SHA256(), size: Int64 = 0
-            while let chunk = try handle.read(upToCount: 1_048_576), !chunk.isEmpty { digest.update(data: chunk); size += Int64(chunk.count) }
-            let actual = digest.finalize().map { String(format: "%02x", $0) }.joined()
-            guard actual == model.hash, size == model.size else { throw NSError(domain: "Download", code: 2, userInfo: [NSLocalizedDescriptionKey: L10n.string("The downloaded model failed verification. Please try again.")]) }
-        }.value
         if downloadCancelled { throw CancellationError() }
-        try Task.checkCancellation()
-        let destination = file(model)
-        if FileManager.default.fileExists(atPath: destination.path) { try FileManager.default.removeItem(at: destination) }
-        try FileManager.default.moveItem(at: temporary, to: destination)
-        try Data(model.hash.utf8).write(to: destination.appendingPathExtension("verified"), options: .atomic)
-        status = L10n.string("Ready"); return destination
+        // Invalidate old markers before replacing any shard. Commit markers only after all moves.
+        for asset in model.assets {
+            try? FileManager.default.removeItem(at: directory.appendingPathComponent(asset.filename).appendingPathExtension("verified"))
+        }
+        for asset in model.assets {
+            let destination = directory.appendingPathComponent(asset.filename)
+            if FileManager.default.fileExists(atPath: destination.path) { try FileManager.default.removeItem(at: destination) }
+            try FileManager.default.moveItem(at: staging.appendingPathComponent(asset.filename), to: destination)
+        }
+        for asset in model.assets {
+            try Data(asset.hash.utf8).write(to: directory.appendingPathComponent(asset.filename).appendingPathExtension("verified"), options: .atomic)
+        }
+        status = L10n.string("Ready"); return file(model)
     }
     func cancelDownload() { downloadCancelled = true; activeDownload?.cancel() }
     func generate(_ prompt: String, maxTokens: Int? = nil, allowedTools: [String]? = nil, responseGrammar: String? = nil, stopAtJSON: Bool = true, model overrideModel: ModelChoice? = nil, sampling: ModelSampling = .greedy) async throws -> String {
@@ -172,8 +254,13 @@ final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchecked Send
     func remove(_ model: ModelChoice) async throws {
         guard !generating else { throw NSError(domain: "Inference", code: 2, userInfo: [NSLocalizedDescriptionKey: L10n.string("Stop the current request before removing its model.")]) }
         await runtime.unload()
-        if FileManager.default.fileExists(atPath: file(model).path) { try FileManager.default.removeItem(at: file(model)) }
-        try? FileManager.default.removeItem(at: file(model).appendingPathExtension("verified")); revision += 1
+        let chosen = model == .automatic ? resolved : model
+        for asset in chosen.assets {
+            let file = directory.appendingPathComponent(asset.filename)
+            try? FileManager.default.removeItem(at: file.appendingPathExtension("verified"))
+            if FileManager.default.fileExists(atPath: file.path) { try FileManager.default.removeItem(at: file) }
+        }
+        revision += 1
     }
 }
 

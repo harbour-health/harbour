@@ -66,3 +66,23 @@ import XCTest
     }
 
 }
+
+@MainActor final class LargeModelUITests: XCTestCase {
+    func testOptionalLargeModelSelection() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--ui-test-unlocked", "-model", "automatic", "-effort", "Standard", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
+        app.launch(); app.buttons["nav-chat"].tap(); app.buttons["modelSelector"].tap()
+        let choice = app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Qwen 7B")).firstMatch
+        XCTAssertTrue(choice.waitForExistence(timeout: 5)); choice.tap()
+        let picker = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); picker.name = "209-optional-7b-model"; picker.lifetime = .keepAlways; add(picker)
+        app.buttons["Done"].tap()
+        XCTAssertEqual(app.buttons["modelSelector"].value as? String, "Qwen 7B, Standard")
+        let composer = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); composer.name = "210-7b-chat-selector"; composer.lifetime = .keepAlways; add(composer)
+        // Selecting a model alone does not start a multi-gigabyte download.
+        XCTAssertFalse(app.buttons["Cancel download"].exists)
+        app.buttons["modelSelector"].tap()
+        app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Automatic")).firstMatch.tap()
+        app.buttons["Done"].tap()
+        XCTAssertFalse((app.buttons["modelSelector"].value as? String)?.contains("7B") == true)
+    }
+}

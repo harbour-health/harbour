@@ -148,6 +148,8 @@ TITLES = {
     '206-chat-removal-confirmation': 'Chat · Removal confirmation',
     '207-existing-medication-editor': 'Medication editor',
     '208-open-timeline': 'Timeline · Open layout',
+    '209-optional-7b-model': 'Optional Qwen 7B model',
+    '210-7b-chat-selector': 'Chat · Qwen 7B selection',
 
 
 }
@@ -169,7 +171,7 @@ for result in args.results:
         subprocess.run(['xcrun', 'xcresulttool', 'export', 'attachments', '--path', str(result), '--output-path', temporary], check=True, stdout=subprocess.DEVNULL)
         for test in json.loads((Path(temporary) / 'manifest.json').read_text()):
             for attachment in test['attachments']:
-                match = re.match(r'(\d{2,3}-[a-z-]+)_', attachment['suggestedHumanReadableName'])
+                match = re.match(r'(\d{2,3}-[a-z0-9-]+)_', attachment['suggestedHumanReadableName'])
                 report_names = {
                     'Report - options_': '147-report-options',
                     'Report - PDF preview_': '148-report-preview',
@@ -243,7 +245,7 @@ if args.update_readme:
         'Records': {2, 3, 4, 22, 33, 34, 35, 64, 65, 151},
         'Entry and review': {5, 6, 7, 8, 9, 20, 21, 23, 24, 25, 48, 49, 50, 51, 52, 79, 81, 82, 84, 85, 90},
         'Doctor visits': set(range(67, 79)) | {83, 87, 88, 142, 147, 148, 149, 154, 155, 156, 158, 159},
-        'Settings, models, and notes': {14, 15, 16, 18, 19, 27, 37, 38, 39, 40, 41, 60, 169, 170, 171, 172, 173},
+        'Settings, models, and notes': {209, 210, 14, 15, 16, 18, 19, 27, 37, 38, 39, 40, 41, 60, 169, 170, 171, 172, 173},
         'App lock': {54, 55, 56, 57, 59, 61, 62, 80},
         'Health permissions': {26, 30, 63},
         'Evaluation': {17, 29, 86, 157},

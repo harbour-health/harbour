@@ -707,3 +707,5 @@
 "Correct my saved metformin dose to 250 mg" = "Corrige la dose de metformine enregistrée à 250 mg";
 
 "Recorded instructions" = "Consignes enregistrées";
+
+"Qwen 7B uses more memory and may not run on every device." = "Qwen 7B utilise plus de mémoire et pourrait ne pas fonctionner sur tous les appareils.";

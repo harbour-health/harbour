@@ -55,3 +55,5 @@ Captures 143–145 come from `harbour-conversation-voice-final.xcresult`, whose 
 The optional post-test `simctl diagnose` collector was stopped after both flows passed, because it delayed result finalization. Xcode subsequently returned `TEST SUCCEEDED`, and attachments were exported from its complete result bundle. No screenshot was fabricated or retouched.
 
 The spacing refresh in `harbour-spacing-spinner-final.xcresult` replaces the eight English main-page originals and adds 146 for the smaller loading mark. `HarbourStableMainScreensTests` sends a real request, captures the pending state, cancels it, and clears its test chat. The shared 20-point mark also applies to chat/visit model downloads; this run does not download additional weights. See [Visual review](visual-review.md) for the inspected surfaces and warning boundary.
+
+Screenshot attachment names support lowercase letters, digits and hyphens after the numeric prefix (for example `209-optional-7b-model`). Add the display title and gallery group in `scripts/export-screenshots.py` when introducing a new capture.

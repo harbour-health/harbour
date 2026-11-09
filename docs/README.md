@@ -4,7 +4,7 @@
 
 - [Architecture](architecture.md) — modules, persistence, tool execution, and change points.
 - [Chat agent](chat-agent.md) — generated conversation, model-selected tools, history, and validation.
-- [Local models](local-models.md) — runtime setup, pinned weights, downloads, and cancellation.
+- [Local models](local-models.md) — runtime setup, optional 7B shards, pinned weights, downloads, and cancellation.
 - [Doctor visits](doctor-visits.md) — local recording, transcript recovery, source-grounded summaries, and confirmed medicine updates.
 - [Doctor visit reports](visit-reports.md) — selected records, embedded Typst, PDF preview, and sharing.
 - [Care actions](care-actions.md) — reminders, schedules, dose logging, history, appointment preparation, and shared chat tools.
@@ -67,3 +67,5 @@ Course context, the project plan, and the preliminary report are maintained sepa
 - [Medication chat changes](medication-chat-changes.md) — dose corrections, destructive-action checks and visible confirmation state.
 
 - [Record review redesign release](releases/record-review-redesign.md) — build 10 layout, visit acceptance, chat correction and internal distribution evidence.
+
+- [Optional 7B release](releases/optional-7b.md) — split-file downloads, manual model selection and validation.
