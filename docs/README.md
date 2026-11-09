@@ -60,3 +60,5 @@ Course context, the project plan, and the preliminary report are maintained sepa
 - [Developer demo data](demo-data.md) — explicit fictional dataset replacement, transcripts, summaries and reset boundaries.
 
 - [Developer demo release](releases/developer-demo-data.md) — build 8 verification and internal TestFlight delivery.
+
+- [Flat record lists release](releases/flat-record-lists.md) — build 9 styling, native UI verification and internal TestFlight delivery.
