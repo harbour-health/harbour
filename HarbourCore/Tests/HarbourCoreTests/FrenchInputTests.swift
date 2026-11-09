@@ -127,3 +127,15 @@ final class FrenchInputTests: XCTestCase {
         XCTAssertTrue(try VisitReview.parse(output(action: .stop, instructions: "", quote: wrong), transcript: wrong, medicines: [metformin]).medicines.isEmpty)
     }
 }
+
+final class ReadingsQueryTests: XCTestCase {
+    func testExplicitReadingKindsAreSourceFiltersNotActionSelection() {
+        XCTAssertEqual(ReadingParser.requestedKind("Show my blood pressure readings"), .bloodPressure)
+        XCTAssertEqual(ReadingParser.requestedKind("Montre mes mesures de tension artérielle"), .bloodPressure)
+        XCTAssertEqual(ReadingParser.requestedKind("Recent heart rate readings"), .heartRate)
+        XCTAssertEqual(ReadingParser.requestedKind("Ma température"), .temperature)
+        XCTAssertNil(ReadingParser.requestedKind("Show my blood pressure and heart rate"))
+        XCTAssertNil(ReadingParser.requestedKind("Show readings except blood pressure"))
+        XCTAssertNil(ReadingParser.requestedKind("Show my readings"))
+    }
+}

@@ -104,7 +104,7 @@ import XCTest
         let selector = app.buttons["modelSelector"]
         XCTAssertEqual(XCTWaiter.wait(for: [expectation(for: NSPredicate(format: "hittable == true"), evaluatedWith: selector)], timeout: 5), .completed)
         selector.tap()
-        XCTAssertTrue(app.staticTexts["Qwen Small"].firstMatch.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Alex"].firstMatch.waitForExistence(timeout: 5))
         XCTAssertTrue(app.sliders["Generation effort"].exists)
     }
     func testScreenshots() {
@@ -127,7 +127,7 @@ import XCTest
         if app.buttons["Done"].exists { app.buttons["Done"].tap() }
         capture(app, "13-chat-topic")
         app.buttons["modelSelector"].tap()
-        XCTAssertTrue(app.staticTexts["Qwen Small"].firstMatch.waitForExistence(timeout: 5)); capture(app, "14-models")
+        XCTAssertTrue(app.staticTexts["Alex"].firstMatch.waitForExistence(timeout: 5)); capture(app, "14-models")
         if app.buttons["Download"].exists {
             app.buttons["Download"].firstMatch.tap()
             XCTAssertTrue(app.buttons["Cancel"].firstMatch.waitForExistence(timeout: 10))
@@ -650,7 +650,7 @@ import XCTest
         capture("73-visit-recording")
         app.buttons["Pause recording"].tap(); XCTAssertTrue(app.buttons["Resume recording"].waitForExistence(timeout: 5)); capture("74-visit-paused")
         app.buttons["Resume recording"].tap(); XCTAssertTrue(app.buttons["Pause recording"].waitForExistence(timeout: 5))
-        app.buttons["nav-chat"].tap(); XCTAssertFalse(app.buttons["Voice options"].isEnabled)
+        app.buttons["nav-chat"].tap(); XCTAssertFalse(app.buttons["dictateMessage"].isEnabled)
         app.buttons["nav-visits"].tap(); XCTAssertTrue(app.buttons["Pause recording"].waitForExistence(timeout: 5))
         app.buttons["finishVisitRecording"].tap()
         XCTAssertTrue(app.buttons["Play visit audio"].waitForExistence(timeout: 20), app.debugDescription)
@@ -900,11 +900,11 @@ import XCTest
         XCUIDevice.shared.orientation = .portrait
         let app = XCUIApplication(); app.launchArguments = ["--verify-drawers"]; app.launch()
         app.buttons["nav-chat"].tap(); app.buttons["modelSelector"].tap()
-        app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Qwen Balanced")).firstMatch.tap()
+        app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Sam")).firstMatch.tap()
         app.sliders["Generation effort"].adjust(toNormalizedSliderPosition: 1)
         app.buttons["Done"].tap()
         let input = app.textFields["chatInput"]; input.tap(); input.typeText("Help me prepare for my appointment")
-        let selector = app.buttons["modelSelector"], microphone = app.buttons["Voice options"], send = app.buttons["Send message"]
+        let selector = app.buttons["modelSelector"], microphone = app.buttons["dictateMessage"], send = app.buttons["Send message"]
         XCTAssertTrue(selector.isHittable); XCTAssertTrue(microphone.isHittable); XCTAssertTrue(send.isHittable)
         XCTAssertTrue(send.isEnabled)
         XCTAssertLessThanOrEqual(selector.frame.maxX, microphone.frame.minX + 1)
@@ -962,7 +962,7 @@ import XCTest
         app.buttons["nav-records"].tap(); selectRecords(app, "Medications"); app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Metformin")).firstMatch.tap()
         reveal(app, app.buttons["addDoseTime"]); capture("102-schedule-dark"); app.buttons["Cancel"].tap()
         app.buttons["nav-today"].tap(); reveal(app, dose); dose.tap(); app.buttons["doseStatus-Remind later"].tap(); capture("103-dose-later-dark"); app.buttons["Cancel"].tap()
-        app.buttons["nav-chat"].tap(); app.buttons["New chat"].tap(); app.buttons["Voice options"].tap(); capture("104-voice-options"); app.tap()
+        app.buttons["nav-chat"].tap(); app.buttons["New chat"].tap(); app.buttons["dictateMessage"].tap(); capture("104-voice-options"); app.tap()
         appearance(app, dark: false); app.swipeDown(); app.swipeDown(); capture("01-today")
         app.buttons["nav-chat"].tap(); capture("11-chat-empty"); app.buttons["nav-records"].tap(); selectRecords(app, "Medications"); capture("03-medicines")
         app.navigationBars["Medications"].buttons.firstMatch.tap(); capture("64-records"); app.buttons["nav-visits"].tap(); capture("67-visits")
@@ -1067,11 +1067,11 @@ import XCTest
         XCTAssertEqual(notify.value as? String, "1"); capture("115-notification-setting")
         app.buttons["saveReminder"].tap(); acceptPermission(app)
         XCTAssertTrue(app.buttons["Add reminder"].waitForExistence(timeout: 10))
-        app.buttons["nav-chat"].tap(); app.buttons["Voice options"].tap(); capture("104-voice-options"); app.buttons["Voice conversation"].tap(); acceptPermission(app)
+        app.buttons["nav-chat"].tap(); app.buttons["startVoiceConversation"].tap(); capture("104-voice-options"); acceptPermission(app)
         if app.buttons["Resume voice"].exists && !app.alerts.firstMatch.exists { app.buttons["Resume voice"].tap(); acceptPermission(app) }
         if app.alerts["Voice input"].exists { capture("114-voice-input-error"); app.alerts["Voice input"].buttons["OK"].tap() }
         else { XCTAssertTrue(app.buttons["End voice"].waitForExistence(timeout: 5)); capture("113-voice-mode"); app.buttons["End voice"].tap() }
-        XCTAssertTrue(app.buttons["Voice options"].exists)
+        XCTAssertTrue(app.buttons["dictateMessage"].exists)
         app.buttons["nav-today"].tap()
     }
 }
@@ -1186,7 +1186,7 @@ import XCTest
         capture("133-french-models"); app.buttons["Terminé"].tap()
         let draft = app.textFields["chatInput"]
         draft.tap(); draft.typeText("Exemple fictif : quelles questions devrais-je poser pendant ma prochaine consultation?")
-        let selector = app.buttons["modelSelector"], voice = app.buttons["Options vocales"], send = app.buttons["Envoyer le message"]
+        let selector = app.buttons["modelSelector"], voice = app.buttons["dictateMessage"], send = app.buttons["Envoyer le message"]
         XCTAssertTrue(selector.isHittable); XCTAssertTrue(voice.isHittable); XCTAssertTrue(send.isHittable)
         XCTAssertLessThanOrEqual(selector.frame.maxX, voice.frame.minX + 1)
         XCTAssertLessThanOrEqual(voice.frame.maxX, send.frame.minX + 1)
@@ -1259,16 +1259,16 @@ import XCTest
 
         // Refuse to start inference if Small has not already passed native download verification.
         func smallIsCached() -> Bool {
-            app.cells.containing(.staticText, identifier: "Qwen Petit").allElementsBoundByIndex.contains { $0.buttons["Retirer"].exists }
+            app.cells.containing(.staticText, identifier: "Alex").allElementsBoundByIndex.contains { $0.buttons["Retirer"].exists }
         }
         for _ in 0..<3 { if smallIsCached() { break }; app.swipeUp() }
-        XCTAssertTrue(smallIsCached(), "Qwen Small must already be cached; this test does not start a download.")
-        let small = app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Qwen Petit")).firstMatch
+        XCTAssertTrue(smallIsCached(), "Alex must already be cached; this test does not start a download.")
+        let small = app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Alex")).firstMatch
         for _ in 0..<3 { if small.isHittable { break }; app.swipeDown() }
         XCTAssertTrue(small.isHittable); small.tap()
         let effort = app.sliders["Generation effort"]; reveal(app, effort); effort.adjust(toNormalizedSliderPosition: 0.5)
         XCTAssertEqual(effort.value as? String, "Standard"); app.buttons["Terminé"].tap()
-        XCTAssertEqual(app.buttons["modelSelector"].value as? String, "Qwen Petit, Standard")
+        XCTAssertEqual(app.buttons["modelSelector"].value as? String, "Alex, Standard")
         app.buttons["Nouvelle conversation"].tap()
         XCTAssertEqual(app.staticTexts["chatTitle"].label, "Nouvelle conversation")
 
@@ -1379,7 +1379,7 @@ import XCTest
     func testFreeformConversationAndToolReview() {
         let app = XCUIApplication(); app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]; app.launch()
         app.buttons["nav-chat"].tap()
-        app.buttons["modelSelector"].tap(); app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Qwen Balanced")).firstMatch.tap(); app.buttons["Done"].tap()
+        app.buttons["modelSelector"].tap(); app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Sam")).firstMatch.tap(); app.buttons["Done"].tap()
         let input = app.textFields["chatInput"]
         func send(_ text: String) { input.tap(); input.typeText(text); app.buttons["Send message"].tap(); idle(app) }
         send("My favourite colour is purple. What is two plus two?")

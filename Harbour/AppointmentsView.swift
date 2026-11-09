@@ -34,8 +34,8 @@ struct AppointmentEditor: View {
                 TextField("Location", text: $appointment.location).focused($editing).accessibilityIdentifier("appointmentLocation")
                 DatePicker("Date", selection: $appointment.date, displayedComponents: appointment.includesTime ? [.date, .hourAndMinute] : [.date])
                     .accessibilityIdentifier("appointmentDate")
-                Toggle("Include time", isOn: $appointment.includesTime).accessibilityIdentifier("appointmentIncludesTime")
-                Toggle("Date confirmed", isOn: $dateConfirmed).accessibilityIdentifier("confirmAppointmentDate")
+                Toggle("Include time", isOn: $appointment.includesTime).harbourSwitch().accessibilityIdentifier("appointmentIncludesTime")
+                Toggle("Date confirmed", isOn: $dateConfirmed).harbourSwitch().accessibilityIdentifier("confirmAppointmentDate")
             }
             Section("Notes") { TextField("Notes", text: $appointment.notes, axis: .vertical).lineLimit(3...8).focused($editing).accessibilityIdentifier("appointmentNotes") }
             if let quote = appointment.quote { Section("From your recording") { Text(quote).foregroundStyle(Palette.muted) } }

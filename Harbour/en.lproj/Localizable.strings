@@ -467,7 +467,7 @@
 "The visit couldn’t be saved. Recording has not started." = "The visit couldn’t be saved. Recording has not started.";
 "The visit note has changed. Choose the follow-up again." = "The visit note has changed. Choose the follow-up again.";
 "The visit was removed, but its audio couldn’t be deleted. %@" = "The visit was removed, but its audio couldn’t be deleted. %@";
-"There isn’t enough memory to start this model. Choose Qwen Small." = "There isn’t enough memory to start this model. Choose Qwen Small.";
+"There isn’t enough memory to start this model. Choose Alex." = "There isn’t enough memory to start this model. Choose Alex.";
 "Thinking" = "Thinking";
 "Thinking…" = "Thinking…";
 "This dose is scheduled for later today." = "This dose is scheduled for later today.";
@@ -709,3 +709,23 @@
 "Recorded instructions" = "Recorded instructions";
 
 "Qwen 7B uses more memory and may not run on every device." = "Qwen 7B uses more memory and may not run on every device.";
+
+"Camille uses more memory and may not run on every device." = "Camille uses more memory and may not run on every device.";
+
+"Systolic: %@; diastolic: %@ mmHg" = "Systolic: %@; diastolic: %@ mmHg";
+
+"Range: %@ %@" = "Range: %@ %@";
+
+"Latest: %@ (%@)" = "Latest: %@ (%@)";
+
+"%lld symptoms recorded" = "%lld symptoms recorded";
+
+"%lld visits recorded" = "%lld visits recorded";
+
+"Showing the %lld most recent entries. Enable Full history to include every entry." = "Showing the %lld most recent entries. Enable Full history to include every entry.";
+
+"%lld additional questions" = "%lld additional questions";
+
+"Enable Full history to include every entry." = "Enable Full history to include every entry.";
+
+"Full history" = "Full history";

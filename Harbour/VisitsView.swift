@@ -226,14 +226,18 @@ struct VisitDetailView: View {
                             VStack(alignment: .leading, spacing: 16) {
                                 Label("Follow-up", systemImage: "checklist").font(.title2.weight(.semibold)).foregroundStyle(Palette.coral)
                                 ForEach(summary.followUps) { item in
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        Text(item.text ?? VisitFollowUp.title(for: item.quote, french: L10n.isFrench)).font(.title3.weight(.medium))
-                                        if let due = VisitFollowUp.dueDate(in: item.quote, relativeTo: visit.date) { Label(due.formatted(.dateTime.month(.abbreviated).day().year().locale(L10n.locale)), systemImage: "calendar").foregroundStyle(Palette.muted) }
-                                        Button("Add reminder", systemImage: "plus.circle") {
+                                    HStack(alignment: .center, spacing: 20) {
+                                        VStack(alignment: .leading, spacing: 7) {
+                                            Text(item.text ?? VisitFollowUp.title(for: item.quote, french: L10n.isFrench)).font(.body.weight(.medium))
+                                            if let due = VisitFollowUp.dueDate(in: item.quote, relativeTo: visit.date) {
+                                                Text(due, format: .dateTime.month(.abbreviated).day().year()).font(.subheadline).foregroundStyle(Palette.muted)
+                                            }
+                                        }.frame(maxWidth: .infinity, alignment: .leading)
+                                        Button {
                                             reminderDraft = CareReminder(title: item.text ?? VisitFollowUp.title(for: item.quote, french: L10n.isFrench), due: VisitFollowUp.dueDate(in: item.quote, relativeTo: visit.date) ?? .now, visitID: visit.id, quote: item.quote)
-                                        }.disabled(recorder.active || busy)
-                                    }.padding(.vertical, 4)
-                                    Divider().overlay(Palette.line)
+                                        } label: { Image(systemName: "bell.badge").font(.title3).foregroundStyle(Palette.blue).frame(width: 48, height: 48).background(Palette.blueWash, in: Circle()) }
+                                            .accessibilityLabel("Add reminder").disabled(recorder.active || busy)
+                                    }.padding(.vertical, 8)
                                 }
                             }
                         }

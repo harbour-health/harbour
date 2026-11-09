@@ -467,7 +467,7 @@
 "The visit couldn’t be saved. Recording has not started." = "Impossible de sauvegarder la consultation. L’enregistrement n’a pas commencé.";
 "The visit note has changed. Choose the follow-up again." = "La note de consultation a changé. Sélectionnez de nouveau le suivi.";
 "The visit was removed, but its audio couldn’t be deleted. %@" = "La consultation a été supprimée, mais son audio n’a pas pu être supprimé. %@";
-"There isn’t enough memory to start this model. Choose Qwen Small." = "La mémoire est insuffisante pour démarrer ce modèle. Choisissez Qwen Petit.";
+"There isn’t enough memory to start this model. Choose Alex." = "La mémoire est insuffisante pour démarrer ce modèle. Choisissez Alex.";
 "Thinking" = "Réflexion";
 "Thinking…" = "Réflexion…";
 "This dose is scheduled for later today." = "Cette dose est prévue plus tard aujourd’hui.";
@@ -709,3 +709,23 @@
 "Recorded instructions" = "Consignes enregistrées";
 
 "Qwen 7B uses more memory and may not run on every device." = "Qwen 7B utilise plus de mémoire et pourrait ne pas fonctionner sur tous les appareils.";
+
+"Camille uses more memory and may not run on every device." = "Camille utilise plus de mémoire et pourrait ne pas fonctionner sur tous les appareils.";
+
+"Systolic: %@; diastolic: %@ mmHg" = "Systolique : %@; diastolique : %@ mmHg";
+
+"Range: %@ %@" = "Étendue : %@ %@";
+
+"Latest: %@ (%@)" = "Dernière mesure : %@ (%@)";
+
+"%lld symptoms recorded" = "%lld symptômes consignés";
+
+"%lld visits recorded" = "%lld consultations consignées";
+
+"Showing the %lld most recent entries. Enable Full history to include every entry." = "Les %lld entrées les plus récentes sont présentées. Activez Historique complet pour inclure toutes les entrées.";
+
+"%lld additional questions" = "%lld autres questions";
+
+"Enable Full history to include every entry." = "Activez Historique complet pour inclure toutes les entrées.";
+
+"Full history" = "Historique complet";

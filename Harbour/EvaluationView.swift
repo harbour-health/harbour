@@ -90,7 +90,7 @@ struct EvaluationView: View {
                 ForEach(report.checks) { check in Label(checkTitle(check), systemImage: check.passed ? "checkmark.circle" : "xmark.circle").foregroundStyle(check.passed ? Color.primary : Color.red).font(.subheadline) }
             }
             Section {
-                Toggle("Test all effort settings", isOn: $allEfforts).disabled(busy)
+                Toggle("Test all effort settings", isOn: $allEfforts).harbourSwitch().disabled(busy)
                 Button(L10n.string(busy ? "Stop evaluation" : "Evaluate selected model")) { if busy { task?.cancel() } else { run() } }
                 if busy {
                     VStack(spacing: 16) {

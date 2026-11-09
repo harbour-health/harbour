@@ -10,7 +10,7 @@ import XCTest
         let app = XCUIApplication()
         app.launchArguments = ["--app-store-screenshots", "--voice-conversation-fixture", "--voice-ui-state", "listening", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
         app.launch(); app.buttons["nav-chat"].tap()
-        app.buttons["voiceOptions"].tap(); app.buttons["startVoiceConversation"].tap()
+        app.buttons["startVoiceConversation"].tap()
         XCTAssertTrue(app.buttons["endVoiceConversation"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["nav-chat"].waitForNonExistence(timeout: 5))
         XCTAssertFalse(app.textFields["chatInput"].isHittable)
@@ -26,7 +26,7 @@ import XCTest
     func testLargeTextVoiceControlsRemainReachable() {
         let app = XCUIApplication()
         app.launchArguments = ["--app-store-screenshots", "--voice-conversation-fixture", "--voice-ui-state", "paused", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
-        app.launch(); app.buttons["nav-chat"].tap(); app.buttons["voiceOptions"].tap(); app.buttons["startVoiceConversation"].tap()
+        app.launch(); app.buttons["nav-chat"].tap(); app.buttons["startVoiceConversation"].tap()
         XCTAssertTrue(app.buttons["endVoiceConversation"].waitForExistence(timeout: 5))
         if !app.buttons["endVoiceConversation"].isHittable { app.swipeUp() }
         XCTAssertTrue(app.buttons["endVoiceConversation"].isHittable)
@@ -41,7 +41,7 @@ import XCTest
         // Use stable identifiers for appearance and navigation in either language.
         app.buttons["Apparence"].tap(); app.buttons["appearance-dark"].tap()
         app.navigationBars["Apparence"].buttons.firstMatch.tap(); app.buttons["Terminé"].tap()
-        app.buttons["nav-chat"].tap(); app.buttons["voiceOptions"].tap(); app.buttons["startVoiceConversation"].tap()
+        app.buttons["nav-chat"].tap(); app.buttons["startVoiceConversation"].tap()
         XCTAssertTrue(app.buttons["endVoiceConversation"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["nav-chat"].exists)
         capture("166-voice-conversation-french-dark")

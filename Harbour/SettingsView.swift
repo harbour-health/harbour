@@ -19,7 +19,7 @@ struct SettingsView: View {
                 NavigationLink { AppearanceView() } label: { Label("Appearance", systemImage: "circle.lefthalf.filled") }
                 NavigationLink { ModelsView() } label: { Label("Models", systemImage: "cpu") }
                 NavigationLink { VoiceSettingsView() } label: { Label("Voice", systemImage: "waveform") }.accessibilityIdentifier("voiceSettings")
-                Toggle(isOn: $liveActivities) { Label("Live Activities", systemImage: "waveform.path") }.onChange(of: liveActivities) { SessionActivities.shared.refreshPreferences() }
+                Toggle(isOn: $liveActivities) { Label("Live Activities", systemImage: "waveform.path") }.harbourSwitch().onChange(of: liveActivities) { SessionActivities.shared.refreshPreferences() }
                 Button { Task { await health.sync(into: store) } } label: { HStack { Label("Import from Apple Health", systemImage: "heart.fill").foregroundStyle(Palette.ink); Spacer(); if health.busy { ProgressView() } } }.disabled(health.busy)
                 if !health.status.isEmpty { Text(health.status).font(.subheadline).foregroundStyle(Palette.muted) }
             }
@@ -49,12 +49,12 @@ struct ModelsView: View {
                 ForEach(ModelChoice.allCases) { choice in
                     Button { models.selection = choice } label: {
                         HStack {
-                            VStack(alignment: .leading, spacing: 5) { Text(choice.title).fontWeight(.medium); Text(choice == .automatic ? L10n.format("For this device: %@", models.automaticModel.title) : ByteCountFormatter.string(fromByteCount: choice.size, countStyle: .file)).font(.subheadline).foregroundStyle(Palette.muted) }
+                            VStack(alignment: .leading, spacing: 5) { Text(choice.title).fontWeight(.medium); Text(choice == .automatic ? L10n.format("For this device: %@", models.automaticModel.title) : choice.technicalName + " · " + ByteCountFormatter.string(fromByteCount: choice.size, countStyle: .file)).font(.subheadline).foregroundStyle(Palette.muted) }
                             Spacer(); if models.selection == choice { Image(systemName: "checkmark").fontWeight(.semibold) }
                         }.foregroundStyle(Palette.ink).padding(.vertical, 5)
-                    }.disabled(models.downloading != nil || models.generating)
+                    }.accessibilityIdentifier("model-" + choice.rawValue).disabled(models.downloading != nil || models.generating)
                 }
-            } header: { Text("Model") } footer: { Text("Qwen 7B uses more memory and may not run on every device.") }
+            } header: { Text("Model") } footer: { Text("Camille uses more memory and may not run on every device.") }
             Section {
                 Text(models.effort.title).font(.headline)
                 EffortSlider(value: Binding(get: { Double(Effort.allCases.firstIndex(of: models.effort) ?? 1) }, set: { models.effort = Effort.allCases[Int($0.rounded())] })).frame(height: 48).padding(.vertical, 6)
@@ -64,7 +64,7 @@ struct ModelsView: View {
                 ForEach(ModelChoice.downloadable) { choice in
                     VStack(alignment: .leading, spacing: 12) {
                         HStack {
-                            Text(choice.title); Spacer()
+                            VStack(alignment: .leading, spacing: 4) { Text(choice.title); Text(choice.technicalName).font(.caption).foregroundStyle(Palette.muted) }; Spacer()
                             if models.installed(choice) {
                                 Button("Remove", role: .destructive) { Task { do { try await models.remove(choice) } catch { store.error = L10n.string(error.localizedDescription) } } }.disabled(models.downloading != nil || models.generating)
                             } else if models.downloading == choice {

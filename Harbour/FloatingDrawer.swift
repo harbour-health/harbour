@@ -38,6 +38,7 @@ private struct FloatingDrawer: ViewModifier {
     @State private var windowWidth: CGFloat = 400
     @State private var topInset: CGFloat = 62
     @Environment(\.verticalSizeClass) private var verticalSizeClass
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @ScaledMetric(relativeTo: .body) private var textScale = 1.0
     @AppStorage("appearance") private var appearance = AppearanceChoice.system.rawValue
     private var height: CGFloat {
@@ -65,7 +66,8 @@ private struct FloatingDrawer: ViewModifier {
             windowHeight = size.height; windowWidth = size.width; topInset = inset
         })
         .onPreferenceChange(DrawerHeightKey.self) { contentHeight = $0 }
-        .presentationDetents([.height(height)])
+        .presentationDetents([.height(defaultHeight)])
+        .background { DrawerResizeBridge(height: height, reduceMotion: reduceMotion).allowsHitTesting(false) }
         .presentationBackground(nativeDetached ? Palette.canvas : .clear)
         .presentationCornerRadius(nativeDetached ? cornerRadius : nil)
         .presentationDragIndicator(nativeDetached ? .visible : .hidden)
@@ -102,5 +104,68 @@ private final class DrawerWindowView: UIView {
         previousSize = window.bounds.size; previousInset = window.safeAreaInsets.top
         let size = previousSize; let inset = previousInset
         DispatchQueue.main.async { [weak self] in self?.update?(size, inset) }
+    }
+}
+
+/// SwiftUI owns the presentation; UIKit animates changes to one stable custom detent.
+/// Replacing SwiftUI's sole `.height` detent on navigation otherwise snaps to the new size.
+private struct DrawerResizeBridge: UIViewRepresentable {
+    let height: CGFloat
+    let reduceMotion: Bool
+    func makeUIView(context: Context) -> DrawerResizeView { DrawerResizeView() }
+    func updateUIView(_ view: DrawerResizeView, context: Context) {
+        view.requestedHeight = height; view.reduceMotion = reduceMotion
+        view.scheduleResize()
+    }
+}
+
+private final class DrawerResizeView: UIView {
+    var requestedHeight: CGFloat = 0
+    var reduceMotion = false
+    private var resolvedHeight: CGFloat = 0
+    private weak var attachedSheet: UISheetPresentationController?
+    private let identifier = UISheetPresentationController.Detent.Identifier("harbour-content-height")
+    private var scheduled = false
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        isUserInteractionEnabled = false; isAccessibilityElement = false
+    }
+    required init?(coder: NSCoder) { fatalError("Created programmatically") }
+    override func didMoveToWindow() { super.didMoveToWindow(); scheduleResize() }
+    override func layoutSubviews() { super.layoutSubviews(); scheduleResize() }
+
+    func scheduleResize() {
+        guard !scheduled else { return }
+        scheduled = true
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.scheduled = false; self.resize()
+        }
+    }
+    private func resize() {
+        guard window != nil, requestedHeight > 0 else { return }
+        var responder: UIResponder? = self
+        var sheet: UISheetPresentationController?
+        while let next = responder?.next {
+            if let controller = next as? UIViewController, controller.presentingViewController != nil,
+               let presentation = controller.presentationController as? UISheetPresentationController {
+                sheet = presentation; break
+            }
+            responder = next
+        }
+        guard let sheet else { return }
+        if attachedSheet !== sheet || sheet.detents.first?.identifier != identifier {
+            attachedSheet = sheet; resolvedHeight = requestedHeight
+            sheet.detents = [.custom(identifier: identifier) { [weak self] context in
+                guard let self else { return nil }
+                return min(self.resolvedHeight, context.maximumDetentValue)
+            }]
+            sheet.selectedDetentIdentifier = identifier
+        } else if abs(resolvedHeight - requestedHeight) > 0.5 {
+            let update = { self.resolvedHeight = self.requestedHeight; sheet.invalidateDetents() }
+            if reduceMotion { UIView.performWithoutAnimation(update) }
+            else { sheet.animateChanges(update) }
+        }
     }
 }

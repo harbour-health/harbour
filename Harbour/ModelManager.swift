@@ -41,22 +41,34 @@ enum ModelChoice: String, CaseIterable, Identifiable, Codable {
     var id: String { rawValue }
     var title: String { switch self {
         case .automatic: L10n.string("Automatic")
-        case .small: L10n.string("Qwen Small")
-        case .balanced: L10n.string("Qwen Balanced")
-        case .large: "Qwen 7B"
+        case .small: "Alex"
+        case .balanced: "Sam"
+        case .large: "Camille"
     } }
-    var compactTitle: String { switch self {
+    var compactTitle: String { title }
+    var technicalName: String { switch self {
         case .automatic: L10n.string("Automatic")
-        case .small: L10n.string("Small")
-        case .balanced: L10n.string("Balanced")
-        case .large: "7B"
+        case .small: "Qwen2.5 · 0.5B · Q4_K_M"
+        case .balanced: "Qwen2.5 · 1.5B · Q4_K_M"
+        case .large: "Qwen2.5 · 7B · Q4_K_M"
     } }
-    var parameterTitle: String { switch self {
-        case .automatic: L10n.string("Automatic")
-        case .small: "Qwen 0.5B"
-        case .balanced: "Qwen 1.5B"
-        case .large: "Qwen 7B"
+    var parameterTitle: String { title }
+    var personality: String { switch self {
+        case .automatic: ""
+        case .small: "Use brief, practical wording and short sentences."
+        case .balanced: "Use friendly, conversational wording with plain explanations."
+        case .large: "Use calm, thoughtful wording. Add useful context when requested, while staying concise."
     } }
+    func styleConversation(_ prompt: String) -> String {
+        guard self != .automatic, let systemEnd = prompt.range(of: "<|im_end|>") else { return prompt }
+        var styled = prompt
+        styled.insert(contentsOf: "\nConversation style only: Your selected name is \(title). \(personality) This changes wording only. All existing limits, source requirements and confirmation rules still apply.\n", at: systemEnd.lowerBound)
+        if let end = styled.range(of: "<|im_end|>"),
+           let identity = styled.range(of: "You are Harbour, a helpful conversational assistant.", range: styled.startIndex..<end.lowerBound) {
+            styled.replaceSubrange(identity, with: "You are \(title), a helpful conversational assistant in Harbour.")
+        }
+        return styled
+    }
     var size: Int64 { assets.reduce(0) { $0 + $1.size } }
     // llama.cpp discovers the second shard beside the first using these original names.
     var filename: String { assets[0].filename }
@@ -238,7 +250,7 @@ final class ModelDownload: NSObject, URLSessionDownloadDelegate, @unchecked Send
         }
         // A tool with missing source facts cannot run. Let the model answer or clarify normally.
         try Task.checkCancellation()
-        let answer = try await generate(ToolPlanner.conversationPrompt(input, records: records, history: history), maxTokens: effort.chatTokens, stopAtJSON: false)
+        let answer = try await generate(resolved.styleConversation(ToolPlanner.conversationPrompt(input, records: records, history: history)), maxTokens: effort.chatTokens, stopAtJSON: false)
         return ToolDecision(tool: .reply, arg: answer)
     }
     func toolResponse(_ payload: String, history: [ConversationTurn]) async throws -> String {

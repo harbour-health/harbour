@@ -6,7 +6,7 @@ public enum ModelError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .load: "The model could not be opened. Remove it and download it again."
-        case .context: "There isn’t enough memory to start this model. Choose Qwen Small."
+        case .context: "There isn’t enough memory to start this model. Choose Alex."
         case .promptTooLong: "The message is too long. Please shorten it."
         case .tokenize: "The model could not read this message."
         case .decode: "The model stopped unexpectedly. Please try again."

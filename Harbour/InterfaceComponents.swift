@@ -68,3 +68,10 @@ struct OpenRecordHeader: View {
             .textCase(nil).padding(.leading, 8)
     }
 }
+
+/// Apply the native style directly, without nesting a second Toggle/accessibility element.
+extension Toggle {
+    func harbourSwitch() -> some View {
+        toggleStyle(.switch).tint(Palette.blue)
+    }
+}

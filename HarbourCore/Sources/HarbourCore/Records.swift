@@ -135,13 +135,21 @@ public enum Catalog {
 }
 
 public enum ReadingParser {
-    public static func parse(_ input: String) -> Reading? {
-        let input = input.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: "en_US_POSIX"))
-        let labels: [(ReadingKind, String)] = [
+    private static let labels: [(ReadingKind, String)] = [
             (.heartRate, "heart rate|pulse|pouls|frequence cardiaque|rythme cardiaque"),
             (.bloodPressure, "blood pressure|tension arterielle|pression arterielle|tension"),
             (.temperature, "temperature")
         ]
+    /// Extracts an explicitly named read-only filter, never selects a chat action.
+    public static func requestedKind(_ source: String) -> ReadingKind? {
+        let input = source.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: "en_US_POSIX"))
+        guard input.range(of: "\\b(?:not|except|excluding|without|sans|sauf|pas)\\b", options: .regularExpression) == nil else { return nil }
+        let matches = labels.filter { input.range(of: "\\b(?:" + $0.1 + ")(?![\\p{L}\\p{M}])", options: .regularExpression) != nil }
+        return matches.count == 1 ? matches[0].0 : nil
+    }
+
+    public static func parse(_ input: String) -> Reading? {
+        let input = input.folding(options: [.caseInsensitive, .diacriticInsensitive], locale: Locale(identifier: "en_US_POSIX"))
         let matches = labels.compactMap { (kind, label) -> (ReadingKind, Range<String.Index>)? in
             guard let range = input.range(of: "\\b(?:" + label + ")(?![\\p{L}\\p{M}])", options: .regularExpression) else { return nil }
             return (kind, range)

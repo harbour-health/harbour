@@ -346,7 +346,7 @@ import HarbourSpeech
         XCTAssertNotEqual(manager.resolved, .large)
         manager.selection = .large
         XCTAssertEqual(manager.resolved, .large); XCTAssertEqual(manager.visitModel, .large)
-        XCTAssertEqual(manager.resolved.parameterTitle, "Qwen 7B")
+        XCTAssertEqual(manager.resolved.parameterTitle, "Camille")
     }
     func testVerificationRejectsCorruptionAndTruncation() throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
@@ -380,5 +380,20 @@ import HarbourSpeech
         }
         try await manager.remove(.large)
         XCTAssertFalse(manager.installed(.large)); XCTAssertTrue(try FileManager.default.contentsOfDirectory(atPath: directory.path).isEmpty)
+    }
+}
+
+@MainActor final class ModelPersonalityTests: XCTestCase {
+    func testPersonalityOnlyChangesConversationSystemSection() {
+        let request = "Please don't change my medication. Explain this exact sentence: You are Harbour, a helpful conversational assistant."
+        let original = ToolPlanner.conversationPrompt(request, records: Records())
+        for model in ModelChoice.downloadable {
+            let styled = model.styleConversation(original)
+            XCTAssertTrue(styled.contains(model.title)); XCTAssertTrue(styled.contains(model.personality))
+            XCTAssertTrue(styled.contains("Do not diagnose, prescribe, change medication doses"))
+            XCTAssertEqual(styled.components(separatedBy: "<|im_end|>").dropFirst().joined(separator: "<|im_end|>"), original.components(separatedBy: "<|im_end|>").dropFirst().joined(separator: "<|im_end|>"))
+            XCTAssertEqual(ModelChoice(rawValue: model.rawValue), model)
+        }
+        XCTAssertEqual(ModelChoice.automatic.styleConversation(original), original)
     }
 }

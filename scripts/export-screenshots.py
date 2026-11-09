@@ -150,6 +150,22 @@ TITLES = {
     '208-open-timeline': 'Timeline · Open layout',
     '209-optional-7b-model': 'Optional Qwen 7B model',
     '210-7b-chat-selector': 'Chat · Qwen 7B selection',
+    '211-switches-light': 'Settings · Switch contrast · Light',
+    '212-switches-dark': 'Settings · Switch contrast · Dark',
+    '213-short-drawer-light': 'Compact drawer · Light',
+    '214-short-drawer-dark': 'Compact drawer · Dark',
+    '215-inline-voice-light': 'Voice preview · Loading · Light',
+    '216-inline-voice-dark': 'Voice preview · Loading · Dark',
+    '217-named-models': 'Alex, Sam and Camille',
+    '218-compact-readings-chat': 'Chat · Compact saved readings',
+    '219-balanced-visit-follow-up': 'Visit · Follow-up actions',
+    '220-blood-pressure-chat-table': 'Chat · Blood pressure table',
+    '221-home-with-records': 'Today · Saved records',
+    '222-condensed-report-page-one': 'Condensed report · Page 1',
+    '223-condensed-report-page-two': 'Condensed report · Page 2',
+    '224-condensed-report-page-three': 'Condensed report · Page 3',
+    '225-condensed-report-page-four': 'Condensed report · Page 4',
+
 
 
 }
@@ -173,6 +189,10 @@ for result in args.results:
             for attachment in test['attachments']:
                 match = re.match(r'(\d{2,3}-[a-z0-9-]+)_', attachment['suggestedHumanReadableName'])
                 report_names = {
+                    'condensed-report-page-1_': '222-condensed-report-page-one',
+                    'condensed-report-page-2_': '223-condensed-report-page-two',
+                    'condensed-report-page-3_': '224-condensed-report-page-three',
+                    'condensed-report-page-4_': '225-condensed-report-page-four',
                     'Report - options_': '147-report-options',
                     'Report - PDF preview_': '148-report-preview',
                     'Report - sharing_': '149-report-sharing',
@@ -196,7 +216,7 @@ for entry in entries:
 figures = ''.join(f'<figure><button class="capture" data-index="{i}" aria-label="Open {html.escape(entry["title"])}"><img src="{entry["src"]}" alt="{html.escape(entry["title"])}" loading="lazy"></button><figcaption>{html.escape(entry["title"])}</figcaption><a href="{entry["file"]}" download>Download PNG</a></figure>' for i, entry in enumerate(entries))
 page = '''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Harbour — iOS screenshots</title>
 <style> *{box-sizing:border-box}body{margin:0;background:#f7f7f7;color:#141414;font:16px -apple-system,BlinkMacSystemFont,sans-serif}header{padding:48px 5vw 28px}h1{margin:0 0 12px;font-size:34px;font-weight:650}header p{color:#666;line-height:1.6}main{display:flex;flex-wrap:wrap;gap:48px 32px;padding:16px 5vw 64px}figure{margin:0;width:260px;max-width:100%}.capture{display:block;width:100%;padding:0;border:0;background:transparent;cursor:zoom-in}.capture img{display:block;width:100%;border-radius:24px}figcaption{font-weight:600;margin:16px 0 8px}a{color:#666;font-size:14px}button{font:inherit}dialog{border:0;border-radius:20px;padding:16px;background:#fff;max-width:96vw;max-height:96vh}dialog::backdrop{background:#000b}.viewer-controls{display:flex;gap:12px;align-items:center;margin-bottom:12px;position:sticky;top:0;background:white;padding:4px 0}.viewer-controls strong{flex:1}.viewer-controls button{border:0;border-radius:10px;padding:10px;background:#eee;cursor:pointer}#full{display:block;max-width:88vw;width:500px;height:auto;margin:auto}button:focus-visible,a:focus-visible{outline:3px solid #555;outline-offset:4px}@media(max-width:600px){header{padding-top:28px}main{justify-content:center}figure{width:320px}} </style>
-<header><h1>Harbour for iOS</h1><p>COUNT native screenshots · iPhone simulators<br>Fictional records. Select a screen to view it larger or download the original.</p></header><main>FIGURES</main>
+<header><h1>Harbour for iOS</h1><p>COUNT app captures and rendered report pages · iPhone simulators<br>Fictional records. Select a screen to view it larger or download the original.</p></header><main>FIGURES</main>
 <dialog id="viewer"><div class="viewer-controls"><button id="previous" aria-label="Previous screenshot">←</button><strong id="name"></strong><button id="next" aria-label="Next screenshot">→</button><button id="close">Close</button></div><img id="full" alt=""></dialog>
 <script>const entries=ENTRIES;let selected=0;const viewer=document.getElementById('viewer');function show(index){selected=(index+entries.length)%entries.length;const entry=entries[selected];document.getElementById('name').textContent=entry.title;const full=document.getElementById('full');full.src=entry.src;full.alt=entry.title;}document.querySelectorAll('.capture').forEach(button=>button.addEventListener('click',()=>{show(Number(button.dataset.index));viewer.showModal();}));document.getElementById('close').onclick=()=>viewer.close();document.getElementById('previous').onclick=()=>show(selected-1);document.getElementById('next').onclick=()=>show(selected+1);document.addEventListener('keydown',event=>{if(viewer.open&&event.key==='ArrowRight')show(selected+1);if(viewer.open&&event.key==='ArrowLeft')show(selected-1);});</script></html>'''
 (args.output / 'index.html').write_text(page.replace('COUNT', str(len(entries))).replace('FIGURES', figures).replace('ENTRIES', json.dumps(entries)))
@@ -238,6 +258,7 @@ except ImportError:
     print('Pillow not installed; full-resolution gallery exported without overview sheets.')
 if args.update_readme:
     groups = {
+        'Chat, voice and report refinements': set(range(211, 226)),
         'Open records and medicine review': set(range(188, 209)),
         'Flat record lists': set(range(174, 188)),
         'Today': {1, 31, 43, 66, 116, 152, 153},
@@ -260,7 +281,7 @@ if args.update_readme:
         sections.setdefault(group, []).append(entry)
     start = '<!-- screenshot-gallery:start -->'
     end = '<!-- screenshot-gallery:end -->'
-    lines = [start, '## All screens', '', f'{len(entries)} native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).', '']
+    lines = [start, '## All screens', '', f'{len(entries)} app captures and rendered report pages. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).', '']
     for name, captures in sections.items():
         if not captures:
             continue

@@ -37,6 +37,12 @@ jobs:
       - name: Select Xcode
         run: xcodebuild -version
 
+      - name: Check Swift formatting
+        run: |
+          python3 scripts/prepare-format.py
+          python3 scripts/format.py --self-test
+          python3 scripts/format.py --check
+
       - name: Test Core rules and evaluation cases
         run: swift test --package-path HarbourCore
 

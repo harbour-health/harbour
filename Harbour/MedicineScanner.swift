@@ -75,7 +75,7 @@ struct ScheduleFields: View {
     }
     var body: some View {
         Section(L10n.string("Schedule")) {
-            Toggle(L10n.string("Save frequency"), isOn: $frequencyEnabled)
+            Toggle(L10n.string("Save frequency"), isOn: $frequencyEnabled).harbourSwitch()
             if frequencyEnabled {
                 Stepper(L10n.format("%d per %@", frequencyCount, L10n.string(frequencyPeriod.rawValue)), value: $frequencyCount, in: 1...(frequencyPeriod == .day ? 24 : 31))
                 Picker(L10n.string("Period"), selection: $frequencyPeriod) {
@@ -102,9 +102,9 @@ struct ScheduleFields: View {
                 #endif
             } label: { Label(L10n.string("Add time"), systemImage: "plus") }.disabled(times.count >= 8).accessibilityIdentifier("addDoseTime")
             if !times.isEmpty && !frequencyEnabled { Text(L10n.format("%d per day", times.count)).font(.footnote).foregroundStyle(Palette.muted) }
-            Toggle(L10n.string("Refill reminder"), isOn: $refillEnabled)
+            Toggle(L10n.string("Refill reminder"), isOn: $refillEnabled).harbourSwitch()
             if refillEnabled { DatePicker(L10n.string("Refill"), selection: $refill, displayedComponents: [.date, .hourAndMinute]) }
-            if !times.isEmpty || refillEnabled { Toggle(L10n.string("Notify me"), isOn: $notify) }
+            if !times.isEmpty || refillEnabled { Toggle(L10n.string("Notify me"), isOn: $notify).harbourSwitch() }
         }
     }
 }

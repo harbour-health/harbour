@@ -69,3 +69,9 @@ Course context, the project plan, and the preliminary report are maintained sepa
 - [Record review redesign release](releases/record-review-redesign.md) — build 10 layout, visit acceptance, chat correction and internal distribution evidence.
 
 - [Optional 7B release](releases/optional-7b.md) — split-file downloads, manual model selection and validation.
+
+- [Condensed reports](report-summary.md) — summary statistics, bounded history, complete-history option and source preservation.
+
+- [Swift formatting](swift-formatting.md) — pinned layout rules, compiler-aware statement spacing and blame exclusions.
+
+- [Interface polish release](releases/interface-polish.md) — build 12 changes, validation and internal distribution evidence.

@@ -128,9 +128,9 @@ struct ReminderEditor: View {
             Section {
                 DatePicker("Due", selection: $reminder.due).onChange(of: reminder.due) { dateChosen = true }.accessibilityIdentifier("reminderDate")
                 Button { dateChosen = true } label: { Label(L10n.string(dateChosen ? "Date confirmed" : "Confirm date"), systemImage: dateChosen ? "checkmark.circle.fill" : "calendar") }.accessibilityIdentifier("confirmReminderDate")
-                Toggle("Notify me", isOn: $reminder.notify)
+                Toggle("Notify me", isOn: $reminder.notify).harbourSwitch()
                 if reminder.notify { Text(alerts.status).font(.footnote).foregroundStyle(Palette.muted) }
-                Toggle("Completed", isOn: $reminder.completed)
+                Toggle("Completed", isOn: $reminder.completed).harbourSwitch()
             }
             if store.care.reminders.contains(where: { $0.id == reminder.id }) { Section { Button("Delete reminder", role: .destructive) { store.removeReminder(reminder.id); dismiss() } } }
         }.scrollContentBackground(.hidden).background(Palette.canvas)

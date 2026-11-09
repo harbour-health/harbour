@@ -21,7 +21,7 @@ import XCTest
         app.buttons["loadDemoData"].tap(); app.alerts.buttons["Replace with demo data"].tap()
         XCTAssertTrue(app.staticTexts["demoDataLoaded"].waitForExistence(timeout: 5))
         app.navigationBars["Developer"].buttons.firstMatch.tap(); app.buttons["Done"].tap()
-        XCTAssertTrue(app.staticTexts["demoDataBadge"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["demoDataBadge"].exists)
         capture("171-demo-today")
         app.buttons["nav-visits"].tap()
         let visit = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Demo · Blood pressure follow-up")).firstMatch
@@ -31,7 +31,7 @@ import XCTest
         XCTAssertTrue(app.staticTexts["Demo visit · preset transcript, no audio"].exists)
         capture("172-demo-visit-summary")
         app.terminate(); app.launch()
-        XCTAssertTrue(app.staticTexts["demoDataBadge"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["demoDataBadge"].exists)
     }
     func testFrenchDemoSettings() {
         let app = XCUIApplication()
@@ -44,6 +44,6 @@ import XCTest
         XCTAssertTrue(app.staticTexts["demoDataLoaded"].waitForExistence(timeout: 5))
         capture("173-developer-french")
         app.navigationBars["Développement"].buttons.firstMatch.tap(); app.navigationBars["Réglages"].buttons["Terminé"].tap()
-        XCTAssertTrue(app.staticTexts["demoDataBadge"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["demoDataBadge"].exists)
     }
 }

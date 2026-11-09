@@ -1,6 +1,11 @@
 import SwiftUI
 import HarbourCore
 
+private struct ChatComposerHeightKey: PreferenceKey {
+    static let defaultValue: CGFloat = 180
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
+}
+
 struct ChatView: View {
     @EnvironmentObject var recorder: VisitRecorder
     @EnvironmentObject var store: AppStore
@@ -21,6 +26,8 @@ struct ChatView: View {
     private var busy: Bool { models.chatRequestState.isBusy }
     private var awaitingReview: Bool { store.messages.last?.toolPayload?.hasPrefix("status=requires_confirmation\n") == true }
     @State private var modelSheet = false
+    @State private var composerHeight: CGFloat = 180
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @State private var historySheet = false
     @State private var toolSheet = false
     @State private var deleteConfirmation = false
@@ -30,7 +37,7 @@ struct ChatView: View {
     @Environment(\.verticalSizeClass) private var verticalSize
     @Environment(\.floatingDockClearance) private var dockClearance
     private var conversationLayout: some View {
-        VStack(spacing: 0) {
+        ZStack(alignment: .bottom) {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
@@ -51,14 +58,14 @@ struct ChatView: View {
                         if models.downloading != nil { VStack(alignment: .leading, spacing: 8) { ProgressView(value: models.progress); Text(models.isVerifying ? models.status : L10n.format("%lld%% downloaded", Int64(models.progress * 100))).font(.caption).foregroundStyle(Palette.muted) } }
                     }
                     Color.clear.frame(height: 1).id("bottom")
-                }.animation(reduceMotion || awaitingReview ? nil : .easeOut(duration: 0.3), value: store.messages.count).padding(.horizontal, AppLayout.screenInset).padding(.bottom, 16).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity).mainPageSwipes(1)
+                }.animation(reduceMotion || awaitingReview ? nil : .easeOut(duration: 0.3), value: store.messages.count).padding(.horizontal, AppLayout.screenInset).padding(.bottom, composerHeight + 16).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity).mainPageSwipes(1)
             }
             .scrollDismissesKeyboard(.interactively)
             .onChange(of: store.messages.count) { withAnimation(reduceMotion || awaitingReview ? nil : .easeOut(duration: 0.3)) { proxy.scrollTo("bottom", anchor: .bottom) } }
             .onChange(of: busy) { withAnimation(reduceMotion || awaitingReview ? nil : .easeOut(duration: 0.3)) { proxy.scrollTo("bottom", anchor: .bottom) } }
         }
-            composer
-        }
+            composer.background { GeometryReader { geometry in Color.clear.preference(key: ChatComposerHeightKey.self, value: geometry.size.height) } }
+        }.onPreferenceChange(ChatComposerHeightKey.self) { composerHeight = $0 }
     }
     private var presentationContent: some View {
         ZStack {
@@ -79,8 +86,12 @@ struct ChatView: View {
         .toolbar {
             if focused { ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { focused = false } } }
             ToolbarItem(placement: .principal) { Text(store.chatTitle).font(.body.weight(.medium)).lineLimit(1).accessibilityIdentifier("chatTitle") }
-            ToolbarItem(placement: .topBarLeading) { Button { cancel(); focused = false; historySheet = true } label: { ToolbarGlyph(symbol: "sidebar.left") }.accessibilityLabel("Chats") }
-            ToolbarItem(placement: .topBarLeading) { Button { cancel(); focused = false; draft = ""; hint = nil; store.newChat() } label: { ToolbarGlyph(symbol: "square.and.pencil") }.accessibilityLabel("New chat") }
+            ToolbarItem(placement: .topBarLeading) {
+                HStack(spacing: 0) {
+                    Button { cancel(); focused = false; historySheet = true } label: { ToolbarGlyph(symbol: "sidebar.left") }.accessibilityLabel("Chats")
+                    Button { cancel(); focused = false; draft = ""; hint = nil; store.newChat() } label: { ToolbarGlyph(symbol: "square.and.pencil") }.accessibilityLabel("New chat")
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) }
         }
         .sheet(isPresented: $historySheet) { history.floatingDrawer(height: min(600, CGFloat(max(1, store.conversations.count)) * 90 + 180)) }
@@ -219,24 +230,39 @@ struct ChatView: View {
                         }
                             .padding(.horizontal, 10).frame(minHeight: 48).contentShape(RoundedRectangle(cornerRadius: 10))
                     }.layoutPriority(-1).accessibilityLabel("Choose model").accessibilityValue(L10n.string(models.resolved.title) + ", " + models.effort.title).accessibilityIdentifier("modelSelector")
-                        Menu {
-                            Button("Voice conversation", systemImage: "waveform", action: beginVoiceConversation).accessibilityIdentifier("startVoiceConversation")
-                            Button(L10n.string(voice.listening ? "Finish dictation" : "Dictate message"), systemImage: "mic") {
-                                if voice.listening { voice.finishUtterance() }
-                                else { let original = draft; Task { await voice.start { transcript in draft = original.isEmpty ? transcript : original + " " + transcript } } }
-                            }
-                        } label: { Image(systemName: voice.listening ? "mic.fill" : "mic").foregroundStyle(voice.listening ? Palette.coral : Palette.ink).frame(width: 44, height: 48) }.accessibilityLabel("Voice options").accessibilityIdentifier("voiceOptions").disabled(busy || recorder.active)
-                    Button { busy ? cancel() : send() } label: {
-                        Image(systemName: busy ? "stop.fill" : "arrow.up").font(.body.weight(.semibold))
+                    Button {
+                        if voice.listening { voice.finishUtterance() }
+                        else { let original = draft; Task { await voice.start { transcript in draft = original.isEmpty ? transcript : original + " " + transcript } } }
+                    } label: {
+                        Image(systemName: voice.listening ? "mic.fill" : "mic").foregroundStyle(voice.listening ? Palette.coral : Palette.ink).frame(width: 44, height: 48)
+                    }.accessibilityLabel(L10n.string(voice.listening ? "Finish dictation" : "Dictate message")).accessibilityIdentifier("dictateMessage").disabled(busy || recorder.active || voice.preparingInput)
+                    Button {
+                        if busy { cancel() }
+                        else if draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { beginVoiceConversation() }
+                        else { send() }
+                    } label: {
+                        Image(systemName: busy ? "stop.fill" : draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "waveform" : "arrow.up").font(.body.weight(.semibold))
                             .foregroundStyle(Palette.canvas).frame(width: 44, height: 44).background(Palette.ink, in: Circle())
-                    }.accessibilityLabel(L10n.string(busy ? "Stop" : "Send message")).disabled(models.chatRequestState.isCancelling || (!busy && draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty))
+                    }
+                    .accessibilityLabel(L10n.string(busy ? "Stop" : draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Voice conversation" : "Send message"))
+                    .accessibilityIdentifier(!busy && draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "startVoiceConversation" : "sendMessage")
+                    .disabled(models.chatRequestState.isCancelling || (!busy && draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && (recorder.active || voice.listening || voice.preparingInput)))
                 }
             }
-            .padding(16).background(Palette.surface, in: RoundedRectangle(cornerRadius: 28))
+            .padding(16)
+            .background { if reduceTransparency { RoundedRectangle(cornerRadius: 28).fill(Palette.surface) } else { RoundedRectangle(cornerRadius: 28).fill(.regularMaterial) } }
             .overlay(RoundedRectangle(cornerRadius: 28).strokeBorder(Palette.line.opacity(0.7)))
             .padding(.horizontal, 12).padding(.top, 8).padding(.bottom, 8)
             .frame(maxWidth: AppLayout.contentWidth)
-        }.frame(maxWidth: .infinity).background(Palette.canvas).foregroundStyle(Palette.ink)
+        }.frame(maxWidth: .infinity)
+        .background {
+            if reduceTransparency { Palette.canvas }
+            else {
+                Rectangle().fill(.ultraThinMaterial)
+                    .mask(LinearGradient(colors: [.clear, .black, .black], startPoint: .top, endPoint: .bottom))
+                    .padding(.top, -24)
+            }
+        }.foregroundStyle(Palette.ink)
     }
     private func modelLabel(compact: Bool) -> some View {
         HStack(spacing: 5) {
@@ -276,7 +302,7 @@ struct ChatView: View {
                 try Task.checkCancellation()
                 guard models.chatRequests.canApplyResult(for: currentID), operationID == currentID else { return }
                 let action = try ToolPlanner.validate(decision, original: input, records: store.records)
-                execute(action)
+                execute(action, original: input)
                 if firstMessage, let title = try? await models.title(for: input), !Task.isCancelled, models.chatRequests.canApplyResult(for: currentID), operationID == currentID { store.nameChat(title, firstMessage: message.id) }
             } catch is CancellationError { }
             catch { if !Task.isCancelled, models.chatRequests.canApplyResult(for: currentID), operationID == currentID { store.error = L10n.string(error.localizedDescription) } }
@@ -299,7 +325,7 @@ struct ChatView: View {
         }, onCompletion: { accepted in if accepted { speakReply() } }) else { return }
         operationID = currentID
     }
-    private func execute(_ action: ValidatedAction) {
+    private func execute(_ action: ValidatedAction, original: String) {
         switch action {
         case .reply(let text): store.append(ChatMessage(text: text))
         case .appointment(let text): sheet = .appointment(AppointmentRules.draft(from: text)); store.appendToolEvent(ChatMessage(text: text), status: "requires_confirmation")
@@ -314,7 +340,10 @@ struct ChatView: View {
         case .medicines: store.appendToolEvent(ChatMessage(text: L10n.string(store.records.medicines.isEmpty ? "No medications recorded." : "Your medications"), medicines: store.records.medicines))
         case .interactions(let medicines): store.appendToolEvent(ChatMessage(text: L10n.string("Medication check"), report: HealthRules.check(medicines)))
         case .reading(let reading): sheet = .reading(reading); store.appendToolEvent(ChatMessage(text: L10n.format("Confirm %@: %@ %@.", L10n.string(reading.kind.rawValue), L10n.readingValue(reading), reading.kind.unit)), status: "requires_confirmation")
-        case .readings: store.appendToolEvent(ChatMessage(text: L10n.string(store.records.readings.isEmpty ? "No readings recorded." : "Recent readings"), readings: Array(store.records.readings.prefix(10))))
+        case .readings:
+            let kind = ReadingParser.requestedKind(original)
+            let values = store.records.readings.filter { kind == nil || $0.kind == kind }.sorted { $0.date > $1.date }
+            store.appendToolEvent(ChatMessage(text: L10n.string(values.isEmpty ? "No readings recorded." : "Recent readings"), readings: Array(values.prefix(10))))
         case .importHealth:
             let requestedOperation = operationID
             Task { await health.sync(into: store); guard operationID == requestedOperation else { return }; store.appendToolEvent(ChatMessage(text: health.status)) }
@@ -347,7 +376,7 @@ struct MessageView: View {
     private var rich: Bool { message.report != nil || message.readings?.isEmpty == false || message.medicines?.isEmpty == false }
     private var careResult: Bool { message.reminders?.isEmpty == false || message.timeline?.isEmpty == false || message.appointments?.isEmpty == false }
     var body: some View {
-        if message.toolPayload != nil && message.text.isEmpty {
+        if message.toolPayload != nil && message.text.isEmpty && message.readings == nil {
             if message.toolPayload?.hasPrefix("status=requires_confirmation\n") == true { Label("Review requested change", systemImage: "checkmark.shield").font(.body).foregroundStyle(Palette.muted).accessibilityIdentifier("chatPendingReview") }
             else if message.toolFailed == true { HStack { Text("Response unavailable").foregroundStyle(Palette.muted); if let retry { Button("Try again", action: retry).frame(minHeight: AppLayout.controlSize) } } }
         }
@@ -377,6 +406,8 @@ struct MessageView: View {
                             }
                         }
                     }
+                } else if let readings = message.readings {
+                    ChatReadingsTable(readings: readings)
                 } else if rich {
                     VStack(alignment: .leading, spacing: 0) {
                         HStack {
@@ -388,9 +419,6 @@ struct MessageView: View {
                             if let reminders = message.reminders { ForEach(reminders) { reminder in VStack(alignment: .leading, spacing: 6) { Label(reminder.title, systemImage: reminder.completed ? "checkmark.circle" : "checklist"); Text(reminder.due, style: .date).foregroundStyle(Palette.muted) }.padding(.vertical, 8) } }
                             if let timeline = message.timeline { ForEach(timeline) { entry in VStack(alignment: .leading, spacing: 6) { Text(entry.title).font(.headline); Text(entry.date, style: .date).foregroundStyle(Palette.muted); Text(entry.detail).lineLimit(3).foregroundStyle(Palette.muted) }.padding(.vertical, 8) } }
                             if let report = message.report { InteractionView(report: report) }
-                            if let readings = message.readings {
-                                ForEach(readings) { reading in ReadingRow(reading: reading); if reading.id != readings.last?.id { Divider().overlay(Palette.line) } }
-                            }
                             if let medicines = message.medicines {
                                 ForEach(medicines) { medicine in
                                     HStack(alignment: .top, spacing: 14) {
@@ -430,5 +458,30 @@ extension ChatMessage {
             text += ". " + timeline.map { $0.title + ", " + L10n.date($0.date, time: true) + ($0.detail.isEmpty ? "" : ", " + $0.detail) }.joined(separator: ". ")
         }
         return text
+    }
+}
+
+/// Compact, source-backed values: generated narration is never a table cell or heading.
+struct ChatReadingsTable: View {
+    let readings: [Reading]
+    private var singleKind: ReadingKind? { Set(readings.map(\.kind)).count == 1 ? readings.first?.kind : nil }
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(L10n.string(singleKind?.rawValue ?? "Recent readings")).font(.headline)
+            Grid(alignment: .leading, horizontalSpacing: 16, verticalSpacing: 10) {
+                GridRow {
+                    Text("Date")
+                    if singleKind == nil { Text("Type") }
+                    Text(singleKind?.unit ?? L10n.string("Value")).gridColumnAlignment(.trailing)
+                }.font(.caption.weight(.medium)).foregroundStyle(Palette.muted)
+                ForEach(readings) { reading in
+                    GridRow(alignment: .firstTextBaseline) {
+                        Text(reading.date, format: .dateTime.month(.abbreviated).day().year()).font(.subheadline).foregroundStyle(Palette.muted)
+                        if singleKind == nil { Text(L10n.string(reading.kind.rawValue)).font(.subheadline) }
+                        Text(L10n.readingValue(reading) + (singleKind == nil ? " " + reading.kind.unit : "")).monospacedDigit().font(.body.weight(.medium))
+                    }.accessibilityElement(children: .combine)
+                }
+            }.textSelection(.enabled)
+        }.frame(maxWidth: .infinity, alignment: .leading).accessibilityElement(children: .contain).accessibilityIdentifier("chatReadingsTable")
     }
 }

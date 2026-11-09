@@ -31,7 +31,7 @@ struct VisitReportSnapshot: Encodable {
     var sections: [Section]
 
     init(records: Records, care: CareData, visits: [DoctorVisit], from: Date, through: Date,
-         selected: Set<VisitReportSection>, now: Date = .now, calendar: Calendar = .current) {
+         selected: Set<VisitReportSection>, detailed: Bool = false, now: Date = .now, calendar: Calendar = .current) {
         let start = calendar.startOfDay(for: from)
         let end = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: through))!
         func included(_ date: Date) -> Bool { date >= start && date < end && date <= now }
@@ -46,9 +46,26 @@ struct VisitReportSnapshot: Encodable {
             switch section {
             case .readings:
                 let readings = records.readings.filter { included($0.date) }.sorted { $0.date < $1.date }
+                if detailed {
                 result.items = readings.map { reading in
                     Item(title: L10n.date(reading.date, time: true) + " · " + L10n.string(reading.kind.rawValue) + ": " + L10n.readingValue(reading) + " " + reading.kind.unit,
                          detail: L10n.string("Source") + ": " + L10n.string(reading.source))
+                }
+                } else {
+                    result.items = ReadingKind.allCases.compactMap { kind in
+                        let values = readings.filter { $0.kind == kind && ReadingParser.valid($0.value, kind: kind) }
+                        guard let latest = values.last else { return nil }
+                        let series = (0..<(kind == .bloodPressure ? 2 : 1)).map { index in
+                            values.map { Double(ReadingParser.normalizedValue($0.value).split(separator: "/")[index])! }
+                        }
+                        func range(_ values: [Double]) -> String {
+                            let format = kind == .temperature ? "%.1f" : "%.0f"
+                            return String(format: format, locale: L10n.locale, values.min()!) + "–" + String(format: format, locale: L10n.locale, values.max()!)
+                        }
+                        let span = kind == .bloodPressure ? L10n.format("Systolic: %@; diastolic: %@ mmHg", range(series[0]), range(series[1])) : L10n.format("Range: %@ %@", range(series[0]), kind.unit)
+                        return Item(title: L10n.string(kind.rawValue), detail: [L10n.format("%lld readings", Int64(values.count)),
+                            L10n.format("Latest: %@ (%@)", L10n.readingValue(latest) + " " + kind.unit, L10n.date(latest.date, time: true)), span].joined(separator: " · "))
+                    }
                 }
                 result.charts = ReadingKind.allCases.compactMap { kind in
                     let values = readings.filter { $0.kind == kind && ReadingParser.valid($0.value, kind: kind) }
@@ -57,10 +74,13 @@ struct VisitReportSnapshot: Encodable {
                                  caption: L10n.string("Dots show recorded values. Lines connect consecutive readings; gaps do not imply measurements.") + (kind == .bloodPressure ? " " + L10n.string("Blue: systolic. Coral: diastolic.") : ""))
                 }
             case .symptoms:
-                result.items = records.symptoms.filter { included($0.date) }.sorted { $0.date < $1.date }.map {
-                    Item(title: L10n.date($0.date, time: true) + " · " + $0.text,
-                         detail: L10n.format("Severity: %@", L10n.string($0.severity)) + "\n" + L10n.format("Started: %@", $0.onset.isEmpty ? L10n.string("Not recorded") : $0.onset))
+                let symptoms = records.symptoms.filter { included($0.date) }.sorted { $0.date > $1.date }
+                let chosen = detailed ? symptoms : Array(symptoms.prefix(5))
+                result.items = chosen.map {
+                    Item(title: L10n.date($0.date) + " · " + $0.text,
+                         detail: L10n.format("Severity: %@", L10n.string($0.severity)) + " · " + L10n.format("Started: %@", $0.onset.isEmpty ? L10n.string("Not recorded") : $0.onset))
                 }
+                if chosen.count < symptoms.count { result.items.insert(Item(title: L10n.format("%lld symptoms recorded", Int64(symptoms.count)), detail: L10n.format("Showing the %lld most recent entries. Enable Full history to include every entry.", Int64(chosen.count))), at: 0) }
             case .medications:
                 result.items = records.medicines.map { medicine in
                     var details = [medicine.instructions]
@@ -68,15 +88,20 @@ struct VisitReportSnapshot: Encodable {
                         if let frequency = schedule.frequency { details.append(L10n.frequency(frequency)) }
                         if !schedule.times.isEmpty { details.append(L10n.doseTimes(schedule.times)) }
                     }
-                    return Item(title: L10n.medicineName(medicine), detail: details.filter { !$0.isEmpty }.joined(separator: "\n"))
+                    return Item(title: L10n.medicineName(medicine), detail: details.filter { !$0.isEmpty }.joined(separator: detailed ? "\n" : " · "))
                 }
             case .visits:
-                result.items = visits.filter { included($0.date) }.sorted { $0.date < $1.date }.map {
+                let history = visits.filter { included($0.date) }.sorted { $0.date > $1.date }
+                let chosen = detailed ? history : Array(history.prefix(3))
+                result.items = chosen.map {
                     Item(title: L10n.date($0.date) + " · " + $0.title,
                          detail: $0.summary.map { summary in (summary.highlights.compactMap(\.text) + summary.medicines.map { L10n.medicineName($0.medicine) + ": " + $0.medicine.instructions } + summary.followUps.map { $0.text ?? VisitFollowUp.title(for: $0.quote, french: L10n.isFrench) }).joined(separator: "\n") } ?? L10n.string("No summary yet"))
                 }
+                if chosen.count < history.count { result.items.insert(Item(title: L10n.format("%lld visits recorded", Int64(history.count)), detail: L10n.format("Showing the %lld most recent entries. Enable Full history to include every entry.", Int64(chosen.count))), at: 0) }
             case .questions:
-                result.items = care.questions.map { Item(title: $0.text, detail: "") }
+                let questions = detailed ? care.questions : Array(care.questions.prefix(10))
+                result.items = questions.map { Item(title: $0.text, detail: "") }
+                if questions.count < care.questions.count { result.items.append(Item(title: L10n.format("%lld additional questions", Int64(care.questions.count - questions.count)), detail: L10n.string("Enable Full history to include every entry."))) }
             }
             return result
         }
@@ -95,9 +120,9 @@ struct VisitReportSnapshot: Encodable {
         let padding = max((high - low) * 0.15, kind == .temperature ? 0.5 : 5)
         let minimum = low - padding, maximum = high + padding
         let first = readings.first!.date.timeIntervalSince1970, last = readings.last!.date.timeIntervalSince1970
-        var svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"640\" height=\"174\" viewBox=\"0 0 640 174\"><rect width=\"640\" height=\"174\" fill=\"#f5f5f5\"/>"
+        var svg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"640\" height=\"140\" viewBox=\"0 0 640 140\"><rect width=\"640\" height=\"140\" fill=\"#f5f5f5\"/>"
         for tick in 0...4 {
-            let y = 10 + Double(tick) * 34
+            let y = 10 + Double(tick) * 25.5
             let label = maximum - Double(tick) * (maximum - minimum) / 4
             let axisLabel = String(format: kind == .temperature ? "%.1f" : "%.0f", locale: L10n.locale, label)
             svg += "<line x1=\"34\" y1=\"\(number(y))\" x2=\"630\" y2=\"\(number(y))\" stroke=\"#e5e5e5\"/><text x=\"28\" y=\"\(number(y + 4))\" text-anchor=\"end\" font-size=\"11\" font-family=\"Lato\">\(xml(axisLabel))</text>"
@@ -106,14 +131,14 @@ struct VisitReportSnapshot: Encodable {
             let color = index == 0 ? "#365dce" : "#b94831"
             let coordinates = points.enumerated().map { item -> (String, String) in
                 let x = first == last ? 332 : 34 + (readings[item.offset].date.timeIntervalSince1970 - first) / (last - first) * 596
-                let y = 146 - (item.element - minimum) / (maximum - minimum) * 136
+                let y = 112 - (item.element - minimum) / (maximum - minimum) * 102
                 return (number(x), number(y))
             }
             svg += "<polyline points=\"\(coordinates.map { $0.0 + "," + $0.1 }.joined(separator: " "))\" fill=\"none\" stroke=\"\(color)\" stroke-width=\"2\"/>"
             for (x, y) in coordinates { svg += "<circle cx=\"\(x)\" cy=\"\(y)\" r=\"3\" fill=\"\(color)\"/>" }
         }
-        svg += "<text x=\"34\" y=\"167\" font-size=\"11\" font-family=\"Lato\">\(xml(L10n.date(readings.first!.date, time: true)))</text>"
-        if first != last { svg += "<text x=\"630\" y=\"167\" text-anchor=\"end\" font-size=\"11\" font-family=\"Lato\">\(xml(L10n.date(readings.last!.date, time: true)))</text>" }
+        svg += "<text x=\"34\" y=\"133\" font-size=\"11\" font-family=\"Lato\">\(xml(L10n.date(readings.first!.date, time: true)))</text>"
+        if first != last { svg += "<text x=\"630\" y=\"133\" text-anchor=\"end\" font-size=\"11\" font-family=\"Lato\">\(xml(L10n.date(readings.last!.date, time: true)))</text>" }
         return svg + "</svg>"
     }
 }
@@ -125,6 +150,7 @@ struct VisitReportView: View {
     @State private var from = Calendar.current.date(byAdding: .day, value: -29, to: .now)!
     @State private var through = Date.now
     @State private var selected = Set(VisitReportSection.allCases)
+    @State private var detailed = false
     @State private var generating = false
     @State private var error: String?
     @State private var preview: ShareFile?
@@ -145,6 +171,7 @@ struct VisitReportView: View {
                 }.buttonStyle(.borderless)
                 DatePicker("From", selection: $from, in: ...Date.now, displayedComponents: .date).accessibilityIdentifier("reportFrom")
                 DatePicker("Through", selection: $through, in: ...Date.now, displayedComponents: .date).accessibilityIdentifier("reportThrough")
+                Toggle("Full history", isOn: $detailed).harbourSwitch().accessibilityIdentifier("reportFullHistory")
                 if Calendar.current.startOfDay(for: from) > Calendar.current.startOfDay(for: through) { Text("Choose an end date on or after the start date.").foregroundStyle(Palette.coral) }
             }
             Section {
@@ -155,7 +182,7 @@ struct VisitReportView: View {
                             Text(L10n.string(section.rawValue)).foregroundStyle(Palette.ink)
                         }
                     }
-                        .accessibilityIdentifier("reportSection-" + section.id.rawValue)
+                        .harbourSwitch().accessibilityIdentifier("reportSection-" + section.id.rawValue)
                 }
             } header: { Text("Include in report") } footer: {
                 Text("The date range applies to readings, symptoms, and visit notes. Current medications and saved questions are included as they are today. Visit notes include saved transcripts, not audio.")
@@ -181,7 +208,7 @@ struct VisitReportView: View {
 
     private func generate() {
         error = nil; generating = true
-        let snapshot = VisitReportSnapshot(records: store.records, care: store.care, visits: store.visits, from: from, through: through, selected: selected)
+        let snapshot = VisitReportSnapshot(records: store.records, care: store.care, visits: store.visits, from: from, through: through, selected: selected, detailed: detailed)
         generation = Task {
             defer { generating = false }
             do {

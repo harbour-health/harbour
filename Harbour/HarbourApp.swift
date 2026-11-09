@@ -218,7 +218,6 @@ struct TodayView: View {
                     HStack {
                         Text("Today").font(.largeTitle.bold()).accessibilityAddTraits(.isHeader)
                         Spacer()
-                        if store.archive.demoData == true { Text("Demo data").font(.caption.weight(.medium)).foregroundStyle(Palette.blue).padding(.horizontal, 10).padding(.vertical, 6).background(Palette.blue.opacity(0.10), in: Capsule()).accessibilityIdentifier("demoDataBadge") }
                     }
                     Text(Date.now, format: .dateTime.weekday(.wide).month(.wide).day()).font(.body).foregroundStyle(Palette.muted)
                 }.padding(.top, 14)

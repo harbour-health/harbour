@@ -67,3 +67,15 @@ Medications has one compact interaction-check action above its medicines. Medici
 Apply the shared modifier to the outer Button or NavigationLink, not just its label. Keep whole-row hit areas and adaptable system text. Do not add filled backgrounds or asymmetric native separators to individual record rows. Verify both appearances and text wrapping with the populated demo dataset. Row changes do not bypass record validation or alter medical content.
 
 The populated light/dark native audit passed for all four record categories, symptom details, preparation and chat history. Screenshots 188–201 show the revised layout; final review/editor/alert/timeline captures continue through 208. Header alignment, repeated date metadata, empty drawer space, and overlapping pending status were corrected after inspecting actual captures. Core validation and saved data remain separate from these presentation checks.
+
+## Controls and chat surfaces
+
+All app switches explicitly apply the shared `harbourSwitch()` modifier at the control. It applies the native `.switch` style and `Palette.blue` directly, without nesting another Toggle, so the white thumb does not blend into a white track when the surrounding screen uses the neutral ink tint. Applying the style at the control prevents native List/Form styling and enclosing neutral tints from resetting it, including report options. Keep the built-in switch for VoiceOver, disabled states and native thumb animation.
+
+The two leading chat toolbar actions share one zero-spacing group of 44-point targets. Dictation has a dedicated microphone button. An empty (including whitespace-only) draft exposes Voice conversation in the circular primary button; a non-empty draft exposes Send message, and an active request exposes Stop. Recording and cancellation gates still apply.
+
+The chat composer overlays the scroll surface. Its measured height supplies trailing scroll space, allowing the latest message to clear the input while older content can pass behind a material fade. Native material provides the blur; Reduce Transparency uses opaque semantic backgrounds. Avoid restoring a full-width opaque canvas behind the composer or moving it back into a sibling layout that clips the scroll viewport above it.
+
+Reading results render `ChatReadingsTable` directly from saved `Reading` objects, including while tool narration is pending. Generated response text is neither a table cell nor its header. A single kind has Date and unit columns; mixed results add Type. `ReadingParser.requestedKind` validates a single explicitly named filter after the LLM chooses `list_readings`; it never selects the action. Broad, multi-kind and negated filters remain broad. Dates and values are never taken from model-generated narration. The UI caps the result at the ten newest saved entries.
+
+Visit follow-ups align the action text and due date opposite one 48-point reminder action, without a repeated divider/button stack. Reminder drafts keep their visit ID and exact source quote.
