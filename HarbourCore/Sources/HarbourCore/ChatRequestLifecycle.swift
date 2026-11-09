@@ -8,9 +8,15 @@ import Foundation
         case running(UUID)
         case cancelling(UUID)
 
-        public var isBusy: Bool { self != .idle }
+        public var isBusy: Bool {
+            self != .idle
+        }
+
         public var isCancelling: Bool {
-            if case .cancelling = self { return true }
+            if case .cancelling = self {
+                return true
+            }
+
             return false
         }
     }
@@ -28,11 +34,16 @@ import Foundation
         operation: @escaping @MainActor (UUID) async -> Void,
         onCompletion: @escaping @MainActor (Bool) -> Void = { _ in }
     ) -> UUID? {
-        guard !state.isBusy else { return nil }
+        guard !state.isBusy else {
+            return nil
+        }
+
         let id = UUID()
         task = Task { @MainActor in
             // Stop may arrive before this newly scheduled task has begun.
-            if !Task.isCancelled { await operation(id) }
+            if !Task.isCancelled {
+                await operation(id)
+            }
             let acceptsCompletion = canApplyResult(for: id) && !Task.isCancelled
             task = nil
             transition(to: .idle)
@@ -41,6 +52,7 @@ import Foundation
         // Install the handle before publishing: a synchronous observer may Stop
         // in response to the running transition, before startup has yielded.
         transition(to: .running(id))
+
         return id
     }
 
@@ -48,9 +60,13 @@ import Foundation
     /// the operation returns. Repeated Stop/background/disappear calls are safe.
     @discardableResult
     public func cancel() -> Bool {
-        guard case .running(let id) = state else { return false }
+        guard case .running(let id) = state else {
+            return false
+        }
+
         transition(to: .cancelling(id))
         task?.cancel()
+
         return true
     }
 

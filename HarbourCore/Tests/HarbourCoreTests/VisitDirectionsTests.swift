@@ -5,20 +5,48 @@ final class VisitDirectionsTests: XCTestCase {
     func testComplexSourceDirectionsRemainStructuredWithoutClockReminders() throws {
         let instructions = "500 mg at 8 am for seven days then 1000 mg at 8 am for seven days"
         let source = "Start metformin " + instructions + "."
-        let item: [String: String] = ["action": "start", "name": "metformin", "instructions": instructions, "quote": source]
-        let data = try JSONSerialization.data(withJSONObject: ["highlights": [], "medicines": [item], "followUps": [], "appointments": []])
-        let change = try XCTUnwrap(VisitReview.parse(String(decoding: data, as: UTF8.self), transcript: source, medicines: []).medicines.first)
+        let item: [String: String] = [
+            "action": "start",
+            "name": "metformin",
+            "instructions": instructions,
+            "quote": source
+        ]
+        let data = try JSONSerialization.data(withJSONObject: [
+            "highlights": [],
+            "medicines": [item],
+            "followUps": [],
+            "appointments": []
+        ])
+        let change = try XCTUnwrap(VisitReview.parse(
+            String(decoding: data, as: UTF8.self),
+            transcript: source,
+            medicines: []
+        ).medicines.first)
         XCTAssertTrue(VisitDirections(change.medicine.instructions).needsIndividualSchedule)
-        XCTAssertNil(change.frequency); XCTAssertTrue(change.times.isEmpty)
+        XCTAssertNil(change.frequency)
+        XCTAssertTrue(change.times.isEmpty)
     }
+
     func testFollowUpsUseVisitDateAndCalendarRatherThanSummaryGenerationDate() throws {
-        var calendar = Calendar(identifier: .gregorian); calendar.timeZone = TimeZone(identifier: "America/Toronto")!
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "America/Toronto")!
         let visit = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 11, day: 1, hour: 10)))
         let expected = calendar.date(from: DateComponents(year: 2026, month: 11, day: 15))
-        XCTAssertEqual(VisitFollowUp.dueDate(in: "Book blood work in two weeks.", relativeTo: visit, calendar: calendar), expected)
-        XCTAssertEqual(VisitFollowUp.dueDate(in: "Prise de sang dans deux semaines.", relativeTo: visit, calendar: calendar), expected)
-        XCTAssertNil(VisitFollowUp.dueDate(in: "Call the clinic if symptoms return.", relativeTo: visit, calendar: calendar))
+        XCTAssertEqual(
+            VisitFollowUp.dueDate(in: "Book blood work in two weeks.", relativeTo: visit, calendar: calendar),
+            expected
+        )
+        XCTAssertEqual(
+            VisitFollowUp.dueDate(in: "Prise de sang dans deux semaines.", relativeTo: visit, calendar: calendar),
+            expected
+        )
+        XCTAssertNil(VisitFollowUp.dueDate(
+            in: "Call the clinic if symptoms return.",
+            relativeTo: visit,
+            calendar: calendar
+        ))
     }
+
     func testDecimalDoseFormattingIsPreserved() {
         XCTAssertEqual(VisitDirections("2.5 mg once daily at bedtime").dose, "2.5 mg")
     }
@@ -31,6 +59,7 @@ extension VisitDirectionsTests {
         let summary = try VisitReview.parse(bad, transcript: source, medicines: [Catalog.resolve("warfarin")!])
         XCTAssertTrue(summary.medicines.isEmpty)
     }
+
     func testNegatedMedicineInstructionIsNotAFollowUpTask() throws {
         let source = "Do not start metformin 500 mg twice daily."
         let output = #"{"highlights":[],"medicines":[],"followUps":[{"quote":"Do not start metformin 500 mg twice daily.","text":"Do not start metformin."}],"appointments":[]}"#

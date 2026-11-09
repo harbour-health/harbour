@@ -8,39 +8,63 @@ final class ToolOutputGrammarTests: XCTestCase {
         tool ::= "capture_symptom" | "reply"
         """#)
     }
+
     func testReplyRouterDecisionHasAnEmptyArgument() throws {
         XCTAssertEqual(try ToolOutputGrammar.make(allowedTools: ["reply"]), #"""
         root ::= "{\"tool\":\"" tool "\",\"arg\":\"\"}"
         tool ::= "reply"
         """#)
     }
+
     func testActionOnlyGrammarKeepsEmptyArguments() throws {
         XCTAssertEqual(try ToolOutputGrammar.make(allowedTools: ["capture_symptom", "log_reading"]), #"""
         root ::= "{\"tool\":\"" tool "\",\"arg\":\"\"}"
         tool ::= "capture_symptom" | "log_reading"
         """#)
     }
+
     func testDuplicateToolsPreserveFirstOrder() throws {
-        XCTAssertEqual(try ToolOutputGrammar.make(allowedTools: ["reply", "log_dose", "reply"]),
-                       try ToolOutputGrammar.make(allowedTools: ["reply", "log_dose"]))
+        XCTAssertEqual(
+            try ToolOutputGrammar.make(allowedTools: ["reply", "log_dose", "reply"]),
+            try ToolOutputGrammar.make(allowedTools: ["reply", "log_dose"])
+        )
     }
+
     func testEmptyToolsAreRejected() {
         XCTAssertThrowsError(try ToolOutputGrammar.make(allowedTools: [])) {
             XCTAssertEqual($0 as? ToolOutputGrammarError, .emptyTools)
         }
     }
+
     func testUnsafeNamesCannotInjectGrammarOrJSON() {
-        for name in ["", "reply\"", "reply\\", "reply\nroot ::= \"x\"", "reply|other", "reply name", "reply\0", "réply", "Reply", "1reply", "_reply"] {
+        for name in [
+            "",
+            "reply\"",
+            "reply\\",
+            "reply\nroot ::= \"x\"",
+            "reply|other",
+            "reply name",
+            "reply\0",
+            "réply",
+            "Reply",
+            "1reply",
+            "_reply"
+        ] {
             XCTAssertThrowsError(try ToolOutputGrammar.make(allowedTools: ["reply", name]), name) {
                 XCTAssertEqual($0 as? ToolOutputGrammarError, .invalidToolName)
             }
         }
     }
+
     func testInvalidGrammarFailsBeforeLoadingModel() async {
         let runtime = LocalModel()
         for grammar in ["", " \n", "root ::= \"reply\"\0"] {
             do {
-                _ = try await runtime.generate(file: URL(fileURLWithPath: "/missing-model.gguf"), prompt: "test", grammar: grammar)
+                _ = try await runtime.generate(
+                    file: URL(fileURLWithPath: "/missing-model.gguf"),
+                    prompt: "test",
+                    grammar: grammar
+                )
                 XCTFail("Invalid grammar should fail")
             } catch ModelError.grammar {
             } catch {

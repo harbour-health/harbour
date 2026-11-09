@@ -2,8 +2,13 @@ import Foundation
 import HarbourCore
 
 enum L10n {
-    static var isFrench: Bool { Bundle.main.preferredLocalizations.first?.hasPrefix("fr") == true }
-    static var locale: Locale { Locale(identifier: isFrench ? "fr_CA" : "en_CA") }
+    static var isFrench: Bool {
+        Bundle.main.preferredLocalizations.first?.hasPrefix("fr") == true
+    }
+
+    static var locale: Locale {
+        Locale(identifier: isFrench ? "fr_CA" : "en_CA")
+    }
 
     static func string(_ key: String) -> String {
         Bundle.main.localizedString(forKey: key, value: key, table: "Localizable")
@@ -22,7 +27,11 @@ enum L10n {
     }
 
     static func medicineName(_ medicine: Medicine) -> String {
-        guard Catalog.medicines.contains(where: { $0.id == medicine.id && $0.name == medicine.name }) else { return medicine.name }
+        guard Catalog.medicines.contains(where: { $0.id == medicine.id && $0.name == medicine.name })
+        else {
+            return medicine.name
+        }
+
         return string(medicine.name)
     }
 
@@ -37,6 +46,7 @@ enum L10n {
     static func doseTimes(_ times: [DoseTime]) -> String {
         times.map { time in
             let date = Calendar.current.date(bySettingHour: time.hour, minute: time.minute, second: 0, of: .now) ?? .now
+
             return date.formatted(Date.FormatStyle(date: .omitted, time: .shortened).locale(locale))
         }.joined(separator: ", ")
     }

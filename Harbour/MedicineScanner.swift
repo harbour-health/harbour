@@ -9,18 +9,29 @@ import HarbourCore
     @Published var text = ""
     @Published var error: String?
     func recognize(_ data: Data) async {
-        busy = true; error = nil; text = ""; defer { busy = false }
+        busy = true
+        error = nil
+        text = ""
+        defer { busy = false }
         let languages = L10n.isFrench ? ["fr-CA", "en-CA"] : ["en-CA", "fr-CA"]
         do {
             text = try await Task.detached(priority: .userInitiated) {
-                let request = VNRecognizeTextRequest(); request.recognitionLevel = .accurate; request.usesLanguageCorrection = true; request.recognitionLanguages = languages
-                let handler = VNImageRequestHandler(data: data, options: [:]); try handler.perform([request])
+                let request = VNRecognizeTextRequest()
+                request.recognitionLevel = .accurate
+                request.usesLanguageCorrection = true
+                request.recognitionLanguages = languages
+                let handler = VNImageRequestHandler(data: data, options: [:])
+                try handler.perform([request])
+
                 return (request.results ?? []).compactMap { $0.topCandidates(1).first?.string }.joined(separator: "\n")
             }.value
-            if text.isEmpty { error = L10n.string("No text found. Try a closer, sharper photo of the label.") }
+            if text.isEmpty {
+                error = L10n.string("No text found. Try a closer, sharper photo of the label.")
+            }
         } catch { self.error = L10n.format("Couldn’t read this photo. %@", error.localizedDescription) }
     }
 }
+
 struct MedicineScanButtons: View {
     @ObservedObject var scanner: MedicineScanner
     @State private var photo: PhotosPickerItem?
@@ -29,39 +40,89 @@ struct MedicineScanButtons: View {
         VStack(alignment: .leading, spacing: 16) {
 
             if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                Button { camera = true } label: { Label(L10n.string("Camera"), systemImage: "camera").frame(maxWidth: .infinity, minHeight: AppLayout.controlSize, alignment: .leading).contentShape(Rectangle()) }.accessibilityLabel(L10n.string("Scan medicine label"))
+                Button { camera = true } label: { Label(L10n.string("Camera"), systemImage: "camera").frame(
+                    maxWidth: .infinity,
+                    minHeight: AppLayout.controlSize,
+                    alignment: .leading
+                ).contentShape(Rectangle()) }.accessibilityLabel(L10n.string("Scan medicine label"))
             }
-            PhotosPicker(selection: $photo, matching: .images) { Label(L10n.string("Label photo"), systemImage: "photo").frame(maxWidth: .infinity, minHeight: AppLayout.controlSize, alignment: .leading).contentShape(Rectangle()) }
+            PhotosPicker(selection: $photo, matching: .images) {
+                Label(L10n.string("Label photo"), systemImage: "photo").frame(
+                    maxWidth: .infinity,
+                    minHeight: AppLayout.controlSize,
+                    alignment: .leading
+                ).contentShape(Rectangle()) }
             #if DEBUG
-            if ProcessInfo.processInfo.arguments.contains("--qa-label-fixture") {
-                Button {
-                    let image = UIGraphicsImageRenderer(size: CGSize(width: 1100, height: 700)).image { context in
-                        UIColor.white.setFill(); context.fill(CGRect(x: 0, y: 0, width: 1100, height: 700))
-                        ("METFORMIN\n500 mg\nTake one tablet with food" as NSString).draw(in: CGRect(x: 70, y: 90, width: 970, height: 520), withAttributes: [.font: UIFont.systemFont(ofSize: 58), .foregroundColor: UIColor.black])
-                    }
-                    if let data = image.pngData() { Task { await scanner.recognize(data) } }
-                } label: { Text(L10n.string("Read test label")).frame(maxWidth: .infinity, minHeight: AppLayout.controlSize, alignment: .leading).contentShape(Rectangle()) }.accessibilityIdentifier("qaReadLabel")
-            }
+                if ProcessInfo.processInfo.arguments.contains("--qa-label-fixture") {
+                    Button {
+                        let image = UIGraphicsImageRenderer(size: CGSize(width: 1100, height: 700)).image { context in
+                            UIColor.white.setFill()
+                            context.fill(CGRect(x: 0, y: 0, width: 1100, height: 700))
+                            ("METFORMIN\n500 mg\nTake one tablet with food" as NSString).draw(
+                                in: CGRect(x: 70, y: 90, width: 970, height: 520),
+                                withAttributes: [.font: UIFont.systemFont(ofSize: 58), .foregroundColor: UIColor.black]
+                            )
+                        }
+                        if let data = image.pngData() {
+                            Task { await scanner.recognize(data) }
+                        }
+                    } label: { Text(L10n.string("Read test label")).frame(
+                        maxWidth: .infinity,
+                        minHeight: AppLayout.controlSize,
+                        alignment: .leading
+                    ).contentShape(Rectangle()) }.accessibilityIdentifier("qaReadLabel")
+                }
             #endif
         }.buttonStyle(.borderless).disabled(scanner.busy)
-            .onChange(of: photo) { Task { do { if let data = try await photo?.loadTransferable(type: Data.self) { await scanner.recognize(data) } } catch { scanner.error = L10n.string("Couldn’t open the photo.") }; photo = nil } }
-            .fullScreenCover(isPresented: $camera) { LabelCamera { data in camera = false; if let data { Task { await scanner.recognize(data) } } }.ignoresSafeArea() }
+            .onChange(of: photo) {
+                Task {
+                    do {
+                        if let data = try await photo?.loadTransferable(type: Data.self) {
+                            await scanner.recognize(data)
+                        }
+                    } catch { scanner.error = L10n.string("Couldn’t open the photo.") }
+                    photo = nil } }
+            .fullScreenCover(isPresented: $camera) { LabelCamera { data in camera = false
+                if let data {
+                    Task { await scanner.recognize(data) }
+                } }.ignoresSafeArea() }
     }
 }
+
 private struct LabelCamera: UIViewControllerRepresentable {
     var finished: (Data?) -> Void
-    func makeCoordinator() -> Coordinator { Coordinator(finished: finished) }
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let controller = UIImagePickerController(); controller.sourceType = .camera; controller.delegate = context.coordinator; return controller
+    func makeCoordinator() -> Coordinator {
+        Coordinator(finished: finished)
     }
+
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let controller = UIImagePickerController()
+        controller.sourceType = .camera
+        controller.delegate = context.coordinator
+
+        return controller
+    }
+
     func updateUIViewController(_ controller: UIImagePickerController, context: Context) {}
     final class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
         let finished: (Data?) -> Void
-        init(finished: @escaping (Data?) -> Void) { self.finished = finished }
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) { finished(nil) }
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) { finished((info[.originalImage] as? UIImage)?.jpegData(compressionQuality: 0.9)) }
+        init(finished: @escaping (Data?) -> Void) {
+            self.finished = finished
+        }
+
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            finished(nil)
+        }
+
+        func imagePickerController(
+            _ picker: UIImagePickerController,
+            didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
+        ) {
+            finished((info[.originalImage] as? UIImage)?.jpegData(compressionQuality: 0.9))
+        }
     }
 }
+
 struct ScheduleFields: View {
     @Binding var times: [DoseTime]
     @Binding var frequencyEnabled: Bool
@@ -71,40 +132,92 @@ struct ScheduleFields: View {
     @Binding var refillEnabled: Bool
     @Binding var refill: Date
     private var frequencyMatchesTimes: Bool {
-        !frequencyEnabled || (MedicationFrequency(count: frequencyCount, period: frequencyPeriod).valid && (times.isEmpty || (frequencyPeriod == .day && frequencyCount == times.count)))
+        !frequencyEnabled ||
+            (MedicationFrequency(count: frequencyCount, period: frequencyPeriod)
+                .valid && (times.isEmpty || (frequencyPeriod == .day && frequencyCount == times.count)))
     }
+
     var body: some View {
         Section(L10n.string("Schedule")) {
             Toggle(L10n.string("Save frequency"), isOn: $frequencyEnabled).harbourSwitch()
             if frequencyEnabled {
-                Stepper(L10n.format("%d per %@", frequencyCount, L10n.string(frequencyPeriod.rawValue)), value: $frequencyCount, in: 1...(frequencyPeriod == .day ? 24 : 31))
+                Stepper(
+                    L10n.format("%d per %@", frequencyCount, L10n.string(frequencyPeriod.rawValue)),
+                    value: $frequencyCount,
+                    in: 1 ... (frequencyPeriod == .day ? 24 : 31)
+                )
                 Picker(L10n.string("Period"), selection: $frequencyPeriod) {
-                    ForEach(MedicationFrequencyPeriod.allCases, id: \.self) { period in Text(L10n.string(period.rawValue.capitalized)).tag(period) }
+                    ForEach(MedicationFrequencyPeriod.allCases, id: \.self) { period in
+                        Text(L10n.string(period.rawValue.capitalized)).tag(period) }
                 }
-                if times.isEmpty { Text(L10n.string("Frequency without a clock time will not create dose reminders.")).font(.footnote).foregroundStyle(Palette.muted) }
+                if
+                    times
+                        .isEmpty {
+                    Text(L10n.string("Frequency without a clock time will not create dose reminders.")).font(.footnote)
+                        .foregroundStyle(Palette.muted) }
                 else if !frequencyMatchesTimes {
-                    Text(L10n.string(MedicationFrequency(count: frequencyCount, period: frequencyPeriod).valid ? "Choose a daily frequency that matches the number of clock times, or remove the times." : "Choose a valid frequency count.")).font(.footnote).foregroundStyle(.red)
+                    Text(L10n
+                        .string(MedicationFrequency(count: frequencyCount, period: frequencyPeriod)
+                            .valid ?
+                            "Choose a daily frequency that matches the number of clock times, or remove the times." :
+                            "Choose a valid frequency count.")).font(.footnote).foregroundStyle(.red)
                 }
             }
             ForEach(times.indices, id: \.self) { index in
                 HStack {
-                    DatePicker(L10n.format("Time %d", index + 1), selection: Binding(get: { Calendar.current.date(bySettingHour: times[index].hour, minute: times[index].minute, second: 0, of: .now) ?? .now }, set: { let p = Calendar.current.dateComponents([.hour, .minute], from: $0); times[index] = DoseTime(hour: p.hour ?? 0, minute: p.minute ?? 0) }), displayedComponents: .hourAndMinute).accessibilityIdentifier("doseTime-\(index)")
-                    Button { times.remove(at: index) } label: { Image(systemName: "minus.circle").frame(width: 44, height: 44) }.accessibilityLabel(L10n.format("Remove time %d", index + 1))
+                    DatePicker(
+                        L10n.format("Time %d", index + 1),
+                        selection: Binding(
+                            get: { Calendar.current.date(
+                                bySettingHour: times[index].hour,
+                                minute: times[index].minute,
+                                second: 0,
+                                of: .now
+                            ) ?? .now },
+                            set: { let p = Calendar.current.dateComponents([.hour, .minute], from: $0)
+                                times[index] = DoseTime(hour: p.hour ?? 0, minute: p.minute ?? 0) }
+                        ),
+                        displayedComponents: .hourAndMinute
+                    ).accessibilityIdentifier("doseTime-\(index)")
+                    Button { times.remove(at: index) } label: { Image(systemName: "minus.circle").frame(
+                        width: 44,
+                        height: 44
+                    ) }.accessibilityLabel(L10n.format("Remove time %d", index + 1))
                 }
             }.buttonStyle(.borderless)
             Button {
                 #if DEBUG
-                if times.isEmpty && ProcessInfo.processInfo.arguments.contains("--qa-label-fixture") {
-                    let p = Calendar.current.dateComponents([.hour, .minute], from: max(Calendar.current.startOfDay(for: .now), Date.now.addingTimeInterval(-600))); times.append(DoseTime(hour: p.hour!, minute: p.minute!))
-                } else { times.append(DoseTime(hour: times.isEmpty ? 8 : min(23, (times.last?.hour ?? 8) + 4), minute: 0)) }
+                    if times.isEmpty && ProcessInfo.processInfo.arguments.contains("--qa-label-fixture") {
+                        let p = Calendar.current.dateComponents(
+                            [.hour, .minute],
+                            from: max(Calendar.current.startOfDay(for: .now), Date.now.addingTimeInterval(-600))
+                        )
+                        times.append(DoseTime(hour: p.hour!, minute: p.minute!))
+                    } else {
+                        times.append(DoseTime(
+                            hour: times.isEmpty ? 8 : min(23, (times.last?.hour ?? 8) + 4),
+                            minute: 0
+                        )) }
                 #else
-                times.append(DoseTime(hour: times.isEmpty ? 8 : min(23, (times.last?.hour ?? 8) + 4), minute: 0))
+                    times.append(DoseTime(hour: times.isEmpty ? 8 : min(23, (times.last?.hour ?? 8) + 4), minute: 0))
                 #endif
-            } label: { Label(L10n.string("Add time"), systemImage: "plus") }.disabled(times.count >= 8).accessibilityIdentifier("addDoseTime")
-            if !times.isEmpty && !frequencyEnabled { Text(L10n.format("%d per day", times.count)).font(.footnote).foregroundStyle(Palette.muted) }
+            } label: { Label(L10n.string("Add time"), systemImage: "plus") }.disabled(times.count >= 8)
+                .accessibilityIdentifier("addDoseTime")
+            if
+                !times
+                    .isEmpty &&
+                    !frequencyEnabled {
+                Text(L10n.format("%d per day", times.count)).font(.footnote).foregroundStyle(Palette.muted) }
             Toggle(L10n.string("Refill reminder"), isOn: $refillEnabled).harbourSwitch()
-            if refillEnabled { DatePicker(L10n.string("Refill"), selection: $refill, displayedComponents: [.date, .hourAndMinute]) }
-            if !times.isEmpty || refillEnabled { Toggle(L10n.string("Notify me"), isOn: $notify).harbourSwitch() }
+            if refillEnabled {
+                DatePicker(
+                    L10n.string("Refill"),
+                    selection: $refill,
+                    displayedComponents: [.date, .hourAndMinute]
+                ) }
+            if !times.isEmpty || refillEnabled {
+                Toggle(L10n.string("Notify me"), isOn: $notify).harbourSwitch()
+            }
         }
     }
 }

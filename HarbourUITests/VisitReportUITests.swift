@@ -1,7 +1,10 @@
 import XCTest
 
 @MainActor final class VisitReportUITests: XCTestCase {
-    override func setUpWithError() throws { continueAfterFailure = false }
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+    }
+
     func testReportPreviewAndSharing() {
         let app = XCUIApplication()
         app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
@@ -21,16 +24,24 @@ import XCTest
         XCTAssertTrue(app.otherElements["ActivityListView"].waitForExistence(timeout: 10), app.debugDescription)
         capture(app, "Report - sharing")
     }
+
     private func capture(_ app: XCUIApplication, _ name: String) {
-        let attachment = XCTAttachment(screenshot: app.screenshot()); attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
+
     func testFrenchReportPreview() {
         let app = XCUIApplication()
         app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(fr-CA)", "-AppleLocale", "fr_CA"]
         app.launch()
-        app.buttons["nav-visits"].tap(); app.buttons["openVisitReport"].tap()
+        app.buttons["nav-visits"].tap()
+        app.buttons["openVisitReport"].tap()
         XCTAssertTrue(app.buttons["reportAllTime"].waitForExistence(timeout: 5))
-        app.buttons["reportAllTime"].tap(); app.swipeUp(); app.buttons["previewVisitReport"].tap()
+        app.buttons["reportAllTime"].tap()
+        app.swipeUp()
+        app.buttons["previewVisitReport"].tap()
         XCTAssertTrue(app.navigationBars["Aperçu du rapport"].waitForExistence(timeout: 90), app.debugDescription)
         capture(app, "Rapport - aperçu PDF")
     }

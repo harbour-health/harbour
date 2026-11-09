@@ -18,11 +18,17 @@ enum VoiceConversationPhase: String {
 @MainActor final class VoiceVisualization: ObservableObject {
     @Published private(set) var level: Double = 0
     func update(_ rms: Double) {
-        guard rms.isFinite else { return }
+        guard rms.isFinite else {
+            return
+        }
+
         let value = min(1, max(0, rms * 5))
         level += (value - level) * (value > level ? 0.55 : 0.22)
     }
-    func reset() { level = 0 }
+
+    func reset() {
+        level = 0
+    }
 }
 
 struct VoiceConversationView: View {
@@ -47,13 +53,16 @@ struct VoiceConversationView: View {
         .foregroundStyle(Palette.ink)
         .accessibilityAction(.escape, end)
     }
+
     private func layout(in size: CGSize) -> some View {
         VStack(spacing: 20) {
             Text("Voice conversation").font(.headline).padding(.top, 20)
             if size.height < 500 {
                 HStack(spacing: 28) {
                     orb.frame(width: min(size.width * 0.4, 240))
-                    VStack(spacing: 20) { status; downloads; controls }
+                    VStack(spacing: 20) { status
+                        downloads
+                        controls }
                 }.frame(maxHeight: .infinity)
             } else {
                 Spacer(minLength: 0)
@@ -67,11 +76,13 @@ struct VoiceConversationView: View {
         .padding(.horizontal, 28).padding(.bottom, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
+
     private var orb: some View {
         VoiceOrb(phase: phase, visualization: visualization)
             .frame(maxWidth: 380).frame(maxWidth: .infinity)
             .accessibilityHidden(true)
     }
+
     private var status: some View {
         VStack(spacing: 12) {
             Text(L10n.string(downloadProgress == nil ? phase.title : "Downloading voice"))
@@ -83,6 +94,7 @@ struct VoiceConversationView: View {
             }
         }.animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: phase)
     }
+
     @ViewBuilder private var downloads: some View {
         if let progress = downloadProgress {
             VStack(spacing: 10) {
@@ -95,18 +107,22 @@ struct VoiceConversationView: View {
             }.frame(maxWidth: 320)
         }
     }
+
     private var controls: some View {
         HStack(alignment: .top, spacing: 48) {
             VStack(spacing: 10) {
                 Button(action: toggleMicrophone) {
-                    Image(systemName: phase == .listening ? "mic.fill" : phase == .speaking ? "waveform" : "mic.slash.fill")
+                    Image(systemName: phase == .listening ? "mic.fill" : phase == .speaking ? "waveform" :
+                        "mic.slash.fill")
                         .font(.system(size: 25, weight: .medium))
                         .foregroundStyle(phase == .listening ? Palette.blue : Palette.ink)
                         .frame(width: 64, height: 64).background(Palette.surface, in: Circle())
                 }
                 .buttonStyle(PressFeedback())
                 .disabled(phase == .connecting || phase == .finishing || phase == .thinking)
-                .accessibilityLabel(L10n.string(phase == .listening ? "Pause microphone" : phase == .speaking ? "Interrupt response" : "Resume voice"))
+                .accessibilityLabel(L10n
+                    .string(phase == .listening ? "Pause microphone" : phase == .speaking ? "Interrupt response" :
+                        "Resume voice"))
                 .accessibilityIdentifier("voiceConversationMicrophone")
                 Text(L10n.string(phase == .listening ? "Pause" : phase == .speaking ? "Speak" : "Resume"))
                     .font(.subheadline).foregroundStyle(Palette.muted).lineLimit(1).minimumScaleFactor(0.65)
@@ -116,7 +132,8 @@ struct VoiceConversationView: View {
                     Image(systemName: "xmark").font(.system(size: 24, weight: .medium))
                         .foregroundStyle(Palette.canvas).frame(width: 64, height: 64)
                         .background(Palette.ink, in: Circle())
-                }.buttonStyle(PressFeedback()).accessibilityLabel("End voice").accessibilityIdentifier("endVoiceConversation")
+                }.buttonStyle(PressFeedback()).accessibilityLabel("End voice")
+                    .accessibilityIdentifier("endVoiceConversation")
                 Text("End").font(.subheadline).foregroundStyle(Palette.muted).lineLimit(1).minimumScaleFactor(0.65)
             }.frame(maxWidth: .infinity)
         }
@@ -139,34 +156,67 @@ private struct VoiceOrb: View {
                 let speed = phase == .thinking || phase == .finishing ? 1.6 : 0.65
                 let amplitude = reduceMotion || phase == .paused ? 0 : 0.035 + energy * 0.13
                 let scale = 1 + energy * 0.16
-                context.fill(outline(center: center, radius: radius * 1.09 * scale, time: time * speed + 2, amplitude: amplitude), with: .color(Palette.blueWash))
-                context.fill(outline(center: center, radius: radius * scale, time: time * speed, amplitude: amplitude), with: .color(phase == .paused ? Palette.muted.opacity(0.3) : Palette.blue))
+                context.fill(
+                    outline(
+                        center: center,
+                        radius: radius * 1.09 * scale,
+                        time: time * speed + 2,
+                        amplitude: amplitude
+                    ),
+                    with: .color(Palette.blueWash)
+                )
+                context.fill(
+                    outline(center: center, radius: radius * scale, time: time * speed, amplitude: amplitude),
+                    with: .color(phase == .paused ? Palette.muted.opacity(0.3) : Palette.blue)
+                )
                 // An off-center, clipped highlight gives the shape volume without a neon gradient.
                 var highlight = context
-                highlight.clip(to: outline(center: center, radius: radius * scale, time: time * speed, amplitude: amplitude))
+                highlight.clip(to: outline(
+                    center: center,
+                    radius: radius * scale,
+                    time: time * speed,
+                    amplitude: amplitude
+                ))
                 let highlightCenter = CGPoint(x: center.x - radius * 0.58, y: center.y - radius * 0.6)
-                highlight.fill(outline(center: highlightCenter, radius: radius * 0.88, time: time * 0.4, amplitude: amplitude), with: .color(.white.opacity(phase == .paused ? 0.06 : 0.15)))
+                highlight.fill(
+                    outline(center: highlightCenter, radius: radius * 0.88, time: time * 0.4, amplitude: amplitude),
+                    with: .color(.white.opacity(phase == .paused ? 0.06 : 0.15))
+                )
                 if phase == .thinking || phase == .connecting || phase == .finishing {
-                    for index in 0..<3 {
+                    for index in 0 ..< 3 {
                         let angle = time * 0.8 + Double(index) * .pi * 2 / 3
                         let distance = radius * 1.34
                         let point = CGPoint(x: center.x + cos(angle) * distance, y: center.y + sin(angle) * distance)
-                        context.fill(Path(ellipseIn: CGRect(x: point.x - 3.5, y: point.y - 3.5, width: 7, height: 7)), with: .color(Palette.blue.opacity(0.45)))
+                        context.fill(
+                            Path(ellipseIn: CGRect(x: point.x - 3.5, y: point.y - 3.5, width: 7, height: 7)),
+                            with: .color(Palette.blue.opacity(0.45))
+                        )
                     }
                 }
             }
         }
     }
+
     private func outline(center: CGPoint, radius: Double, time: Double, amplitude: Double) -> Path {
-        let points = (0..<80).map { index -> CGPoint in
+        let points = (0 ..< 80).map { index -> CGPoint in
             let angle = Double(index) * .pi * 2 / 80
             let wave = sin(angle * 3 + time) * 0.62 + sin(angle * 5 - time * 0.7) * 0.38
             let value = radius * (1 + amplitude * wave)
+
             return CGPoint(x: center.x + cos(angle) * value, y: center.y + sin(angle) * value)
         }
-        func midpoint(_ a: CGPoint, _ b: CGPoint) -> CGPoint { CGPoint(x: (a.x + b.x) / 2, y: (a.y + b.y) / 2) }
-        var path = Path(); path.move(to: midpoint(points[79], points[0]))
-        for index in points.indices { path.addQuadCurve(to: midpoint(points[index], points[(index + 1) % 80]), control: points[index]) }
-        path.closeSubpath(); return path
+        func midpoint(_ a: CGPoint, _ b: CGPoint) -> CGPoint {
+            CGPoint(x: (a.x + b.x) / 2, y: (a.y + b.y) / 2)
+        }
+        var path = Path()
+        path.move(to: midpoint(points[79], points[0]))
+        for index in points.indices {
+            path.addQuadCurve(
+                to: midpoint(points[index], points[(index + 1) % 80]),
+                control: points[index]
+            ) }
+        path.closeSubpath()
+
+        return path
     }
 }

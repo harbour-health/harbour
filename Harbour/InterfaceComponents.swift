@@ -45,6 +45,7 @@ struct ActionButtonStyle: ButtonStyle {
 }
 
 private struct ChatVisibilityKey: EnvironmentKey { static let defaultValue = false }
+
 extension EnvironmentValues {
     var isChatVisible: Bool {
         get { self[ChatVisibilityKey.self] }
@@ -57,7 +58,12 @@ extension View {
     func openRecordRow() -> some View {
         listRowBackground(Color.clear)
             .listRowSeparator(.hidden)
-            .listRowInsets(EdgeInsets(top: 0, leading: AppLayout.screenInset, bottom: 0, trailing: AppLayout.screenInset))
+            .listRowInsets(EdgeInsets(
+                top: 0,
+                leading: AppLayout.screenInset,
+                bottom: 0,
+                trailing: AppLayout.screenInset
+            ))
     }
 }
 

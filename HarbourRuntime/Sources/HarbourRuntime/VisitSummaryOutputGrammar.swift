@@ -22,6 +22,7 @@ public enum VisitSummaryOutputGrammar {
         ws ::= [ \t\n\r]{0,4}
         """#
     }
+
     public static func make(section: String) -> String {
         let root: String
         switch section {
@@ -33,11 +34,21 @@ public enum VisitSummaryOutputGrammar {
         var rules = make().split(separator: "\n").dropFirst().map(String.init)
         if section == "medicines" {
             rules = rules.map { line in
-                if line.hasPrefix("active-medicine ::=") { return #"active-medicine ::= "{" ws "\"quote\"" ws ":" ws quote-string ws "," ws "\"name\"" ws ":" ws name-string ws "," ws "\"action\"" ws ":" ws active-action ws "," ws "\"instructions\"" ws ":" ws instruction-string ws "}""# }
-                if line.hasPrefix("stop-medicine ::=") { return #"stop-medicine ::= "{" ws "\"quote\"" ws ":" ws quote-string ws "," ws "\"name\"" ws ":" ws name-string ws "," ws "\"action\"" ws ":" ws "\"stop\"" ws "," ws "\"instructions\"" ws ":" ws "\"\"" ws "}""# }
+                if
+                    line
+                        .hasPrefix("active-medicine ::=") {
+                    return #"active-medicine ::= "{" ws "\"quote\"" ws ":" ws quote-string ws "," ws "\"name\"" ws ":" ws name-string ws "," ws "\"action\"" ws ":" ws active-action ws "," ws "\"instructions\"" ws ":" ws instruction-string ws "}""#
+                }
+                if
+                    line
+                        .hasPrefix("stop-medicine ::=") {
+                    return #"stop-medicine ::= "{" ws "\"quote\"" ws ":" ws quote-string ws "," ws "\"name\"" ws ":" ws name-string ws "," ws "\"action\"" ws ":" ws "\"stop\"" ws "," ws "\"instructions\"" ws ":" ws "\"\"" ws "}""#
+                }
+
                 return line
             }
         }
+
         return root + "\n" + rules.joined(separator: "\n")
     }
 

@@ -8,7 +8,9 @@ private struct DrawerHeight: Equatable {
 private struct DrawerHeightKey: PreferenceKey {
     static let defaultValue: DrawerHeight? = nil
     static func reduce(value: inout DrawerHeight?, nextValue: () -> DrawerHeight?) {
-        if let next = nextValue() { value = next }
+        if let next = nextValue() {
+            value = next
+        }
     }
 }
 
@@ -24,7 +26,10 @@ extension View {
     func measuredDrawerHeight(chrome: CGFloat = 100) -> some View {
         background {
             GeometryReader { geometry in
-                Color.clear.preference(key: DrawerHeightKey.self, value: DrawerHeight(points: geometry.size.height + chrome, scalesWithText: false))
+                Color.clear.preference(
+                    key: DrawerHeightKey.self,
+                    value: DrawerHeight(points: geometry.size.height + chrome, scalesWithText: false)
+                )
             }
         }
     }
@@ -43,16 +48,23 @@ private struct FloatingDrawer: ViewModifier {
     @AppStorage("appearance") private var appearance = AppearanceChoice.system.rawValue
     private var height: CGFloat {
         let request = contentHeight ?? DrawerHeight(points: defaultHeight, scalesWithText: true)
+
         return min(request.points * (request.scalesWithText ? textScale : 1), max(180, windowHeight - topInset - 60))
     }
+
     private var nativeDetached: Bool {
-        if #available(iOS 26, *) { return verticalSizeClass != .compact && windowHeight > windowWidth }
+        if #available(iOS 26, *) {
+            return verticalSizeClass != .compact && windowHeight > windowWidth
+        }
+
         return false
     }
+
     func body(content: Content) -> some View {
         VStack(spacing: 0) {
             Capsule().fill(Palette.muted.opacity(0.35)).frame(width: 36, height: nativeDetached ? 0 : 5)
-                .padding(.top, nativeDetached ? 0 : 10).padding(.bottom, nativeDetached ? 0 : 4).accessibilityHidden(true)
+                .padding(.top, nativeDetached ? 0 : 10).padding(.bottom, nativeDetached ? 0 : 4)
+                .accessibilityHidden(true)
             content.safeAreaPadding(.bottom, nativeDetached ? 20 : 16)
         }
         .background(Palette.canvas)
@@ -63,7 +75,9 @@ private struct FloatingDrawer: ViewModifier {
         .padding(.bottom, nativeDetached ? 0 : 12)
         .ignoresSafeArea(.container, edges: nativeDetached ? [] : .bottom)
         .background(DrawerWindowReader { size, inset in
-            windowHeight = size.height; windowWidth = size.width; topInset = inset
+            windowHeight = size.height
+            windowWidth = size.width
+            topInset = inset
         })
         .onPreferenceChange(DrawerHeightKey.self) { contentHeight = $0 }
         .presentationDetents([.height(defaultHeight)])
@@ -82,27 +96,45 @@ private struct DrawerBounds: View {
     @ViewBuilder var body: some View {
         if ProcessInfo.processInfo.arguments.contains("--verify-drawers") {
             Color.clear.accessibilityElement(children: .ignore).accessibilityLabel("Drawer")
-            .accessibilityIdentifier("drawerBounds").allowsHitTesting(false)
+                .accessibilityIdentifier("drawerBounds").allowsHitTesting(false)
         }
     }
 }
 
 private struct DrawerWindowReader: UIViewRepresentable {
     let update: (CGSize, CGFloat) -> Void
-    func makeUIView(context: Context) -> DrawerWindowView { DrawerWindowView() }
-    func updateUIView(_ view: DrawerWindowView, context: Context) { view.update = update }
+    func makeUIView(context: Context) -> DrawerWindowView {
+        DrawerWindowView()
+    }
+
+    func updateUIView(_ view: DrawerWindowView, context: Context) {
+        view.update = update
+    }
 }
 
 private final class DrawerWindowView: UIView {
     var update: ((CGSize, CGFloat) -> Void)?
     private var previousSize = CGSize.zero
     private var previousInset: CGFloat = -1
-    override func didMoveToWindow() { super.didMoveToWindow(); refresh() }
-    override func layoutSubviews() { super.layoutSubviews(); refresh() }
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        refresh() }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        refresh() }
+
     private func refresh() {
-        guard let window, window.bounds.size != previousSize || window.safeAreaInsets.top != previousInset else { return }
-        previousSize = window.bounds.size; previousInset = window.safeAreaInsets.top
-        let size = previousSize; let inset = previousInset
+        guard
+            let window,
+            window.bounds.size != previousSize || window.safeAreaInsets.top != previousInset else {
+            return
+        }
+
+        previousSize = window.bounds.size
+        previousInset = window.safeAreaInsets.top
+        let size = previousSize
+        let inset = previousInset
         DispatchQueue.main.async { [weak self] in self?.update?(size, inset) }
     }
 }
@@ -112,9 +144,13 @@ private final class DrawerWindowView: UIView {
 private struct DrawerResizeBridge: UIViewRepresentable {
     let height: CGFloat
     let reduceMotion: Bool
-    func makeUIView(context: Context) -> DrawerResizeView { DrawerResizeView() }
+    func makeUIView(context: Context) -> DrawerResizeView {
+        DrawerResizeView()
+    }
+
     func updateUIView(_ view: DrawerResizeView, context: Context) {
-        view.requestedHeight = height; view.reduceMotion = reduceMotion
+        view.requestedHeight = height
+        view.reduceMotion = reduceMotion
         view.scheduleResize()
     }
 }
@@ -129,43 +165,82 @@ private final class DrawerResizeView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        isUserInteractionEnabled = false; isAccessibilityElement = false
+        isUserInteractionEnabled = false
+        isAccessibilityElement = false
     }
-    required init?(coder: NSCoder) { fatalError("Created programmatically") }
-    override func didMoveToWindow() { super.didMoveToWindow(); scheduleResize() }
-    override func layoutSubviews() { super.layoutSubviews(); scheduleResize() }
+
+    required init?(coder: NSCoder) {
+        fatalError("Created programmatically")
+    }
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        scheduleResize() }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        scheduleResize() }
 
     func scheduleResize() {
-        guard !scheduled else { return }
+        guard !scheduled else {
+            return
+        }
+
         scheduled = true
         DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
-            self.scheduled = false; self.resize()
+
+            guard let self else {
+                return
+            }
+
+            self.scheduled = false
+            self.resize()
         }
     }
+
     private func resize() {
-        guard window != nil, requestedHeight > 0 else { return }
+        guard window != nil, requestedHeight > 0 else {
+            return
+        }
+
         var responder: UIResponder? = self
         var sheet: UISheetPresentationController?
         while let next = responder?.next {
-            if let controller = next as? UIViewController, controller.presentingViewController != nil,
-               let presentation = controller.presentationController as? UISheetPresentationController {
-                sheet = presentation; break
+            if
+                let controller = next as? UIViewController, controller.presentingViewController != nil,
+                let presentation = controller.presentationController as? UISheetPresentationController {
+                sheet = presentation
+
+                break
             }
             responder = next
         }
-        guard let sheet else { return }
+
+        guard let sheet else {
+            return
+        }
+
         if attachedSheet !== sheet || sheet.detents.first?.identifier != identifier {
-            attachedSheet = sheet; resolvedHeight = requestedHeight
+            attachedSheet = sheet
+            resolvedHeight = requestedHeight
             sheet.detents = [.custom(identifier: identifier) { [weak self] context in
-                guard let self else { return nil }
+
+                guard let self else {
+                    return nil
+                }
+
                 return min(self.resolvedHeight, context.maximumDetentValue)
             }]
             sheet.selectedDetentIdentifier = identifier
         } else if abs(resolvedHeight - requestedHeight) > 0.5 {
-            let update = { self.resolvedHeight = self.requestedHeight; sheet.invalidateDetents() }
-            if reduceMotion { UIView.performWithoutAnimation(update) }
-            else { sheet.animateChanges(update) }
+            let update = { self.resolvedHeight = self.requestedHeight
+                sheet.invalidateDetents() }
+            if reduceMotion {
+                UIView.performWithoutAnimation(update)
+            }
+            else {
+                sheet.animateChanges(update)
+            }
         }
     }
 }

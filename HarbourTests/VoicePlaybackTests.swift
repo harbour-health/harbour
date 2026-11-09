@@ -4,11 +4,15 @@ import Combine
 
 @MainActor final class VoicePlaybackTests: XCTestCase {
     func testPlaybackFeedsVisualizerAndStopClearsIt() async throws {
-        try XCTSkipUnless(KokoroAssets.shared.ready, "Local Kokoro assets are required; this test does not download them.")
+        try XCTSkipUnless(
+            KokoroAssets.shared.ready,
+            "Local Kokoro assets are required; this test does not download them."
+        )
         let voice = VoiceService()
         let audioLevel = expectation(description: "Playback mixer produces an audible signal")
         let subscription = voice.visualization.$level.filter { $0 > 0.005 }.first().sink { _ in audioLevel.fulfill() }
-        defer { subscription.cancel(); voice.stop() }
+        defer { subscription.cancel()
+            voice.stop() }
         voice.speak("This is a fictional voice interface test.")
         await fulfillment(of: [audioLevel], timeout: 45)
         voice.stop()

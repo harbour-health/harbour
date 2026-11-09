@@ -3,9 +3,40 @@ import HarbourCore
 
 enum AppSheet: Identifiable {
     case appointment(Appointment)
-    case symptom(String), medicine(Medicine?), medicineDraft(Medicine, [DoseTime], MedicationFrequency?), reading(Reading?), interactions([Medicine]), settings, note, reminder(CareReminder), dose(Medicine, Date, DoseStatus?), timeline(String), question(String), scanMedicine, schedule(Medicine, [DoseTime], MedicationFrequency?)
-    var drawerHeight: CGFloat { switch self { case .appointment: 620; case .symptom: 690; case .medicine, .medicineDraft: 600; case .reading: 320; case .interactions: 420; case .settings: 640; case .note, .question: 640; case .reminder: 590; case .dose: 450; case .timeline: 720; case .scanMedicine, .schedule: 690 } }
-    var id: String { switch self { case .appointment: "appointment"; case .symptom: "symptom"; case .medicine: "medicine"; case .medicineDraft: "medicineDraft"; case .reading: "reading"; case .interactions: "interactions"; case .settings: "settings"; case .note: "note"; case .reminder: "reminder"; case .dose: "dose"; case .timeline: "timeline"; case .question: "question"; case .scanMedicine: "scan"; case .schedule: "schedule" } }
+    case symptom(String), medicine(Medicine?), medicineDraft(Medicine, [DoseTime], MedicationFrequency?),
+         reading(Reading?), interactions([Medicine]), settings, note, reminder(CareReminder), dose(
+             Medicine,
+             Date,
+             DoseStatus?
+         ), timeline(String), question(String), scanMedicine, schedule(Medicine, [DoseTime], MedicationFrequency?)
+    var drawerHeight: CGFloat {
+        switch self { case .appointment: 620
+        case .symptom: 690
+        case .medicine, .medicineDraft: 600
+        case .reading: 320
+        case .interactions: 420
+        case .settings: 640
+        case .note, .question: 640
+        case .reminder: 590
+        case .dose: 450
+        case .timeline: 720
+        case .scanMedicine, .schedule: 690 } }
+
+    var id: String {
+        switch self { case .appointment: "appointment"
+        case .symptom: "symptom"
+        case .medicine: "medicine"
+        case .medicineDraft: "medicineDraft"
+        case .reading: "reading"
+        case .interactions: "interactions"
+        case .settings: "settings"
+        case .note: "note"
+        case .reminder: "reminder"
+        case .dose: "dose"
+        case .timeline: "timeline"
+        case .question: "question"
+        case .scanMedicine: "scan"
+        case .schedule: "schedule" } }
 }
 
 @main struct HarbourApp: App {
@@ -18,7 +49,8 @@ enum AppSheet: Identifiable {
     @AppStorage("appearance") private var appearance = AppearanceChoice.system.rawValue
     var body: some Scene {
         WindowGroup {
-            LockShell().environmentObject(lock).environmentObject(store).environmentObject(models).environmentObject(health).environmentObject(recorder).environmentObject(alerts)
+            LockShell().environmentObject(lock).environmentObject(store).environmentObject(models)
+                .environmentObject(health).environmentObject(recorder).environmentObject(alerts)
                 .tint(Palette.ink)
                 .environment(\.locale, L10n.locale)
                 .preferredColorScheme((AppearanceChoice(rawValue: appearance) ?? .system).scheme)
@@ -33,16 +65,41 @@ struct LockShell: View {
     @Environment(\.scenePhase) private var phase
     var body: some View {
         Group { if lock.locked { LockScreen() } else { RootView() } }
-            .background(PrivacyCurtain(covered: phase != .active && !(phase == .inactive && lock.presentingAuthentication)))
+            .background(PrivacyCurtain(covered: phase != .active &&
+                    !(phase == .inactive && lock.presentingAuthentication)))
             .accessibilityHidden(phase != .active)
             .onAppear { _ = SessionActivities.shared }
-            .transaction { if lock.locked { $0.disablesAnimations = true } }
-            .onOpenURL { url in
-                guard url.scheme == "harbour" else { return }
-                if url.host == "recording" { UserDefaults.standard.set(true, forKey: "openRecordingSession"); UserDefaults.standard.set(3, forKey: "pendingSessionTab") }
-                else if url.host == "chat" { UserDefaults.standard.set(1, forKey: "pendingSessionTab") }
+            .transaction {
+                if lock.locked {
+                    $0.disablesAnimations = true
+                }
             }
-            .onChange(of: phase) { if phase == .active { recorder.checkpointOnForeground(); SessionActivities.shared.refreshPreferences() }; if phase == .background { if recorder.state == .preparing { Task { await recorder.finish(interrupted: true) } }; lock.lock(); store.shareFile = nil } }
+            .onOpenURL { url in
+
+                guard url.scheme == "harbour" else {
+                    return
+                }
+
+                if url.host == "recording" {
+                    UserDefaults.standard.set(true, forKey: "openRecordingSession")
+                    UserDefaults.standard.set(3, forKey: "pendingSessionTab") }
+                else if url.host == "chat" {
+                    UserDefaults.standard.set(1, forKey: "pendingSessionTab")
+                }
+            }
+            .onChange(of: phase) {
+                if phase == .active {
+                    recorder.checkpointOnForeground()
+                    SessionActivities.shared.refreshPreferences() }
+                if
+                    phase ==
+                    .background {
+                    if recorder.state == .preparing {
+                        Task { await recorder.finish(interrupted: true) }
+                    }
+                    lock.lock()
+                    store.shareFile = nil }
+            }
     }
 }
 
@@ -63,12 +120,15 @@ struct RootView: View {
         GeometryReader { geometry in
             let pageSize = CGSize(width: max(0, geometry.size.width), height: max(0, geometry.size.height))
             HStack(spacing: 0) {
-                NavigationStack { TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1; tab = 2 }, openSymptoms: { recordCategory = 0; tab = 2 }, openVisits: { tab = 3 }) }
+                NavigationStack { TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1
+                    tab = 2 }, openSymptoms: { recordCategory = 0
+                    tab = 2 }, openVisits: { tab = 3 }) }
                     .frame(width: pageSize.width, height: pageSize.height)
                     .accessibilityHidden(tab != 0)
-                NavigationStack { ChatView(sheet: $sheet, voiceMode: $voiceMode).environment(\.isChatVisible, tab == 1) }
-                    .frame(width: pageSize.width, height: pageSize.height)
-                    .accessibilityHidden(tab != 1)
+                NavigationStack { ChatView(sheet: $sheet, voiceMode: $voiceMode).environment(\.isChatVisible, tab == 1)
+                }
+                .frame(width: pageSize.width, height: pageSize.height)
+                .accessibilityHidden(tab != 1)
                 NavigationStack { RecordsView(sheet: $sheet, category: $recordCategory) }
                     .frame(width: pageSize.width, height: pageSize.height)
                     .accessibilityHidden(tab != 2)
@@ -79,16 +139,27 @@ struct RootView: View {
             .offset(x: -CGFloat(tab) * pageSize.width + pageDrag)
             .animation(reduceMotion ? nil : .spring(response: 0.34, dampingFraction: 0.9), value: tab)
             .environment(\.mainPageSwipeAction, MainPageSwipeAction(canBegin: { index in
-                tab == index && !voiceMode && (index != 2 || recordCategory == nil) && !keyboardVisible && sheet == nil && store.shareFile == nil
+                tab == index && !voiceMode && (index != 2 || recordCategory == nil) && !keyboardVisible && sheet ==
+                    nil &&
+                    store.shareFile == nil
             }, update: { index, translation in
-                guard tab == index else { return }
+
+                guard tab == index else {
+                    return
+                }
+
                 let atEdge = (index == 0 && translation > 0) || (index == 3 && translation < 0)
-                var transaction = Transaction(); transaction.disablesAnimations = true
+                var transaction = Transaction()
+                transaction.disablesAnimations = true
                 withTransaction(transaction) {
                     pageDrag = atEdge ? translation * 0.2 : min(pageSize.width, max(-pageSize.width, translation))
                 }
             }, finish: { index, translation, velocity, cancelled in
-                guard tab == index else { return }
+
+                guard tab == index else {
+                    return
+                }
+
                 let projected = translation + velocity * 0.16
                 let threshold = pageSize.width * 0.25
                 let step = !cancelled && abs(projected) > threshold ? (projected < 0 ? 1 : -1) : 0
@@ -101,53 +172,130 @@ struct RootView: View {
         .clipped()
         .environment(\.floatingDockClearance, keyboardVisible ? 0 : (tab == 1 ? 34 : 86))
         .overlay(alignment: .bottom) {
-            if !keyboardVisible && !voiceMode { NavigationDock(selection: $tab) }
+            if !keyboardVisible && !voiceMode {
+                NavigationDock(selection: $tab)
+            }
         }
         .background(Palette.canvas)
-        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardVisible = true }
-        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in keyboardVisible = false }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+            keyboardVisible = true }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            keyboardVisible = false }
         .sheet(item: $sheet) { item in
             NavigationStack {
                 switch item {
-                case .appointment(let appointment): AppointmentEditor(initial: appointment, saved: store.records.appointments.contains { $0.id == appointment.id })
+                case .appointment(let appointment): AppointmentEditor(
+                        initial: appointment,
+                        saved: store.records.appointments.contains { $0.id == appointment.id }
+                    )
                 case .symptom(let text): SymptomEditor(initial: text)
                 case .medicine(let medicine): MedicineEditor(initial: medicine)
-                case .medicineDraft(let medicine, let times, let frequency): MedicationDraftReview(medication: medicine, times: times, frequency: frequency)
+                case .medicineDraft(let medicine, let times, let frequency): MedicationDraftReview(
+                        medication: medicine,
+                        times: times,
+                        frequency: frequency
+                    )
                 case .reading(let reading): ReadingEditor(initial: reading)
-                case .interactions(let medicines): ScrollView { InteractionView(report: HealthRules.check(medicines)).padding(24).measuredDrawerHeight() }.navigationTitle("Interactions").navigationBarTitleDisplayMode(.inline).toolbar { closeButton }
+                case .interactions(let medicines): ScrollView {
+                        InteractionView(report: HealthRules.check(medicines)).padding(24).measuredDrawerHeight() }
+                        .navigationTitle("Interactions").navigationBarTitleDisplayMode(.inline).toolbar { closeButton }
                 case .settings: SettingsView()
                 case .note: PreparationView()
                 case .question(let text): PreparationView(initialQuestion: text)
-                case .reminder(let reminder): ReminderEditor(initial: reminder, saved: store.care.reminders.contains { $0.id == reminder.id })
-                case .dose(let medicine, let date, let status): DoseEditor(medicine: medicine, scheduled: date, proposed: status)
+                case .reminder(let reminder): ReminderEditor(
+                        initial: reminder,
+                        saved: store.care.reminders.contains { $0.id == reminder.id }
+                    )
+                case .dose(let medicine, let date, let status): DoseEditor(
+                        medicine: medicine,
+                        scheduled: date,
+                        proposed: status
+                    )
                 case .timeline(let query): HealthHistoryView(initialQuery: query).toolbar { closeButton }
                 case .scanMedicine: MedicineEditor(initial: nil)
-                case .schedule(let medicine, let times, let frequency): MedicineEditor(initial: medicine, suggestedTimes: times, suggestedFrequency: frequency)
+                case .schedule(let medicine, let times, let frequency): MedicineEditor(
+                        initial: medicine,
+                        suggestedTimes: times,
+                        suggestedFrequency: frequency
+                    )
                 }
             }
             .background(Palette.canvas)
             .floatingDrawer(height: item.drawerHeight)
             .sheet(item: $store.shareFile) { ShareView(url: $0.url) }
         }
-        .sheet(item: Binding(get: { if case nil = sheet { return store.shareFile }; return nil }, set: { store.shareFile = $0 })) { ShareView(url: $0.url) }
-        .alert("Couldn’t complete that", isPresented: Binding(get: { store.error != nil }, set: { if !$0 { store.error = nil } })) { Button("OK") { store.error = nil } } message: { Text(store.error ?? "") }
-        .onAppear { if pendingSessionTab >= 0 { tab = pendingSessionTab; pendingSessionTab = -1 } }
-        .onChange(of: pendingSessionTab) { if pendingSessionTab >= 0 { tab = pendingSessionTab; pendingSessionTab = -1 } }
+        .sheet(item: Binding(get: {
+            if case nil = sheet {
+                return store.shareFile
+            }
+
+            return nil }, set: { store.shareFile = $0 })) { ShareView(url: $0.url) }
+        .alert(
+            "Couldn’t complete that",
+            isPresented: Binding(get: { store.error != nil }, set: {
+                if !$0 {
+                    store.error = nil
+                }
+            })
+        ) { Button("OK") { store.error = nil } } message: { Text(store.error ?? "") }
+        .onAppear {
+            if pendingSessionTab >= 0 {
+                tab = pendingSessionTab
+                pendingSessionTab = -1 }
+        }
+        .onChange(of: pendingSessionTab) {
+            if pendingSessionTab >= 0 {
+                tab = pendingSessionTab
+                pendingSessionTab = -1 }
+        }
         .task(id: store.archive.care) { await alerts.sync(care: store.care, medicines: store.records.medicines) }
-        .onChange(of: store.records.medicines.map(\.id)) { Task { await alerts.sync(care: store.care, medicines: store.records.medicines) } }
-        .onChange(of: scenePhase) { if scenePhase == .active { Task { await alerts.sync(care: store.care, medicines: store.records.medicines) } } }
+        .onChange(of: store.records.medicines.map(\.id)) { Task { await alerts.sync(
+            care: store.care,
+            medicines: store.records.medicines
+        ) } }
+        .onChange(of: scenePhase) {
+            if scenePhase == .active {
+                Task { await alerts.sync(
+                    care: store.care,
+                    medicines: store.records.medicines
+                ) } }
+        }
         .task {
             #if DEBUG
-            if ProcessInfo.processInfo.arguments.contains("--medicine-review-fixture") { store.prepareMedicineReviewScreenshot() }
-            if ProcessInfo.processInfo.arguments.contains("--appointment-summary-fixture") { store.prepareAppointmentSummaryFixture() }
-            if ProcessInfo.processInfo.arguments.contains("--medication-draft-fixture"),
-               let action = try? ToolPlanner.validate(.init(tool: .addMedicine), original: "Add Metformin 500 mg 2 times daily", records: store.records),
-               case .add(let medication, let times, let frequency) = action { sheet = .medicineDraft(medication, times, frequency) }
+                if
+                    ProcessInfo.processInfo.arguments
+                        .contains("--medicine-review-fixture") {
+                    store.prepareMedicineReviewScreenshot()
+                }
+                if
+                    ProcessInfo.processInfo.arguments
+                        .contains("--appointment-summary-fixture") {
+                    store.prepareAppointmentSummaryFixture()
+                }
+                if
+                    ProcessInfo.processInfo.arguments.contains("--medication-draft-fixture"),
+                    let action = try? ToolPlanner.validate(
+                        .init(tool: .addMedicine),
+                        original: "Add Metformin 500 mg 2 times daily",
+                        records: store.records
+                    ),
+                    case .add(let medication, let times, let frequency) = action {
+                    sheet = .medicineDraft(
+                        medication,
+                        times,
+                        frequency
+                    ) }
             #endif
-            if ProcessInfo.processInfo.arguments.contains("--evaluate-model") { await SimulatorEvaluation.run(models: models, store: store) }
+            if ProcessInfo.processInfo.arguments.contains("--evaluate-model") {
+                await SimulatorEvaluation.run(
+                    models: models,
+                    store: store
+                ) }
         }
     }
-    private var closeButton: some ToolbarContent { ToolbarItem(placement: .confirmationAction) { Button("Done") { sheet = nil } } }
+
+    private var closeButton: some ToolbarContent {
+        ToolbarItem(placement: .confirmationAction) { Button("Done") { sheet = nil } } }
 }
 
 struct HarbourMark: View {
@@ -157,20 +305,27 @@ struct HarbourMark: View {
     @State private var animate = false
     var body: some View {
         ZStack {
-            ForEach(0..<4) { index in
+            ForEach(0 ..< 4) { index in
                 RoundedRectangle(cornerRadius: size * 0.11)
                     .frame(width: size * 0.393, height: size * 0.393)
-                    .offset(x: index % 2 == 0 ? -size * 0.303 : size * 0.303, y: index < 2 ? -size * 0.303 : size * 0.303)
+                    .offset(
+                        x: index % 2 == 0 ? -size * 0.303 : size * 0.303,
+                        y: index < 2 ? -size * 0.303 : size * 0.303
+                    )
             }
         }
         .frame(width: size, height: size)
         .rotationEffect(.degrees(animate && spinning && !reduceMotion ? 348 : -12))
-        .animation(animate && spinning && !reduceMotion ? .linear(duration: 2.8).repeatForever(autoreverses: false) : nil, value: animate)
+        .animation(
+            animate && spinning && !reduceMotion ? .linear(duration: 2.8).repeatForever(autoreverses: false) : nil,
+            value: animate
+        )
         .onAppear { animate = true }
         .onDisappear { animate = false }
         .accessibilityHidden(true)
     }
 }
+
 struct FeatureIcon: View {
     var symbol: String
     var colour: Color
@@ -179,6 +334,7 @@ struct FeatureIcon: View {
             .frame(width: 32, height: 48)
     }
 }
+
 struct FeatureRow: View {
     var title: String
     var subtitle: String?
@@ -189,17 +345,22 @@ struct FeatureRow: View {
             FeatureIcon(symbol: symbol, colour: colour)
             VStack(alignment: .leading, spacing: 4) {
                 Text(L10n.string(title)).font(.title3.weight(.medium)).foregroundStyle(Palette.ink)
-                if let subtitle { Text(L10n.string(subtitle)).font(.subheadline).foregroundStyle(Palette.muted) }
+                if let subtitle {
+                    Text(L10n.string(subtitle)).font(.subheadline).foregroundStyle(Palette.muted)
+                }
             }
             Spacer(minLength: 8)
             Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Palette.muted)
         }.padding(.vertical, 6).contentShape(Rectangle())
     }
 }
+
 struct SettingsButton: View {
     @Binding var sheet: AppSheet?
-    var body: some View { Button { sheet = .settings } label: { ToolbarGlyph(symbol: "gearshape") }.accessibilityLabel("Settings") }
+    var body: some View {
+        Button { sheet = .settings } label: { ToolbarGlyph(symbol: "gearshape") }.accessibilityLabel("Settings") }
 }
+
 struct TodayView: View {
     @State private var showHistory = false
     @State private var showTrends = false
@@ -219,46 +380,93 @@ struct TodayView: View {
                         Text("Today").font(.largeTitle.bold()).accessibilityAddTraits(.isHeader)
                         Spacer()
                     }
-                    Text(Date.now, format: .dateTime.weekday(.wide).month(.wide).day()).font(.body).foregroundStyle(Palette.muted)
+                    Text(Date.now, format: .dateTime.weekday(.wide).month(.wide).day()).font(.body)
+                        .foregroundStyle(Palette.muted)
                 }.padding(.top, 14)
                 VStack(spacing: 14) {
                     ReadingSummary(readings: store.records.readings)
                     Button { showTrends = true } label: {
-                        FeatureRow(title: "Trends", subtitle: "Readings and symptoms over time", symbol: "chart.xyaxis.line", colour: Palette.blue)
+                        FeatureRow(
+                            title: "Trends",
+                            subtitle: "Readings and symptoms over time",
+                            symbol: "chart.xyaxis.line",
+                            colour: Palette.blue
+                        )
                     }.buttonStyle(.plain).accessibilityIdentifier("openTrends")
-                    if typeSize.isAccessibilitySize { VStack(spacing: 16) { shortcuts } }
-                    else { HStack(alignment: .top, spacing: 14) { shortcuts } }
+                    if typeSize.isAccessibilitySize {
+                        VStack(spacing: 16) { shortcuts }
+                    }
+                    else {
+                        HStack(alignment: .top, spacing: 14) { shortcuts }
+                    }
                 }
                 Button(action: openChat) {
                     HStack(spacing: 18) {
                         HarbourMark(size: 30).foregroundStyle(Palette.blue)
                         Text("Ask Harbour").font(.title3.weight(.medium))
-                        Spacer(); Image(systemName: "arrow.up.right").font(.title3)
+                        Spacer()
+                        Image(systemName: "arrow.up.right").font(.title3)
                     }.foregroundStyle(Palette.ink).padding(.vertical, 16).contentShape(Rectangle())
                 }.buttonStyle(PressFeedback())
                 if store.records.readings.contains(where: { $0.kind != store.records.readings.first?.kind }) {
                     VStack(alignment: .leading, spacing: 0) {
-                        Text("Readings").font(.title2.weight(.semibold)).frame(maxWidth: .infinity, alignment: .leading).padding(.bottom, 16)
+                        Text("Readings").font(.title2.weight(.semibold)).frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(
+                                .bottom,
+                                16
+                            )
                         ForEach(ReadingKind.allCases, id: \.self) { kind in
-                            if kind != store.records.readings.first?.kind, let reading = store.records.readings.first(where: { $0.kind == kind }) { ReadingRow(reading: reading); Divider().overlay(Palette.line) }
+                            if
+                                kind != store.records.readings.first?.kind,
+                                let reading = store.records.readings
+                                    .first(where: { $0.kind == kind }) {
+                                ReadingRow(reading: reading)
+                                Divider().overlay(Palette.line) }
                         }
                     }
                 }
                 AgendaView(sheet: $sheet)
-                Button { showHistory = true } label: { FeatureRow(title: "Timeline", subtitle: nil, symbol: "clock.arrow.circlepath", colour: Palette.blue) }.buttonStyle(.plain).accessibilityIdentifier("openTimeline")
-            }.padding(.horizontal, AppLayout.screenInset).padding(.bottom, 32).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity).mainPageSwipes(0)
+                Button { showHistory = true } label: { FeatureRow(
+                    title: "Timeline",
+                    subtitle: nil,
+                    symbol: "clock.arrow.circlepath",
+                    colour: Palette.blue
+                ) }.buttonStyle(.plain).accessibilityIdentifier("openTimeline")
+            }.padding(.horizontal, AppLayout.screenInset).padding(.bottom, 32).frame(maxWidth: AppLayout.contentWidth)
+                .frame(maxWidth: .infinity).mainPageSwipes(0)
         }.contentMargins(.bottom, dockClearance, for: .scrollContent)
             .background(Palette.canvas).foregroundStyle(Palette.ink)
-            .navigationTitle("").navigationBarTitleDisplayMode(.inline).toolbar { ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) } }
+            .navigationTitle("").navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) } }
             .navigationDestination(isPresented: $showHistory) { HealthHistoryView() }
             .navigationDestination(isPresented: $showTrends) { HealthTrendsView() }
     }
+
     @ViewBuilder private var shortcuts: some View {
-        illustratedShortcut("Medications", detail: L10n.format("%lld recorded", Int64(store.records.medicines.count)), kind: .medicines, colour: Palette.blueWash, action: openMedicines).accessibilityIdentifier("openMedicines")
-        illustratedShortcut("Symptoms", detail: L10n.format("%lld recorded", Int64(store.records.symptoms.count)), kind: .symptoms, colour: Palette.coralWash, action: openSymptoms)
-            .accessibilityIdentifier("addSymptom")
+        illustratedShortcut(
+            "Medications",
+            detail: L10n.format("%lld recorded", Int64(store.records.medicines.count)),
+            kind: .medicines,
+            colour: Palette.blueWash,
+            action: openMedicines
+        ).accessibilityIdentifier("openMedicines")
+        illustratedShortcut(
+            "Symptoms",
+            detail: L10n.format("%lld recorded", Int64(store.records.symptoms.count)),
+            kind: .symptoms,
+            colour: Palette.coralWash,
+            action: openSymptoms
+        )
+        .accessibilityIdentifier("addSymptom")
     }
-    private func illustratedShortcut(_ title: String, detail: String, kind: IllustrationKind, colour: Color, action: @escaping () -> Void) -> some View {
+
+    private func illustratedShortcut(
+        _ title: String,
+        detail: String,
+        kind: IllustrationKind,
+        colour: Color,
+        action: @escaping () -> Void
+    ) -> some View {
         Button(action: action) {
             ZStack(alignment: .topLeading) {
                 colour
@@ -268,36 +476,53 @@ struct TodayView: View {
                 }.padding(18)
             }.frame(maxWidth: .infinity).frame(height: typeSize.isAccessibilitySize ? 320 : 190)
                 .overlay(alignment: .bottomTrailing) {
-                HarbourIllustration(kind: kind).frame(width: 180, height: 150).offset(x: 56, y: 32)
+                    HarbourIllustration(kind: kind).frame(width: 180, height: 150).offset(x: 56, y: 32)
                 }
                 .overlay(alignment: .bottomLeading) {
-                Image(systemName: "arrow.up.right").font(.body.weight(.semibold)).foregroundStyle(Palette.canvas)
-                    .frame(width: 44, height: 44).background(Palette.ink, in: Circle()).padding(18)
+                    Image(systemName: "arrow.up.right").font(.body.weight(.semibold)).foregroundStyle(Palette.canvas)
+                        .frame(width: 44, height: 44).background(Palette.ink, in: Circle()).padding(18)
                 }.foregroundStyle(Palette.ink)
                 .clipShape(RoundedRectangle(cornerRadius: 28))
                 .contentShape(RoundedRectangle(cornerRadius: 28))
         }.buttonStyle(PressFeedback())
     }
 }
+
 struct ReadingRow: View {
     let reading: Reading
     var showsDate = true
     var body: some View {
         HStack(spacing: 14) {
             Image(systemName: reading.kind.symbol).foregroundStyle(.red).frame(width: 24)
-            VStack(alignment: .leading, spacing: 5) { Text(L10n.string(reading.kind.rawValue)).font(.body.weight(.medium)); Text(reading.date, format: showsDate ? .dateTime.month(.abbreviated).day().hour().minute() : .dateTime.hour().minute()).font(.subheadline).foregroundStyle(Palette.muted) }
+            VStack(alignment: .leading, spacing: 5) {
+                Text(L10n.string(reading.kind.rawValue)).font(.body.weight(.medium))
+                Text(
+                    reading.date,
+                    format: showsDate ? .dateTime.month(.abbreviated).day().hour().minute() : .dateTime.hour().minute()
+                ).font(.subheadline).foregroundStyle(Palette.muted) }
             Spacer()
-            HStack(alignment: .firstTextBaseline, spacing: 4) { Text(L10n.readingValue(reading)).font(.title2.weight(.semibold)); Text(reading.kind.unit).font(.subheadline).foregroundStyle(Palette.muted) }
-        }.foregroundStyle(Palette.ink).padding(.vertical, 12).listRowBackground(Color.clear).accessibilityElement(children: .combine)
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text(L10n.readingValue(reading)).font(.title2.weight(.semibold))
+                Text(reading.kind.unit).font(.subheadline).foregroundStyle(Palette.muted) }
+        }.foregroundStyle(Palette.ink).padding(.vertical, 12).listRowBackground(Color.clear)
+            .accessibilityElement(children: .combine)
     }
 }
+
 struct SymptomRow: View {
     let symptom: Symptom
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(symptom.text).font(.body).fixedSize(horizontal: false, vertical: true)
-            HStack { Text(symptom.date, style: .date); if !symptom.onset.isEmpty { Text("· " + symptom.onset) } }.font(.subheadline).foregroundStyle(Palette.muted)
-            if HealthRules.isEmergency(symptom) { Label("Emergency sign recorded", systemImage: "exclamationmark.circle").font(.subheadline).foregroundStyle(.red) }
+            HStack { Text(symptom.date, style: .date)
+                if !symptom.onset.isEmpty {
+                    Text("· " + symptom.onset)
+                } }.font(.subheadline).foregroundStyle(Palette.muted)
+            if
+                HealthRules
+                    .isEmergency(symptom) {
+                Label("Emergency sign recorded", systemImage: "exclamationmark.circle").font(.subheadline)
+                    .foregroundStyle(.red) }
         }.foregroundStyle(Palette.ink).padding(.vertical, 14).listRowBackground(Color.clear)
     }
 }
@@ -311,7 +536,9 @@ struct ShareView: UIViewControllerRepresentable {
         controller.completionWithItemsHandler = { _, _, _, _ in
             Task { @MainActor in close() }
         }
+
         return controller
     }
+
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }

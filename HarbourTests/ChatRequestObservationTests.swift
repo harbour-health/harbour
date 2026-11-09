@@ -11,8 +11,10 @@ import HarbourCore
         let subscription = manager.$chatRequestState.sink { observed.append($0) }
         defer { subscription.cancel() }
         let id = try XCTUnwrap(manager.chatRequests.start(operation: { _ in
-            entered.signal(); await release.wait()
-        }, onCompletion: { accepted.append($0); drained.signal() }))
+            entered.signal()
+            await release.wait()
+        }, onCompletion: { accepted.append($0)
+            drained.signal() }))
         await entered.wait()
         XCTAssertEqual(manager.chatRequestState, .running(id))
         manager.chatRequests.cancel()
@@ -24,7 +26,8 @@ import HarbourCore
         await Task.yield()
         XCTAssertTrue(replacementConsumer.chatRequestState.isBusy)
         XCTAssertTrue(replacementConsumer.chatRequestState.isCancelling)
-        release.signal(); await drained.wait()
+        release.signal()
+        await drained.wait()
         XCTAssertEqual(manager.chatRequestState, .idle)
         XCTAssertEqual(observed, [.idle, .running(id), .cancelling(id), .idle])
         XCTAssertEqual(accepted, [false])
@@ -36,12 +39,18 @@ import HarbourCore
     private var signalled = false
     private var waiters: [CheckedContinuation<Void, Never>] = []
     func wait() async {
-        if signalled { return }
+        if signalled {
+            return
+        }
         await withCheckedContinuation { waiters.append($0) }
     }
+
     func signal() {
         signalled = true
-        let pending = waiters; waiters.removeAll()
-        for waiter in pending { waiter.resume() }
+        let pending = waiters
+        waiters.removeAll()
+        for waiter in pending {
+            waiter.resume()
+        }
     }
 }

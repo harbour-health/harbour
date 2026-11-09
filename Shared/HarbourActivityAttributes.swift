@@ -16,6 +16,7 @@ struct HarbourActivityAttributes: ActivityAttributes {
             case .ended: french ? "Terminé" : "Ended"
             }
         }
+
         var symbol: String {
             switch self {
             case .recording: "mic.fill"
@@ -27,14 +28,21 @@ struct HarbourActivityAttributes: ActivityAttributes {
             }
         }
     }
+
     struct ContentState: Codable, Hashable {
         var phase: Phase
         var elapsed: TimeInterval
         var timerStart: Date?
     }
+
     var sessionID: UUID
     var mode: Mode
     var french: Bool
-    var title: String { mode == .recording ? (french ? "Enregistrement" : "Recording") : (french ? "Conversation vocale" : "Voice conversation") }
-    var url: URL { URL(string: mode == .recording ? "harbour://recording" : "harbour://chat")! }
+    var title: String {
+        mode == .recording ? (french ? "Enregistrement" : "Recording") :
+            (french ? "Conversation vocale" : "Voice conversation") }
+
+    var url: URL {
+        URL(string: mode == .recording ? "harbour://recording" : "harbour://chat")!
+    }
 }

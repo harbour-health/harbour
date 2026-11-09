@@ -54,28 +54,42 @@ private struct IllustrationBoard {
     private var pale: Color {
         dark ? Color(red: 0.29, green: 0.34, blue: 0.44) : Color(red: 0.83, green: 0.88, blue: 0.99)
     }
-    private var shadow: Color { ink.opacity(dark ? 0.28 : 0.12) }
+
+    private var shadow: Color {
+        ink.opacity(dark ? 0.28 : 0.12)
+    }
 
     func appointments() {
         fill(ellipse(25, 29, 190, 160), pale)
         fill(rounded(48, 34, 146, 142, radius: 20), cream, lifted: true)
         fill(rounded(48, 34, 146, 38, radius: 16), cobalt)
         for x in [CGFloat(82), 160] {
-            stroke(Path { p in p.move(to: CGPoint(x: x, y: 24)); p.addLine(to: CGPoint(x: x, y: 49)) }, ink, width: 6)
+            stroke(Path { p in p.move(to: CGPoint(x: x, y: 24))
+                p.addLine(to: CGPoint(x: x, y: 49)) }, ink, width: 6)
         }
-        for row in 0..<2 { for column in 0..<3 {
-            fill(rounded(70 + CGFloat(column) * 35, 88 + CGFloat(row) * 32, 15, 15, radius: 5), row == 1 && column == 1 ? coral : pale)
-        } }
+        for row in 0 ..< 2 {
+            for column in 0 ..< 3 {
+                fill(
+                    rounded(70 + CGFloat(column) * 35, 88 + CGFloat(row) * 32, 15, 15, radius: 5),
+                    row == 1 && column == 1 ? coral : pale
+                )
+            } }
     }
 
     private func fill(_ path: Path, _ color: Color, lifted: Bool = false) {
         var layer = context
-        if lifted { layer.addFilter(.shadow(color: shadow, radius: 7, x: 0, y: 7)) }
+        if lifted {
+            layer.addFilter(.shadow(color: shadow, radius: 7, x: 0, y: 7))
+        }
         layer.fill(path, with: .color(color))
     }
 
     private func stroke(_ path: Path, _ color: Color, width: CGFloat, dash: [CGFloat] = []) {
-        context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: width, lineCap: .round, lineJoin: .round, dash: dash))
+        context.stroke(
+            path,
+            with: .color(color),
+            style: StrokeStyle(lineWidth: width, lineCap: .round, lineJoin: .round, dash: dash)
+        )
     }
 
     private func ellipse(_ x: CGFloat, _ y: CGFloat, _ width: CGFloat, _ height: CGFloat) -> Path {
@@ -88,9 +102,15 @@ private struct IllustrationBoard {
 
     private func line(_ points: [CGPoint]) -> Path {
         Path { path in
-            guard let first = points.first else { return }
+
+            guard let first = points.first else {
+                return
+            }
+
             path.move(to: first)
-            for point in points.dropFirst() { path.addLine(to: point) }
+            for point in points.dropFirst() {
+                path.addLine(to: point)
+            }
         }
     }
 
@@ -134,7 +154,11 @@ private struct IllustrationBoard {
         ])
         var lower = context
         lower.translateBy(x: 0, y: 4)
-        lower.stroke(pulse, with: .color(darkOchre), style: StrokeStyle(lineWidth: 11, lineCap: .round, lineJoin: .round))
+        lower.stroke(
+            pulse,
+            with: .color(darkOchre),
+            style: StrokeStyle(lineWidth: 11, lineCap: .round, lineJoin: .round)
+        )
         stroke(pulse, ochre, width: 11)
         fill(ellipse(202, 92, 16, 16), cream, lifted: true)
         fill(ellipse(207, 97, 6, 6), ochre)
@@ -149,8 +173,24 @@ private struct IllustrationBoard {
         stroke(ellipse(137, 48, 57, 57), blue, width: 2)
         fill(ellipse(155, 66, 21, 21), dark ? ink : cream)
 
-        capsule(center: CGPoint(x: 85, y: 100), angle: -38, length: 118, width: 46, first: coral, second: cream, rim: darkCoral)
-        capsule(center: CGPoint(x: 153, y: 127), angle: 36, length: 111, width: 42, first: cobalt, second: ochre, rim: deepBlue)
+        capsule(
+            center: CGPoint(x: 85, y: 100),
+            angle: -38,
+            length: 118,
+            width: 46,
+            first: coral,
+            second: cream,
+            rim: darkCoral
+        )
+        capsule(
+            center: CGPoint(x: 153, y: 127),
+            angle: 36,
+            length: 111,
+            width: 42,
+            first: cobalt,
+            second: ochre,
+            rim: deepBlue
+        )
 
         // A small tablet has a visible edge, score line, and reflected light.
         fill(ellipse(60, 145, 45, 25), darkOchre, lifted: true)
@@ -166,7 +206,15 @@ private struct IllustrationBoard {
         fill(ellipse(31, 119, 6, 6), blue)
     }
 
-    private func capsule(center: CGPoint, angle: Double, length: CGFloat, width: CGFloat, first: Color, second: Color, rim: Color) {
+    private func capsule(
+        center: CGPoint,
+        angle: Double,
+        length: CGFloat,
+        width: CGFloat,
+        first: Color,
+        second: Color,
+        rim: Color
+    ) {
         var pill = self
         pill.context.translateBy(x: center.x, y: center.y)
         pill.context.rotate(by: .degrees(angle))
@@ -179,9 +227,21 @@ private struct IllustrationBoard {
         var half = pill.context
         half.clip(to: shape)
         half.fill(Path(CGRect(x: 0, y: -width / 2, width: length / 2, height: width)), with: .color(second))
-        pill.stroke(line([CGPoint(x: 0, y: -width / 2 + 2), CGPoint(x: 0, y: width / 2 - 2)]), rim.opacity(0.3), width: 1.2)
-        pill.stroke(line([CGPoint(x: -length / 2 + 20, y: -width / 2 + 9), CGPoint(x: -8, y: -width / 2 + 9)]), cream.opacity(0.65), width: 3)
-        pill.stroke(line([CGPoint(x: 9, y: width / 2 - 5), CGPoint(x: length / 2 - 20, y: width / 2 - 5)]), rim.opacity(0.13), width: 3)
+        pill.stroke(
+            line([CGPoint(x: 0, y: -width / 2 + 2), CGPoint(x: 0, y: width / 2 - 2)]),
+            rim.opacity(0.3),
+            width: 1.2
+        )
+        pill.stroke(
+            line([CGPoint(x: -length / 2 + 20, y: -width / 2 + 9), CGPoint(x: -8, y: -width / 2 + 9)]),
+            cream.opacity(0.65),
+            width: 3
+        )
+        pill.stroke(
+            line([CGPoint(x: 9, y: width / 2 - 5), CGPoint(x: length / 2 - 20, y: width / 2 - 5)]),
+            rim.opacity(0.13),
+            width: 3
+        )
     }
 
     func symptoms() {
@@ -195,7 +255,7 @@ private struct IllustrationBoard {
         book.fill(rounded(-44, -68, 90, 132, radius: 5), darkOchre)
         book.fill(rounded(-44, -71, 90, 130, radius: 5), cream)
         book.fill(rounded(-55, -73, 13, 141, radius: 5), blue)
-        for index in 0..<6 {
+        for index in 0 ..< 6 {
             let y = CGFloat(index) * 20 - 56
             book.stroke(ellipse(-59, y, 17, 8), deepBlue, width: 3)
             book.stroke(Path { path in
@@ -204,7 +264,14 @@ private struct IllustrationBoard {
             }, blue, width: 2)
         }
         for (index, width) in [CGFloat(45), 54, 38].enumerated() {
-            book.stroke(line([CGPoint(x: -25, y: CGFloat(index) * 12 - 34), CGPoint(x: -25 + width, y: CGFloat(index) * 12 - 34)]), ochre.opacity(0.65), width: 3)
+            book.stroke(
+                line([
+                    CGPoint(x: -25, y: CGFloat(index) * 12 - 34),
+                    CGPoint(x: -25 + width, y: CGFloat(index) * 12 - 34)
+                ]),
+                ochre.opacity(0.65),
+                width: 3
+            )
         }
         let fold = Path { path in
             path.move(to: CGPoint(x: 28, y: 59))
@@ -222,7 +289,9 @@ private struct IllustrationBoard {
         bandage.fill(rounded(-20, -24, 38, 42, radius: 8), cream)
         bandage.fill(rounded(-16, -20, 30, 34, radius: 6), Color(red: 0.97, green: 0.85, blue: 0.70))
         for x in [CGFloat(-45), -33, 31, 43] {
-            for y in [CGFloat(-12), 0, 12] { bandage.fill(ellipse(x - 1.3, y - 1.3, 2.6, 2.6), darkCoral.opacity(0.65)) }
+            for y in [CGFloat(-12), 0, 12] {
+                bandage.fill(ellipse(x - 1.3, y - 1.3, 2.6, 2.6), darkCoral.opacity(0.65))
+            }
         }
         sparkle(at: CGPoint(x: 188, y: 42), size: 12, color: ochre)
         fill(ellipse(207, 80, 6, 6), coral)
@@ -251,7 +320,11 @@ private struct IllustrationBoard {
         bubble(at: CGPoint(x: 47, y: 137), angle: -12, color: ochre, edge: darkOchre, dots: ink)
         let foregroundOrbit = Path { path in
             path.move(to: CGPoint(x: 64, y: 161))
-            path.addCurve(to: CGPoint(x: 215, y: 82), control1: CGPoint(x: 133, y: 164), control2: CGPoint(x: 218, y: 109))
+            path.addCurve(
+                to: CGPoint(x: 215, y: 82),
+                control1: CGPoint(x: 133, y: 164),
+                control2: CGPoint(x: 218, y: 109)
+            )
         }
         stroke(foregroundOrbit, blue, width: 2)
         fill(ellipse(199, 112, 12, 12), cream, lifted: true)
@@ -284,6 +357,8 @@ private struct IllustrationBoard {
         lower.addFilter(.shadow(color: shadow, radius: 4, x: 0, y: 3))
         lower.fill(shape, with: .color(edge))
         bubble.fill(shape, color)
-        for x in [CGFloat(-12), 0, 12] { bubble.fill(ellipse(x - 2.5, -3, 5, 5), dots) }
+        for x in [CGFloat(-12), 0, 12] {
+            bubble.fill(ellipse(x - 2.5, -3, 5, 5), dots)
+        }
     }
 }

@@ -10,28 +10,64 @@ struct RecordsView: View {
         List {
             Text("Records").font(.largeTitle.bold()).accessibilityAddTraits(.isHeader)
                 .mainPageSwipes(2)
-                .listRowInsets(EdgeInsets(top: 8, leading: AppLayout.screenInset, bottom: 14, trailing: AppLayout.screenInset))
+                .listRowInsets(EdgeInsets(
+                    top: 8,
+                    leading: AppLayout.screenInset,
+                    bottom: 14,
+                    trailing: AppLayout.screenInset
+                ))
                 .listRowSeparator(.hidden).listRowBackground(Color.clear)
-            categoryRow("Symptoms", count: store.records.symptoms.count, symbol: "cross.case.fill", colour: Palette.coral, index: 0)
-            categoryRow("Medications", count: store.records.medicines.count, symbol: "pills.fill", colour: Palette.blue, index: 1)
-            categoryRow("Readings", count: store.records.readings.count, symbol: "waveform.path.ecg", colour: Palette.coral, index: 2)
-            categoryRow("Appointments", count: store.records.appointments.count, symbol: "calendar", colour: Palette.blue, index: 3)
+            categoryRow(
+                "Symptoms",
+                count: store.records.symptoms.count,
+                symbol: "cross.case.fill",
+                colour: Palette.coral,
+                index: 0
+            )
+            categoryRow(
+                "Medications",
+                count: store.records.medicines.count,
+                symbol: "pills.fill",
+                colour: Palette.blue,
+                index: 1
+            )
+            categoryRow(
+                "Readings",
+                count: store.records.readings.count,
+                symbol: "waveform.path.ecg",
+                colour: Palette.coral,
+                index: 2
+            )
+            categoryRow(
+                "Appointments",
+                count: store.records.appointments.count,
+                symbol: "calendar",
+                colour: Palette.blue,
+                index: 3
+            )
         }
         .contentMargins(.bottom, dockClearance, for: .scrollContent)
         .listStyle(.plain).scrollContentBackground(.hidden).background(Palette.canvas)
         .navigationTitle("").navigationBarTitleDisplayMode(.inline)
-        .toolbar { if category == nil { ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) } } }
+        .toolbar {
+            if category == nil {
+                ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) }
+            }
+        }
         .navigationDestination(item: $category) { selected in
             RecordList(sheet: $sheet, category: selected)
         }
     }
+
     private func categoryRow(_ title: String, count: Int, symbol: String, colour: Color, index: Int) -> some View {
         Button { category = index } label: {
             HStack(spacing: 18) {
-                Image(systemName: symbol).font(.system(size: 27, weight: .medium)).foregroundStyle(colour).frame(width: 36)
+                Image(systemName: symbol).font(.system(size: 27, weight: .medium)).foregroundStyle(colour)
+                    .frame(width: 36)
                 VStack(alignment: .leading, spacing: 6) {
                     Text(L10n.string(title)).font(.title2.weight(.semibold)).foregroundStyle(Palette.ink)
-                    Text(L10n.format(count == 1 ? "%d record" : "%d records", count)).font(.body).foregroundStyle(Palette.muted)
+                    Text(L10n.format(count == 1 ? "%d record" : "%d records", count)).font(.body)
+                        .foregroundStyle(Palette.muted)
                 }
                 Spacer(minLength: 12)
                 Image(systemName: "chevron.right").font(.body.weight(.medium)).foregroundStyle(Palette.muted)
@@ -47,25 +83,38 @@ private struct RecordList: View {
     @Environment(\.floatingDockClearance) private var dockClearance
     @Binding var sheet: AppSheet?
     let category: Int
-    private var title: String { L10n.string(["Symptoms", "Medications", "Readings", "Appointments"][category]) }
+    private var title: String {
+        L10n.string(["Symptoms", "Medications", "Readings", "Appointments"][category])
+    }
+
     private struct ReadingDay: Identifiable {
         let date: Date
         let readings: [Reading]
-        var id: Date { date }
+        var id: Date {
+            date
+        }
     }
+
     private var readingDays: [ReadingDay] {
         Dictionary(grouping: store.records.readings, by: { Calendar.current.startOfDay(for: $0.date) })
             .sorted { $0.key > $1.key }.map { ReadingDay(date: $0.key, readings: $0.value) }
     }
+
     var body: some View {
         List {
             if category == 0 {
                 Section {
-                    if store.records.symptoms.isEmpty { RecordEmptyState(kind: .symptoms, title: "No symptoms") }
+                    if store.records.symptoms.isEmpty {
+                        RecordEmptyState(kind: .symptoms, title: "No symptoms")
+                    }
                     ForEach(store.records.symptoms) { symptom in
                         NavigationLink { SymptomDetail(symptom: symptom) } label: { SymptomRow(symptom: symptom) }
                             .openRecordRow()
-                    }.onDelete { indexes in for id in indexes.map({ store.records.symptoms[$0].id }) { store.removeSymptom(id) } }
+                    }
+                    .onDelete { indexes in
+                        for id in indexes.map({ store.records.symptoms[$0].id }) {
+                            store.removeSymptom(id)
+                        } }
                 }.listSectionSeparator(.hidden)
             } else if category == 1 {
                 if !store.records.medicines.isEmpty {
@@ -83,40 +132,66 @@ private struct RecordList: View {
                     }.listSectionSeparator(.hidden)
                 }
                 Section {
-                    if store.records.medicines.isEmpty { RecordEmptyState(kind: .medicines, title: "No medications") }
+                    if store.records.medicines.isEmpty {
+                        RecordEmptyState(kind: .medicines, title: "No medications")
+                    }
                     ForEach(store.records.medicines) { medicine in
                         Button { sheet = .medicine(medicine) } label: { MedicineRecordRow(medicine: medicine) }
                             .buttonStyle(.plain).openRecordRow().accessibilityIdentifier("medicine-row-\(medicine.id)")
-                    }.onDelete { indexes in for id in indexes.map({ store.records.medicines[$0].id }) { store.removeMedicine(id) } }
+                    }
+                    .onDelete { indexes in
+                        for id in indexes.map({ store.records.medicines[$0].id }) {
+                            store.removeMedicine(id)
+                        } }
                 }.listSectionSeparator(.hidden)
             } else if category == 3 {
                 Section {
-                    if store.records.appointments.isEmpty { RecordEmptyState(kind: .appointments, title: "No appointments") }
+                    if store.records.appointments.isEmpty {
+                        RecordEmptyState(
+                            kind: .appointments,
+                            title: "No appointments"
+                        ) }
                     ForEach(store.records.appointments.sorted { $0.date < $1.date }) { appointment in
                         Button { sheet = .appointment(appointment) } label: { AppointmentRow(appointment: appointment) }
                             .buttonStyle(.plain).openRecordRow()
                     }.onDelete { indexes in
                         let sorted = store.records.appointments.sorted { $0.date < $1.date }
-                        for index in indexes { store.removeAppointment(sorted[index].id) }
+                        for index in indexes {
+                            store.removeAppointment(sorted[index].id)
+                        }
                     }
                 }.listSectionSeparator(.hidden)
             } else {
-                if store.records.readings.isEmpty { RecordEmptyState(kind: .readings, title: "No readings") }
+                if store.records.readings.isEmpty {
+                    RecordEmptyState(kind: .readings, title: "No readings")
+                }
                 let days = readingDays
                 ForEach(days) { day in
                     Section {
                         let readings = day.readings
                         ForEach(readings) { reading in ReadingRow(reading: reading, showsDate: false).openRecordRow() }
-                            .onDelete { indexes in for index in indexes { store.removeReading(readings[index].id) } }
-                    } header: { Text(day.date, format: .dateTime.month(.abbreviated).day()).font(.subheadline.weight(.semibold)).textCase(nil).foregroundStyle(Palette.muted).padding(.leading, 8).padding(.top, day.id == days.first?.id ? 0 : 12).padding(.bottom, 4) }
+                            .onDelete { indexes in for index in indexes {
+                                store.removeReading(readings[index].id)
+                            } }
+                    } header: {
+                        Text(day.date, format: .dateTime.month(.abbreviated).day()).font(.subheadline.weight(.semibold))
+                            .textCase(nil).foregroundStyle(Palette.muted).padding(
+                                .leading,
+                                8
+                            ).padding(.top, day.id == days.first?.id ? 0 : 12).padding(.bottom, 4) }
                         .listSectionSeparator(.hidden)
                 }
             }
         }
         .contentMargins(.bottom, dockClearance, for: .scrollContent)
-        .listStyle(.plain).listSectionSpacing(8).scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle(title)
+        .listStyle(.plain).listSectionSpacing(8).scrollContentBackground(.hidden).background(Palette.canvas)
+        .navigationTitle(title)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) { Button { switch category { case 0: sheet = .symptom(""); case 1: sheet = .medicine(nil); case 3: sheet = .appointment(Appointment()); default: sheet = .reading(nil) } } label: { ToolbarGlyph(symbol: "plus") }.accessibilityLabel("Add record") }
+            ToolbarItem(placement: .topBarTrailing) { Button { switch category { case 0: sheet = .symptom("")
+            case 1: sheet = .medicine(nil)
+            case 3: sheet = .appointment(Appointment())
+            default: sheet = .reading(nil) } } label: { ToolbarGlyph(symbol: "plus") }.accessibilityLabel("Add record")
+            }
         }
     }
 }
@@ -124,20 +199,42 @@ private struct RecordList: View {
 private struct MedicineRecordRow: View {
     let medicine: Medicine
     private var ingredients: String? {
-        guard !medicine.ingredients.isEmpty else { return L10n.string("Ingredients unconfirmed") }
+        guard !medicine.ingredients.isEmpty else {
+            return L10n.string("Ingredients unconfirmed")
+        }
+
         let value = L10n.ingredientNames(medicine.ingredients)
-        return value.compare(L10n.medicineName(medicine), options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame ? nil : value
+
+        return value
+            .compare(L10n.medicineName(medicine), options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame ?
+            nil : value
     }
+
     var body: some View {
         HStack(alignment: .top, spacing: 16) {
-            Image(systemName: "pills.fill").font(.system(size: 24, weight: .medium)).foregroundStyle(Palette.blue).frame(width: 28, height: 30)
+            Image(systemName: "pills.fill").font(.system(size: 24, weight: .medium)).foregroundStyle(Palette.blue)
+                .frame(
+                    width: 28,
+                    height: 30
+                )
             VStack(alignment: .leading, spacing: 7) {
                 Text(L10n.medicineName(medicine)).font(.title3.weight(.semibold)).foregroundStyle(Palette.ink)
-                if let ingredients { Text(ingredients).font(.subheadline).foregroundStyle(Palette.muted) }
-                if !medicine.instructions.isEmpty { Text(medicine.instructions).font(.body).foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true) }
+                if let ingredients {
+                    Text(ingredients).font(.subheadline).foregroundStyle(Palette.muted)
+                }
+                if
+                    !medicine.instructions
+                        .isEmpty {
+                    Text(medicine.instructions).font(.body).foregroundStyle(Palette.muted).fixedSize(
+                        horizontal: false,
+                        vertical: true
+                    ) }
             }
             Spacer(minLength: 0)
-            Image(systemName: "chevron.right").font(.caption.weight(.medium)).foregroundStyle(Palette.muted).padding(.top, 7)
+            Image(systemName: "chevron.right").font(.caption.weight(.medium)).foregroundStyle(Palette.muted).padding(
+                .top,
+                7
+            )
         }.padding(.vertical, 20).contentShape(Rectangle())
     }
 }
@@ -153,61 +250,117 @@ struct SymptomEditor: View {
     @State private var none = false
     @State private var reviewed = false
     @FocusState private var editing: Bool
-    private var symptom: Symptom { Symptom(text: text.trimmingCharacters(in: .whitespacesAndNewlines), onset: onset, severity: severity, signs: EmergencySign.allCases.filter { signs.contains($0) }) }
+    private var symptom: Symptom {
+        Symptom(
+            text: text.trimmingCharacters(in: .whitespacesAndNewlines),
+            onset: onset,
+            severity: severity,
+            signs: EmergencySign.allCases.filter { signs.contains($0) }
+        ) }
+
     var body: some View {
         Form {
             Section("What’s happening?") {
-                TextField("Describe the symptom", text: $text, prompt: Text("Describe the symptom").foregroundStyle(Palette.muted), axis: .vertical).lineLimit(3...7).focused($editing).accessibilityIdentifier("symptomText")
-                TextField("When did it start?", text: $onset, prompt: Text("When did it start?").foregroundStyle(Palette.muted)).focused($editing).accessibilityIdentifier("symptomOnset")
-                Picker("Severity", selection: $severity) { ForEach(["Not specified", "Mild", "Moderate", "Severe"], id: \.self) { Text(L10n.string($0)).tag($0) } }
+                TextField(
+                    "Describe the symptom",
+                    text: $text,
+                    prompt: Text("Describe the symptom").foregroundStyle(Palette.muted),
+                    axis: .vertical
+                ).lineLimit(3 ... 7).focused($editing).accessibilityIdentifier("symptomText")
+                TextField(
+                    "When did it start?",
+                    text: $onset,
+                    prompt: Text("When did it start?").foregroundStyle(Palette.muted)
+                ).focused($editing).accessibilityIdentifier("symptomOnset")
+                Picker("Severity", selection: $severity) { ForEach(
+                    ["Not specified", "Mild", "Moderate", "Severe"],
+                    id: \.self
+                ) { Text(L10n.string($0)).tag($0) } }
             }
             Section("Emergency signs") {
                 VStack(alignment: .leading, spacing: 10) {
                     ForEach(EmergencySign.allCases) { sign in
-                        choice(sign.rawValue, selected: signs.contains(sign)) { none = false; if signs.contains(sign) { signs.remove(sign) } else { signs.insert(sign) }; reviewed = false }
+                        choice(sign.rawValue, selected: signs.contains(sign)) { none = false
+                            if signs.contains(sign) {
+                                signs.remove(sign)
+                            } else {
+                                signs.insert(sign)
+                            }
+                            reviewed = false }
                     }
-                    choice("None of these apply", selected: none) { signs.removeAll(); none.toggle(); reviewed = false }
-                }.padding(.vertical, 8).listRowBackground(Color.clear).listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                    choice("None of these apply", selected: none) { signs.removeAll()
+                        none.toggle()
+                        reviewed = false }
+                }.padding(.vertical, 8).listRowBackground(Color.clear).listRowInsets(EdgeInsets(
+                    top: 0,
+                    leading: 0,
+                    bottom: 0,
+                    trailing: 0
+                ))
             }
-            if reviewed { Section("Next step") { GuidanceView(symptom: symptom) } }
+            if reviewed {
+                Section("Next step") { GuidanceView(symptom: symptom) }
+            }
         }
         .scrollContentBackground(.hidden).background(Palette.canvas)
         .navigationTitle("Symptom").navigationBarTitleDisplayMode(.inline)
         .onAppear { text = initial }
         .onChange(of: text) { reviewed = false }
         .toolbar {
-            ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { editing = false } }
+            ToolbarItemGroup(placement: .keyboard) { Spacer()
+                Button("Done") { editing = false } }
             ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
             ToolbarItem(placement: .confirmationAction) {
                 Button(L10n.string(reviewed ? "Save" : "Review")) {
                     editing = false
-                    if reviewed { store.add(symptom); dismiss() }
-                    else { withAnimation { reviewed = true } }
-                }.disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || (signs.isEmpty && !none)).accessibilityIdentifier("saveSymptom")
+                    if reviewed {
+                        store.add(symptom)
+                        dismiss() }
+                    else {
+                        withAnimation { reviewed = true }
+                    }
+                }.disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || (signs.isEmpty && !none))
+                    .accessibilityIdentifier("saveSymptom")
             }
         }
     }
+
     private func choice(_ title: String, selected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            HStack(spacing: 12) { Text(L10n.string(title)).font(.body).multilineTextAlignment(.leading); Spacer(); SelectionIndicator(selected: selected, colour: Palette.coral) }
+            HStack(spacing: 12) { Text(L10n.string(title)).font(.body).multilineTextAlignment(.leading)
+                Spacer()
+                SelectionIndicator(selected: selected, colour: Palette.coral) }
                 .foregroundStyle(Palette.ink).padding(14).frame(maxWidth: .infinity, alignment: .leading)
                 .background(selected ? Palette.coralWash : Palette.surface, in: RoundedRectangle(cornerRadius: 18))
-        }.buttonStyle(.plain).accessibilityAddTraits(selected ? .isSelected : []).accessibilityIdentifier(title == "None of these apply" ? "noEmergencySigns" : title)
+        }.buttonStyle(.plain).accessibilityAddTraits(selected ? .isSelected : [])
+            .accessibilityIdentifier(title == "None of these apply" ? "noEmergencySigns" : title)
     }
 }
+
 struct GuidanceView: View {
     let symptom: Symptom
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Label(L10n.string(HealthRules.isEmergency(symptom) ? "Emergency care" : "Health811"), systemImage: HealthRules.isEmergency(symptom) ? "exclamationmark.circle.fill" : "phone").font(.headline).foregroundStyle(HealthRules.isEmergency(symptom) ? Color.red : Color.primary)
+            Label(
+                L10n.string(HealthRules.isEmergency(symptom) ? "Emergency care" : "Health811"),
+                systemImage: HealthRules.isEmergency(symptom) ? "exclamationmark.circle.fill" : "phone"
+            ).font(.headline).foregroundStyle(HealthRules.isEmergency(symptom) ? Color.red : Color.primary)
             Text(L10n.string(HealthRules.guidance(symptom))).fixedSize(horizontal: false, vertical: true)
             HStack(spacing: 24) {
-                Link(L10n.string(HealthRules.isEmergency(symptom) ? "Call 911" : "Call 811"), destination: URL(string: HealthRules.isEmergency(symptom) ? "tel:911" : "tel:811")!)
-                Link("Ontario source", destination: URL(string: HealthRules.isEmergency(symptom) ? HealthRules.emergencySource : HealthRules.helpSource)!).foregroundStyle(Palette.muted)
+                Link(
+                    L10n.string(HealthRules.isEmergency(symptom) ? "Call 911" : "Call 811"),
+                    destination: URL(string: HealthRules.isEmergency(symptom) ? "tel:911" : "tel:811")!
+                )
+                Link(
+                    "Ontario source",
+                    destination: URL(string: HealthRules.isEmergency(symptom) ? HealthRules
+                        .emergencySource : HealthRules.helpSource)!
+                ).foregroundStyle(Palette.muted)
             }.font(.subheadline.weight(.medium))
         }.padding(.vertical, 8)
     }
 }
+
 struct SymptomDetail: View {
     let symptom: Symptom
     @Environment(\.floatingDockClearance) private var dockClearance
@@ -215,13 +368,20 @@ struct SymptomDetail: View {
         List {
             Section {
                 SymptomRow(symptom: symptom).openRecordRow()
-                LabeledContent("Started", value: symptom.onset.isEmpty ? L10n.string("Not recorded") : symptom.onset).openRecordRow()
+                LabeledContent("Started", value: symptom.onset.isEmpty ? L10n.string("Not recorded") : symptom.onset)
+                    .openRecordRow()
                 LabeledContent("Severity", value: L10n.string(symptom.severity)).openRecordRow()
             }.listSectionSeparator(.hidden)
-            if !symptom.signs.isEmpty { Section { ForEach(symptom.signs) { Text(L10n.string($0.rawValue)).openRecordRow() } } header: { OpenRecordHeader(title: "Signs recorded") }.listSectionSeparator(.hidden) }
-            Section { GuidanceView(symptom: symptom).padding(.vertical, 16).openRecordRow() } header: { OpenRecordHeader(title: "Next step") }.listSectionSeparator(.hidden)
+            if
+                !symptom.signs
+                    .isEmpty {
+                Section { ForEach(symptom.signs) { Text(L10n.string($0.rawValue)).openRecordRow() } } header: {
+                    OpenRecordHeader(title: "Signs recorded") }.listSectionSeparator(.hidden) }
+            Section { GuidanceView(symptom: symptom).padding(.vertical, 16).openRecordRow() } header: {
+                OpenRecordHeader(title: "Next step") }.listSectionSeparator(.hidden)
         }.listStyle(.plain).contentMargins(.bottom, dockClearance, for: .scrollContent)
-            .scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle("Symptom").navigationBarTitleDisplayMode(.inline)
+            .scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle("Symptom")
+            .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -247,30 +407,51 @@ struct MedicineEditor: View {
     @State private var confirmed = false
     @FocusState private var editing: Bool
     private var savedFrequency: MedicationFrequency? {
-        if frequencyEnabled { return MedicationFrequency(count: frequencyCount, period: frequencyPeriod) }
+        if frequencyEnabled {
+            return MedicationFrequency(count: frequencyCount, period: frequencyPeriod)
+        }
+
         return times.isEmpty ? nil : MedicationFrequency(count: times.count, period: .day)
     }
+
     private var frequencyMatchesTimes: Bool {
-        !frequencyEnabled || (MedicationFrequency(count: frequencyCount, period: frequencyPeriod).valid && (times.isEmpty || (frequencyPeriod == .day && frequencyCount == times.count)))
+        !frequencyEnabled ||
+            (MedicationFrequency(count: frequencyCount, period: frequencyPeriod)
+                .valid && (times.isEmpty || (frequencyPeriod == .day && frequencyCount == times.count)))
     }
+
     var body: some View {
         Form {
             if initial == nil && reviewSource == nil {
-            Section("Medication label") {
-                MedicineScanButtons(scanner: scanner)
-                if scanner.busy { ProgressView("Reading label…") }
-                if let error = scanner.error { Text(error).foregroundStyle(.red) }
-                if !scanner.text.isEmpty {
-                    ForEach(CareRules.labelCandidates(scanner.text)) { candidate in Button(L10n.format("Use %@", L10n.medicineName(candidate))) { chosen = candidate; confirmed = false } }
-                    DisclosureGroup("Label text") { Text(scanner.text).textSelection(.enabled) }
+                Section("Medication label") {
+                    MedicineScanButtons(scanner: scanner)
+                    if scanner.busy {
+                        ProgressView("Reading label…")
+                    }
+                    if let error = scanner.error {
+                        Text(error).foregroundStyle(.red)
+                    }
+                    if !scanner.text.isEmpty {
+                        ForEach(CareRules.labelCandidates(scanner.text)) { candidate in Button(L10n.format(
+                            "Use %@",
+                            L10n.medicineName(candidate)
+                        )) { chosen = candidate
+                            confirmed = false } }
+                        DisclosureGroup("Label text") { Text(scanner.text).textSelection(.enabled) }
+                    }
                 }
-            }
             }
             if let chosen {
                 Section {
                     Text(L10n.medicineName(chosen)).font(.title3.weight(.semibold))
-                    LabeledContent("Active ingredients", value: chosen.ingredients.isEmpty ? L10n.string("Unconfirmed") : L10n.ingredientNames(chosen.ingredients))
-                    if initial == nil || reviewSource != nil { Button("Choose another medicine") { self.chosen = nil; confirmed = false } }
+                    LabeledContent(
+                        "Active ingredients",
+                        value: chosen.ingredients.isEmpty ? L10n.string("Unconfirmed") : L10n
+                            .ingredientNames(chosen.ingredients)
+                    )
+                    if initial == nil || reviewSource != nil {
+                        Button("Choose another medicine") { self.chosen = nil
+                            confirmed = false } }
                 }
                 Section {
                     Button { confirmed.toggle() } label: {
@@ -279,42 +460,116 @@ struct MedicineEditor: View {
                             Spacer(minLength: 8)
                             SelectionIndicator(selected: confirmed)
                         }.padding(.vertical, 8).contentShape(Rectangle())
-                    }.buttonStyle(.plain).accessibilityIdentifier("confirmMedicine").accessibilityValue(L10n.string(confirmed ? "Confirmed" : "Not confirmed")).accessibilityAddTraits(confirmed ? .isSelected : [])
-                } footer: { Text(L10n.string(chosen.ingredients.isEmpty ? "This medicine will be saved with unconfirmed ingredients. Its interactions cannot be assessed." : "Brand formulations can differ. Check the active ingredients on your package.")) }
-                Section(L10n.string(initial == nil && reviewSource == nil ? "Instructions from your label" : "Recorded instructions")) { TextField("Dose or notes (optional)", text: $instructions, prompt: Text("Dose or notes (optional)").foregroundStyle(Palette.muted), axis: .vertical).lineLimit(2...4).focused($editing).accessibilityIdentifier("medicineInstructions") }
-                ScheduleFields(times: $times, frequencyEnabled: $frequencyEnabled, frequencyCount: $frequencyCount, frequencyPeriod: $frequencyPeriod, notify: $notify, refillEnabled: $refillEnabled, refill: $refill)
+                    }.buttonStyle(.plain).accessibilityIdentifier("confirmMedicine")
+                        .accessibilityValue(L10n.string(confirmed ? "Confirmed" : "Not confirmed"))
+                        .accessibilityAddTraits(confirmed ? .isSelected : [])
+                } footer: {
+                    Text(L10n
+                        .string(chosen.ingredients
+                            .isEmpty ?
+                            "This medicine will be saved with unconfirmed ingredients. Its interactions cannot be assessed." :
+                            "Brand formulations can differ. Check the active ingredients on your package.")) }
+                Section(L10n
+                    .string(initial == nil && reviewSource == nil ? "Instructions from your label" :
+                        "Recorded instructions")) { TextField(
+                    "Dose or notes (optional)",
+                    text: $instructions,
+                    prompt: Text("Dose or notes (optional)").foregroundStyle(Palette.muted),
+                    axis: .vertical
+                ).lineLimit(2 ... 4).focused($editing).accessibilityIdentifier("medicineInstructions") }
+                ScheduleFields(
+                    times: $times,
+                    frequencyEnabled: $frequencyEnabled,
+                    frequencyCount: $frequencyCount,
+                    frequencyPeriod: $frequencyPeriod,
+                    notify: $notify,
+                    refillEnabled: $refillEnabled,
+                    refill: $refill
+                )
             } else {
                 Section {
-                    TextField("Medication name", text: $query, prompt: Text("Medication name").foregroundStyle(Palette.muted)).autocorrectionDisabled().focused($editing).accessibilityIdentifier("medicineSearch")
+                    TextField(
+                        "Medication name",
+                        text: $query,
+                        prompt: Text("Medication name").foregroundStyle(Palette.muted)
+                    ).autocorrectionDisabled().focused($editing).accessibilityIdentifier("medicineSearch")
                 }
                 Section("Medications") {
                     ForEach(Catalog.search(query)) { medicine in
-                        Button { chosen = medicine } label: { VStack(alignment: .leading, spacing: 4) { Text(L10n.medicineName(medicine)).foregroundStyle(Palette.ink); Text(L10n.ingredientNames(medicine.ingredients)).font(.body).foregroundStyle(Palette.muted) } }.accessibilityIdentifier("catalog-" + medicine.id)
+                        Button { chosen = medicine } label: {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(L10n.medicineName(medicine)).foregroundStyle(Palette.ink)
+                                Text(L10n.ingredientNames(medicine.ingredients)).font(.body)
+                                    .foregroundStyle(Palette.muted) } }
+                            .accessibilityIdentifier("catalog-" + medicine.id)
                     }
                     if !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && Catalog.resolve(query) == nil {
-                        Button(L10n.format("Add %@ with unconfirmed ingredients", query)) { chosen = Medicine(name: query.trimmingCharacters(in: .whitespacesAndNewlines)) }.accessibilityIdentifier("addUnlistedMedicine")
+                        Button(L10n.format("Add %@ with unconfirmed ingredients", query)) {
+                            chosen = Medicine(name: query.trimmingCharacters(in: .whitespacesAndNewlines)) }
+                            .accessibilityIdentifier("addUnlistedMedicine")
                     }
                 }
             }
         }
         .scrollContentBackground(.hidden).background(Palette.canvas)
         .drawerHeight(chosen == nil ? 600 : 690)
-        .navigationTitle(L10n.string(initial == nil ? "Add medicine" : "Medication")).navigationBarTitleDisplayMode(.inline)
+        .navigationTitle(L10n.string(initial == nil ? "Add medicine" : "Medication"))
+        .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            chosen = initial; instructions = initial?.instructions ?? reviewSource?.instructions ?? ""; query = reviewSource?.name ?? ""; times = suggestedTimes
-            if let suggestedFrequency { frequencyEnabled = true; frequencyCount = suggestedFrequency.count; frequencyPeriod = suggestedFrequency.period }
+            chosen = initial
+            instructions = initial?.instructions ?? reviewSource?.instructions ?? ""
+            query = reviewSource?.name ?? ""
+            times = suggestedTimes
+            if let suggestedFrequency {
+                frequencyEnabled = true
+                frequencyCount = suggestedFrequency.count
+                frequencyPeriod = suggestedFrequency.period }
             if let schedule = store.care.schedules.first(where: { $0.medicineID == initial?.id }) {
-                if suggestedTimes.isEmpty { times = schedule.times }
-                if suggestedFrequency == nil, let frequency = schedule.frequency { frequencyEnabled = true; frequencyCount = frequency.count; frequencyPeriod = frequency.period }
-                notify = schedule.notify; refillEnabled = schedule.refill != nil; refill = schedule.refill ?? refill
+                if suggestedTimes.isEmpty {
+                    times = schedule.times
+                }
+                if suggestedFrequency == nil, let frequency = schedule.frequency {
+                    frequencyEnabled = true
+                    frequencyCount = frequency.count
+                    frequencyPeriod = frequency.period }
+                notify = schedule.notify
+                refillEnabled = schedule.refill != nil
+                refill = schedule.refill ?? refill
             }
         }
         .onChange(of: frequencyPeriod) { frequencyCount = min(frequencyCount, frequencyPeriod == .day ? 24 : 31) }
-        .onChange(of: scanner.text) { confirmed = false; let candidates = CareRules.labelCandidates(scanner.text); chosen = candidates.count == 1 ? candidates[0] : nil; instructions = CareRules.labelInstructions(scanner.text) }
+        .onChange(of: scanner.text) { confirmed = false
+            let candidates = CareRules.labelCandidates(scanner.text)
+            chosen = candidates.count == 1 ? candidates[0] : nil
+            instructions = CareRules.labelInstructions(scanner.text) }
         .toolbar {
-            ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { editing = false } }
+            ToolbarItemGroup(placement: .keyboard) { Spacer()
+                Button("Done") { editing = false } }
             ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
-            ToolbarItem(placement: .confirmationAction) { Button("Save") { if var chosen { chosen.instructions = instructions; Task { if notify { await alerts.requestAccess() }; if store.saveMedicine(chosen, schedule: MedicineSchedule(medicineID: chosen.id, times: times, frequency: savedFrequency, notify: notify, refill: refillEnabled ? refill : nil), reviewSource: reviewSource) { dismiss() } } } }.disabled(chosen == nil || !confirmed || !frequencyMatchesTimes).accessibilityIdentifier("saveMedicine") }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Save") {
+                    if var chosen {
+                        chosen.instructions = instructions
+                        Task {
+                            if notify {
+                                await alerts.requestAccess()
+                            }
+                            if store.saveMedicine(
+                                chosen,
+                                schedule: MedicineSchedule(
+                                    medicineID: chosen.id,
+                                    times: times,
+                                    frequency: savedFrequency,
+                                    notify: notify,
+                                    refill: refillEnabled ? refill : nil
+                                ),
+                                reviewSource: reviewSource
+                            ) {
+                                dismiss()
+                            }
+                        } }
+                }.disabled(chosen == nil || !confirmed || !frequencyMatchesTimes)
+                    .accessibilityIdentifier("saveMedicine") }
         }
     }
 }
@@ -333,24 +588,45 @@ struct ReadingEditor: View {
         _value = State(initialValue: initial.map { L10n.readingValue($0) } ?? "")
         _date = State(initialValue: initial?.date ?? .now)
     }
-    private var example: String { kind == .bloodPressure ? "120/80" : kind == .temperature ? (L10n.isFrench ? "36,8" : "36.8") : "72" }
+
+    private var example: String {
+        kind == .bloodPressure ? "120/80" : kind == .temperature ? (L10n.isFrench ? "36,8" : "36.8") : "72" }
+
     var body: some View {
         Form {
             Section {
-                Picker("Type", selection: $kind) { ForEach(ReadingKind.allCases, id: \.self) { Text(L10n.string($0.rawValue)).tag($0) } }.accessibilityIdentifier("readingKind")
-                HStack { TextField(example, text: $value, prompt: Text(example).foregroundStyle(Palette.muted)).focused($editing).keyboardType(kind == .bloodPressure ? .numbersAndPunctuation : .decimalPad).accessibilityIdentifier("readingValue"); Text(L10n.string(kind.unit)).foregroundStyle(Palette.muted) }
+                Picker("Type", selection: $kind) {
+                    ForEach(ReadingKind.allCases, id: \.self) { Text(L10n.string($0.rawValue)).tag($0) } }
+                    .accessibilityIdentifier("readingKind")
+                HStack {
+                    TextField(example, text: $value, prompt: Text(example).foregroundStyle(Palette.muted))
+                        .focused($editing).keyboardType(kind == .bloodPressure ? .numbersAndPunctuation : .decimalPad)
+                        .accessibilityIdentifier("readingValue")
+                    Text(L10n.string(kind.unit)).foregroundStyle(Palette.muted) }
                 DatePicker("Date", selection: $date, in: ...Date.now)
             }
-            if !value.isEmpty && !ReadingParser.valid(value, kind: kind) { Section { Text(L10n.string(kind == .bloodPressure ? "Enter systolic/diastolic, such as 120/80." : "Check the number and unit.")).foregroundStyle(Palette.muted) } }
+            if
+                !value.isEmpty && !ReadingParser
+                    .valid(value, kind: kind) {
+                Section {
+                    Text(L10n
+                        .string(kind == .bloodPressure ? "Enter systolic/diastolic, such as 120/80." :
+                            "Check the number and unit.")).foregroundStyle(Palette.muted) } }
         }
         .scrollContentBackground(.hidden).background(Palette.canvas)
         .drawerHeight(!value.isEmpty && !ReadingParser.valid(value, kind: kind) ? 390 : 320)
         .navigationTitle("Add reading").navigationBarTitleDisplayMode(.inline)
         .onChange(of: kind) { value = "" }
         .toolbar {
-            ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { editing = false } }
+            ToolbarItemGroup(placement: .keyboard) { Spacer()
+                Button("Done") { editing = false } }
             ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
-            ToolbarItem(placement: .confirmationAction) { Button("Save") { store.add(Reading(kind: kind, value: ReadingParser.normalizedValue(value), date: date)); dismiss() }.disabled(!ReadingParser.valid(value, kind: kind)).accessibilityIdentifier("saveReading") }
+            ToolbarItem(placement: .confirmationAction) { Button("Save") { store.add(Reading(
+                kind: kind,
+                value: ReadingParser.normalizedValue(value),
+                date: date
+            ))
+            dismiss() }.disabled(!ReadingParser.valid(value, kind: kind)).accessibilityIdentifier("saveReading") }
         }
     }
 }
@@ -362,16 +638,44 @@ struct InteractionView: View {
             ForEach(report.alerts.indices, id: \.self) { index in
                 let alert = report.alerts[index]
                 VStack(alignment: .leading, spacing: 10) {
-                    Label(alert.pair.map { L10n.string($0).capitalized }.joined(separator: " + "), systemImage: "exclamationmark.circle.fill").font(.headline).foregroundStyle(Palette.coral)
+                    Label(
+                        alert.pair.map { L10n.string($0).capitalized }.joined(separator: " + "),
+                        systemImage: "exclamationmark.circle.fill"
+                    ).font(.headline).foregroundStyle(Palette.coral)
                     Text(L10n.string(alert.summary)).fixedSize(horizontal: false, vertical: true)
-                    Link("NHS source", destination: URL(string: alert.source)!).font(.body).foregroundStyle(Palette.muted).accessibilityIdentifier("interactionSource")
+                    Link("NHS source", destination: URL(string: alert.source)!).font(.body)
+                        .foregroundStyle(Palette.muted).accessibilityIdentifier("interactionSource")
                 }
             }
-            if !report.duplicates.isEmpty { Label(L10n.format("Repeated ingredients: %@", L10n.ingredientNames(report.duplicates)), systemImage: "pills.fill").foregroundStyle(Palette.coral) }
-            if !report.unresolved.isEmpty { VStack(alignment: .leading, spacing: 6) { Text("Unconfirmed ingredients").font(.headline); Text(report.unresolved.joined(separator: ", ")).foregroundStyle(Palette.muted) } }
-            if !report.unassessed.isEmpty { VStack(alignment: .leading, spacing: 10) { Text("Not assessed").font(.headline); ForEach(report.unassessed.indices, id: \.self) { Text(report.unassessed[$0].map { L10n.string($0) }.joined(separator: " + ")).foregroundStyle(Palette.muted) } } }
-            if report.alerts.isEmpty && report.unassessed.isEmpty && report.duplicates.isEmpty && report.unresolved.isEmpty { Text("Add at least two medications to compare.").foregroundStyle(Palette.muted) }
-            Text("Coverage: four source-listed ingredient pairs. An absent alert does not establish safety. Ask a pharmacist before changing medications.").font(.footnote).foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true)
+            if !report.duplicates.isEmpty {
+                Label(
+                    L10n.format("Repeated ingredients: %@", L10n.ingredientNames(report.duplicates)),
+                    systemImage: "pills.fill"
+                ).foregroundStyle(Palette.coral) }
+            if
+                !report.unresolved
+                    .isEmpty {
+                VStack(alignment: .leading, spacing: 6) { Text("Unconfirmed ingredients").font(.headline)
+                    Text(report.unresolved.joined(separator: ", ")).foregroundStyle(Palette.muted) } }
+            if
+                !report.unassessed
+                    .isEmpty {
+                VStack(alignment: .leading, spacing: 10) { Text("Not assessed").font(.headline)
+                    ForEach(report.unassessed.indices, id: \.self) {
+                        Text(report.unassessed[$0].map { L10n.string($0) }.joined(separator: " + "))
+                            .foregroundStyle(Palette.muted) } } }
+            if
+                report.alerts.isEmpty && report.unassessed.isEmpty && report.duplicates.isEmpty && report.unresolved
+                    .isEmpty {
+                Text("Add at least two medications to compare.").foregroundStyle(Palette.muted)
+            }
+            Text(
+                "Coverage: four source-listed ingredient pairs. An absent alert does not establish safety. Ask a pharmacist before changing medications."
+            )
+            .font(.footnote).foregroundStyle(Palette.muted).fixedSize(
+                horizontal: false,
+                vertical: true
+            )
         }.frame(maxWidth: .infinity, alignment: .leading)
     }
 }
@@ -380,7 +684,10 @@ struct NoteView: View {
     @EnvironmentObject var store: AppStore
     @Environment(\.dismiss) private var dismiss
     @State private var copied = false
-    private var text: String { LocalizedHealthContent.appointmentNote(records: store.records) }
+    private var text: String {
+        LocalizedHealthContent.appointmentNote(records: store.records)
+    }
+
     var body: some View {
         VStack(spacing: 16) {
             ScrollView {
@@ -392,15 +699,23 @@ struct NoteView: View {
                 VStack(spacing: 12) { noteActions }
             }
         }.padding(.horizontal, AppLayout.screenInset).padding(.bottom, 12)
-            .background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle("Appointment note").navigationBarTitleDisplayMode(.inline)
+            .background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle("Appointment note")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } }
             }
     }
+
     @ViewBuilder private var noteActions: some View {
-        Button { UIPasteboard.general.string = text; copied = true } label: { Label(L10n.string(copied ? "Copied" : "Copy"), systemImage: copied ? "checkmark" : "doc.on.doc") }
-            .buttonStyle(ActionButtonStyle()).accessibilityLabel("Copy note").accessibilityValue(L10n.string(copied ? "Copied" : "Not copied"))
-        ShareLink(item: text) { Label("Share", systemImage: "square.and.arrow.up") }.buttonStyle(ActionButtonStyle(secondary: true))
+        Button { UIPasteboard.general.string = text
+            copied = true } label: { Label(
+            L10n.string(copied ? "Copied" : "Copy"),
+            systemImage: copied ? "checkmark" : "doc.on.doc"
+        ) }
+        .buttonStyle(ActionButtonStyle()).accessibilityLabel("Copy note")
+        .accessibilityValue(L10n.string(copied ? "Copied" : "Not copied"))
+        ShareLink(item: text) { Label("Share", systemImage: "square.and.arrow.up") }
+            .buttonStyle(ActionButtonStyle(secondary: true))
     }
 }
 

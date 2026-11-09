@@ -6,7 +6,10 @@ import llama
 final class VisitSummaryOutputGrammarTests: XCTestCase {
     func testRootRequiresAllCategoriesAndBoundedCollections() {
         let grammar = VisitSummaryOutputGrammar.make()
-        XCTAssertTrue(grammar.contains(#"root ::= ws "{" ws "\"highlights\"" ws ":" ws quotes ws "," ws "\"medicines\"" ws ":" ws medicines ws "," ws "\"followUps\"" ws ":" ws quotes ws "," ws "\"appointments\"" ws ":" ws quotes ws "}" ws"#))
+        XCTAssertTrue(grammar
+            .contains(
+                #"root ::= ws "{" ws "\"highlights\"" ws ":" ws quotes ws "," ws "\"medicines\"" ws ":" ws medicines ws "," ws "\"followUps\"" ws ":" ws quotes ws "," ws "\"appointments\"" ws ":" ws quotes ws "}" ws"#
+            ))
         XCTAssertTrue(grammar.contains(#"quotes ::= "[" ws (quote (ws "," ws quote){0,11})? ws "]""#))
         XCTAssertTrue(grammar.contains(#"medicines ::= "[" ws (medicine (ws "," ws medicine){0,11})? ws "]""#))
         XCTAssertTrue(grammar.contains(#"medicine ::= active-medicine | stop-medicine"#))
@@ -14,7 +17,10 @@ final class VisitSummaryOutputGrammarTests: XCTestCase {
         XCTAssertTrue(grammar.contains(#"character{4,600}"#))
         XCTAssertTrue(grammar.contains(#"character{1,100}"#))
         XCTAssertTrue(grammar.contains(#"character{1,480}"#))
-        XCTAssertTrue(grammar.contains(#""\"stop\"" ws "," ws "\"name\"" ws ":" ws name-string ws "," ws "\"instructions\"" ws ":" ws "\"\"""#))
+        XCTAssertTrue(grammar
+            .contains(
+                #""\"stop\"" ws "," ws "\"name\"" ws ":" ws name-string ws "," ws "\"instructions\"" ws ":" ws "\"\"""#
+            ))
         XCTAssertFalse(grammar.contains(".*"))
     }
 
@@ -36,14 +42,24 @@ final class VisitSummaryOutputGrammarTests: XCTestCase {
 
     func testGrammarContainsOnlyTheSupportedMedicationFields() {
         let grammar = VisitSummaryOutputGrammar.make()
-        XCTAssertTrue(grammar.contains(#"active-medicine ::= "{" ws "\"action\"" ws ":" ws active-action ws "," ws "\"name\"" ws ":" ws name-string ws "," ws "\"instructions\"" ws ":" ws instruction-string ws "," ws "\"quote\"" ws ":" ws quote-string ws "}""#))
+        XCTAssertTrue(grammar
+            .contains(
+                #"active-medicine ::= "{" ws "\"action\"" ws ":" ws active-action ws "," ws "\"name\"" ws ":" ws name-string ws "," ws "\"instructions\"" ws ":" ws instruction-string ws "," ws "\"quote\"" ws ":" ws quote-string ws "}""#
+            ))
         XCTAssertFalse(grammar.contains("metformin"))
         XCTAssertFalse(grammar.contains("twice daily"))
     }
 
     func testNativeRuntimeParsesAllOutputGrammarsWithoutModelWeights() throws {
         // These character-only grammars need no vocabulary until token sampling.
-        for grammar in [VisitSummaryOutputGrammar.make(), VisitSummaryOutputGrammar.make(section: "medicines"), VisitSummaryOutputGrammar.make(section: "followUps"), VisitSummaryOutputGrammar.make(section: "highlights"), TitleOutputGrammar.make(), try ToolOutputGrammar.make(allowedTools: ["reply"])] {
+        for grammar in [
+            VisitSummaryOutputGrammar.make(),
+            VisitSummaryOutputGrammar.make(section: "medicines"),
+            VisitSummaryOutputGrammar.make(section: "followUps"),
+            VisitSummaryOutputGrammar.make(section: "highlights"),
+            TitleOutputGrammar.make(),
+            try ToolOutputGrammar.make(allowedTools: ["reply"])
+        ] {
             let sampler = try XCTUnwrap(llama_sampler_init_grammar(nil, grammar, "root"))
             llama_sampler_free(sampler)
         }

@@ -30,6 +30,8 @@ final class ReadingParserTests: XCTestCase {
             "Pulse 81 mg.", "Pouls 81mg.", "Température 37,1 milligrammes.",
             "Temperature 37.1 micrograms.", "Blood pressure 118/76 mg.",
             "I take 81 mg of medicine.", "Je prends un médicament de 81 mg."
-        ] { XCTAssertNil(ReadingParser.parse(original), original) }
+        ] {
+            XCTAssertNil(ReadingParser.parse(original), original)
+        }
     }
 }
