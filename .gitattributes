@@ -1,0 +1,11 @@
+# Generated media must never be treated as source text or newline-normalized.
+*.pdf binary
+*.mp4 binary
+*.png binary
+*.jpg binary
+
+# Editable presentation source lives in presentation/; these are built artifacts.
+docs/presentation/** linguist-generated=true
+docs/screenshots/** linguist-generated=true
+HarbourCore/Sources/HarbourCore/Resources/medication-vocabulary.json linguist-generated=true
+docs/evaluation/medication-names-*.json linguist-generated=true
