@@ -65,3 +65,5 @@ Course context, the project plan, and the preliminary report are maintained sepa
 
 - [Unconfirmed medicine review](unconfirmed-medicine-review.md) — human confirmation of unresolved visit items and atomic save status.
 - [Medication chat changes](medication-chat-changes.md) — dose corrections, destructive-action checks and visible confirmation state.
+
+- [Record review redesign release](releases/record-review-redesign.md) — build 10 layout, visit acceptance, chat correction and internal distribution evidence.
