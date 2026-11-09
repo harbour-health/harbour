@@ -1298,42 +1298,42 @@
   "165-voice-conversation-history": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1794255743.111,
-    "suggestedHumanReadableName": "165-voice-conversation-history_0_E169B9F5-ED1D-4C93-A6F3-3D6983CCD757.png",
+    "timestamp": 1794257187.385,
+    "suggestedHumanReadableName": "165-voice-conversation-history_0_402307DD-CD43-4AF4-97F8-C24EDC4B17EA.png",
     "test": "VoiceConversationUITests/testFullScreenVoiceKeepsConversationOnExit()",
-    "resultBundle": "harbour-polish-20261109.xcresult"
+    "resultBundle": "harbour-polish-post-format-20261109.xcresult"
   },
   "164-voice-conversation-light": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1794255741.427,
-    "suggestedHumanReadableName": "164-voice-conversation-light_0_82171EC6-1B61-42EA-9A2C-D900706570E0.png",
+    "timestamp": 1794257185.328,
+    "suggestedHumanReadableName": "164-voice-conversation-light_0_068E145F-A576-44F1-9E3C-2F426434A96E.png",
     "test": "VoiceConversationUITests/testFullScreenVoiceKeepsConversationOnExit()",
-    "resultBundle": "harbour-polish-20261109.xcresult"
+    "resultBundle": "harbour-polish-post-format-20261109.xcresult"
   },
   "167-voice-conversation-landscape": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1794255766.581,
-    "suggestedHumanReadableName": "167-voice-conversation-landscape_0_08E0CE59-6EB3-421E-BD4C-C64C8F21134B.png",
+    "timestamp": 1794257212.608,
+    "suggestedHumanReadableName": "167-voice-conversation-landscape_0_97A1176B-FAF4-429A-ACCD-EDA9FF67F6C2.png",
     "test": "VoiceConversationUITests/testVoicePresentationFrenchDarkAndLandscape()",
-    "resultBundle": "harbour-polish-20261109.xcresult"
+    "resultBundle": "harbour-polish-post-format-20261109.xcresult"
   },
   "166-voice-conversation-french-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1794255765.085,
-    "suggestedHumanReadableName": "166-voice-conversation-french-dark_0_8563B489-7728-400E-8C96-DB7E7010E5B9.png",
+    "timestamp": 1794257211.424,
+    "suggestedHumanReadableName": "166-voice-conversation-french-dark_0_DF40F873-C837-4AC1-B451-35A9E87382CA.png",
     "test": "VoiceConversationUITests/testVoicePresentationFrenchDarkAndLandscape()",
-    "resultBundle": "harbour-polish-20261109.xcresult"
+    "resultBundle": "harbour-polish-post-format-20261109.xcresult"
   },
   "168-voice-conversation-large-text": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1794255749.677,
-    "suggestedHumanReadableName": "168-voice-conversation-large-text_0_3DEB630B-4C88-426C-81A8-3F29C010091E.png",
+    "timestamp": 1794257195.476,
+    "suggestedHumanReadableName": "168-voice-conversation-large-text_0_642A0D23-E232-445C-A438-664F7D7D622D.png",
     "test": "VoiceConversationUITests/testLargeTextVoiceControlsRemainReachable()",
-    "resultBundle": "harbour-polish-20261109.xcresult"
+    "resultBundle": "harbour-polish-post-format-20261109.xcresult"
   },
   "172-demo-visit-summary": {
     "deviceName": "Harbour QA",
@@ -1671,108 +1671,108 @@
     "test": "LargeModelUITests/testOptionalLargeModelSelection()",
     "resultBundle": "harbour-7b-options-final-20261109.xcresult"
   },
-  "224-condensed-report-page-three": {
-    "deviceName": "Harbour QA",
-    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1794255771.864,
-    "suggestedHumanReadableName": "condensed-report-page-3_0_D2A74215-A3BB-4FF1-85E0-89E4FD86536D.png",
-    "test": "CondensedReportTests/testSummaryReportIsBoundedAndKeepsEveryCurrentMedication()",
-    "resultBundle": "harbour-polish-20261109.xcresult"
-  },
   "223-condensed-report-page-two": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1794255771.856,
-    "suggestedHumanReadableName": "condensed-report-page-2_0_40D39059-619B-4C6A-9986-1A040C68941A.png",
+    "timestamp": 1794257219.728,
+    "suggestedHumanReadableName": "condensed-report-page-2_0_FE67F94B-A8BD-435E-86B4-CFF59C192038.png",
     "test": "CondensedReportTests/testSummaryReportIsBoundedAndKeepsEveryCurrentMedication()",
-    "resultBundle": "harbour-polish-20261109.xcresult"
+    "resultBundle": "harbour-polish-post-format-20261109.xcresult"
   },
   "222-condensed-report-page-one": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1794255771.846,
-    "suggestedHumanReadableName": "condensed-report-page-1_0_3360B2FF-2F0F-457E-85A2-39B35C07E4F3.png",
+    "timestamp": 1794257219.718,
+    "suggestedHumanReadableName": "condensed-report-page-1_0_EDCCFFB0-2ECC-4F9D-85FE-CAC2F8E44C13.png",
     "test": "CondensedReportTests/testSummaryReportIsBoundedAndKeepsEveryCurrentMedication()",
-    "resultBundle": "harbour-polish-20261109.xcresult"
+    "resultBundle": "harbour-polish-post-format-20261109.xcresult"
   },
   "217-named-models": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1794255890.306,
-    "suggestedHumanReadableName": "217-named-models_0_96DCDD51-1C01-4DBD-BC69-CADACAC659AA.png",
+    "timestamp": 1794256818.602,
+    "suggestedHumanReadableName": "217-named-models_0_0348791D-E5BF-412D-8E91-C5B5FA4A09FD.png",
     "test": "InterfacePolishUITests/testComposerControlsNamesAndSavedReadingTable()",
-    "resultBundle": "harbour-polish-layout-final-20261109.xcresult"
+    "resultBundle": "harbour-polish-post-format-20261109.xcresult"
   },
   "211-switches-light": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1794256344.266,
-    "suggestedHumanReadableName": "211-switches-light_0_7EF7D1BE-40C7-4127-AA69-4605DDBABC33.png",
+    "timestamp": 1794257137.244,
+    "suggestedHumanReadableName": "211-switches-light_0_F171AC3E-0ADC-41BE-9ABC-6E3058C9352D.png",
     "test": "InterfacePolishUITests/testSwitchContrastDrawerSizesAndInlineVoicePreview()",
-    "resultBundle": "harbour-controls-final-20261109.xcresult"
+    "resultBundle": "harbour-polish-post-format-20261109.xcresult"
   },
   "219-balanced-visit-follow-up": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1794255907.463,
-    "suggestedHumanReadableName": "219-balanced-visit-follow-up_0_D437D659-2DF0-4D62-833E-7847E56DF216.png",
+    "timestamp": 1794256841.845,
+    "suggestedHumanReadableName": "219-balanced-visit-follow-up_0_307947CD-13CD-42BC-847D-763627A6568F.png",
     "test": "InterfacePolishUITests/testComposerControlsNamesAndSavedReadingTable()",
-    "resultBundle": "harbour-polish-layout-final-20261109.xcresult"
+    "resultBundle": "harbour-polish-post-format-20261109.xcresult"
   },
   "218-compact-readings-chat": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1794255900.214,
-    "suggestedHumanReadableName": "218-compact-readings-chat_0_C92524E0-D92A-4933-B588-9F20CD87CD94.png",
+    "timestamp": 1794256832.165,
+    "suggestedHumanReadableName": "218-compact-readings-chat_0_89375551-1AC8-47C3-8640-D3935790C484.png",
     "test": "InterfacePolishUITests/testComposerControlsNamesAndSavedReadingTable()",
-    "resultBundle": "harbour-polish-layout-final-20261109.xcresult"
+    "resultBundle": "harbour-polish-post-format-20261109.xcresult"
   },
   "221-home-with-records": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1794255887.571,
-    "suggestedHumanReadableName": "221-home-with-records_0_1B51576C-C92F-4245-A17B-744508E5EE50.png",
+    "timestamp": 1794256814.633,
+    "suggestedHumanReadableName": "221-home-with-records_0_4F995973-428A-40A1-B873-1ADDC8175B32.png",
     "test": "InterfacePolishUITests/testComposerControlsNamesAndSavedReadingTable()",
-    "resultBundle": "harbour-polish-layout-final-20261109.xcresult"
+    "resultBundle": "harbour-polish-post-format-20261109.xcresult"
   },
   "216-inline-voice-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1794256380.311,
-    "suggestedHumanReadableName": "216-inline-voice-dark_0_AEC349A0-23D0-4124-8613-4854ECB00D71.png",
+    "timestamp": 1794257171.564,
+    "suggestedHumanReadableName": "216-inline-voice-dark_0_6A61EED9-4425-4B55-86EF-F06BB5F23AD3.png",
     "test": "InterfacePolishUITests/testSwitchContrastDrawerSizesAndInlineVoicePreview()",
-    "resultBundle": "harbour-controls-final-20261109.xcresult"
+    "resultBundle": "harbour-polish-post-format-20261109.xcresult"
   },
   "214-short-drawer-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1794256375.631,
-    "suggestedHumanReadableName": "214-short-drawer-dark_0_FB5FCF6B-84EF-4CE1-A6EB-5694FF622C70.png",
+    "timestamp": 1794257166.494,
+    "suggestedHumanReadableName": "214-short-drawer-dark_0_27731317-EFF7-46AB-91EF-F840E68C8BC6.png",
     "test": "InterfacePolishUITests/testSwitchContrastDrawerSizesAndInlineVoicePreview()",
-    "resultBundle": "harbour-controls-final-20261109.xcresult"
+    "resultBundle": "harbour-polish-post-format-20261109.xcresult"
   },
   "212-switches-dark": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1794256367.795,
-    "suggestedHumanReadableName": "212-switches-dark_0_A628C94C-0082-403C-8EE9-33861E0ABEA1.png",
+    "timestamp": 1794257158.828,
+    "suggestedHumanReadableName": "212-switches-dark_0_90528A13-54D7-4D36-A90B-6199F54AE27B.png",
     "test": "InterfacePolishUITests/testSwitchContrastDrawerSizesAndInlineVoicePreview()",
-    "resultBundle": "harbour-controls-final-20261109.xcresult"
+    "resultBundle": "harbour-polish-post-format-20261109.xcresult"
   },
   "215-inline-voice-light": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1794256358.572,
-    "suggestedHumanReadableName": "215-inline-voice-light_0_E372BA52-40B6-4C22-A2DF-6A1C317B7D9E.png",
+    "timestamp": 1794257149.923,
+    "suggestedHumanReadableName": "215-inline-voice-light_0_043B4C39-FAD7-4C01-B093-EB76952068B8.png",
     "test": "InterfacePolishUITests/testSwitchContrastDrawerSizesAndInlineVoicePreview()",
-    "resultBundle": "harbour-controls-final-20261109.xcresult"
+    "resultBundle": "harbour-polish-post-format-20261109.xcresult"
   },
   "213-short-drawer-light": {
     "deviceName": "Harbour QA",
     "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
-    "timestamp": 1794256352.975,
-    "suggestedHumanReadableName": "213-short-drawer-light_0_30E79392-701D-4267-A402-2640B6C5490F.png",
+    "timestamp": 1794257144.99,
+    "suggestedHumanReadableName": "213-short-drawer-light_0_F576A1A4-8D33-4B01-93B4-1C6646C527FA.png",
     "test": "InterfacePolishUITests/testSwitchContrastDrawerSizesAndInlineVoicePreview()",
-    "resultBundle": "harbour-controls-final-20261109.xcresult"
+    "resultBundle": "harbour-polish-post-format-20261109.xcresult"
+  },
+  "220-blood-pressure-chat-table": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794257127.497,
+    "suggestedHumanReadableName": "220-blood-pressure-chat-table_0_E11B7DF4-7551-4B98-832B-80E64BCCAB93.png",
+    "test": "InterfacePolishUITests/testLiveBloodPressureRequestUsesSourceBackedTable()",
+    "resultBundle": "harbour-polish-post-format-20261109.xcresult"
   }
 }

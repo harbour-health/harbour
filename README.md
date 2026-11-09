@@ -94,7 +94,7 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 <!-- screenshot-gallery:start -->
 ## All screens
 
-222 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
+222 app captures and rendered report pages. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
 
 ### Chat, voice and report refinements
 
@@ -104,9 +104,9 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | <strong>Compact drawer · Light</strong><br>[<img src="docs/screenshots/213-short-drawer-light.png" alt="Compact drawer · Light" width="220">](docs/screenshots/213-short-drawer-light.png) | <strong>Compact drawer · Dark</strong><br>[<img src="docs/screenshots/214-short-drawer-dark.png" alt="Compact drawer · Dark" width="220">](docs/screenshots/214-short-drawer-dark.png) |
 | <strong>Voice preview · Loading · Light</strong><br>[<img src="docs/screenshots/215-inline-voice-light.png" alt="Voice preview · Loading · Light" width="220">](docs/screenshots/215-inline-voice-light.png) | <strong>Voice preview · Loading · Dark</strong><br>[<img src="docs/screenshots/216-inline-voice-dark.png" alt="Voice preview · Loading · Dark" width="220">](docs/screenshots/216-inline-voice-dark.png) |
 | <strong>Alex, Sam and Camille</strong><br>[<img src="docs/screenshots/217-named-models.png" alt="Alex, Sam and Camille" width="220">](docs/screenshots/217-named-models.png) | <strong>Chat · Compact saved readings</strong><br>[<img src="docs/screenshots/218-compact-readings-chat.png" alt="Chat · Compact saved readings" width="220">](docs/screenshots/218-compact-readings-chat.png) |
-| <strong>Visit · Follow-up actions</strong><br>[<img src="docs/screenshots/219-balanced-visit-follow-up.png" alt="Visit · Follow-up actions" width="220">](docs/screenshots/219-balanced-visit-follow-up.png) | <strong>Today · Saved records</strong><br>[<img src="docs/screenshots/221-home-with-records.png" alt="Today · Saved records" width="220">](docs/screenshots/221-home-with-records.png) |
-| <strong>Condensed report · Page 1</strong><br>[<img src="docs/screenshots/222-condensed-report-page-one.png" alt="Condensed report · Page 1" width="220">](docs/screenshots/222-condensed-report-page-one.png) | <strong>Condensed report · Page 2</strong><br>[<img src="docs/screenshots/223-condensed-report-page-two.png" alt="Condensed report · Page 2" width="220">](docs/screenshots/223-condensed-report-page-two.png) |
-| <strong>Condensed report · Page 3</strong><br>[<img src="docs/screenshots/224-condensed-report-page-three.png" alt="Condensed report · Page 3" width="220">](docs/screenshots/224-condensed-report-page-three.png) |  |
+| <strong>Visit · Follow-up actions</strong><br>[<img src="docs/screenshots/219-balanced-visit-follow-up.png" alt="Visit · Follow-up actions" width="220">](docs/screenshots/219-balanced-visit-follow-up.png) | <strong>Chat · Blood pressure table</strong><br>[<img src="docs/screenshots/220-blood-pressure-chat-table.png" alt="Chat · Blood pressure table" width="220">](docs/screenshots/220-blood-pressure-chat-table.png) |
+| <strong>Today · Saved records</strong><br>[<img src="docs/screenshots/221-home-with-records.png" alt="Today · Saved records" width="220">](docs/screenshots/221-home-with-records.png) | <strong>Condensed report · Page 1</strong><br>[<img src="docs/screenshots/222-condensed-report-page-one.png" alt="Condensed report · Page 1" width="220">](docs/screenshots/222-condensed-report-page-one.png) |
+| <strong>Condensed report · Page 2</strong><br>[<img src="docs/screenshots/223-condensed-report-page-two.png" alt="Condensed report · Page 2" width="220">](docs/screenshots/223-condensed-report-page-two.png) |  |
 
 ### Open records and medicine review
 
