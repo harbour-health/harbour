@@ -1,1 +1,4 @@
 # Formatting-only commits. Do not list functional changes here.
+
+# SwiftFormat 0.64.6 and compiler-aware statement spacing; no functional changes.
+9fbc3a0a5893eb6889bde41bd5af011acf93ac3b
