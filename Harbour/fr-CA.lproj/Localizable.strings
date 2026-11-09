@@ -684,3 +684,16 @@
 "Pause" = "Pause";
 
 "End" = "Terminer";
+
+/* Developer demo data */
+"Developer" = "Développement";
+"Replace with demo data" = "Remplacer par les données de démo";
+"Demo data loaded" = "Données de démo chargées";
+"Demo data" = "Données de démo";
+"Demo visit · preset transcript, no audio" = "Consultation de démo · transcription prédéfinie, sans audio";
+"Fictional records, trends, schedules, appointments, chat history and completed visit summaries. Visits use preset transcripts without audio. Notifications are off for demo records." = "Dossiers fictifs, tendances, horaires, rendez-vous, historique de clavardage et résumés de consultation complets. Les consultations utilisent des transcriptions prédéfinies sans audio. Les notifications des données de démo sont désactivées.";
+"Models and app settings are kept" = "Les modèles et les réglages sont conservés";
+"Export any records you want to keep before replacing them. This removes existing records, chat and visit recordings from this device." = "Exportez les dossiers à conserver avant de les remplacer. Les dossiers, le clavardage et les enregistrements de consultation existants seront supprimés de cet appareil.";
+"Replace all local data?" = "Remplacer toutes les données locales?";
+"Your records, chat history and visit recordings will be deleted and replaced with fictional demo data. This cannot be undone." = "Vos dossiers, votre historique de clavardage et vos enregistrements de consultation seront supprimés et remplacés par des données de démo fictives. Cette action est irréversible.";
+"Couldn’t finish replacing local data. %@" = "Impossible de terminer le remplacement des données locales. %@";

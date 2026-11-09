@@ -185,6 +185,7 @@ struct VisitDetailView: View {
                             }.accessibilityLabel(L10n.string(playback.playing ? "Pause visit audio" : "Play visit audio")).disabled(recorder.active)
                         }
                     }
+                    if store.archive.demoData == true && (visit.title.hasPrefix("Démo ·") || visit.title.hasPrefix("Demo ·")) { Label("Demo visit · preset transcript, no audio", systemImage: "text.quote").font(.subheadline).foregroundStyle(Palette.muted) }
                     if visit.interrupted { Label("Recording was interrupted. Review the saved audio.", systemImage: "exclamationmark.circle").font(.body).foregroundStyle(Palette.coral) }
                     if let warning = visit.transcriptionWarning { Label(L10n.string(warning), systemImage: "waveform.badge.exclamationmark").font(.body).foregroundStyle(Palette.coral) }
                     if let summary = visit.summary {

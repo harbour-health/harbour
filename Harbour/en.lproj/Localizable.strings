@@ -684,3 +684,16 @@
 "Pause" = "Pause";
 
 "End" = "End";
+
+/* Developer demo data */
+"Developer" = "Developer";
+"Replace with demo data" = "Replace with demo data";
+"Demo data loaded" = "Demo data loaded";
+"Demo data" = "Demo data";
+"Demo visit · preset transcript, no audio" = "Demo visit · preset transcript, no audio";
+"Fictional records, trends, schedules, appointments, chat history and completed visit summaries. Visits use preset transcripts without audio. Notifications are off for demo records." = "Fictional records, trends, schedules, appointments, chat history and completed visit summaries. Visits use preset transcripts without audio. Notifications are off for demo records.";
+"Models and app settings are kept" = "Models and app settings are kept";
+"Export any records you want to keep before replacing them. This removes existing records, chat and visit recordings from this device." = "Export any records you want to keep before replacing them. This removes existing records, chat and visit recordings from this device.";
+"Replace all local data?" = "Replace all local data?";
+"Your records, chat history and visit recordings will be deleted and replaced with fictional demo data. This cannot be undone." = "Your records, chat history and visit recordings will be deleted and replaced with fictional demo data. This cannot be undone.";
+"Couldn’t finish replacing local data. %@" = "Couldn’t finish replacing local data. %@";

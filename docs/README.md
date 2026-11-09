@@ -56,3 +56,5 @@ Course context, the project plan, and the preliminary report are maintained sepa
 - [Linked-plan evaluation](linked-plan-evaluation.md) — 7B baseline and bilingual instruction extraction/coverage experiments.
 
 - [Full-screen voice release](releases/full-screen-voice.md) — build 7 distribution, verification and known summary limitation.
+
+- [Developer demo data](demo-data.md) — explicit fictional dataset replacement, transcripts, summaries and reset boundaries.

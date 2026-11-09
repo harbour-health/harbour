@@ -108,6 +108,11 @@ TITLES = {
     '166-voice-conversation-french-dark': 'Conversation vocale · Sombre',
     '167-voice-conversation-landscape': 'Voice · Landscape',
     '168-voice-conversation-large-text': 'Voice · Largest text',
+    '169-developer-settings': 'Developer settings',
+    '170-demo-replacement-confirmation': 'Replace demo data · Confirmation',
+    '171-demo-today': 'Demo · Today',
+    '172-demo-visit-summary': 'Demo · Visit summary',
+    '173-developer-french': 'Développement · Données de démo',
 
 
 }
@@ -201,7 +206,7 @@ if args.update_readme:
         'Records': {2, 3, 4, 22, 33, 34, 35, 64, 65, 151},
         'Entry and review': {5, 6, 7, 8, 9, 20, 21, 23, 24, 25, 48, 49, 50, 51, 52, 79, 81, 82, 84, 85, 90},
         'Doctor visits': set(range(67, 79)) | {83, 87, 88, 142, 147, 148, 149, 154, 155, 156, 158, 159},
-        'Settings, models, and notes': {14, 15, 16, 18, 19, 27, 37, 38, 39, 40, 41, 60},
+        'Settings, models, and notes': {14, 15, 16, 18, 19, 27, 37, 38, 39, 40, 41, 60, 169, 170, 171, 172, 173},
         'App lock': {54, 55, 56, 57, 59, 61, 62, 80},
         'Health permissions': {26, 30, 63},
         'Evaluation': {17, 29, 86, 157},

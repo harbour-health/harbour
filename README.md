@@ -94,7 +94,7 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 <!-- screenshot-gallery:start -->
 ## All screens
 
-167 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
+172 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
 
 ### Today
 
@@ -172,6 +172,9 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | <strong>Models · Dark</strong><br>[<img src="docs/screenshots/37-models-dark.png" alt="Models · Dark" width="220">](docs/screenshots/37-models-dark.png) | <strong>Settings · Dark</strong><br>[<img src="docs/screenshots/38-settings-dark.png" alt="Settings · Dark" width="220">](docs/screenshots/38-settings-dark.png) |
 | <strong>Appointment note · Dark</strong><br>[<img src="docs/screenshots/39-note-dark.png" alt="Appointment note · Dark" width="220">](docs/screenshots/39-note-dark.png) | <strong>Appearance · Light</strong><br>[<img src="docs/screenshots/40-appearance-light.png" alt="Appearance · Light" width="220">](docs/screenshots/40-appearance-light.png) |
 | <strong>Appearance · Dark</strong><br>[<img src="docs/screenshots/41-appearance-dark.png" alt="Appearance · Dark" width="220">](docs/screenshots/41-appearance-dark.png) | <strong>Import records</strong><br>[<img src="docs/screenshots/60-import-records.png" alt="Import records" width="220">](docs/screenshots/60-import-records.png) |
+| <strong>Developer settings</strong><br>[<img src="docs/screenshots/169-developer-settings.png" alt="Developer settings" width="220">](docs/screenshots/169-developer-settings.png) | <strong>Replace demo data · Confirmation</strong><br>[<img src="docs/screenshots/170-demo-replacement-confirmation.png" alt="Replace demo data · Confirmation" width="220">](docs/screenshots/170-demo-replacement-confirmation.png) |
+| <strong>Demo · Today</strong><br>[<img src="docs/screenshots/171-demo-today.png" alt="Demo · Today" width="220">](docs/screenshots/171-demo-today.png) | <strong>Demo · Visit summary</strong><br>[<img src="docs/screenshots/172-demo-visit-summary.png" alt="Demo · Visit summary" width="220">](docs/screenshots/172-demo-visit-summary.png) |
+| <strong>Développement · Données de démo</strong><br>[<img src="docs/screenshots/173-developer-french.png" alt="Développement · Données de démo" width="220">](docs/screenshots/173-developer-french.png) |  |
 
 ### App lock
 

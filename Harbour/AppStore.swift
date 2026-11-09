@@ -30,6 +30,7 @@ struct ChatConversation: Codable, Identifiable {
 }
 struct Archive: Codable {
     var version = 1
+    var demoData: Bool?
     var records = Records()
     var messages: [ChatMessage] = []
     var chatTitle: String?

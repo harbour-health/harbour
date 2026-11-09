@@ -1334,5 +1334,45 @@
     "suggestedHumanReadableName": "168-voice-conversation-large-text_0_83861FE4-05A0-4109-8A13-8E378E9AC6C4.png",
     "test": "VoiceConversationUITests/testLargeTextVoiceControlsRemainReachable()",
     "resultBundle": "test_sim_2026-11-07T20-08-55-510Z_pid2645_5f028b9c.xcresult"
+  },
+  "172-demo-visit-summary": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794245249.682,
+    "suggestedHumanReadableName": "172-demo-visit-summary_0_660DC186-63D5-4C70-8D35-5620F024730F.png",
+    "test": "DemoDataUITests/testDemoReplacementConfirmationAndVisitSummary()",
+    "resultBundle": "test_sim_2026-11-09T17-26-26-310Z_pid62996_08a8eb0c.xcresult"
+  },
+  "171-demo-today": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794245246.885,
+    "suggestedHumanReadableName": "171-demo-today_0_5CB323A0-C156-4D10-ADA9-E57F37A3D57B.png",
+    "test": "DemoDataUITests/testDemoReplacementConfirmationAndVisitSummary()",
+    "resultBundle": "test_sim_2026-11-09T17-26-26-310Z_pid62996_08a8eb0c.xcresult"
+  },
+  "170-demo-replacement-confirmation": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794245238.558,
+    "suggestedHumanReadableName": "170-demo-replacement-confirmation_0_43319880-D296-42B4-9B19-317897F57FF7.png",
+    "test": "DemoDataUITests/testDemoReplacementConfirmationAndVisitSummary()",
+    "resultBundle": "test_sim_2026-11-09T17-26-26-310Z_pid62996_08a8eb0c.xcresult"
+  },
+  "169-developer-settings": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794245236.608,
+    "suggestedHumanReadableName": "169-developer-settings_0_C2860ACB-E49C-49B9-B3F1-F201FF3BFEE9.png",
+    "test": "DemoDataUITests/testDemoReplacementConfirmationAndVisitSummary()",
+    "resultBundle": "test_sim_2026-11-09T17-26-26-310Z_pid62996_08a8eb0c.xcresult"
+  },
+  "173-developer-french": {
+    "deviceName": "Harbour QA",
+    "deviceId": "4CBE3917-F4F5-453D-98C6-AEB7844BDA25",
+    "timestamp": 1794245272.121,
+    "suggestedHumanReadableName": "173-developer-french_0_6338C738-E929-455A-AD9E-55AF6EB18FD2.png",
+    "test": "DemoDataUITests/testFrenchDemoSettings()",
+    "resultBundle": "test_sim_2026-11-09T17-26-26-310Z_pid62996_08a8eb0c.xcresult"
   }
 }

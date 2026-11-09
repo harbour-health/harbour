@@ -28,6 +28,7 @@ struct SettingsView: View {
                 Button { importing = true } label: { Label("Import records", systemImage: "square.and.arrow.down") }
                 Button("Delete all records and chat", role: .destructive) { deleting = true }.disabled(recorder.active)
             }
+            Section { NavigationLink { DeveloperSettingsView() } label: { Label("Developer", systemImage: "hammer") }.accessibilityIdentifier("developerSettings") }
             Section { NavigationLink { EvaluationView() } label: { Label("Evaluation", systemImage: "checkmark.seal") } }
         }.scrollContentBackground(.hidden).background(Palette.canvas).navigationTitle("Settings").navigationBarTitleDisplayMode(.inline)
         .drawerHeight(health.status.isEmpty ? 690 : 740)
