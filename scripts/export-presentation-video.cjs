@@ -37,7 +37,11 @@ const url = argument("--url", "http://127.0.0.1:8766/"),
     recordVideo: { dir: tmp, size: { width: 1920, height: 1080 } },
   });
   const page = await context.newPage();
-  const errors = [];
+  const errors = [],
+    backendBeats = [];
+  await page.exposeFunction("onBackendBeat", ({ key, beat }) =>
+    backendBeats.push(`${key}:${beat}`),
+  );
   page.on("pageerror", (e) => errors.push(e.message));
   await page.exposeFunction("onPresentationStep", (step) =>
     console.log(`Explaining ${step}`),
@@ -49,15 +53,34 @@ const url = argument("--url", "http://127.0.0.1:8766/"),
     "Recording actual native footage with external UI deconstruction…",
   );
   await page.waitForFunction(() => window.presentation.done, null, {
-    timeout: 300000,
+    timeout: 480000,
   });
   const stages = await page.evaluate(() => presentation.state.stops);
   if (
-    !["home", "readings", "caregiver", "records", "medication", "visit"].every(
-      (s) => stages.includes(s),
-    )
+    ![
+      "home",
+      "readings",
+      "caregiver",
+      "records",
+      "medication",
+      "visit",
+      "backend-model",
+      "backend-chat",
+      "backend-voice",
+      "backend-medicine",
+      "backend-recording",
+      "backend-summary",
+    ].every((s) => stages.includes(s))
   )
     throw new Error("Incomplete deconstruction sequence: " + stages.join(", "));
+  const expectedBeats = await page.evaluate(() =>
+    Object.entries(
+      JSON.parse(document.querySelector("#manifest").textContent).backend,
+    ).flatMap(([key, flow]) => flow.beats.map((_, i) => `${key}:${i}`)),
+  );
+  if (!expectedBeats.every((beat) => backendBeats.includes(beat)))
+    throw new Error("Backend beat sequence incomplete");
+  console.log(`Verified ${expectedBeats.length} backend animation beats.`);
   await page.waitForTimeout(800);
   const recording = await page.video().path();
   await context.close();

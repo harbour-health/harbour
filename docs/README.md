@@ -83,3 +83,5 @@ Course context, the project plan, and the preliminary report are maintained sepa
 - [Presentation walkthrough](presentation-walkthrough.md) — actual UI magnification, live state and reproducible video.
 - [Medication-name text checks](evaluation/medication-names.md) — bilingual difficult names, fictional identities and separate routing/validation results.
 - [Simple interface and presentation verification](releases/simple-interface-and-presentation.md) — native checks, model subset results and evidence limits.
+
+- [Presentation backend animations](presentation-backend.md) — illustrated model selection, routing, voice, recording and summary internals.

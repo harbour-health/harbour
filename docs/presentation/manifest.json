@@ -1,4 +1,405 @@
 {
+  "backend": {
+    "model": {
+      "title": "Choosing a local model",
+      "subtitle": "Policy examples. The recorded chat explicitly selected Alex.",
+      "stages": [
+        "Phone state",
+        "Model choice",
+        "Verified weights",
+        "Local runtime"
+      ],
+      "sources": [
+        "Harbour/ModelManager.swift · automaticModel, visitModel, ensure, generate",
+        "HarbourRuntime/Sources/HarbourRuntime/LocalModel.swift · load, generate"
+      ],
+      "beats": [
+        {
+          "stage": 0,
+          "title": "Read the phone’s current limits",
+          "detail": "Automatic selection uses physical memory, Low Power Mode and thermal state. It does not benchmark the phone.",
+          "code": "Example A\n6 GB memory · Low Power Mode off · nominal temperature\nAutomatic choice: Alex (0.5B)",
+          "seconds": 5,
+          "visual": {
+            "kind": "branches",
+            "input": "Automatic",
+            "options": [
+              "Alex · 0.5B",
+              "Sam · 1.5B",
+              "Camille · manual"
+            ],
+            "selected": [
+              0
+            ]
+          }
+        },
+        {
+          "stage": 1,
+          "title": "Use Sam when the policy permits",
+          "detail": "At least 8 GB, normal power and nominal temperature select Sam. Otherwise it selects Alex. Camille (7B) is a manual option.",
+          "code": "Example B\n12 GB memory · Low Power Mode off · nominal temperature\nAutomatic choice: Sam (1.5B)\nVisit summaries promote Alex to Sam; manual Camille stays selected.",
+          "seconds": 6,
+          "visual": {
+            "kind": "branches",
+            "input": "Automatic",
+            "options": [
+              "Alex · 0.5B",
+              "Sam · 1.5B",
+              "Camille · manual"
+            ],
+            "selected": [
+              1
+            ]
+          }
+        },
+        {
+          "stage": 2,
+          "title": "Reuse a verified download",
+          "detail": "If the files are missing, download pinned model assets and verify their size and SHA-256 before installation. Partial files stay in staging.",
+          "code": "Verified local weights ────────────── ready\nMissing weights → download → verify → install\nDownload is network access; inference runs locally.",
+          "seconds": 5
+        },
+        {
+          "stage": 3,
+          "title": "Generate inside llama.cpp",
+          "detail": "The runtime loads GGUF weights. Physical devices request Metal layers; Simulator uses CPU. Effort controls output budgets, not model size.",
+          "code": "Standard effort: router ≤ 160 tokens · chat ≤ 512 tokens\nQuick / Standard / Extended change those budgets.\nSummary passes use separate fixed budgets.",
+          "seconds": 5
+        }
+      ]
+    },
+    "chat": {
+      "title": "A message becomes a tool request",
+      "subtitle": "Architecture illustration. The recorded request actually executed list_readings.",
+      "stages": [
+        "Prompt",
+        "Local model",
+        "Validate",
+        "Dispatch"
+      ],
+      "sources": [
+        "HarbourCore/Sources/HarbourCore/ToolPlanner.swift · prompt, parse, validate",
+        "Harbour/ModelManager.swift · chatDecision; Harbour/ChatView.swift · send, execute"
+      ],
+      "beats": [
+        {
+          "stage": 0,
+          "title": "Build a bounded prompt",
+          "detail": "Combine the message with the tool list, a limited saved-record snapshot and recent conversation turns. A selected topic is only a hint.",
+          "code": "Message: Show my recent blood pressure readings\nContext: saved medicines, recent readings, symptoms\nHistory: up to six recent turns\nTopic: optional; it does not execute an action",
+          "seconds": 5
+        },
+        {
+          "stage": 1,
+          "title": "The LLM selects the intent",
+          "detail": "Constrained JSON names one tool. This is a model decision, rather than a keyword rule choosing which action to run.",
+          "code": "Illustrative structured decision\n{\n  \"tool\": \"list_readings\",\n  \"arg\": \"\"\n}",
+          "seconds": 5,
+          "visual": {
+            "kind": "branches",
+            "input": "LLM decision",
+            "options": [
+              "list_readings",
+              "update_medication",
+              "reply"
+            ],
+            "selected": [
+              0
+            ]
+          }
+        },
+        {
+          "stage": 2,
+          "title": "Check the decision against the request",
+          "detail": "Parse the output and validate requested actions against original input and saved identities. Unsupported write requests can be rejected or clarified.",
+          "code": "LLM proposal → parse → source checks\nRead tool: continue to dispatcher\nUnsupported write: reject or ask for clarification\nValidation is a guard, not a guarantee of medical accuracy.",
+          "seconds": 5
+        },
+        {
+          "stage": 3,
+          "title": "Route to the matching implementation",
+          "detail": "Read tools fetch saved data. Write tools open the shared review controls. A reply intent asks the model to generate ordinary conversation.",
+          "code": "list_readings → filter saved records → newest ten → table\nadd_medication / update_medication → medicine review\ncapture_symptom / log_reading → shared entry editor\nreply → generated conversation",
+          "seconds": 6,
+          "visual": {
+            "kind": "branches",
+            "input": "Dispatcher",
+            "options": [
+              "Saved records",
+              "Review editor",
+              "Conversation"
+            ],
+            "selected": [
+              0
+            ]
+          }
+        }
+      ]
+    },
+    "voice": {
+      "title": "Voice uses the same conversation",
+      "subtitle": "Illustrated speech path. This footage does not measure audio recognition or voice quality.",
+      "stages": [
+        "Microphone",
+        "Speech to text",
+        "Chat + tools",
+        "Kokoro speech"
+      ],
+      "sources": [
+        "Harbour/DeviceServices.swift · VoiceService; Harbour/ChatView.swift · voice turns, send",
+        "HarbourSpeech · KokoroSpeechEngine; Harbour/SessionActivities.swift"
+      ],
+      "beats": [
+        {
+          "stage": 0,
+          "title": "Listen on the phone",
+          "detail": "Voice conversation captures microphone audio and reports listening levels. Dictation only fills the composer; voice conversation continues the agent loop.",
+          "code": "Microphone → Apple on-device recognizer\nLanguage follows the app’s English / French choice.\nMedication-name hints guide recognition; they are not corrections.",
+          "seconds": 5
+        },
+        {
+          "stage": 1,
+          "title": "Finalize recognized words",
+          "detail": "The on-device recognizer supplies partial text while listening. The completed turn, rather than every partial fragment, becomes the message submitted to the agent.",
+          "code": "Partial recognition → finalized turn\nMedication hints bias recognition toward known names.\nThey do not verify that a medicine was actually spoken.",
+          "seconds": 5,
+          "visual": {
+            "kind": "branches",
+            "input": "Recognized text",
+            "options": [
+              "Dictation draft",
+              "Voice message"
+            ],
+            "selected": [
+              1
+            ]
+          }
+        },
+        {
+          "stage": 2,
+          "title": "Send the finished turn as text",
+          "detail": "The completed utterance enters the normal chat pipeline. Model-selected tools, review screens and conversation history remain the same.",
+          "code": "Finished utterance → chat message → local LLM\n                 ↳ tool request or generated reply\nThe full-screen voice view hides text, but chat history remains.",
+          "seconds": 5
+        },
+        {
+          "stage": 3,
+          "title": "Speak the response locally",
+          "detail": "Kokoro synthesizes the response into audio chunks for playback. The voice view reflects listening, thinking and speaking states.",
+          "code": "Agent response → text chunks → Kokoro → audio playback\nThe next listening turn continues the conversation.\nSpeech assets may need an initial download.",
+          "seconds": 5
+        }
+      ]
+    },
+    "medicine": {
+      "title": "Intent and medicine identity are separate",
+      "subtitle": "The recorded editor shows a real name suggestion. The routing example below is illustrative.",
+      "stages": [
+        "Requested change",
+        "Name lookup",
+        "Review",
+        "Save"
+      ],
+      "sources": [
+        "HarbourCore/Sources/HarbourCore/ToolPlanner.swift · validate",
+        "HarbourCore/Sources/HarbourCore/MedicationVocabulary.swift; Harbour/RecordsView.swift · MedicineEditor"
+      ],
+      "beats": [
+        {
+          "stage": 0,
+          "title": "Choose the action first",
+          "detail": "The local model distinguishes adding, updating, removing and asking a question. Validation then checks whether that action was actually requested.",
+          "code": "Illustrative message: Update my metformin to 400 mg\nModel intent: update_medication\nSource checks: saved medicine identity + requested directions\nResult: a review draft, not a deletion or silent overwrite",
+          "seconds": 5
+        },
+        {
+          "stage": 1,
+          "title": "Resolve names without guessing ingredients",
+          "detail": "Saved and exact database identities take precedence. Similar spellings produce candidates in the editor; the app does not silently replace the original text.",
+          "code": "Typed: hydroclorothiazide\nCandidate: Hydrochlorothiazide\nSource: Health Canada Drug Product Database vocabulary\nCandidate ≠ confirmed medicine",
+          "seconds": 5,
+          "visual": {
+            "kind": "branches",
+            "input": "Name lookup",
+            "options": [
+              "Exact identity",
+              "Similar candidates",
+              "Unresolved"
+            ],
+            "selected": [
+              1
+            ]
+          }
+        },
+        {
+          "stage": 2,
+          "title": "Review identity and directions together",
+          "detail": "The existing medicine editor displays the chosen product, instructions and schedule. A proposed correction remains a draft until the user checks it.",
+          "code": "Selected candidate: Hydrochlorothiazide\nCheck the exact product and ingredients.\nReview label directions, frequency and times.\nAn unchecked product cannot be saved.",
+          "seconds": 5
+        },
+        {
+          "stage": 3,
+          "title": "Keep the user at the write boundary",
+          "detail": "The shared editor shows identity, instructions and schedule. The user checks the intended product and confirms before the record store changes.",
+          "code": "Choose candidate → check product → review directions → Save\nNo confirmed selection: Save stays disabled.\nThese name entries are not a complete interaction database.",
+          "seconds": 5
+        }
+      ]
+    },
+    "recording": {
+      "title": "Recording and transcription run together",
+      "subtitle": "Illustrated backend. The displayed visit uses an authored transcript and summary fixture.",
+      "stages": [
+        "Audio capture",
+        "Local audio file",
+        "Speech service",
+        "Transcript"
+      ],
+      "sources": [
+        "Harbour/VisitRecorder.swift · VisitAudioWriter, ModernVisitSpeech, LegacyVisitSpeech",
+        "Harbour/VisitTranscription.swift · transcribe; Harbour/SessionActivities.swift"
+      ],
+      "beats": [
+        {
+          "stage": 0,
+          "title": "Start one recording session",
+          "detail": "After permissions and audio-session setup, AVAudioEngine supplies buffers. A single writer saves audio and forwards buffers to the speech session.",
+          "code": "Microphone → AVAudioEngine → audio buffers\n                         ├─ save .m4a locally\n                         └─ feed live speech recognition\nMeter updates also drive the recording display.",
+          "seconds": 6,
+          "visual": {
+            "kind": "branches",
+            "input": "Audio buffers",
+            "options": [
+              "Local audio file",
+              "Live transcription",
+              "Display levels"
+            ],
+            "selected": [
+              0,
+              1,
+              2
+            ]
+          }
+        },
+        {
+          "stage": 1,
+          "title": "Keep audio even if speech fails",
+          "detail": "The recorder supports background audio while locked. Live Activities report session state. If recognition is unavailable or falls behind, audio can still be retained for retry.",
+          "code": "Local recording + session state\nLive Activity / Dynamic Island: recording or paused\nRecognition failure: retain audio + show a warning\nInterrupted sessions are marked for recovery.",
+          "seconds": 5
+        },
+        {
+          "stage": 2,
+          "title": "Transcribe with the available Apple service",
+          "detail": "On iOS 26, live visits use SpeechAnalyzer and SpeechTranscriber. The older path requires on-device SFSpeechRecognizer support. Live speech receives medication hints.",
+          "code": "iOS 26 live path: audio → SpeechAnalyzer → transcript\nEarlier path: audio → on-device SFSpeechRecognizer\nSaved audio may be transcribed again after the visit.\nNo cloud transcription fallback is shown here.",
+          "seconds": 6
+        },
+        {
+          "stage": 3,
+          "title": "Save the text as summary input",
+          "detail": "The saved visit retains its audio reference and transcript. An empty failed retry does not replace a previously saved transcript. Summary extraction starts from the text.",
+          "code": "Saved visit\n  audio reference + transcript + session warnings\n                          ↓\n                  summary pipeline",
+          "seconds": 4
+        }
+      ]
+    },
+    "summary": {
+      "title": "Three focused passes per transcript chunk",
+      "subtitle": "Pipeline illustration, not an executed extraction of this demo visit. Proposals can still be missed or rejected.",
+      "stages": [
+        "Chunk text",
+        "Focused passes",
+        "Validate + merge",
+        "User review"
+      ],
+      "sources": [
+        "Harbour/VisitsView.swift · summarise; HarbourCore/Sources/HarbourCore/VisitExtraction.swift",
+        "HarbourCore/Sources/HarbourCore/Visits.swift · chunks, parse; Harbour/AppStore.swift · saveVisitSummary"
+      ],
+      "beats": [
+        {
+          "stage": 0,
+          "title": "Split text into bounded chunks",
+          "detail": "The app groups words into chunks of at most 1,800 characters and takes a baseline of saved medications. Each chunk goes through the same three passes, sequentially.",
+          "code": "Illustrative transcript\nIncrease amlodipine to 10 mg once daily at 8 am.\nRepeat blood work in two weeks. Home readings reviewed.\n\nVisit model: Sam when the chat selection is Alex.",
+          "seconds": 6
+        },
+        {
+          "stage": 1,
+          "title": "Pass 1: medication instructions",
+          "detail": "The prompt asks for explicit start, update or stop orders, complete directions and an exact source quote. Constrained JSON defines the output shape.",
+          "code": "medicines → action + name + instructions + source quote\nExample proposal: update amlodipine\nDirections: 10 mg once daily at 8 am\nBudget: up to 1,536 output tokens",
+          "seconds": 6,
+          "visual": {
+            "kind": "passes",
+            "input": "Same text chunk",
+            "options": [
+              "Medicines",
+              "Follow-ups",
+              "Highlights"
+            ],
+            "selected": [
+              0
+            ]
+          }
+        },
+        {
+          "stage": 1,
+          "title": "Pass 2: follow-ups and appointments",
+          "detail": "A separate prompt extracts tests, monitoring and future tasks, plus explicit appointment details. It must preserve dates and conditions without booking anything.",
+          "code": "followUps: Repeat blood work in two weeks.\nappointments: only explicitly supported appointment details\nEach item keeps its source quote.\nBudget: up to 1,024 output tokens",
+          "seconds": 5,
+          "visual": {
+            "kind": "passes",
+            "input": "Same text chunk",
+            "options": [
+              "Medicines",
+              "Follow-ups",
+              "Highlights"
+            ],
+            "selected": [
+              1
+            ]
+          }
+        },
+        {
+          "stage": 1,
+          "title": "Pass 3: discussion highlights",
+          "detail": "The final prompt extracts concise discussion points without repeating full medicine directions. This is not a second model voting on or repairing the earlier passes.",
+          "code": "highlights: Home readings reviewed.\nPreserve negation, uncertainty and numbers.\nKeep supporting source quotes.\nBudget: up to 768 output tokens",
+          "seconds": 5,
+          "visual": {
+            "kind": "passes",
+            "input": "Same text chunk",
+            "options": [
+              "Medicines",
+              "Follow-ups",
+              "Highlights"
+            ],
+            "selected": [
+              2
+            ]
+          }
+        },
+        {
+          "stage": 2,
+          "title": "Validate the proposals and combine them",
+          "detail": "Parsing checks quotes and source-supported fields, including medication instructions and action context. Supported results merge across passes and chunks; omitted facts are not invented by a recovery step.",
+          "code": "Candidates → source checks → supported summary fields\nUnknown medication identity can require manual review.\nNo guaranteed completeness: extraction can still miss an instruction.\nSummary saves with transcript + medication baseline.",
+          "seconds": 6
+        },
+        {
+          "stage": 3,
+          "title": "Review before changing medication records",
+          "detail": "Saving a summary does not apply its medication proposals. The review checks selected changes and acknowledgement; a changed medication baseline blocks stale application.",
+          "code": "Summary saved → proposed changes remain unapplied\nReview → select changes → confirm instructions → Save\nChanged baseline / conflicting changes: stop and review again",
+          "seconds": 6
+        }
+      ]
+    }
+  },
   "slides": [
     {
       "title": "Harbour",
@@ -7,18 +408,18 @@
     },
     {
       "title": "Interfaces",
-      "seconds": 40,
+      "seconds": 35,
       "scene": "interfaces",
       "notes": "Simple mode is the default for an independent older adult. A caregiver can expose records and review tools in Settings. Both modes use the same local account and records; this is not remote caregiver access."
     },
     {
       "title": "Request processing",
-      "seconds": 55,
-      "notes": "The local LLM chooses the tool. The app validates the request against original input, resolves names from saved records and the database, and uses existing editors. It does not let generated text directly overwrite medications. Unknown interaction pairs remain unassessed; the medication-name vocabulary is not a comprehensive interaction dataset."
+      "seconds": 40,
+      "notes": "The local LLM chooses the tool. The app validates the request against original input, resolves names from saved records and the database, and uses existing editors. It does not let generated text directly overwrite medications. Unknown interaction pairs remain unassessed; the medication-name vocabulary is not a comprehensive interaction dataset. The walkthrough animates the actual implementation paths. These explanatory diagrams are not live runtime telemetry."
     },
     {
       "title": "App walkthrough",
-      "seconds": 230,
+      "seconds": 330,
       "scene": "walkthrough",
       "source": "237-guided-readings",
       "target": "chatReadingsTable",
@@ -27,11 +428,11 @@
         "The local model chose list_readings",
         "Values come from records, not generated prose"
       ],
-      "notes": "Play the actual native walkthrough. Complete cards, record rows and drawers lift together in 440 ms before callout text appears. Explain Simple voice/chat/recording, the complete saved-readings card, caregiver measurement/medicine/symptom cards, the four record categories, medication-name review and the complete visit-change drawer. The recording uses Alex with actual tool inference. Saved records and visit summaries are fictional authored fixtures; this is not speech or summary-accuracy evidence."
+      "notes": "Play the actual native walkthrough. Complete cards, record rows and drawers lift together in 440 ms before callout text appears. Explain Simple voice/chat/recording, the complete saved-readings card, caregiver measurement/medicine/symptom cards, the four record categories, medication-name review and the complete visit-change drawer. The recording uses Alex with actual tool inference. Saved records and visit summaries are fictional authored fixtures; this is not speech or summary-accuracy evidence. Six architecture sequences cover automatic model policy, verified downloads/runtime, voice turns, chat JSON routing and source guards, medicine identity review, audio/transcription and three focused summary passes. Their examples are illustrative, not extra successful model evaluations. Native footage remains genuine; recording and summary scenes explain source code rather than claiming the authored visit was extracted live."
     },
     {
       "title": "Medication names",
-      "seconds": 65,
+      "seconds": 45,
       "scene": "medication",
       "source": "244-guided-medicine-confirmation",
       "target": "saveMedicine",
@@ -44,7 +445,7 @@
     },
     {
       "title": "Visit review",
-      "seconds": 75,
+      "seconds": 45,
       "scene": "visit",
       "source": "247-guided-visit-review",
       "target": "confirmVisitMedicines",
@@ -57,12 +458,12 @@
     },
     {
       "title": "Text evaluation",
-      "seconds": 55,
+      "seconds": 35,
       "notes": "This is the new 16-case medication-name subset, not the full medical evaluation. Both models scored 14/16; both failed the two negation routes, and validation blocked each attempted write. Diverse fictional names were paired across otherwise identical Canadian English/French requests. 153 deterministic core tests passed. A small fixture set is not demographic or clinical validation."
     },
     {
       "title": "Further evaluation",
-      "seconds": 40,
+      "seconds": 30,
       "notes": "Priorities are actual older-adult usability, bilingual acoustic tests, held-out complex visit transcripts and real-device latency/memory. No fine-tuning benefit or clinical accuracy claim is established here."
     },
     {

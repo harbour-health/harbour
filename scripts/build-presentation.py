@@ -70,9 +70,10 @@ scenes={
 for key,shot in scenes.items():
  shot['holdMs']=20000 if key=='records' else 17000
  shot['completeElements']=True
-manifest={'slides':slides,'recording':recording,'scenes':scenes,'source':'Touying 0.7.3, native XCTest screenshots and unaccelerated Simulator footage','cropUnits':'Logical points on the captured 402 × 874 screen. Complete native cards, record rows and drawers only. No partial table or individual text fragments. All lifts preserve aspect ratio; artwork overflowing a tile is clipped at its genuine rounded boundary.'}
+backend=json.loads((ROOT/'presentation/backend-flows.json').read_text())
+manifest={'backend':backend,'slides':slides,'recording':recording,'scenes':scenes,'source':'Touying 0.7.3, native XCTest screenshots and unaccelerated Simulator footage','cropUnits':'Logical points on the captured 402 × 874 screen. Complete native cards, record rows and drawers only. No partial table or individual text fragments. All lifts preserve aspect ratio; artwork overflowing a tile is clipped at its genuine rounded boundary.'}
 (out/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
-for filename in ['styles.css','player.js']:shutil.copy2(ROOT/'presentation'/filename,out/filename)
+for filename in ['styles.css','backend.js','player.js']:shutil.copy2(ROOT/'presentation'/filename,out/filename)
 html=(ROOT/'presentation/index.html').read_text().replace('__MANIFEST__',json.dumps(manifest,ensure_ascii=False).replace('</','<\\/'))
 (out/'index.html').write_text(html)
 (out/'speaker-notes.md').write_text('# Harbour — 10-minute presenter notes\n\n'+'\n\n'.join(f'## {i+1}. {s["title"]} · {s["seconds"]} seconds\n\n{s["notes"]}' for i,s in enumerate(slides)))

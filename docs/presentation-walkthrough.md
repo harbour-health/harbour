@@ -71,3 +71,7 @@ After video export, run `python3 scripts/package-presentation.py`. The ignored `
 ## Verification for complete-element scenes
 
 The native walkthrough waits for the reading reply to finish, scrolls into view and asserts that the complete table fits between the top controls and composer before capture. Its caregiver chapter captures the actual home cards before opening Records. The updated native test passed. Browser review checked all six scenes: lift animations share a start frame and last 440 ms, no explanatory text appears during the lift, labels fit the stage without overlap, and complete cards/rows/drawers retain their aspect ratios. The video exporter checks that all six scenes ran before producing a successful deliverable. Review the actual images again whenever native layout or fonts change; bounds alone do not prove visual completeness.
+
+## Backend explanations
+
+The video now inserts six source-traced architecture animations alongside the native scenes: model selection and runtime, chat routing, voice turns, medicine identity, recording/transcription, and focused summary extraction. Use the Backend menu to replay one during a live talk. See [backend animation configuration and implementation mapping](presentation-backend.md). They use labelled illustrative payloads; they do not claim that the authored visit fixture was extracted live. The export must include all six backend sequences in addition to the six complete-element UI scenes.

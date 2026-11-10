@@ -243,7 +243,10 @@ function defaultScene(s) {
         : "readings";
 }
 async function show(i) {
-  if (busy) return;
+  if (busy && !HarbourBackend.active) return;
+  HarbourBackend.close();
+  busy = false;
+  document.querySelector(".backend-menu")?.remove();
   auto = false;
   video?.pause();
   index = Math.max(0, Math.min(data.slides.length - 1, i));
@@ -260,7 +263,14 @@ async function show(i) {
   q("#count").textContent = `${index + 1} / ${data.slides.length}`;
   q("#notes").textContent = `${s.title} · ${s.seconds}s\n\n${s.notes}`;
   const dynamic = Boolean(s.scene);
-  for (const id of ["play", "explain", "live", "capture", "simulator"])
+  for (const id of [
+    "play",
+    "explain",
+    "backend",
+    "live",
+    "capture",
+    "simulator",
+  ])
     q("#" + id).hidden = !dynamic;
   if (!dynamic) return;
   phone = document.createElement("div");
@@ -300,6 +310,9 @@ async function show(i) {
 }
 async function play() {
   if (!video) return;
+  HarbourBackend.close();
+  busy = false;
+  document.querySelector(".backend-menu")?.remove();
   clearLayers();
   phone.querySelector(".still").hidden = true;
   video.hidden = false;
@@ -307,6 +320,9 @@ async function play() {
 }
 async function autoStop() {
   if (!auto || busy || !video) return;
+  const owner = video,
+    ownerIndex = index;
+  const stillCurrent = () => auto && video === owner && index === ownerIndex;
   const requestAt = chapterTime("236-"),
     resultAt = chapterTime("237-");
   // Keep the native source unaccelerated. The presentation uses one explicit jump
@@ -328,6 +344,9 @@ async function autoStop() {
     note.append(heading, detail);
     scene.append(note);
     await wait(3500);
+    if (!stillCurrent()) return;
+    await backend("chat", { keepFrame: true });
+    if (!stillCurrent()) return;
     video.currentTime = resultAt - 0.3;
     await video.play();
     return;
@@ -338,6 +357,7 @@ async function autoStop() {
     { key: "caregiver", at: chapterTime("250-") + 0.2 },
     { key: "records", at: chapterTime("240-") + 0.2 },
     { key: "medication", at: chapterTime("244-") + 0.2 },
+    { key: "visit-processing", at: chapterTime("245-") + 0.2 },
     {
       key: "visit",
       at: Math.min(chapterTime("247-") + 0.2, video.duration - 2),
@@ -350,20 +370,94 @@ async function autoStop() {
   stops.add(item.key);
   window.onPresentationStep?.(item.key);
   video.pause();
+  if (item.key === "visit-processing") {
+    await backend("recording", { keepFrame: true });
+    if (!stillCurrent()) return;
+    await backend("summary", { keepFrame: true });
+    if (!stillCurrent()) return;
+    await video.play();
+    return;
+  }
+  if (item.key === "readings" && !stops.has("backend-chat")) {
+    await backend("chat", { keepFrame: true });
+    if (!stillCurrent()) return;
+  }
   await explode(item.key);
   await wait(currentShot.holdMs ?? 11000);
+  if (!stillCurrent()) return;
   if (item.key === "visit") {
     auto = false;
     window.presentation.done = true;
     return;
   }
   await collapse();
-  if (video) {
+  if (item.key === "home") {
+    await backend("model", { keepFrame: true });
+    if (!stillCurrent()) return;
+    await backend("voice", { keepFrame: true });
+  }
+  if (item.key === "medication") await backend("medicine", { keepFrame: true });
+  if (stillCurrent()) {
     phone.querySelector(".still").hidden = true;
     video.hidden = false;
     await video.play();
   }
 }
+async function backend(key, options = {}) {
+  const flow = data.backend[key];
+  if (!flow || !phone) return;
+  video?.pause();
+  await collapse();
+  clearLayers();
+  if (!options.keepFrame)
+    await setShot(
+      key === "chat"
+        ? "readings"
+        : key === "medicine"
+          ? "medication"
+          : ["recording", "summary"].includes(key)
+            ? "visit"
+            : "home",
+    );
+  busy = true;
+  try {
+    stops.add("backend-" + key);
+    window.onPresentationStep?.("backend-" + key);
+    await HarbourBackend.play(scene, flow, {
+      previewBeat: options.previewBeat ?? null,
+      onBeat: (beat) => window.onBackendBeat?.({ key, beat }),
+    });
+  } finally {
+    busy = false;
+  }
+}
+function backendMenu() {
+  const existing = document.querySelector(".backend-menu");
+  if (existing) return existing.remove();
+  const menu = document.createElement("div");
+  menu.className = "backend-menu";
+  menu.setAttribute("role", "group");
+  menu.setAttribute("aria-label", "Backend explanations");
+  for (const [key, title] of Object.entries({
+    model: "Model selection",
+    chat: "Chat routing",
+    voice: "Voice conversation",
+    medicine: "Medicine intent and names",
+    recording: "Recording and transcription",
+    summary: "Visit summary passes",
+  })) {
+    const button = document.createElement("button");
+    button.textContent = title;
+    button.onclick = () => {
+      menu.remove();
+      auto = false;
+      backend(key);
+    };
+    menu.append(button);
+  }
+  document.body.append(menu);
+}
+q("#backend").onclick = backendMenu;
 async function capture() {
   live = true;
   try {
@@ -509,6 +603,11 @@ q("#live").onclick = async () => {
 };
 addEventListener("keydown", (e) => {
   if (e.target.matches("input,textarea")) return;
+  if (e.key === "Escape") {
+    HarbourBackend.close();
+    document.querySelector(".backend-menu")?.remove();
+    return;
+  }
   if (["ArrowRight", "PageDown"].includes(e.key)) {
     e.preventDefault();
     show(index + 1);
@@ -530,6 +629,7 @@ window.presentation = {
   show,
   explode,
   collapse,
+  backend,
   async playDemo() {
     this.done = false;
     await show(3);
