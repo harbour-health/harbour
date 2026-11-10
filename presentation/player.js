@@ -123,8 +123,14 @@ function leader(layer, i) {
       scene.append(s);
       return s;
     })();
-  const y = layer.to.y + layer.to.h / 2,
-    x = layer.to.x + layer.to.w,
+  const y =
+      layer.to.y +
+      layer.to.h * (layer.anchor ?? 0.5) -
+      (layer.edge === "top" ? 12 : 0),
+    x =
+      layer.edge === "top"
+        ? layer.to.x + layer.to.w / 2
+        : layer.to.x + layer.to.w,
     labelY = layer.labelY ?? y - 36;
   const path = document.createElementNS(svg.namespaceURI, "path");
   path.setAttribute(
@@ -177,7 +183,8 @@ async function explode(key = null) {
     clearLayers();
     phone.classList.add("exploded");
     const scale = phoneBox.w / currentShot.screen.width;
-    for (const [i, part] of currentShot.layers.entries()) {
+    const animations = [];
+    for (const part of currentShot.layers) {
       const src = part.rect,
         origin = {
           left: `${phoneBox.x + src.x * scale}px`,
@@ -201,15 +208,26 @@ async function explode(key = null) {
         height: `${part.to.h}px`,
         transform: "rotateX(2deg) rotateY(-5deg) translateZ(35px)",
       };
-      await layer.animate([origin, final], {
-        duration: reduced ? 0 : 850,
-        delay: i * 70,
-        easing: "cubic-bezier(.17,.8,.2,1)",
-        fill: "forwards",
-      }).finished;
-      Object.assign(layer.style, final);
-      leader(part, i);
+      animations.push(
+        layer
+          .animate([origin, final], {
+            duration: reduced ? 0 : 440,
+            easing: "cubic-bezier(.17,.8,.2,1)",
+            fill: "forwards",
+          })
+          .finished.then(() => Object.assign(layer.style, final)),
+      );
     }
+    // Every complete element finishes lifting before any leader or explanation appears.
+    await Promise.all(animations);
+    currentShot.layers
+      .flatMap((part) =>
+        (part.annotations ?? [part]).map((annotation) => ({
+          ...part,
+          ...annotation,
+        })),
+      )
+      .forEach((part, i) => leader(part, i));
     lifted = true;
   } finally {
     busy = false;
@@ -289,9 +307,36 @@ async function play() {
 }
 async function autoStop() {
   if (!auto || busy || !video) return;
+  const requestAt = chapterTime("236-"),
+    resultAt = chapterTime("237-");
+  // Keep the native source unaccelerated. The presentation uses one explicit jump
+  // cut for an otherwise long inference wait, with its duration disclosed on screen.
+  if (
+    !stops.has("wait-cut") &&
+    resultAt - requestAt > 12 &&
+    video.currentTime >= requestAt + 5 &&
+    video.currentTime < resultAt - 1
+  ) {
+    stops.add("wait-cut");
+    video.pause();
+    const note = document.createElement("div");
+    note.className = "scene-note";
+    const heading = document.createElement("div"),
+      detail = document.createElement("small");
+    heading.textContent = "Local processing";
+    detail.textContent = `The request-to-result capture took ${Math.round(resultAt - requestAt)} seconds. Waiting time is omitted here.`;
+    note.append(heading, detail);
+    scene.append(note);
+    await wait(3500);
+    video.currentTime = resultAt - 0.3;
+    await video.play();
+    return;
+  }
   const points = [
     { key: "home", at: 0.5 },
     { key: "readings", at: chapterTime("237-") + 0.2 },
+    { key: "caregiver", at: chapterTime("250-") + 0.2 },
+    { key: "records", at: chapterTime("240-") + 0.2 },
     { key: "medication", at: chapterTime("244-") + 0.2 },
     {
       key: "visit",
@@ -306,7 +351,7 @@ async function autoStop() {
   window.onPresentationStep?.(item.key);
   video.pause();
   await explode(item.key);
-  await wait(6500);
+  await wait(currentShot.holdMs ?? 11000);
   if (item.key === "visit") {
     auto = false;
     window.presentation.done = true;
@@ -336,7 +381,7 @@ async function capture() {
     };
     await setShot(currentShot);
     phone.classList.add("selecting");
-    notice("Drag over a part of the actual capture to lift it out.");
+    notice("Drag around a complete card or control to lift it out.");
     let start = null,
       box = null;
     phone.onpointerdown = (e) => {
@@ -407,9 +452,13 @@ q("#explain").onclick = async () => {
         ? "visit"
         : t >= chapterTime("244-")
           ? "medication"
-          : t >= chapterTime("237-")
-            ? "readings"
-            : "home",
+          : t >= chapterTime("240-")
+            ? "records"
+            : t >= chapterTime("250-")
+              ? "caregiver"
+              : t >= chapterTime("237-")
+                ? "readings"
+                : "home",
     );
   }
   if (!currentShot || currentShot.layers.length === 0)

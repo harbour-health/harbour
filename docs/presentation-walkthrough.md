@@ -8,11 +8,11 @@ A 10-minute honours-project presentation built from pinned Touying source, actua
 
 `presentation/slides.json` holds notes and timings (600 seconds total). The supplied CSI4900 brief separately specifies a 13-minute final talk; this is the user's requested 10-minute demo version. The live walkthrough or exported composition can occupy the demo section.
 
-`PresentationWalkthroughUITests` operates the real app: explicitly replace QA records with fictional data, switch to Simple, send a real local-model reading request, switch to caregiver records, choose a medication-name suggestion and review a saved visit. It uses Alex for this capture. Saved visit summaries are authored fixtures, not live summary-accuracy evidence. No audio is captured or evaluated.
+`PresentationWalkthroughUITests` operates the real app: explicitly replace QA records with fictional data, switch to Simple, send a real local-model reading request, show the caregiver home cards and record categories, choose a medication-name suggestion and review a saved visit. It uses Alex for this capture. Saved visit summaries are authored fixtures, not live summary-accuracy evidence. No audio is captured or evaluated.
 
 `record-presentation.py` records the simulator, verifies the native test passed, trims setup and exports an **unaccelerated** silent MP4. It retains original MOV, test result, log and `walkthrough.json` timestamps/actual accessibility bounds. It has no `drawtext` dependency. `--export-only` retries an export without rerunning inference or overwriting a passed test. Variable-frame-rate capture is resampled before trimming, then timestamps are reset to zero; the encoded duration is checked against the declared source trim.
 
-`player.js` uses CSS clipping (no cross-origin canvas readback) to animate real cropped UI from its original phone position into the surrounding slide. Callouts explain entry points, saved readings, database names and confirmation. Crops are declared in logical points in `build-presentation.py`; some accessibility bounds include clipped decorative artwork, so visible card edges are explicitly clipped to the genuine rendered bounds. Update crops after UI changes and inspect every result.
+`player.js` uses CSS clipping (no cross-origin canvas readback) to animate real cropped UI from its original phone position into the surrounding slide. All complete elements in a scene lift concurrently in 440 ms. Only after every lift finishes do the leader lines and explanation text fade in. Callouts explain Simple voice/chat/recording, the whole saved-readings card, caregiver home cards, all four record categories, database names and the visit-change drawer. The medicine and visit drawers each lift as one complete panel with several annotations; the table never splits into rows or text fragments. Crops are declared in logical points in `build-presentation.py`; some accessibility bounds include clipped decorative artwork, so tile edges are explicitly clipped to their genuine rounded boundaries. Most bounds come from the matched XCTest chapter. The builder rejects missing or offscreen element bounds and preserves the source aspect ratio. Update crops after UI changes and inspect every result.
 
 ## Rebuild and record
 
@@ -52,7 +52,7 @@ node scripts/export-presentation-video.cjs --url http://127.0.0.1:8766/ \
   --output docs/presentation/harbour-demo.mp4
 ```
 
-The script records the real HTML composition at 1920 × 1080, pauses the actual native footage for deconstruction, then resumes it. It exports H.264 MP4 with ffmpeg. Original browser footage remains under ignored `build/`. `HARBOUR_NODE_MODULES` can point to an existing Playwright dependency directory instead of installing locally.
+The script records the real HTML composition at 1920 × 1080. The native source stays unaccelerated. For a request-to-result capture gap over 12 seconds, the exported composition keeps the first five seconds then uses a disclosed jump cut to the result. An on-screen note gives the original capture gap; this video must not be used as a real-time inference benchmark. It pauses the actual native footage for six deconstruction scenes, then resumes it. Each scene stays visible for 17 seconds (20 for the four record categories) so the explanatory text can be read. The exporter requires all six stops before declaring success. It exports H.264 MP4 with ffmpeg. Original browser footage remains under ignored `build/`. `HARBOUR_NODE_MODULES` can point to an existing Playwright dependency directory instead of installing locally.
 
 ## How to change it
 
@@ -67,3 +67,7 @@ References: [Touying exporter](https://touying-typ.github.io/docs/external/touyi
 ## Portable bundle
 
 After video export, run `python3 scripts/package-presentation.py`. The ignored `build/harbour-presentation.zip` contains the offline player, videos, PDF, notes and editable source with the actual source captures. Its README includes a rebuild command that works from the extracted bundle. No model weights, test result bundles or runtime logs are included.
+
+## Verification for complete-element scenes
+
+The native walkthrough waits for the reading reply to finish, scrolls into view and asserts that the complete table fits between the top controls and composer before capture. Its caregiver chapter captures the actual home cards before opening Records. The updated native test passed. Browser review checked all six scenes: lift animations share a start frame and last 440 ms, no explanatory text appears during the lift, labels fit the stage without overlap, and complete cards/rows/drawers retain their aspect ratios. The video exporter checks that all six scenes ran before producing a successful deliverable. Review the actual images again whenever native layout or fonts change; bounds alone do not prove visual completeness.

@@ -49,12 +49,12 @@ const url = argument("--url", "http://127.0.0.1:8766/"),
     "Recording actual native footage with external UI deconstruction…",
   );
   await page.waitForFunction(() => window.presentation.done, null, {
-    timeout: 240000,
+    timeout: 300000,
   });
   const stages = await page.evaluate(() => presentation.state.stops);
   if (
-    !["home", "readings", "medication", "visit"].every((s) =>
-      stages.includes(s),
+    !["home", "readings", "caregiver", "records", "medication", "visit"].every(
+      (s) => stages.includes(s),
     )
   )
     throw new Error("Incomplete deconstruction sequence: " + stages.join(", "));

@@ -7,53 +7,58 @@
   "chapters": [
     {
       "name": "233-guided-simple-home",
-      "sourceSeconds": 21.257364511489868,
+      "sourceSeconds": 22.59728217124939,
       "videoSeconds": 1.0
     },
     {
       "name": "236-guided-real-request",
-      "sourceSeconds": 25.693800449371338,
-      "videoSeconds": 5.43643593788147
+      "sourceSeconds": 26.063770294189453,
+      "videoSeconds": 4.4664881229400635
     },
     {
       "name": "237-guided-readings",
-      "sourceSeconds": 45.244120359420776,
-      "videoSeconds": 24.986755847930908
+      "sourceSeconds": 93.07855439186096,
+      "videoSeconds": 71.48127222061157
+    },
+    {
+      "name": "250-guided-caregiver-home",
+      "sourceSeconds": 100.4863212108612,
+      "videoSeconds": 78.88903903961182
     },
     {
       "name": "240-guided-caregiver-records",
-      "sourceSeconds": 54.45682239532471,
-      "videoSeconds": 34.19945788383484
+      "sourceSeconds": 101.8939220905304,
+      "videoSeconds": 80.296639919281
     },
     {
       "name": "242-guided-medicines",
-      "sourceSeconds": 58.26948046684265,
-      "videoSeconds": 38.01211595535278
+      "sourceSeconds": 105.9273931980133,
+      "videoSeconds": 84.33011102676392
     },
     {
       "name": "243-guided-phonetic-suggestions",
-      "sourceSeconds": 66.4318425655365,
-      "videoSeconds": 46.17447805404663
+      "sourceSeconds": 111.77399921417236,
+      "videoSeconds": 90.17671704292297
     },
     {
       "name": "244-guided-medicine-confirmation",
-      "sourceSeconds": 71.72329354286194,
-      "videoSeconds": 51.46592903137207
+      "sourceSeconds": 114.04899024963379,
+      "videoSeconds": 92.4517080783844
     },
     {
       "name": "245-guided-visit-summary",
-      "sourceSeconds": 80.12004137039185,
-      "videoSeconds": 59.86267685890198
+      "sourceSeconds": 120.41975235939026,
+      "videoSeconds": 98.82247018814087
     },
     {
       "name": "246-guided-visit-followups",
-      "sourceSeconds": 84.15655541419983,
-      "videoSeconds": 63.89919090270996
+      "sourceSeconds": 121.9119062423706,
+      "videoSeconds": 100.31462407112122
     },
     {
       "name": "247-guided-visit-review",
-      "sourceSeconds": 89.99802851676941,
-      "videoSeconds": 69.74066400527954
+      "sourceSeconds": 125.25247740745544,
+      "videoSeconds": 103.65519523620605
     }
   ],
   "nativeRegions": [
@@ -91,13 +96,7 @@
           "height": 50,
           "width": 334,
           "x": 34,
-          "y": 319
-        },
-        "simpleTalk": {
-          "height": 171.00001525878906,
-          "width": 392,
-          "x": -378,
-          "y": 196.6666717529297
+          "y": 353
         }
       },
       "screen": {
@@ -115,16 +114,31 @@
           "y": 668
         },
         "chatReadingsTable": {
-          "height": 349.9999694824219,
-          "width": 162.6666717529297,
+          "height": 382,
+          "width": 354,
           "x": 24,
-          "y": 258.3333435058594
+          "y": 171
+        }
+      },
+      "screen": {
+        "height": 874,
+        "width": 402
+      }
+    },
+    {
+      "chapter": "250-guided-caregiver-home",
+      "regions": {
+        "addSymptom": {
+          "height": 190,
+          "width": 170,
+          "x": 208,
+          "y": 566.6666666666666
         },
-        "simpleTalk": {
-          "height": 171.00001525878906,
-          "width": 392,
-          "x": -378,
-          "y": 196.6666717529297
+        "openMedicines": {
+          "height": 190,
+          "width": 170,
+          "x": 24,
+          "y": 566.6666666666666
         }
       },
       "screen": {
@@ -134,7 +148,32 @@
     },
     {
       "chapter": "240-guided-caregiver-records",
-      "regions": {},
+      "regions": {
+        "record-category-0": {
+          "height": 96.66666666666666,
+          "width": 402,
+          "x": 0,
+          "y": 178.66666666666666
+        },
+        "record-category-1": {
+          "height": 96.66666666666669,
+          "width": 402,
+          "x": 0,
+          "y": 275.33333333333337
+        },
+        "record-category-2": {
+          "height": 96.66666666666669,
+          "width": 402,
+          "x": 0,
+          "y": 372
+        },
+        "record-category-3": {
+          "height": 96.66666666666669,
+          "width": 402,
+          "x": 0,
+          "y": 468.6666666666667
+        }
+      },
       "screen": {
         "height": 874,
         "width": 402
@@ -150,14 +189,7 @@
     },
     {
       "chapter": "243-guided-phonetic-suggestions",
-      "regions": {
-        "saveMedicine": {
-          "height": 34.56716417910445,
-          "width": 59.85240464344946,
-          "x": 314.9436152570481,
-          "y": 276.4378109452736
-        }
-      },
+      "regions": {},
       "screen": {
         "height": 874,
         "width": 402
@@ -192,14 +224,7 @@
     },
     {
       "chapter": "245-guided-visit-summary",
-      "regions": {
-        "reviewVisitMedicines": {
-          "height": 60,
-          "width": 354,
-          "x": 24,
-          "y": 568.6666666666666
-        }
-      },
+      "regions": {},
       "screen": {
         "height": 874,
         "width": 402
@@ -207,14 +232,7 @@
     },
     {
       "chapter": "246-guided-visit-followups",
-      "regions": {
-        "reviewVisitMedicines": {
-          "height": 60.00000000000006,
-          "width": 354,
-          "x": 24,
-          "y": 298.66666666666663
-        }
-      },
+      "regions": {},
       "screen": {
         "height": 874,
         "width": 402
@@ -228,12 +246,6 @@
           "width": 339.91046142578125,
           "x": 31.044776916503906,
           "y": 685.1625366210938
-        },
-        "reviewVisitMedicines": {
-          "height": 60,
-          "width": 354,
-          "x": 24,
-          "y": 568.6666666666666
         },
         "saveVisitMedicines": {
           "height": 34.567164179104395,
@@ -250,11 +262,11 @@
   ],
   "edits": [
     {
-      "sourceStart": 20.257364511489868,
-      "sourceEnd": 91.99802851676941,
+      "sourceStart": 21.59728217124939,
+      "sourceEnd": 127.25247740745544,
       "speed": 1,
       "outputStart": 0
     }
   ],
-  "durationSeconds": 71.74066400527954
+  "durationSeconds": 105.65519523620605
 }

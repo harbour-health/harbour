@@ -100,7 +100,7 @@ The HTML presentation lifts actual captured UI sections out of the phone with ex
 <!-- screenshot-gallery:start -->
 ## All screens
 
-240 app captures and rendered report pages. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
+241 app captures and rendered report pages. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
 
 ### Simple interface and live walkthrough
 
@@ -115,6 +115,7 @@ The HTML presentation lifts actual captured UI sections out of the phone with ex
 | <strong>Medication name suggestions</strong><br>[<img src="docs/screenshots/243-guided-phonetic-suggestions.png" alt="Medication name suggestions" width="220">](docs/screenshots/243-guided-phonetic-suggestions.png) | <strong>Suggested medicine · Confirmation required</strong><br>[<img src="docs/screenshots/244-guided-medicine-confirmation.png" alt="Suggested medicine · Confirmation required" width="220">](docs/screenshots/244-guided-medicine-confirmation.png) |
 | <strong>Walkthrough · Saved visit summary</strong><br>[<img src="docs/screenshots/245-guided-visit-summary.png" alt="Walkthrough · Saved visit summary" width="220">](docs/screenshots/245-guided-visit-summary.png) | <strong>Walkthrough · Follow-ups</strong><br>[<img src="docs/screenshots/246-guided-visit-followups.png" alt="Walkthrough · Follow-ups" width="220">](docs/screenshots/246-guided-visit-followups.png) |
 | <strong>Walkthrough · Medication review</strong><br>[<img src="docs/screenshots/247-guided-visit-review.png" alt="Walkthrough · Medication review" width="220">](docs/screenshots/247-guided-visit-review.png) | <strong>Simple home · Largest text</strong><br>[<img src="docs/screenshots/248-simple-largest-text.png" alt="Simple home · Largest text" width="220">](docs/screenshots/248-simple-largest-text.png) |
+| <strong>Walkthrough · Caregiver home</strong><br>[<img src="docs/screenshots/250-guided-caregiver-home.png" alt="Walkthrough · Caregiver home" width="220">](docs/screenshots/250-guided-caregiver-home.png) |  |
 
 ### Chat, voice and report refinements
 

@@ -25,27 +25,52 @@ def scene(name,capture,layers):
  if not source.exists():raise SystemExit(f'Missing genuine screenshot: {source}')
  shutil.copy2(source,out/'captures'/source.name)
  return {'image':f'captures/{source.name}','screen':{'width':402,'height':874},'layers':layers}
-def layer(rect,to,title,detail):return {'rect':dict(zip(['x','y','w','h'],rect)),'to':dict(zip(['x','y','w','h'],to)),'title':title,'detail':detail}
+def bounds(chapter,identifier):
+ matches=[item for item in recording['nativeRegions'] if item['chapter'].startswith(chapter)]
+ if not matches or identifier not in matches[0]['regions']:raise SystemExit(f'Missing native bounds: {chapter}/{identifier}. Re-record the updated walkthrough.')
+ r=matches[0]['regions'][identifier]
+ return [r['x'],r['y'],r['width'],r['height']]
+def layer(rect,position,width,title,detail,radius=0,**extra):
+ # Preserve aspect ratio and lift complete rendered controls/sections only.
+ x,y,w,h=rect
+ if min(w,h)<=0 or x<0 or y<0 or x+w>402.5 or y+h>874.5:raise SystemExit(f'Offscreen or incomplete element: {title} {rect}')
+ return {'rect':dict(zip(['x','y','w','h'],rect)),'to':{'x':position[0],'y':position[1],'w':width,'h':width*h/w},'title':title,'detail':detail,'radius':radius,**extra}
 scenes={
  'home':scene('home','233-guided-simple-home',[
-  layer([24,196.667,354,146],[650,300,640,264],'Voice conversation','A large entry point for spoken requests.'),
-  layer([24,362.667,354,84],[710,620,590,140],'Freeform chat','The local model chooses the appropriate tool.'),
-  layer([24,466.667,354,84],[760,820,540,128],'Doctor visit','Record once, then review the proposed changes.')]),
+  layer([24,196.667,354,146],[650,290],640,'Voice conversation','Speak naturally. Your words become chat messages, and the reply is spoken aloud.',30),
+  layer([24,362.667,354,84],[710,610],590,'Message','Ask questions or request record changes. The local model chooses which tool to use.',26),
+  layer([24,466.667,354,84],[760,820],540,'Record a visit','Start recording immediately. Afterwards, review the summary and proposed medication changes.',26)]),
  'readings':scene('readings','237-guided-readings',[
-  layer([24,258.333,164,58],[720,290,480,170],'Read-only tool','The model selected list_readings.'),
-  layer([24,316.333,164,114],[650,500,420,292],'Stored measurements','Dates and values are fetched from saved records.'),
-  layer([24,555,164,28],[730,850,420,72],'Shared records','The caregiver interface uses the same readings.')]),
+  layer(bounds('237-','chatReadingsTable'),[710,290],520,'Blood pressure',
+    'The whole result card comes from saved records.',24,annotations=[
+     {'title':'Saved readings','detail':'Dates, units and measurements come from the record store. The model does not invent table values.','anchor':0.12,'labelY':310},
+     {'title':'A local tool call','detail':'The request was freeform text. Alex selected list_readings to retrieve these measurements.','anchor':0.48,'labelY':550},
+     {'title':'One set of records','detail':'Chat and the caregiver interface read the same data. New readings can be entered in Records.','anchor':0.85,'labelY':790}])]),
+ 'caregiver':scene('caregiver','250-guided-caregiver-home',[
+  # This VStack exposes its label as an AX descendant, not the rendered card bounds.
+  layer([24,226.667,354,250.667],[650,290],430,'Latest reading','The most recent measurement, its timestamp and a chart of earlier values.',28,labelY=300),
+  # Artwork extends beyond accessibility bounds. Clip each complete tile to its visible rounded edge.
+  layer([24,566.667,170,190],[680,650],250,'Medications','Save a medicine’s identity, dose, directions, frequency and scheduled times.',28,edge='top',anchor=0,labelY=565),
+  layer([208,566.667,170,190],[1030,650],250,'Symptoms','Keep a dated description, onset, severity and any reported warning signs.',28,anchor=0.7,labelY=815)]),
+ 'records':scene('records','240-guided-caregiver-records',[
+  layer(bounds('240-','record-category-0'),[650,290],620,'Symptoms','Review earlier symptoms and add a new symptom record.',labelY=300),
+  layer(bounds('240-','record-category-1'),[670,465],600,'Medications','Edit doses and schedules. Interaction checks cover listed pairs only.',labelY=475),
+  layer(bounds('240-','record-category-2'),[690,640],580,'Readings','Save dated blood pressure, pulse, temperature and other readings.',labelY=650),
+  layer(bounds('240-','record-category-3'),[710,815],560,'Appointments','Save dates, locations and questions to prepare for a visit.',labelY=825)]),
  'medication':scene('medication','244-guided-medicine-confirmation',[
-  layer([25,278,352,100],[670,300,600,170],'Name and ingredients','An exact database identity follows a deliberate choice.'),
-  layer([23.363,456.955,355.274,84.818],[710,570,570,136],'Product check','The user checks the product before it can be saved.'),
-  layer([314.944,190.02,59.852,34.567],[930,820,160,92],'Nothing saved yet','Save remains disabled until the product is checked.')]),
+  layer([8,170,386,696],[770,290],360,'Add medicine','The complete editor stays together.',54,annotations=[
+   {'title':'Name and ingredients','detail':'Choose the intended medicine from Health Canada names. A similar-sounding suggestion needs a decision.','anchor':0.22,'labelY':305},
+   {'title':'Check the product','detail':'Confirm the exact identity and ingredients against the package. Save stays disabled until checked.','anchor':0.46,'labelY':550},
+   {'title':'Directions and schedule','detail':'Store label instructions, frequency and dose times in the same editor. Nothing is saved by a suggestion alone.','anchor':0.82,'labelY':790}])]),
  'visit':scene('visit','247-guided-visit-review',[
-  layer([31,478,340,30],[670,300,600,53],'Proposed change','A saved demo proposal, not a live extraction claim.'),
-  layer([31,510,340,115],[650,450,600,203],'Directions','Dose, frequency and time remain separate.'),
-  layer([31,685,340,96],[700,760,600,169],'Confirmation','The proposal stays unsaved until reviewed.')])}
-for part,radius in zip(scenes['home']['layers'],[30,26,26]):part['radius']=radius
-scenes['visit']['layers'][2]['radius']=22
-manifest={'slides':slides,'recording':recording,'scenes':scenes,'source':'Touying 0.7.3, native XCTest screenshots and unaccelerated Simulator footage','cropUnits':'Logical points on the captured 402 × 874 screen. Visible card bounds are clipped to their real edges; AX bounds can include clipped decorative artwork.'}
+  layer([8,380,386,486],[710,290],500,'Medication changes','The complete review drawer stays together.',54,annotations=[
+   {'title':'Proposed change','detail':'The review names the medicine and shows its dose, frequency and timing together. This saved example updates amlodipine.','anchor':0.26,'labelY':305},
+   {'title':'Review directions','detail':'Open Instructions to check the proposed details. Visit summaries also retain follow-up actions for review.','anchor':0.55,'labelY':550},
+   {'title':'Confirm before saving','detail':'Select the intended change and acknowledge the instructions. The saved medication changes only after confirmation.','anchor':0.83,'labelY':790}])])}
+for key,shot in scenes.items():
+ shot['holdMs']=20000 if key=='records' else 17000
+ shot['completeElements']=True
+manifest={'slides':slides,'recording':recording,'scenes':scenes,'source':'Touying 0.7.3, native XCTest screenshots and unaccelerated Simulator footage','cropUnits':'Logical points on the captured 402 × 874 screen. Complete native cards, record rows and drawers only. No partial table or individual text fragments. All lifts preserve aspect ratio; artwork overflowing a tile is clipped at its genuine rounded boundary.'}
 (out/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n')
 for filename in ['styles.css','player.js']:shutil.copy2(ROOT/'presentation'/filename,out/filename)
 html=(ROOT/'presentation/index.html').read_text().replace('__MANIFEST__',json.dumps(manifest,ensure_ascii=False).replace('</','<\\/'))

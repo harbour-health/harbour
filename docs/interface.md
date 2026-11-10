@@ -79,3 +79,7 @@ The chat composer overlays the scroll surface. Its measured height supplies trai
 Reading results render `ChatReadingsTable` directly from saved `Reading` objects, including while tool narration is pending. Generated response text is neither a table cell nor its header. A single kind has Date and unit columns; mixed results add Type. `ReadingParser.requestedKind` validates a single explicitly named filter after the LLM chooses `list_readings`; it never selects the action. Broad, multi-kind and negated filters remain broad. Dates and values are never taken from model-generated narration. The UI caps the result at the ten newest saved entries.
 
 Visit follow-ups align the action text and due date opposite one 48-point reminder action, without a repeated divider/button stack. Reminder drafts keep their visit ID and exact source quote.
+
+## Chat reading results
+
+`ChatReadingsTable` places its source-backed heading, units and dated values inside one rounded semantic-surface card with 16-point padding. The table stays concise; the card changes neither the stored values nor tool routing. Edit this component in `ChatView.swift` to change the result layout. `Palette.surface` adapts the same card to light and dark appearance; Dynamic Type and per-row combined accessibility are retained. It depends only on the existing `Reading` model, localization helpers and shared palette. The presentation lifts this complete card rather than cropping individual rows.

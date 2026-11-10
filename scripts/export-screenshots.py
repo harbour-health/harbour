@@ -10,6 +10,7 @@ import subprocess
 import tempfile
 
 TITLES = {
+    '250-guided-caregiver-home': 'Walkthrough · Caregiver home',
     '248-simple-largest-text': 'Simple home · Largest text',
     '249-guided-visit-magnified': 'Actual visit summary · Magnified',
 
@@ -281,7 +282,7 @@ except ImportError:
     print('Pillow not installed; full-resolution gallery exported without overview sheets.')
 if args.update_readme:
     groups = {
-        'Simple interface and live walkthrough': set(range(226, 250)),
+        'Simple interface and live walkthrough': set(range(226, 251)),
         'Chat, voice and report refinements': set(range(211, 226)),
         'Open records and medicine review': set(range(188, 209)),
         'Flat record lists': set(range(174, 188)),

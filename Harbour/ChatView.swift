@@ -1140,7 +1140,9 @@ struct ChatReadingsTable: View {
                     }.accessibilityElement(children: .combine)
                 }
             }.textSelection(.enabled)
-        }.frame(maxWidth: .infinity, alignment: .leading).accessibilityElement(children: .contain)
+        }.padding(16).frame(maxWidth: .infinity, alignment: .leading)
+            .background(Palette.surface, in: RoundedRectangle(cornerRadius: 24))
+            .accessibilityElement(children: .contain)
             .accessibilityIdentifier("chatReadingsTable").presentationTarget("chat.readings")
     }
 }

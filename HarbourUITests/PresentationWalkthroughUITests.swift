@@ -14,19 +14,22 @@ import XCTest
         print("WALKTHROUGH_CHAPTER \(name) \(Date().timeIntervalSince1970)")
         let app = XCUIApplication()
         var regions: [String: [String: Double]] = [:]
-        for id in [
-            "simpleTalk",
-            "simpleMessage",
-            "simpleRecordVisit",
-            "chatInput",
-            "chatReadingsTable",
-            "reviewVisitMedicines",
-            "confirmVisitMedicines",
-            "saveVisitMedicines",
-            "confirmMedicine",
-            "medicineInstructions",
-            "saveMedicine"
-        ] {
+        let identifiers: [String]
+        switch name {
+        case "233-guided-simple-home": identifiers = ["simpleTalk", "simpleMessage", "simpleRecordVisit"]
+        case "236-guided-real-request": identifiers = ["chatInput"]
+        case "237-guided-readings": identifiers = ["chatReadingsTable", "chatInput"]
+        case "250-guided-caregiver-home": identifiers = ["openMedicines", "addSymptom"]
+        case "240-guided-caregiver-records": identifiers = (0 ... 3).map { "record-category-\($0)" }
+        case "244-guided-medicine-confirmation": identifiers = [
+                "confirmMedicine",
+                "medicineInstructions",
+                "saveMedicine"
+            ]
+        case "247-guided-visit-review": identifiers = ["confirmVisitMedicines", "saveVisitMedicines"]
+        default: identifiers = []
+        }
+        for id in identifiers {
             let element = app.descendants(matching: .any)[id].firstMatch
             if element.exists {
                 let r = element.frame
@@ -94,10 +97,22 @@ import XCTest
         app.buttons["Send message"].tap()
         print("WALKTHROUGH_INFERENCE_START \(Date().timeIntervalSince1970)")
         XCTAssertTrue(app.descendants(matching: .any)["chatReadingsTable"].firstMatch.waitForExistence(timeout: 360))
+        XCTAssertTrue(app.buttons["Voice conversation"].waitForExistence(timeout: 120))
+        app.swipeUp()
+        let table = app.descendants(matching: .any)["chatReadingsTable"].firstMatch
+        let fullyVisible = NSPredicate { _, _ in
+            table.frame.minY >= 115 && table.frame.maxY < input.frame.minY - 16
+        }
+        XCTAssertEqual(
+            XCTWaiter.wait(for: [expectation(for: fullyVisible, evaluatedWith: nil)], timeout: 5),
+            .completed
+        )
         print("WALKTHROUGH_INFERENCE_END \(Date().timeIntervalSince1970)")
         capture("237-guided-readings")
         app.buttons["Home"].tap()
         interface("caregiver", app: app)
+        app.buttons["nav-today"].tap()
+        capture("250-guided-caregiver-home")
         app.buttons["nav-records"].tap()
         capture("240-guided-caregiver-records")
         app.buttons["record-category-1"].tap()
