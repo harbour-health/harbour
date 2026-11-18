@@ -303,6 +303,15 @@ def validate_results(document, plan, plan_digest, manifest_digest, recordings):
     return system, outputs
 
 
+def system_fingerprint(system):
+    """Run labels cannot turn one declared recognizer configuration into two."""
+    configuration = {key: value for key, value in system.items() if key != "id"}
+    configuration["locales"] = sorted(configuration["locales"])
+    encoded = json.dumps(configuration, ensure_ascii=False, sort_keys=True,
+                         separators=(",", ":"), allow_nan=False).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def align(reference, hypothesis):
     """Unit-cost token alignment, deterministically preferring diagonal ties."""
     rows, columns = len(reference), len(hypothesis)
@@ -383,13 +392,17 @@ def evaluate(plan_path, recordings_path, result_paths):
     manifest = read_json(recordings_path)
     recordings = validate_recordings(manifest, plan, plan_digest, recordings_path.parent)
     manifest_digest = sha256(recordings_path)
-    systems, identifiers = [], set()
+    systems, identifiers, configurations = [], set(), set()
     for result_path in result_paths:
         document = read_json(result_path)
         system, outputs = validate_results(document, plan, plan_digest, manifest_digest, recordings)
         if system["id"] in identifiers:
             raise EvaluationError("Duplicate system id: " + system["id"])
+        fingerprint = system_fingerprint(system)
+        if fingerprint in configurations:
+            raise EvaluationError("Duplicate candidate configuration: " + system["id"])
         identifiers.add(system["id"])
+        configurations.add(fingerprint)
         rows = []
         grouped = defaultdict(lambda: defaultdict(list))
         for recording_id, recording in recordings.items():
@@ -410,7 +423,8 @@ def evaluate(plan_path, recordings_path, result_paths):
             rows.append(row)
             for dimension in ("case_id", "speaker_id", "locale", "condition", "utterance_type", "group"):
                 grouped[dimension][row[dimension]].append(row)
-        systems.append({"system": system, "results_sha256": sha256(result_path),
+        systems.append({"system": system, "configuration_sha256": fingerprint,
+                        "results_sha256": sha256(result_path),
                         "metrics": _metrics(rows),
                         "successful_only_metrics": _metrics([row for row in rows if row["status"] == "ok"]),
                         "groups": {dimension: {value: _metrics(group) for value, group in values.items()}

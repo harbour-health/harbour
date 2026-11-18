@@ -52,7 +52,9 @@ Paths are relative to the manifest directory and cannot escape it. The scorer ch
 
 ## Recognition and output import
 
-Run **the same WAV files** through each candidate recognizer, using each row's locale. Keep the original audio unchanged. For Harbour's on-device Apple recognizers, record the iPhone/iOS version, API/recognizer, asset availability and contextual hints. A different API, OS, hint list or model configuration is a separate system ID. Capture service failures and empty transcripts. Do not replace transcripts with medication matches, LLM corrections or fuzzy suggestions.
+Run **the same WAV files** through each candidate recognizer, using each row's locale. Keep the original audio unchanged. For Harbour's on-device Apple recognizers, record the iPhone/iOS version, API/recognizer, asset availability and contextual hints. A different API, model/version, device, OS or settings is a separate candidate configuration with its own system ID. Capture service failures and empty transcripts. Do not replace transcripts with medication matches, LLM corrections or fuzzy suggestions.
+
+The scorer rejects duplicate declared configurations even when their system IDs differ. Configuration identity includes recognizer, model, version, locales, device, OS and settings; system IDs are run labels and are excluded. Locale-list order and settings-object key order do not create a difference. Settings-array order is retained because it may affect a recognizer. Each accepted configuration's SHA-256 appears in the report. Repeated runs of an identical configuration cannot satisfy the two-candidate completion requirement.
 
 Export one JSON bundle per system. The importer is recognizer-independent: it scores captured raw outputs and does not call an inference service. Automated transcription adapters and actual device runs remain future collection work.
 

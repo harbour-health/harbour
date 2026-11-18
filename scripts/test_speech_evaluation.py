@@ -68,7 +68,8 @@ class SpeechEvaluationTests(unittest.TestCase):
         return {"schema_version": 1, "suite_id": self.plan["suite_id"],
                 "plan_sha256": evaluation.sha256(self.plan_path),
                 "recordings_sha256": evaluation.sha256(self.manifest_path),
-                "system": {"id": system_id, "recognizer": "fixture recognizer", "model": "fixture model",
+                "system": {"id": system_id, "recognizer": "fixture recognizer",
+                           "model": "fixture model" if system_id == "system-a" else "alternate fixture model",
                            "version": "1", "locales": ["en-CA"], "device": "fixture device",
                            "os": "fixture OS", "settings": {"hints": []}},
                 "results": [{"recording_id": row["id"], "audio_sha256": row["audio_sha256"],
@@ -172,6 +173,34 @@ class SpeechEvaluationTests(unittest.TestCase):
         self.assertFalse(report["complete"])
         self.assertFalse(report["coverage"]["corpus_complete"])
         self.assertTrue(all(cell["speakers_observed"] == 1 for cell in report["coverage"]["missing_cells"]))
+
+    def test_renaming_identical_configuration_cannot_create_a_paired_study(self):
+        self.corpus()
+        first = self.bundle()
+        first["system"].update(locales=["en-CA", "fr-CA"],
+                               settings={"hints": [], "decoder": {"beam": 4, "mode": "standard"}})
+        second = copy.deepcopy(first)
+        second["system"].update(id="renamed-run", locales=["fr-CA", "en-CA"],
+                                settings={"decoder": {"mode": "standard", "beam": 4}, "hints": []})
+        self.assertEqual(evaluation.system_fingerprint(first["system"]),
+                         evaluation.system_fingerprint(second["system"]))
+        with self.assertRaisesRegex(evaluation.EvaluationError, "Duplicate candidate configuration"):
+            self.run_evaluation([first, second])
+
+    def test_declared_model_version_settings_or_hardware_difference_is_a_candidate(self):
+        self.corpus()
+        for field, value in (("model", "alternate model"), ("version", "2"),
+                             ("settings", {"hints": ["levothyroxine"]}),
+                             ("device", "alternate hardware"), ("os", "alternate OS"),
+                             ("recognizer", "alternate recognizer")):
+            with self.subTest(field=field):
+                first = self.bundle()
+                second = copy.deepcopy(first)
+                second["system"].update(id="other-candidate", **{field: value})
+                report = self.run_evaluation([first, second])
+                self.assertTrue(report["complete"])
+                self.assertNotEqual(report["systems"][0]["configuration_sha256"],
+                                    report["systems"][1]["configuration_sha256"])
 
     def test_plan_rejects_invalid_spans_variants_and_duplicate_ids(self):
         for mutation in ("span", "variant", "duplicate", "boolean", "condition"):
