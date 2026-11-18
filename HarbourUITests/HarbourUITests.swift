@@ -485,7 +485,7 @@ import XCTest
             input.typeText("Hello there")
             app.buttons["Choose a topic"].tap()
             capture(dark ? "36-topics-dark" : "12-topics")
-            app.buttons["Medications"].tap()
+            app.otherElements["floatingDrawer"].buttons["Medications"].tap()
             XCTAssertEqual(input.value as? String, "Hello there")
             XCTAssertTrue(app.buttons["Clear Medications topic"].exists)
             XCTAssertTrue(app.buttons["Done"].waitForExistence(timeout: 5))
@@ -1033,10 +1033,15 @@ import XCTest
             XCTAssertTrue(visit.waitForExistence(timeout: 10), app.debugDescription)
             visit.tap()
             XCTAssertTrue(app.buttons["addVisitAppointment"].waitForExistence(timeout: 10), app.debugDescription)
-            XCTAssertTrue(app.staticTexts[french ? "Rendez-vous demain à 15 h." : "Appointment tomorrow at 3 pm."]
-                .exists)
+            XCTAssertTrue(app.staticTexts[french ? "Rendez-vous de suivi" : "Follow-up appointment"].exists)
             XCTAssertFalse(app.staticTexts["visitEmptySummary"].exists, app.debugDescription)
             capture(french ? "appointment-only-summary-fr" : "appointment-only-summary-en")
+            app.buttons["addVisitAppointment"].tap()
+            XCTAssertTrue(app.staticTexts[french ? "Rendez-vous demain à 15 h." : "Appointment tomorrow at 3 pm."]
+                .waitForExistence(timeout: 5))
+            XCTAssertFalse(app.buttons["saveAppointment"].isEnabled)
+            app.buttons[french ? "Annuler" : "Cancel"].tap()
+            XCTAssertTrue(app.buttons["addVisitAppointment"].waitForExistence(timeout: 5))
             app.terminate()
         }
     }
@@ -1084,7 +1089,10 @@ import XCTest
             capture(dark ? "142-visit-medicine-review-dark" : "71-visit-medicine-review")
             app.buttons["Cancel"].tap()
             if !dark {
-                app.navigationBars.buttons.firstMatch.tap()
+                let back = app.navigationBars[title].buttons["BackButton"]
+                XCTAssertTrue(back.isHittable)
+                back.tap()
+                XCTAssertTrue(app.buttons["addVisitNotes"].waitForExistence(timeout: 5))
             }
         }
         app.buttons["Visit options"].tap()
@@ -1533,9 +1541,22 @@ import XCTest
         add(item)
     }
 
+    private func currentNavigationBar(_ app: XCUIApplication) -> XCUIElement {
+        // All four page stacks stay mounted. Ignore bars translated outside the visible phone.
+        let bar = app.navigationBars.allElementsBoundByIndex.first {
+            let frame = $0.frame
+
+            return frame.width > 0 && frame.height > 0 &&
+                frame.intersection(app.frame).width >= frame.width * 0.9
+        }
+        XCTAssertNotNil(bar, app.debugDescription)
+
+        return bar ?? app.navigationBars.firstMatch
+    }
+
     private func appearance(_ app: XCUIApplication, dark: Bool) {
         app.buttons["nav-today"].tap()
-        app.buttons["Settings"].tap()
+        currentNavigationBar(app).buttons["Settings"].tap()
         app.buttons["Appearance"].tap()
         app.buttons[dark ? "appearance-dark" : "appearance-light"].tap()
         app.navigationBars["Appearance"].buttons.firstMatch.tap()
@@ -1556,12 +1577,15 @@ import XCTest
                 app.buttons["nav-" + destination].tap()
                 if
                     destination == "records",
-                    !app.buttons["record-category-0"].exists {
-                    app.navigationBars.buttons.firstMatch.tap()
+                    currentNavigationBar(app).buttons["BackButton"].exists {
+                    let back = currentNavigationBar(app).buttons["BackButton"]
+                    XCTAssertTrue(back.isHittable)
+                    back.tap()
                 }
-                XCTAssertTrue(app.buttons["Settings"].isHittable)
-                XCTAssertGreaterThan(app.buttons["Settings"].frame.midX, app.frame.width * 0.7)
-                app.buttons["Settings"].tap()
+                let settings = currentNavigationBar(app).buttons["Settings"]
+                XCTAssertTrue(settings.isHittable)
+                XCTAssertGreaterThan(settings.frame.midX, app.frame.width * 0.7)
+                settings.tap()
                 XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 5))
                 app.buttons["Done"].tap()
                 XCTAssertTrue(app.buttons["nav-" + destination].isSelected)
@@ -1573,7 +1597,7 @@ import XCTest
             input.tap()
             input.typeText("Help me organise my notes")
             app.buttons["Done"].tap()
-            app.buttons["Settings"].tap()
+            currentNavigationBar(app).buttons["Settings"].tap()
             app.buttons["Models"].tap()
             XCTAssertTrue(app.sliders["Generation effort"].waitForExistence(timeout: 5))
             app.navigationBars["Models"].buttons.firstMatch.tap()
@@ -1587,7 +1611,7 @@ import XCTest
             app.buttons["nav-records"].tap()
             capture(dark ? "65-records-dark" : "64-records")
             selectRecords(app, "Medications")
-            XCTAssertFalse(app.buttons["Settings"].exists)
+            XCTAssertFalse(currentNavigationBar(app).buttons["Settings"].exists)
             XCTAssertTrue(app.buttons["Add record"].isHittable)
             capture(dark ? "34-medicines-dark" : "03-medicines")
             app.navigationBars["Medications"].buttons.firstMatch.tap()

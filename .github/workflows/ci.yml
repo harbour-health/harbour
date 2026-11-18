@@ -27,6 +27,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  audio-format-probe:
+    runs-on: macos-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Diagnose AAC format support without microphone input
+        run: swift scripts/probe-visit-audio.swift
+
   deterministic-tests:
     if: github.event_name != 'workflow_dispatch' || !inputs.run_model_evals
     runs-on: macos-latest
@@ -121,7 +129,7 @@ jobs:
           key: ${{ steps.reports-cache.outputs.cache-primary-key }}
       - name: Cache neural speech dependencies
         id: speech-cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: |
             HarbourSpeech/Vendor
@@ -133,6 +141,16 @@ jobs:
           brew install cmake ninja
           python3 scripts/prepare-speech.py
           python3 scripts/prepare-onnx.py
+
+      - name: Save prepared neural speech dependencies
+        if: steps.speech-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            HarbourSpeech/Vendor
+            HarbourSpeech/Sources/HarbourSpeech/Resources/espeak-ng-data
+          key: ${{ steps.speech-cache.outputs.cache-primary-key }}
+
       - name: Test speech frontend without model download
         run: swift test --package-path HarbourSpeech
 
