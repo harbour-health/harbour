@@ -38,10 +38,26 @@ jobs:
         run: xcodebuild -version
 
       - name: Check Swift formatting
+        id: swift_format
         run: |
           python3 scripts/prepare-format.py
           python3 scripts/format.py --self-test
           python3 scripts/format.py --check
+
+      - name: Capture required Swift formatting
+        if: failure() && steps.swift_format.outcome == 'failure'
+        run: |
+          mkdir -p build
+          python3 scripts/format.py
+          git diff --binary > build/format.patch
+
+      - name: Upload required Swift formatting
+        if: failure() && steps.swift_format.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: harbour-format-fix
+          path: build/format.patch
+          if-no-files-found: error
 
       - name: Test Core rules and evaluation cases
         run: swift test --package-path HarbourCore
@@ -128,6 +144,7 @@ jobs:
             -only-testing:HarbourUITests/AppearanceAndLockVisualTests \
             -only-testing:HarbourUITests/HarbourAppointmentUITests \
             -only-testing:HarbourUITests/HarbourMedicationDraftUITests \
+            -only-testing:HarbourUITests/SimpleInterfaceUITests \
             -only-testing:HarbourUITests/HarbourUITests/testMedicineConfirmationAndExport \
             -only-testing:HarbourUITests/HarbourUITests/testRecordsAndPersistence \
             -only-testing:HarbourUITests/HarbourUITests/testChatHintPreservesDraftAndModelSelector \
