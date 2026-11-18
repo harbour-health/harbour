@@ -1580,12 +1580,22 @@ import XCTest
 
     private func currentNavigationBar(_ app: XCUIApplication) -> XCUIElement {
         // All four page stacks stay mounted. Ignore bars translated outside the visible phone.
-        let bar = app.navigationBars.allElementsBoundByIndex.first {
-            let frame = $0.frame
+        var bar: XCUIElement?
+        let visible = NSPredicate { _, _ in
+            bar = app.navigationBars.allElementsBoundByIndex.first {
+                let frame = $0.frame
 
-            return frame.width > 0 && frame.height > 0 &&
-                frame.intersection(app.frame).width >= frame.width * 0.9
+                return frame.width > 0 && frame.height > 0 &&
+                    frame.intersection(app.frame).width >= frame.width * 0.9
+            }
+
+            return bar != nil
         }
+        XCTAssertEqual(
+            XCTWaiter.wait(for: [expectation(for: visible, evaluatedWith: nil)], timeout: 5),
+            .completed,
+            app.debugDescription
+        )
         XCTAssertNotNil(bar, app.debugDescription)
 
         return bar ?? app.navigationBars.firstMatch
