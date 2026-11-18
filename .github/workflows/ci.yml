@@ -50,6 +50,7 @@ jobs:
           mkdir -p build
           python3 scripts/format.py
           git diff --binary > build/format.patch
+          git diff --binary
 
       - name: Upload required Swift formatting
         if: failure() && steps.swift_format.outcome == 'failure'
