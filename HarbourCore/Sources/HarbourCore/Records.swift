@@ -182,11 +182,17 @@ public enum Catalog {
 
     public static func search(_ query: String) -> [Medicine] {
         let input = query.trimmingCharacters(in: .whitespacesAndNewlines)
+
         guard !input.isEmpty else {
             return medicines
         }
+
         let query = MedicationVocabulary.key(input)
-        guard !query.isEmpty, query.count <= 80 else { return [] }
+
+        guard !query.isEmpty, query.count <= 80 else {
+            return []
+        }
+
         let vocabulary = MedicationVocabulary.shared
         let curated = medicines.compactMap { medicine -> (Medicine, Int)? in
             let rank = MedicationVocabulary.matchRank(
@@ -194,14 +200,21 @@ public enum Catalog {
                 names: names(for: medicine).map(MedicationVocabulary.key),
                 ingredients: medicine.ingredients.flatMap { ingredientNames(for: $0) }.map(MedicationVocabulary.key)
             )
+
             return rank.map { (medicine, $0) }
         }
         var ids = Set(curated.map { $0.0.id })
         let database = vocabulary.search(input).compactMap { medicine -> (Medicine, Int)? in
-            guard ids.insert(medicine.id).inserted,
-                  let rank = vocabulary.matchRank(for: medicine, query: query) else { return nil }
+
+            guard
+                ids.insert(medicine.id).inserted,
+                let rank = vocabulary.matchRank(for: medicine, query: query) else {
+                return nil
+            }
+
             return (medicine, rank)
         }
+
         return (curated + database).sorted { MedicationVocabulary.precedes($0, $1) }.map(\.0)
     }
 

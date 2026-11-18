@@ -427,6 +427,7 @@ struct MedicineEditor: View {
         let matches = chosen == nil ? Catalog.search(query) : []
         let suggestions = chosen == nil && hasQuery && matches.isEmpty
             ? MedicationVocabulary.shared.suggestions(query) : []
+
         return Form {
             if initial == nil && reviewSource == nil && chosen == nil {
                 Section("Medication label") {

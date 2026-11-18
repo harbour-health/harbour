@@ -121,35 +121,61 @@ public struct MedicationVocabulary: Sendable {
         }
 
         return entries.indices.compactMap { index -> (Medicine, Int)? in
-            guard let rank = Self.matchRank(query: key, names: nameKeys[index], ingredients: ingredientKeys[index]) else {
+
+            guard let rank = Self.matchRank(query: key, names: nameKeys[index], ingredients: ingredientKeys[index])
+            else {
                 return nil
             }
+
             return (entries[index].medicine, rank)
         }.sorted { Self.precedes($0, $1) }.prefix(limit).map(\.0)
     }
 
     /// Rank exact names, exact ingredients, prefixes and substrings consistently across both catalogs.
     static func matchRank(query: String, names: [String], ingredients: [String]) -> Int? {
-        if names.contains(query) { return 0 }
-        if ingredients.contains(query) { return 1 }
-        if names.contains(where: { $0.hasPrefix(query) }) { return 2 }
-        if ingredients.contains(where: { $0.hasPrefix(query) }) { return 3 }
-        if names.contains(where: { $0.contains(query) }) { return 4 }
-        if ingredients.contains(where: { $0.contains(query) }) { return 5 }
+        if names.contains(query) {
+            return 0
+        }
+        if ingredients.contains(query) {
+            return 1
+        }
+        if names.contains(where: { $0.hasPrefix(query) }) {
+            return 2
+        }
+        if ingredients.contains(where: { $0.hasPrefix(query) }) {
+            return 3
+        }
+        if names.contains(where: { $0.contains(query) }) {
+            return 4
+        }
+        if ingredients.contains(where: { $0.contains(query) }) {
+            return 5
+        }
+
         return nil
     }
 
     func matchRank(for medicine: Medicine, query: String) -> Int? {
-        guard let index = identities[medicine.id] else { return nil }
+        guard let index = identities[medicine.id] else {
+            return nil
+        }
+
         return Self.matchRank(query: query, names: nameKeys[index], ingredients: ingredientKeys[index])
     }
 
     static func precedes(_ lhs: (Medicine, Int), _ rhs: (Medicine, Int)) -> Bool {
-        if lhs.1 != rhs.1 { return lhs.1 < rhs.1 }
+        if lhs.1 != rhs.1 {
+            return lhs.1 < rhs.1
+        }
         let a = key(lhs.0.name), b = key(rhs.0.name)
-        if a != b { return a < b }
+        if a != b {
+            return a < b
+        }
         let officialA = lhs.0.id.hasPrefix("dpd-"), officialB = rhs.0.id.hasPrefix("dpd-")
-        if officialA != officialB { return !officialA }
+        if officialA != officialB {
+            return !officialA
+        }
+
         return lhs.0.id < rhs.0.id
     }
 
@@ -165,7 +191,10 @@ public struct MedicationVocabulary: Sendable {
 
         var best: [String: (Medicine, Double)] = [:]
         func consider(_ sound: String, medicine makeMedicine: () -> Medicine) {
-            guard abs(sound.count - query.count) <= 3, sound.first == query.first else { return }
+            guard abs(sound.count - query.count) <= 3, sound.first == query.first else {
+                return
+            }
+
             let distance = Self.distance(query, sound)
             let score = 1 - Double(distance) / Double(max(query.count, sound.count))
 
@@ -179,6 +208,7 @@ public struct MedicationVocabulary: Sendable {
             let preferIdentity = prior.map { previous in
                 let generic = medicine.id.hasPrefix("dpd-ingredient:")
                 let priorGeneric = previous.0.id.hasPrefix("dpd-ingredient:")
+
                 return generic != priorGeneric ? generic : medicine.id < previous.0.id
             } ?? true
             if score > (prior?.1 ?? 0) || (score == (prior?.1 ?? -1) && preferIdentity) {
@@ -195,7 +225,10 @@ public struct MedicationVocabulary: Sendable {
         }
 
         return best.values.sorted { lhs, rhs in
-            if lhs.1 != rhs.1 { return lhs.1 > rhs.1 }
+            if lhs.1 != rhs.1 {
+                return lhs.1 > rhs.1
+            }
+
             return Self.precedes((lhs.0, 0), (rhs.0, 0))
         }.prefix(limit).map(\.0)
     }

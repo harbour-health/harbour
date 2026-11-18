@@ -23,12 +23,15 @@ import XCTest
         XCTAssertTrue(add.waitForExistence(timeout: 5))
         add.tap()
         XCTAssertTrue(app.textFields["medicineSearch"].waitForExistence(timeout: 5))
+
         return app
     }
 
     private func finishTyping(_ app: XCUIApplication, language: String) {
         let done = app.buttons[language == "en" ? "Done" : "Terminé"]
-        if done.exists { done.tap() }
+        if done.exists {
+            done.tap()
+        }
     }
 
     func testBilingualNoMatchClearsPreviousCandidatesAndRetainsManualEntry() {
@@ -45,7 +48,10 @@ import XCTest
             XCTAssertTrue(empty.waitForExistence(timeout: 5))
             XCTAssertEqual(empty.label, language == "en" ? "No matching medications" : "Aucun médicament correspondant")
             XCTAssertFalse(app.buttons["catalog-metformin"].exists)
-            XCTAssertEqual(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "medicineSuggestion-")).count, 0)
+            XCTAssertEqual(
+                app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "medicineSuggestion-")).count,
+                0
+            )
             XCTAssertTrue(app.buttons["addUnlistedMedicine"].exists)
             XCTAssertFalse(app.buttons["saveMedicine"].isEnabled)
 
@@ -66,7 +72,8 @@ import XCTest
             search.tap()
             search.typeText("metfomrin")
             finishTyping(app, language: language)
-            let suggestion = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "medicineSuggestion-")).firstMatch
+            let suggestion = app.buttons
+                .matching(NSPredicate(format: "identifier BEGINSWITH %@", "medicineSuggestion-")).firstMatch
             XCTAssertTrue(suggestion.waitForExistence(timeout: 5))
             XCTAssertFalse(app.staticTexts["medicineSearchNoMatches"].exists)
             suggestion.tap()

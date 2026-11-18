@@ -31,26 +31,33 @@ func measure(_ operation: () -> Int, iterations: Int) -> [String: Any] {
 
 func run() throws {
     let arguments = Array(CommandLine.arguments.dropFirst())
+
     guard arguments.count == 2 || arguments.count == 4, arguments.first == "--output" else {
         throw BenchmarkError.usage
     }
+
     var iterations = 50
     if arguments.count == 4 {
         guard arguments[2] == "--iterations", let value = Int(arguments[3]), (5 ... 1000).contains(value) else {
             throw BenchmarkError.invalidIterations
         }
+
         iterations = value
     }
     let output = URL(fileURLWithPath: arguments[1])
+
     guard !FileManager.default.fileExists(atPath: output.path) else {
         throw BenchmarkError.outputExists
     }
+
     let start = DispatchTime.now().uptimeNanoseconds
     let vocabulary = MedicationVocabulary.shared
     let coldMilliseconds = Double(DispatchTime.now().uptimeNanoseconds - start) / 1_000_000
+
     guard vocabulary.entries.count > 8000 else {
         throw BenchmarkError.emptyVocabulary
     }
+
     let queries = [
         ("ibuprofen", "exact_generic"),
         ("Advil", "exact_brand"),
@@ -72,6 +79,7 @@ func run() throws {
             ("suggestions", { vocabulary.suggestions(query).count }),
             ("ui_normal_then_fallback", {
                 let exact = Catalog.search(query)
+
                 return exact.isEmpty ? vocabulary.suggestions(query).count : exact.count
             })
         ]
