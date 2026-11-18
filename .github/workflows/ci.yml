@@ -18,6 +18,16 @@ on:
           - all
           - transcripts
         default: all
+      native_scope:
+        description: Native checks for this manual run (pushes and PRs keep the full smoke suite)
+        required: false
+        type: choice
+        options:
+          - smoke
+          - interface
+          - navigation
+          - medication-search
+        default: smoke
 
 permissions:
   contents: read
@@ -155,9 +165,52 @@ jobs:
         run: swift test --package-path HarbourSpeech
 
       - name: Run native iOS smoke and visual regression tests
+        env:
+          HARBOUR_NATIVE_SCOPE: ${{ inputs.native_scope || 'smoke' }}
         run: |
           mkdir -p build
           device_id="$(xcrun simctl list devices available --json | python3 -c 'import json,sys; devices=json.load(sys.stdin)["devices"]; print(next(d["udid"] for runtime, entries in devices.items() if "iOS" in runtime for d in entries if d["name"].startswith("iPhone")))')"
+          case "$HARBOUR_NATIVE_SCOPE" in
+            interface)
+              native_tests=(-only-testing:HarbourUITests/SimpleInterfaceUITests)
+              ;;
+            navigation)
+              native_tests=(
+                -only-testing:HarbourUITests/SimpleInterfaceUITests/testConfirmedRecordSurvivesModeSwitchesAndRelaunch
+                -only-testing:HarbourUITests/HarbourAppearanceTests/testScreensAndAppearancePersistence
+                -only-testing:HarbourUITests/HarbourVisitTests/testMedicineReviewDrawerScreens
+                -only-testing:HarbourUITests/HarbourStreamlineTests/testMainActionsDraftRetentionAndVisitCreation
+              )
+              ;;
+            medication-search)
+              test -f HarbourUITests/MedicationSearchUITests.swift
+              native_tests=(-only-testing:HarbourUITests/MedicationSearchUITests)
+              ;;
+            smoke)
+              native_tests=(
+                -only-testing:HarbourTests
+                -only-testing:HarbourUITests/VisitReportUITests
+                -only-testing:HarbourUITests/ShareExportUITests
+                -only-testing:HarbourUITests/HarbourNativeRefreshTests/testChatDockShrinksLowersAndRetainsNavigation
+                -only-testing:HarbourUITests/HarbourNativeRefreshTests/testSwipeBetweenMainPagesKeepsDockSelectionInSync
+                -only-testing:HarbourUITests/HarbourNativeRefreshTests/testOneTapRecordingAndBackgroundReturn
+                -only-testing:HarbourUITests/AppearanceAndLockVisualTests
+                -only-testing:HarbourUITests/HarbourAppointmentUITests
+                -only-testing:HarbourUITests/HarbourMedicationDraftUITests
+                -only-testing:HarbourUITests/SimpleInterfaceUITests
+                -only-testing:HarbourUITests/MedicationSearchUITests
+                -only-testing:HarbourUITests/HarbourUITests/testMedicineConfirmationAndExport
+                -only-testing:HarbourUITests/HarbourUITests/testRecordsAndPersistence
+                -only-testing:HarbourUITests/HarbourUITests/testChatHintPreservesDraftAndModelSelector
+                -only-testing:HarbourUITests/HarbourAppearanceTests/testScreensAndAppearancePersistence
+                -only-testing:HarbourUITests/HarbourNavigationTests/testDashboardNavigationAndSystemAppearance
+                -only-testing:HarbourUITests/HarbourVisitTests/testMedicineReviewDrawerScreens
+                -only-testing:HarbourUITests/HarbourVisitTests/testAppointmentOnlySummaryDoesNotShowEmptyWarning
+                -only-testing:HarbourUITests/HarbourStreamlineTests/testMainActionsDraftRetentionAndVisitCreation
+              )
+              ;;
+            *) echo "Unknown native test scope" >&2; exit 2 ;;
+          esac
           xcodebuild test \
             -project Harbour.xcodeproj \
             -scheme Harbour \
@@ -165,26 +218,8 @@ jobs:
             -derivedDataPath build/DerivedData \
             -resultBundlePath build/Harbour-CI.xcresult \
             -parallel-testing-enabled NO \
-            -only-testing:HarbourTests \
-            -only-testing:HarbourUITests/VisitReportUITests \
-            -only-testing:HarbourUITests/ShareExportUITests \
-            -only-testing:HarbourUITests/HarbourNativeRefreshTests/testChatDockShrinksLowersAndRetainsNavigation \
-            -only-testing:HarbourUITests/HarbourNativeRefreshTests/testSwipeBetweenMainPagesKeepsDockSelectionInSync \
-            -only-testing:HarbourUITests/HarbourNativeRefreshTests/testOneTapRecordingAndBackgroundReturn \
+            "${native_tests[@]}" \
             -skip-testing:HarbourTests/HarbourCareServiceTests/testNativeVoiceActuallyCompletesShortUtterance \
-            -only-testing:HarbourUITests/AppearanceAndLockVisualTests \
-            -only-testing:HarbourUITests/HarbourAppointmentUITests \
-            -only-testing:HarbourUITests/HarbourMedicationDraftUITests \
-            -only-testing:HarbourUITests/SimpleInterfaceUITests \
-            -only-testing:HarbourUITests/MedicationSearchUITests \
-            -only-testing:HarbourUITests/HarbourUITests/testMedicineConfirmationAndExport \
-            -only-testing:HarbourUITests/HarbourUITests/testRecordsAndPersistence \
-            -only-testing:HarbourUITests/HarbourUITests/testChatHintPreservesDraftAndModelSelector \
-            -only-testing:HarbourUITests/HarbourAppearanceTests/testScreensAndAppearancePersistence \
-            -only-testing:HarbourUITests/HarbourNavigationTests/testDashboardNavigationAndSystemAppearance \
-            -only-testing:HarbourUITests/HarbourVisitTests/testMedicineReviewDrawerScreens \
-            -only-testing:HarbourUITests/HarbourVisitTests/testAppointmentOnlySummaryDoesNotShowEmptyWarning \
-            -only-testing:HarbourUITests/HarbourStreamlineTests/testMainActionsDraftRetentionAndVisitCreation \
             CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=-
 
       - name: Export simulator screenshots

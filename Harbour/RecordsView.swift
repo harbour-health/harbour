@@ -51,8 +51,11 @@ struct RecordsView: View {
         .presentationTarget("records.browser")
         .navigationTitle("").navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            if category == nil {
-                ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) }
+            // Retain the toolbar item's identity when a category is pushed and popped.
+            ToolbarItem(placement: .topBarTrailing) {
+                if category == nil {
+                    SettingsButton(sheet: $sheet)
+                }
             }
         }
         .navigationDestination(item: $category) { selected in

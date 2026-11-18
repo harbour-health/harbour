@@ -1,0 +1,28 @@
+2026-11-18T10:42:12.3433560Z HEAD is now at 3a402e3 Merge b911b256c8e7687648f6efc99b3140d8a1619877 into e11cdd335e4474e862aec50ed7887f80e2345598
+2026-11-18T10:42:12.6758170Z Xcode 26.6
+2026-11-18T10:42:12.6759800Z Build version 17F113
+2026-11-18T10:43:26.9602880Z 	 Executed 25 tests, with 0 failures (0 unexpected) in 0.736 (0.741) seconds
+2026-11-18T10:46:39.1121390Z { platform:iOS Simulator, arch:arm64, id:2CC7A2C1-E1A7-4633-911A-DB60BDEB97F0, OS:26.4.1, name:iPhone 17 Pro }
+2026-11-18T10:55:42.9026600Z /Users/runner/work/harbour/harbour/HarbourUITests/HarbourUITests.swift:502: error: -[HarbourUITests.HarbourAppearanceTests testScreensAndAppearancePersistence] : Failed to tap "Evaluation" Button: No matches found for Elements matching predicate '"Evaluation" IN identifiers' from input {(
+2026-11-18T10:59:19.7456980Z Test Case '-[HarbourUITests.HarbourNativeRefreshTests testOneTapRecordingAndBackgroundReturn]' passed (39.766 seconds).
+2026-11-18T11:03:49.5122730Z /Users/runner/work/harbour/harbour/HarbourUITests/HarbourUITests.swift:1552: error: -[HarbourUITests.HarbourStreamlineTests testMainActionsDraftRetentionAndVisitCreation] : XCTAssertNotNil failed - Attributes: Application, 0x113e966c0, pid: 28828, label: 'Harbour'
+2026-11-18T11:08:26.1513660Z /Users/runner/work/harbour/harbour/HarbourUITests/HarbourUITests.swift:1095: error: -[HarbourUITests.HarbourVisitTests testMedicineReviewDrawerScreens] : XCTAssertTrue failed
+2026-11-18T11:10:13.4610230Z /Users/runner/work/harbour/harbour/HarbourUITests/SimpleInterfaceUITests.swift:57: error: -[HarbourUITests.SimpleInterfaceUITests testConfirmedRecordSurvivesModeSwitchesAndRelaunch] : XCTAssertTrue failed
+2026-11-18T11:10:13.7907090Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testConfirmedRecordSurvivesModeSwitchesAndRelaunch]' failed (66.718 seconds).
+2026-11-18T11:10:28.5316570Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testFrenchSimpleHome]' passed (14.740 seconds).
+2026-11-18T11:11:45.3429180Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testInterfaceAccessibilityMetadataInBothLanguages]' passed (76.796 seconds).
+2026-11-18T11:13:03.6368980Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testModeSelectionPersistsAcrossRelaunchWithoutLaunchSeed]' passed (78.243 seconds).
+2026-11-18T11:13:31.2200140Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testSimpleHomeHelpAndCaregiverSwitch]' passed (27.639 seconds).
+2026-11-18T11:15:29.3262730Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testSimpleLargestTextKeepsPrimaryActionsReachable]' passed (118.100 seconds).
+2026-11-18T11:16:36.9090860Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testUnsentChatDraftSurvivesHomeAndBothModeSwitches]' passed (67.559 seconds).
+2026-11-18T11:17:36.6841180Z 	 Executed 25 tests, with 4 failures (0 unexpected) in 1522.439 (1522.492) seconds
+2026-11-18T11:17:36.7142320Z 	 Executed 25 tests, with 4 failures (0 unexpected) in 1522.439 (1522.495) seconds
+2026-11-18T11:17:55.0137880Z Test Case '-[HarbourTests.ConversationPersistenceTests testVisitAACWriterDecodes16000HzMono]' passed (0.032 seconds).
+2026-11-18T11:17:55.2030470Z Test Case '-[HarbourTests.ConversationPersistenceTests testVisitAACWriterDecodes16000HzStereo]' passed (0.536 seconds).
+2026-11-18T11:17:55.3000900Z Test Case '-[HarbourTests.ConversationPersistenceTests testVisitAACWriterDecodes44100HzMono]' passed (0.014 seconds).
+2026-11-18T11:17:55.3280560Z Test Case '-[HarbourTests.ConversationPersistenceTests testVisitAACWriterDecodes44100HzStereo]' passed (0.012 seconds).
+2026-11-18T11:17:55.3576760Z Test Case '-[HarbourTests.ConversationPersistenceTests testVisitAACWriterDecodes48000HzMono]' passed (0.017 seconds).
+2026-11-18T11:17:55.5401620Z Test Case '-[HarbourTests.ConversationPersistenceTests testVisitAACWriterDecodes48000HzStereo]' passed (0.031 seconds).
+2026-11-18T11:18:06.4161640Z 	 Executed 51 tests, with 6 tests skipped and 0 failures (0 unexpected) in 10.515 (12.207) seconds
+2026-11-18T11:18:06.4553430Z 	 Executed 51 tests, with 6 tests skipped and 0 failures (0 unexpected) in 10.515 (12.208) seconds
+2026-11-18T11:19:11.5145640Z ** TEST FAILED **

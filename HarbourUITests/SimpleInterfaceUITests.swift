@@ -57,6 +57,24 @@ import XCTest
         XCTAssertTrue(element.isHittable)
     }
 
+    private func scrollToVisibleMatch(_ query: XCUIElementQuery, in app: XCUIApplication) -> XCUIElement {
+        // Today and Records both render appointments in retained page stacks.
+        for attempt in 0 ... 6 {
+            let visible = query.allElementsBoundByIndex.filter { $0.isHittable }
+            if !visible.isEmpty {
+                XCTAssertEqual(visible.count, 1, app.debugDescription)
+
+                return visible[0]
+            }
+            if attempt < 6 {
+                app.swipeUp()
+            }
+        }
+        XCTFail("No visible matching record. " + app.debugDescription)
+
+        return query.firstMatch
+    }
+
     private func openInterface(in app: XCUIApplication, language: String = "en") {
         tapWhenReady(app.buttons[language == "en" ? "Settings" : "Réglages"])
         tapWhenReady(app.buttons["interfaceSettings"])
@@ -202,7 +220,6 @@ import XCTest
         let title = "Fictional interface appointment " + String(UUID().uuidString.prefix(8))
         // AppointmentRow is a Button label combining the title and date, not a separate StaticText.
         let savedRows = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", title))
-        let savedRow = savedRows.firstMatch
         let titleField = app.textFields["appointmentTitle"]
         tapWhenReady(titleField)
         titleField.typeText(title)
@@ -220,24 +237,31 @@ import XCTest
         confirm.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
         XCTAssertEqual(confirm.value as? String, "1")
         tapWhenReady(app.buttons["saveAppointment"])
-        scrollTo(savedRow, in: app)
-        XCTAssertEqual(savedRows.count, 1)
+        XCTAssertTrue(app.buttons["saveAppointment"].waitForNonExistence(timeout: 5), app.debugDescription)
+        let savedRow = scrollToVisibleMatch(savedRows, in: app)
+        let prefix = "appointment-row-"
+        XCTAssertTrue(savedRow.identifier.hasPrefix(prefix))
+        let savedID = String(savedRow.identifier.dropFirst(prefix.count).prefix(36))
+        XCTAssertNotNil(UUID(uuidString: savedID))
+        let savedLabel = savedRow.label
 
         tapWhenReady(app.buttons["nav-today"])
         switchInterface(to: "simple", in: app)
         XCTAssertTrue(app.buttons["simpleMessage"].waitForExistence(timeout: 5))
         switchInterface(to: "caregiver", in: app)
         tapWhenReady(app.buttons["nav-records"])
-        scrollTo(savedRow, in: app)
-        XCTAssertEqual(savedRows.count, 1)
+        let switchedRow = scrollToVisibleMatch(savedRows, in: app)
+        XCTAssertTrue(switchedRow.identifier.contains(prefix + savedID))
+        XCTAssertEqual(switchedRow.label, savedLabel)
         app.terminate()
         app.launchEnvironment.removeValue(forKey: "HARBOUR_INITIAL_INTERFACE")
         app.launch()
         tapWhenReady(app.buttons["nav-records"])
         scrollTo(category, in: app)
         category.tap()
-        scrollTo(savedRow, in: app)
-        XCTAssertEqual(savedRows.count, 1)
+        let relaunchedRow = scrollToVisibleMatch(savedRows, in: app)
+        XCTAssertTrue(relaunchedRow.identifier.contains(prefix + savedID))
+        XCTAssertEqual(relaunchedRow.label, savedLabel)
     }
 
     func testInterfaceAccessibilityMetadataInBothLanguages() throws {
