@@ -1,18 +1,46 @@
 import XCTest
 
 @MainActor private func selectRecords(_ app: XCUIApplication, _ name: String) {
-    if app.navigationBars[name].exists {
+    let destination = app.navigationBars[name]
+    if destination.exists && destination.isHittable {
         return
     }
+    let categories = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "record-category-"))
     for _ in 0 ..< 3 {
-        if app.buttons["record-category-0"].exists {
+        if categories.allElementsBoundByIndex.contains(where: { $0.isHittable }) {
             break
         }
-        app.navigationBars.buttons.firstMatch.tap()
+        let back = app.navigationBars.buttons.matching(identifier: "BackButton")
+            .allElementsBoundByIndex.filter { $0.isHittable }
+
+        guard back.count == 1 else {
+            XCTFail("Expected one active Back button before returning to Records. " + app.debugDescription)
+
+            return
+        }
+
+        back[0].tap()
     }
-    let index = ["Symptoms": 0, "Medications": 1, "Readings": 2][name]!
-    app.buttons["record-category-\(index)"].tap()
-    XCTAssertTrue(app.navigationBars[name].waitForExistence(timeout: 5))
+
+    guard categories.allElementsBoundByIndex.contains(where: { $0.isHittable }) else {
+        XCTFail("The Records browser is not visible. " + app.debugDescription)
+
+        return
+    }
+    guard let index = ["Symptoms": 0, "Medications": 1, "Readings": 2][name] else {
+        XCTFail("Unsupported Records category: " + name)
+
+        return
+    }
+
+    let category = app.buttons["record-category-\(index)"]
+    for _ in 0 ..< 6 where !category.isHittable {
+        app.swipeUp()
+    }
+    XCTAssertTrue(category.isHittable, app.debugDescription)
+    category.tap()
+    XCTAssertTrue(destination.waitForExistence(timeout: 5))
+    XCTAssertTrue(destination.isHittable, app.debugDescription)
 }
 
 @MainActor private func openSymptomCapture(_ app: XCUIApplication) {
@@ -1098,7 +1126,10 @@ import XCTest
                 let back = app.navigationBars[title].buttons["BackButton"]
                 XCTAssertTrue(back.isHittable)
                 back.tap()
-                XCTAssertTrue(app.buttons["addVisitNotes"].waitForExistence(timeout: 5))
+                XCTAssertTrue(app.buttons["recordVisit"].waitForExistence(timeout: 5), app.debugDescription)
+                XCTAssertTrue(app.buttons["recordVisit"].isHittable, app.debugDescription)
+                XCTAssertTrue(app.buttons["nav-visits"].isSelected)
+                XCTAssertTrue(app.buttons["addVisitNotes"].waitForExistence(timeout: 5), app.debugDescription)
             }
         }
         app.buttons["Visit options"].tap()
@@ -1549,12 +1580,22 @@ import XCTest
 
     private func currentNavigationBar(_ app: XCUIApplication) -> XCUIElement {
         // All four page stacks stay mounted. Ignore bars translated outside the visible phone.
-        let bar = app.navigationBars.allElementsBoundByIndex.first {
-            let frame = $0.frame
+        var bar: XCUIElement?
+        let visible = NSPredicate { _, _ in
+            bar = app.navigationBars.allElementsBoundByIndex.first {
+                let frame = $0.frame
 
-            return frame.width > 0 && frame.height > 0 &&
-                frame.intersection(app.frame).width >= frame.width * 0.9
+                return frame.width > 0 && frame.height > 0 &&
+                    frame.intersection(app.frame).width >= frame.width * 0.9
+            }
+
+            return bar != nil
         }
+        XCTAssertEqual(
+            XCTWaiter.wait(for: [expectation(for: visible, evaluatedWith: nil)], timeout: 5),
+            .completed,
+            app.debugDescription
+        )
         XCTAssertNotNil(bar, app.debugDescription)
 
         return bar ?? app.navigationBars.firstMatch
@@ -1611,8 +1652,19 @@ import XCTest
             app.buttons["Done"].tap()
             XCTAssertEqual(input.value as? String, "Help me organise my notes")
             app.buttons["modelSelector"].tap()
-            XCTAssertTrue(app.buttons["Done"].isHittable)
-            app.buttons["Done"].tap()
+            let standaloneModels = app.navigationBars["Models"]
+            XCTAssertTrue(standaloneModels.waitForExistence(timeout: 5), app.debugDescription)
+            let closeModels = standaloneModels.buttons["Done"]
+            XCTAssertEqual(
+                XCTWaiter.wait(
+                    for: [expectation(for: NSPredicate(format: "hittable == true"), evaluatedWith: closeModels)],
+                    timeout: 5
+                ),
+                .completed,
+                app.debugDescription
+            )
+            closeModels.tap()
+            XCTAssertTrue(standaloneModels.waitForNonExistence(timeout: 5), app.debugDescription)
             XCTAssertEqual(input.value as? String, "Help me organise my notes")
             app.buttons["nav-records"].tap()
             capture(dark ? "65-records-dark" : "64-records")

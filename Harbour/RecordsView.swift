@@ -50,6 +50,7 @@ struct RecordsView: View {
         .listStyle(.plain).scrollContentBackground(.hidden).background(Palette.canvas)
         .presentationTarget("records.browser")
         .navigationTitle("").navigationBarTitleDisplayMode(.inline)
+        .toolbar(.visible, for: .navigationBar)
         .toolbar {
             // Retain the toolbar item's identity when a category is pushed and popped.
             ToolbarItem(placement: .topBarTrailing) {
