@@ -47,6 +47,8 @@ jobs:
         run: swift scripts/probe-visit-audio.swift
 
   deterministic-tests:
+    # Focused manual runs must not share the full PR smoke check's name.
+    name: ${{ github.event_name == 'workflow_dispatch' && inputs.native_scope && inputs.native_scope != 'smoke' && format('focused-{0}', inputs.native_scope) || 'deterministic-tests' }}
     if: github.event_name != 'workflow_dispatch' || !inputs.run_model_evals
     runs-on: macos-latest
     timeout-minutes: 90
