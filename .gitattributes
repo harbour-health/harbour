@@ -9,3 +9,7 @@ docs/presentation/** linguist-generated=true
 docs/screenshots/** linguist-generated=true
 HarbourCore/Sources/HarbourCore/Resources/medication-vocabulary.json linguist-generated=true
 docs/evaluation/medication-names-*.json linguist-generated=true
+
+# Preserve the recorded SHA-256 values on Windows and macOS checkouts.
+docs/evaluation/medication-search/*.json text eol=lf
+docs/evaluation/medication-search/*.txt text eol=lf

@@ -27,6 +27,11 @@
     "source_commit": "6c78227a12e1529099cec08a9fd72701d211b50a",
     "run_id": 44279114912,
     "job_id": 134714795439,
+    "native_environment": {
+      "device": "iPhone 17 Pro simulator",
+      "os": "iOS 26.4.1",
+      "xcode": "26.6 (17F113)"
+    },
     "core": {
       "suite": "HarbourCore",
       "tests": 159,
@@ -58,6 +63,18 @@
     "excerpt_sha256": "712134050ce0f9b79700c6a900f0441e739112239866accb3258ca701366e39a",
     "workflow_passed": false,
     "workflow_note": "Other selected native UI test methods failed in the same job. Focused medication-search success does not make the overall workflow passing."
+  },
+  "subsequent_verification": {
+    "pull_request_head": "df35c388c379c0c04d00be1c0ff6b7cc2bbe13f8",
+    "run_id": 44287969060,
+    "job_id": 134745463632,
+    "run_url": "https://github.com/harbour-health/harbour/actions/runs/44287969060",
+    "core_tests": 159,
+    "core_failures": 0,
+    "medication_search_ui_tests": 2,
+    "medication_search_ui_failures": 0,
+    "workflow_passed": false,
+    "note": "Parent navigation/saved-record checks and simulator background-assertion errors failed; parent corrections are tracked in PR #17."
   },
   "comparison": {
     "protocol": "Unchanged fixed query matrix; 12 queries x 3 operations x 50 release samples",

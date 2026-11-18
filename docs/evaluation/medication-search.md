@@ -42,9 +42,11 @@ Mac/simulator results measure the full dataset and actual matching code; they do
 
 ### Actual verification
 
-[Run 44279114912, job 134714795439](https://github.com/harbour-health/harbour/actions/runs/44279114912/job/134714795439) tested synthetic merge `6c78227a12e1529099cec08a9fd72701d211b50a`, with PR head `dd09de7db82d560c9099fc49f17ef8f44c643286`. All **159 HarbourCore tests passed**, including all six medication-search methods. Both `MedicationSearchUITests` methods passed: bilingual no-match/stale-result/manual-entry checks (98.266 seconds) and bilingual transposition-selection/product-confirmation checks (48.971 seconds). Each native method exercised English and Canadian French without model inference or speech downloads.
+[Run 44279114912, job 134714795439](https://github.com/harbour-health/harbour/actions/runs/44279114912/job/134714795439) tested synthetic merge `6c78227a12e1529099cec08a9fd72701d211b50a`, with PR head `dd09de7db82d560c9099fc49f17ef8f44c643286`. All **159 HarbourCore tests passed**, including all six medication-search methods. Both `MedicationSearchUITests` methods passed: bilingual no-match/stale-result/manual-entry checks (98.266 seconds) and bilingual transposition-selection/product-confirmation checks (48.971 seconds). Each native method exercised English and Canadian French without model inference or speech downloads. The native destination was an iPhone 17 Pro simulator running iOS 26.4.1, built with Xcode 26.6 (17F113).
 
 The **overall workflow failed** because other selected native UI test methods failed. The [verification excerpt](medication-search/verification-6c78227.txt) preserves the focused pass results together with other failed-method lines and the final failed-test status; use the linked full job for diagnostics. These results do not certify later source changes or label the full suite green.
+
+The subsequent [run 44287969060](https://github.com/harbour-health/harbour/actions/runs/44287969060), head `df35c38`, again passed all 159 Core tests and both bilingual search UI methods. Its overall UI run failed in parent navigation/saved-record checks and simulator background-assertion errors; it is not recorded as a passing full workflow. The parent corrections are tracked in PR #17.
 
 ### Observed release performance
 
