@@ -316,6 +316,7 @@ struct ChatView: View {
                 }
                 ForEach(store.conversations) { conversation in
                     Button { cancel()
+                        draft = ""
                         store.openConversation(conversation.id)
                         historySheet = false } label: {
                         HStack(spacing: 14) {
@@ -394,7 +395,9 @@ struct ChatView: View {
     private func endVoiceConversation() {
         voiceMode = false
         voice.stop()
-        draft = voiceDraftBackup ?? ""
+        if let voiceDraftBackup {
+            draft = voiceDraftBackup
+        }
         voiceDraftBackup = nil
     }
 
