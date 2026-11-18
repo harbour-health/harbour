@@ -1,5 +1,9 @@
 # Developer documentation
 
+- [User stories and acceptance paths](user-stories.md) — roles, core tasks, assumptions and open design questions.
+- [Screen and message flows](message-flows.md) — task entry points, example exchanges and review/recovery boundaries.
+- [Prepared usability session](usability-session-plan.md) — selected tasks and blank observation sheet; #13 remains deferred.
+
 - [Appointments](appointments.md) - records, shared drafts, transcript sources, and migration.
 
 - [Architecture](architecture.md) — modules, persistence, tool execution, and change points.
