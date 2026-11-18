@@ -106,6 +106,7 @@ struct VisitsView: View {
         }.contentMargins(.bottom, dockClearance, for: .scrollContent)
             .background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar(.visible, for: .navigationBar)
             .toolbar {
                 // Keep item containers stable so the root actions return after Back.
                 ToolbarItem(placement: .topBarLeading) {

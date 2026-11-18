@@ -1,0 +1,12 @@
+2026-11-18T11:28:23.4114780Z Xcode 26.6
+2026-11-18T11:28:23.4146660Z Build version 17F113
+2026-11-18T11:36:33.6410810Z { platform:iOS Simulator, arch:arm64, id:2CC7A2C1-E1A7-4633-911A-DB60BDEB97F0, OS:26.4.1, name:iPhone 17 Pro }
+2026-11-18T11:42:03.5595730Z Test Case '-[HarbourUITests.HarbourAppearanceTests testScreensAndAppearancePersistence]' passed (223.576 seconds).
+2026-11-18T11:42:56.4346910Z /Users/runner/work/harbour/harbour/HarbourUITests/HarbourUITests.swift:1614: error: -[HarbourUITests.HarbourStreamlineTests testMainActionsDraftRetentionAndVisitCreation] : XCTAssertTrue failed
+2026-11-18T11:42:56.7635030Z Test Case '-[HarbourUITests.HarbourStreamlineTests testMainActionsDraftRetentionAndVisitCreation]' failed (53.205 seconds).
+2026-11-18T11:43:34.3173370Z /Users/runner/work/harbour/harbour/HarbourUITests/HarbourUITests.swift:1101: error: -[HarbourUITests.HarbourVisitTests testMedicineReviewDrawerScreens] : XCTAssertTrue failed
+2026-11-18T11:43:34.5816070Z Test Case '-[HarbourUITests.HarbourVisitTests testMedicineReviewDrawerScreens]' failed (37.816 seconds).
+2026-11-18T11:45:12.7574290Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testConfirmedRecordSurvivesModeSwitchesAndRelaunch]' passed (98.140 seconds).
+2026-11-18T11:45:12.8336110Z 	 Executed 4 tests, with 2 failures (0 unexpected) in 412.736 (412.741) seconds
+2026-11-18T11:45:12.9903320Z 	 Executed 4 tests, with 2 failures (0 unexpected) in 412.736 (412.743) seconds
+2026-11-18T11:45:45.1359470Z ** TEST FAILED **

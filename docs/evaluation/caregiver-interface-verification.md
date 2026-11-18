@@ -8,14 +8,14 @@ Local source checks passed: `python -X utf8 scripts/audit-localization.py` check
 
 `HarbourUITests/SimpleInterfaceUITests.swift` exercises the actual native screens without sending a message to a model, downloading speech assets or recording audio.
 
-| Test | Assertions | Last completed outcome, head `b911b25` |
+| Test | Assertions | Recorded native outcome |
 | --- | --- | --- |
 | `testSimpleHomeHelpAndCaregiverSwitch` | Simple actions, guide and chat controls; switch to detailed Caregiver navigation. | Passed. |
 | `testSimpleLargestTextKeepsPrimaryActionsReachable` | Largest accessibility text in English and Canadian French; scroll to Simple actions, open the guide, reach the interface choices and Caregiver record categories. | Passed. |
 | `testFrenchSimpleHome` | Translated Simple home and guide labels. | Passed. |
 | `testUnsentChatDraftSurvivesHomeAndBothModeSwitches` | Type a unique unsent message; return Home; switch Simple → Caregiver → Simple; reopen Chat and check the unchanged draft each time. | Passed. |
 | `testModeSelectionPersistsAcrossRelaunchWithoutLaunchSeed` | Select each mode in Settings; terminate and relaunch with the initial-mode environment seed removed; check the retained layout and selected button. | Passed. |
-| `testConfirmedRecordSurvivesModeSwitchesAndRelaunch` | Cancel a fictional appointment before date confirmation; verify no record exists; explicitly confirm and save it; check that the record survives both layout switches and relaunch. | Failed: the global first match was an off-screen Today row. Visible-row lookup and underlying UUID/label preservation checks now require a rerun. |
+| `testConfirmedRecordSurvivesModeSwitchesAndRelaunch` | Cancel a fictional appointment before date confirmation; verify no record exists; explicitly confirm and save it; check that the same underlying UUID and label survive both layout switches and relaunch. | Passed at `5163bad` in the focused run below. The other six methods passed at `b911b25`. |
 | `testInterfaceAccessibilityMetadataInBothLanguages` | Exact translated shared-record notice, mode labels/descriptions and selected state; accessibility audits for sufficient element descriptions and traits on both home layouts and the picker in both selected states. | Passed. |
 
 The mode-persistence test removes `HARBOUR_INITIAL_INTERFACE` before relaunch because `HarbourApp.init()` seeds the preference whenever that variable is supplied. It does not call `launchCaregiver()` to restore a layout, which would overwrite the preference under test. Saved-record checks use a unique fictional appointment on an isolated QA simulator. An unsent draft is checked across navigation and layout switches, not across process termination.
@@ -27,6 +27,8 @@ The separate [AAC diagnostic job](https://github.com/harbour-health/harbour/acti
 [Run 44287840773](https://github.com/harbour-health/harbour/actions/runs/44287840773), head `b911b25`, used Xcode 26.6 (17F113) and an iPhone 17 Pro simulator on iOS 26.4.1. All six actual `VisitAudioWriter` round trips and the recorder/background-return UI test passed. The hosted suite reported 51 tests, six skips and zero failures. The UI suite reported 25 tests and four failures: the saved-record query above, a lazy Evaluation row query, and missing Records/Visits root toolbars after returning from a destination. The [log excerpt](caregiver-interface/native-b911b25.txt) retains those failures alongside the passed interface and audio checks. Stable toolbar item containers and the query corrections require another native run; the overall workflow is not described as passing.
 
 Manual CI dispatch accepts `native_scope=interface` or `navigation` for focused diagnosis. Push and PR runs retain the full smoke selection. The navigation group includes the saved-record test and the three failing older smoke methods; it does not suppress their assertions.
+
+The [focused navigation run 44294966489](https://github.com/harbour-health/harbour/actions/runs/44294966489), head `5163bad`, passed the saved-record round trip and the full Appearance/Evaluation method. The main-actions method passed the Records root-action checks, then failed while checking Done before the standalone Models sheet became hittable. The Visits method returned to the visible root content, but its navigation bar and Add notes were absent in the exported hierarchy. This focused run therefore reported four UI tests and two failures. Explicit Visits navigation-bar visibility, a scoped wait for the Models sheet and active-Back selection in the shared Records helper require the next rerun.
 
 Run the suite on an isolated iPhone simulator with the app's prepared native dependencies:
 
