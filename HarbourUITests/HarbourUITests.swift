@@ -499,7 +499,13 @@ import XCTest
             app.buttons["Settings"].tap()
             capture(dark ? "38-settings-dark" : "16-settings")
             if !dark {
-                app.buttons["Evaluation"].tap()
+                let settingsDrawer = app.otherElements["floatingDrawer"]
+                let evaluation = settingsDrawer.buttons["Evaluation"]
+                for _ in 0 ..< 6 where !evaluation.isHittable {
+                    settingsDrawer.swipeUp()
+                }
+                XCTAssertTrue(evaluation.isHittable, app.debugDescription)
+                evaluation.tap()
                 capture("17-evaluation")
                 app.navigationBars["Evaluation"].buttons.firstMatch.tap()
                 app.buttons["Export records"].tap()
