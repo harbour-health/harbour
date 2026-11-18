@@ -271,6 +271,87 @@ class SpeechEvaluationTests(unittest.TestCase):
         self.assertEqual(subprocess.run(command, capture_output=True).returncode, 2)
         self.assertEqual(destination.read_bytes(), original)
 
+    def personal_plan(self):
+        names = {"arabic": "Amira Hassan", "spanish": "María García",
+                 "punjabi": "Gurpreet Singh", "chinese": "Wei Chen"}
+        self.plan.update(kind="personal_name", minimum_accents=2, required_groups=list(names), cases=[])
+        for group, name in names.items():
+            for utterance_type in ("isolated", "sentence"):
+                start = 0 if utterance_type == "isolated" else 3
+                self.plan["cases"].append({
+                    "id": group + "-" + utterance_type, "group": group, "locale": "en-CA",
+                    "utterance_type": utterance_type,
+                    "reference": name if utterance_type == "isolated" else "My name is " + name + ".",
+                    "targets": [{"text": name, "start": start, "end": start + 2,
+                                 "variants": ["Maria Garcia"] if group == "spanish" else []}]})
+        self.write_json("plan.json", self.plan)
+        self.manifest.update(suite_id=self.plan["suite_id"], plan_sha256=evaluation.sha256(self.plan_path))
+
+    def personal_corpus(self, distinct_accents=True):
+        self.personal_plan()
+        self.corpus()
+        for recording in self.manifest["recordings"]:
+            recording["provenance"]["accent"] = (
+                "Canadian English" if recording["speaker_id"] == "speaker-a"
+                else "Spanish-influenced English" if distinct_accents else " canadian   ENGLISH ")
+
+    def test_personal_name_plan_requires_each_group_without_inferring_spoken_language(self):
+        self.personal_plan()
+        self.assertEqual(len(evaluation.validate_plan(self.plan)), 8)
+        for mutation in ("missing_group", "missing_required", "duplicate_required", "foreign_locale", "accent_count"):
+            with self.subTest(mutation=mutation):
+                plan = copy.deepcopy(self.plan)
+                if mutation == "missing_group":
+                    del plan["cases"][0]["group"]
+                elif mutation == "missing_required":
+                    plan["cases"] = [case for case in plan["cases"] if case["group"] != "arabic"]
+                elif mutation == "duplicate_required":
+                    plan["required_groups"].append("arabic")
+                elif mutation == "foreign_locale":
+                    plan["cases"][0]["locale"] = "ar-SA"
+                else:
+                    plan["minimum_accents"] = 1
+                with self.assertRaises(evaluation.EvaluationError):
+                    evaluation.validate_plan(plan)
+        self.plan["cases"][0]["locale"] = "fr-CA"
+        self.assertEqual(len(evaluation.validate_plan(self.plan)), 8)
+
+    def test_personal_name_metrics_group_by_names_and_self_described_accent(self):
+        self.personal_corpus()
+        report = self.run_evaluation([self.bundle(), self.bundle("system-b")])
+        self.assertTrue(report["complete"])
+        grouped = report["systems"][0]["groups"]
+        self.assertEqual(set(grouped["group"]), {"arabic", "spanish", "punjabi", "chinese"})
+        self.assertEqual(grouped["group"]["spanish"]["recordings"], 8)
+        self.assertEqual(set(grouped["accent"]), {"canadian english", "spanish-influenced english"})
+        self.assertEqual(grouped["accent"]["canadian english"]["recordings"], 16)
+        self.assertEqual(report["systems"][0]["recordings"][0]["provenance"]["accent"], "Canadian English")
+
+    def test_missing_accent_metadata_rejected_and_one_accent_remains_incomplete(self):
+        self.personal_corpus(distinct_accents=False)
+        report = self.run_evaluation([self.bundle(), self.bundle("system-b")])
+        self.assertFalse(report["complete"])
+        self.assertTrue(all(cell["speakers_observed"] == 2 and cell["accents_observed"] == 1
+                            and cell["accents_required"] == 2 for cell in report["coverage"]["missing_cells"]))
+        del self.manifest["recordings"][0]["provenance"]["accent"]
+        with self.assertRaises(evaluation.EvaluationError):
+            self.run_evaluation([self.bundle()])
+
+    def test_speaker_accent_cannot_change_between_cases_to_inflate_coverage(self):
+        self.personal_corpus()
+        self.manifest["recordings"][-1]["provenance"]["accent"] = "Different label for the same speaker"
+        with self.assertRaises(evaluation.EvaluationError):
+            self.run_evaluation([self.bundle()])
+
+    def test_personal_name_diacritic_variant_has_separate_strict_score(self):
+        self.personal_plan()
+        case = next(case for case in self.plan["cases"] if case["id"] == "spanish-sentence")
+        result = evaluation.score(case["reference"], "My name is Maria Garcia.", case["targets"])
+        self.assertFalse(result["targets"][0]["strict"])
+        self.assertTrue(result["targets"][0]["accepted"])
+        self.assertEqual(result["targets"][0]["accepted_variant"], "Maria Garcia")
+        self.assertEqual(result["words"]["substitution"], 2)
+
 
 if __name__ == "__main__":
     unittest.main()

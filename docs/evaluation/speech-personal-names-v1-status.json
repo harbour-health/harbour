@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "suite_id": "harbour-personal-name-asr-v1",
+  "plan_sha256": "c52d390feb57824cd8bd1cf5ba899222e0640daaeedd1dbbae33af66e343d092",
+  "runtime": {
+    "python": "3.12.9",
+    "unicode_database": "15.0.0"
+  },
+  "normalizer": "unicode-nfkc-casefold-alphanumeric-v1",
+  "status": "awaiting_recordings",
+  "complete": false,
+  "cases": 24,
+  "metrics": null
+}

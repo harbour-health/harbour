@@ -1,6 +1,7 @@
 # Developer documentation
 
 - [Human speech evaluation](speech-evaluation.md) — frozen recording plans, audio provenance, raw recognizer outputs and scoring; awaiting human recordings.
+- [Personal-name speech study](personal-name-speech-evaluation.md) — Arabic, Spanish and other names, spelling variants, accent coverage and English/French scope; awaiting recordings.
 
 - [Appointments](appointments.md) - records, shared drafts, transcript sources, and migration.
 
