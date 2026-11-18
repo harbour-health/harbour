@@ -20,6 +20,8 @@ Local source checks passed: `python -X utf8 scripts/audit-localization.py` check
 
 The mode-persistence test removes `HARBOUR_INITIAL_INTERFACE` before relaunch because `HarbourApp.init()` seeds the preference whenever that variable is supplied. It does not call `launchCaregiver()` to restore a layout, which would overwrite the preference under test. Saved-record checks use a unique fictional appointment on an isolated QA simulator. An unsent draft is checked across navigation and layout switches, not across process termination.
 
+The first [native run](https://github.com/harbour-health/harbour/actions/runs/44278619602) compiled successfully and passed 45 hosted tests with six explicit asset/platform skips. Its interface suite passed French home and failed six checks: the combined mode elements lacked a Button trait, and the saved-record test used a StaticText locator for a combined Button row. Those issues were corrected and require the rerun recorded below. Older smoke failures also exposed stale navigation/summary queries and a separate real recording-start format error; neither is counted as a passing interface result.
+
 Run the suite on an isolated iPhone simulator with the app's prepared native dependencies:
 
 ```sh

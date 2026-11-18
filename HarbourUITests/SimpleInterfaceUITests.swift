@@ -200,12 +200,15 @@ import XCTest
         category.tap()
         tapWhenReady(app.buttons["Add record"])
         let title = "Fictional interface appointment " + String(UUID().uuidString.prefix(8))
+        // AppointmentRow is a Button label combining the title and date, not a separate StaticText.
+        let savedRows = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", title))
+        let savedRow = savedRows.firstMatch
         let titleField = app.textFields["appointmentTitle"]
         tapWhenReady(titleField)
         titleField.typeText(title)
         XCTAssertFalse(app.buttons["saveAppointment"].isEnabled)
         tapWhenReady(app.buttons["Cancel"])
-        XCTAssertFalse(app.staticTexts[title].exists)
+        XCTAssertEqual(savedRows.count, 0)
 
         tapWhenReady(app.buttons["Add record"])
         tapWhenReady(titleField)
@@ -217,21 +220,24 @@ import XCTest
         confirm.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.5)).tap()
         XCTAssertEqual(confirm.value as? String, "1")
         tapWhenReady(app.buttons["saveAppointment"])
-        scrollTo(app.staticTexts[title], in: app)
+        scrollTo(savedRow, in: app)
+        XCTAssertEqual(savedRows.count, 1)
 
         tapWhenReady(app.buttons["nav-today"])
         switchInterface(to: "simple", in: app)
         XCTAssertTrue(app.buttons["simpleMessage"].waitForExistence(timeout: 5))
         switchInterface(to: "caregiver", in: app)
         tapWhenReady(app.buttons["nav-records"])
-        scrollTo(app.staticTexts[title], in: app)
+        scrollTo(savedRow, in: app)
+        XCTAssertEqual(savedRows.count, 1)
         app.terminate()
         app.launchEnvironment.removeValue(forKey: "HARBOUR_INITIAL_INTERFACE")
         app.launch()
         tapWhenReady(app.buttons["nav-records"])
         scrollTo(category, in: app)
         category.tap()
-        scrollTo(app.staticTexts[title], in: app)
+        scrollTo(savedRow, in: app)
+        XCTAssertEqual(savedRows.count, 1)
     }
 
     func testInterfaceAccessibilityMetadataInBothLanguages() throws {

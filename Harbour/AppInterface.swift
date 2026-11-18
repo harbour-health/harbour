@@ -46,6 +46,7 @@ struct InterfaceSettingsView: View {
                     }.buttonStyle(.plain).accessibilityElement(children: .ignore)
                         .accessibilityLabel(option.title).accessibilityValue(option.detail)
                         .accessibilityIdentifier("interface-" + option.rawValue)
+                        .accessibilityAddTraits(.isButton)
                         .accessibilityAddTraits(choice == option.rawValue ? .isSelected : [])
                 }
             }
