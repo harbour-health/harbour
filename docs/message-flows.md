@@ -57,6 +57,19 @@ Examples inherit the [user-story preconditions](user-stories.md). Missing saved 
 
 ## Task-specific review paths
 
+### Illustrative assistant wording for design review
+
+These exchanges propose conversational copy. The current app generates wording and uses native review states; these are not recorded outputs or fixed production responses. The confirmation boundary is the acceptance requirement.
+
+| Language | User | Illustrative assistant | Review / next step |
+| --- | --- | --- | --- |
+| EN | “Add metformin to my medications.” | “Please review the medication details before saving.” | Open MED-01 review; the person checks the product and chooses Save or Cancel. |
+| FR | “Ajoute la metformine à mes médicaments.” | « Vérifiez les détails du médicament avant d’enregistrer. » | Same shared review; no save is claimed before confirmation. |
+| EN | “Update my metfulsin to 400 mg.” | “Please restate the exact saved medication name and the correction.” | Preserve records; wait for a complete corrected request. |
+| EN | “Update my metformin to 400 mg.” | “Review the recorded dose change before saving.” | MED-02 review, with one unchanged unit and other directions preserved. |
+| FR | “Mon pouls est de72.” | « Vérifiez la mesure avant de l’enregistrer. » | READ-01 draft shows heart rate 72 bpm; the person can edit or cancel. |
+| EN | “Remind me to book blood work.” | “Choose a date and time for this reminder.” | REM-01 draft requires date/time review; no appointment is booked. |
+
 | Task | Draft/review path | Correction / cancel boundary |
 | --- | --- | --- |
 | Add/correct medication | Identify → choose candidate if needed → inspect name/instructions → confirm product → Save | Edit before Save; unknown ingredients remain unconfirmed; Cancel preserves records. |
