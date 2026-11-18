@@ -97,9 +97,8 @@ python3 scripts/speech_evaluation.py \
 python3 -m unittest discover -s scripts -p 'test_speech_evaluation.py'
 ```
 
-The policy is Unicode NFKC plus case folding, with punctuation, hyphens and apostrophes treated as token boundaries. Diacritics remain significant. Frozen target spans use zero-based token positions; `start` is inclusive and `end` exclusive. Canonical and explicitly accepted-variant name results are reported separately. Word error rate preserves substitution/deletion/insertion counts and the reference-word denominator. Name scoring uses the aligned target position; an unrelated mention elsewhere is insufficient. Raw transcripts and errors remain visible.
+The policy is Unicode NFKC plus case folding, with punctuation, hyphens and apostrophes treated as token boundaries. Diacritics remain significant. Frozen target spans use zero-based token positions; `start` is inclusive and `end` exclusive. Canonical and explicitly accepted-variant name results are reported separately. Word error rate preserves substitution/deletion/insertion counts and the reference-word denominator. Name scoring includes insertions at the target boundaries conservatively and uses the aligned target position; an unrelated mention elsewhere is insufficient. Raw transcripts and errors remain visible.
 
 Reports retain grouping by case/name, locale, speaker, utterance type and noise condition. Missing or failed recognition rows contribute failures, not a smaller successful-only denominator. Empty successful transcripts count as deleted reference words. Compare systems only on the bound recordings; missing coverage keeps completion false. No corpus means no accuracy metrics. A complete coverage flag establishes execution coverage, not clinical reliability or acceptable accuracy.
 
 Before #9 can close: collect and verify the full corpus, run at least two candidate configurations, publish the bound reports and representative errors, and document follow-up work. Record recognition errors separately from medication lookup and any later application correction. The status file must remain awaiting recordings until actual evidence exists.
-
