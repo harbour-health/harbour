@@ -76,6 +76,20 @@
     "workflow_passed": false,
     "note": "Parent navigation/saved-record checks and simulator background-assertion errors failed; parent corrections are tracked in PR #17."
   },
+  "focused_verification": {
+    "pull_request_head": "46de03965f7e464e12816d2715d48d1dfa0a327f",
+    "run_id": 44295145945,
+    "job_id": 134770160420,
+    "run_url": "https://github.com/harbour-health/harbour/actions/runs/44295145945",
+    "native_scope": "medication-search",
+    "workflow_passed": true,
+    "core_tests": 159,
+    "core_failures": 0,
+    "medication_search_ui_tests": 2,
+    "medication_search_ui_failures": 0,
+    "excerpt": "verification-46de039-focused.txt",
+    "note": "This is the focused search workflow, not a passing full smoke result."
+  },
   "comparison": {
     "protocol": "Unchanged fixed query matrix; 12 queries x 3 operations x 50 release samples",
     "vocabulary_entries": 8299,

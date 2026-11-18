@@ -48,6 +48,8 @@ The **overall workflow failed** because other selected native UI test methods fa
 
 The subsequent [run 44287969060](https://github.com/harbour-health/harbour/actions/runs/44287969060), head `df35c38`, again passed all 159 Core tests and both bilingual search UI methods. Its overall UI run failed in parent navigation/saved-record checks and simulator background-assertion errors; it is not recorded as a passing full workflow. The parent corrections are tracked in PR #17.
 
+The [focused medication-search workflow 44295145945](https://github.com/harbour-health/harbour/actions/runs/44295145945), head `46de039`, completed successfully: 159 Core tests and both bilingual native search methods passed. The [excerpt](medication-search/verification-46de039-focused.txt) preserves the exact scope, source and native results. This is a passing focused workflow; the separate full smoke run at that head still failed in parent navigation checks. The latest parent corrections are inherited and require verification at the updated head.
+
 ### Observed release performance
 
 The [initial report](medication-search/baseline-a8e9729.json) is from source `a8e9729a4da21560d376874786657f40fa84f189`, [run 44275156006](https://github.com/harbour-health/harbour/actions/runs/44275156006). Its benchmark and Core steps succeeded before that duplicate push run was cancelled. Those observations motivated removing repeated medicine construction and display normalization during sorting. The [optimized report](medication-search/optimized-6c78227.json) comes from the completed benchmark step in run 44279114912, at the synthetic merge above. Its raw JSON was recovered from the printed job log; an artifact download was not required.
