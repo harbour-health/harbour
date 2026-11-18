@@ -47,3 +47,9 @@ python3 scripts/speech_evaluation.py \
 Reports show strict/accepted target scores and word errors by naming group, accent, speaker, case, locale, utterance type and noise. Retain raw substitutions/omissions, errors and missing rows. Acoustic results must remain separate from LLM routing and medication matching. Compare variants and failures as well as aggregate scores; a small purposive set does not establish demographic fairness.
 
 Before #10 can close, collect and verify the corpus, run the same files across at least two configurations, publish bound reports and representative failures by group, and record follow-up work. The existing typed-name report remains historical evidence with its original limits.
+
+## Canadian French corpus option
+
+Mozilla Data Collective publishes a [Canadian French Common Voice 26.0 subset](https://mozilladatacollective.com/datasets/cmrumhr9h0005md07ph5dkxpp) under CC0-1.0. Its validated human clips include transcripts, pseudonymous `client_id` values and self-described accent metadata. Downloading requires MDC access; the listed archive is 290.66 MB and has not been downloaded for this study.
+
+No specific Arabic/Spanish personal-name utterances, repeated-name speaker coverage or suitable noise conditions have been verified in that archive. It is a collection option, not a replacement for the frozen plan or evidence of completed testing. Preserve supplied accent labels; neither a spoken name nor a French locale establishes a speaker's ethnicity or accent. Any corpus-derived pilot would need verified references and its own declared coverage and provenance limits.
