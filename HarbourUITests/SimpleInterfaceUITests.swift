@@ -12,7 +12,11 @@ import XCTest
         add(a)
     }
 
-    private func launch(_ language: String = "en", mode: String = "simple", largeText: Bool = false) -> XCUIApplication {
+    private func launch(
+        _ language: String = "en",
+        mode: String = "simple",
+        largeText: Bool = false
+    ) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
             "--ui-test-unlocked",
@@ -237,9 +241,13 @@ import XCTest
             try app.performAccessibilityAudit(for: [.sufficientElementDescription, .trait])
             openInterface(in: app, language: language)
             let notice = app.staticTexts["interfaceSharedRecords"]
-            XCTAssertEqual(notice.label, language == "en"
-                ? "Both layouts show and edit the same person's health records on this iPhone. Switching layouts does not select another person."
-                : "Les deux interfaces affichent et modifient le dossier de santé de la même personne sur cet iPhone. Changer d’interface ne change pas de personne.")
+            XCTAssertEqual(
+                notice.label,
+                language == "en"
+                    ? "Both layouts show and edit the same person's health records on this iPhone. Switching layouts does not select another person."
+                    :
+                    "Les deux interfaces affichent et modifient le dossier de santé de la même personne sur cet iPhone. Changer d’interface ne change pas de personne."
+            )
             let simple = app.buttons["interface-simple"]
             let caregiver = app.buttons["interface-caregiver"]
             XCTAssertEqual(simple.label, "Simple")

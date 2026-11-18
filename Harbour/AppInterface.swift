@@ -20,9 +20,11 @@ struct InterfaceSettingsView: View {
     var body: some View {
         List {
             Section("One person's health records") {
-                Text("Both layouts show and edit the same person's health records on this iPhone. Switching layouts does not select another person.")
-                    .font(.body).fixedSize(horizontal: false, vertical: true)
-                    .accessibilityIdentifier("interfaceSharedRecords")
+                Text(
+                    "Both layouts show and edit the same person's health records on this iPhone. Switching layouts does not select another person."
+                )
+                .font(.body).fixedSize(horizontal: false, vertical: true)
+                .accessibilityIdentifier("interfaceSharedRecords")
             }
             Section {
                 ForEach(AppInterface.allCases) { option in
