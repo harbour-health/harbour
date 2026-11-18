@@ -1,0 +1,330 @@
+{
+  "evidence": "Synthetic zero PCM tests AAC encode/decode only; no microphone, permissions, human speech or ASR.",
+  "os": "Version 26.7.2 (Build 25G332)",
+  "probe": "harbour-aac-writer-v1",
+  "results": [
+    {
+      "bit_rate_policy": "explicit",
+      "channels": 1,
+      "duration_seconds": 0.1,
+      "interleaved": false,
+      "pcm_format": "float32",
+      "readback": {
+        "decoded_frames": 1600,
+        "file_bytes": 24592,
+        "file_format": "<AVAudioFormat 0xa7ff40000:  1 ch,  16000 Hz, aac  (0x00000000) 0 bits/channel, 0 bytes/packet, 1024 frames/packet, 0 bytes/frame>",
+        "file_frames": 1600,
+        "processing_format": "<AVAudioFormat 0xa7ff40050:  1 ch,  16000 Hz, Float32>",
+        "written_pcm_frames": 1600
+      },
+      "requested_bit_rate": 32000,
+      "sample_rate": 16000,
+      "stage": "complete",
+      "status": "ok"
+    },
+    {
+      "bit_rate_policy": "explicit",
+      "channels": 1,
+      "duration_seconds": 0.1,
+      "error_code": 560226676,
+      "error_description": "The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 560226676.)",
+      "error_domain": "com.apple.coreaudio.avfaudio",
+      "interleaved": false,
+      "pcm_format": "float32",
+      "requested_bit_rate": 64000,
+      "sample_rate": 16000,
+      "stage": "creating_writer",
+      "status": "error"
+    },
+    {
+      "bit_rate_policy": "platform_default",
+      "channels": 1,
+      "duration_seconds": 0.1,
+      "interleaved": false,
+      "pcm_format": "float32",
+      "readback": {
+        "decoded_frames": 1600,
+        "file_bytes": 24592,
+        "file_format": "<AVAudioFormat 0xa7ff400f0:  1 ch,  16000 Hz, aac  (0x00000000) 0 bits/channel, 0 bytes/packet, 1024 frames/packet, 0 bytes/frame>",
+        "file_frames": 1600,
+        "processing_format": "<AVAudioFormat 0xa7ff40050:  1 ch,  16000 Hz, Float32>",
+        "written_pcm_frames": 1600
+      },
+      "sample_rate": 16000,
+      "stage": "complete",
+      "status": "ok"
+    },
+    {
+      "bit_rate_policy": "explicit",
+      "channels": 2,
+      "duration_seconds": 0.1,
+      "interleaved": false,
+      "pcm_format": "float32",
+      "readback": {
+        "decoded_frames": 1600,
+        "file_bytes": 24600,
+        "file_format": "<AVAudioFormat 0xa7ff400f0:  2 ch,  16000 Hz, aac  (0x00000000) 0 bits/channel, 0 bytes/packet, 1024 frames/packet, 0 bytes/frame>",
+        "file_frames": 1600,
+        "processing_format": "<AVAudioFormat 0xa7ff40050:  2 ch,  16000 Hz, Float32, deinterleaved>",
+        "written_pcm_frames": 1600
+      },
+      "requested_bit_rate": 32000,
+      "sample_rate": 16000,
+      "stage": "complete",
+      "status": "ok"
+    },
+    {
+      "bit_rate_policy": "explicit",
+      "channels": 2,
+      "duration_seconds": 0.1,
+      "interleaved": false,
+      "pcm_format": "float32",
+      "readback": {
+        "decoded_frames": 1600,
+        "file_bytes": 24600,
+        "file_format": "<AVAudioFormat 0xa7ff400f0:  2 ch,  16000 Hz, aac  (0x00000000) 0 bits/channel, 0 bytes/packet, 1024 frames/packet, 0 bytes/frame>",
+        "file_frames": 1600,
+        "processing_format": "<AVAudioFormat 0xa7ff40050:  2 ch,  16000 Hz, Float32, deinterleaved>",
+        "written_pcm_frames": 1600
+      },
+      "requested_bit_rate": 64000,
+      "sample_rate": 16000,
+      "stage": "complete",
+      "status": "ok"
+    },
+    {
+      "bit_rate_policy": "platform_default",
+      "channels": 2,
+      "duration_seconds": 0.1,
+      "interleaved": false,
+      "pcm_format": "float32",
+      "readback": {
+        "decoded_frames": 1600,
+        "file_bytes": 24600,
+        "file_format": "<AVAudioFormat 0xa7ff400f0:  2 ch,  16000 Hz, aac  (0x00000000) 0 bits/channel, 0 bytes/packet, 1024 frames/packet, 0 bytes/frame>",
+        "file_frames": 1600,
+        "processing_format": "<AVAudioFormat 0xa7ff40050:  2 ch,  16000 Hz, Float32, deinterleaved>",
+        "written_pcm_frames": 1600
+      },
+      "sample_rate": 16000,
+      "stage": "complete",
+      "status": "ok"
+    },
+    {
+      "bit_rate_policy": "explicit",
+      "channels": 1,
+      "duration_seconds": 0.1,
+      "interleaved": false,
+      "pcm_format": "float32",
+      "readback": {
+        "decoded_frames": 4410,
+        "file_bytes": 57372,
+        "file_format": "<AVAudioFormat 0xa7ff400f0:  1 ch,  44100 Hz, aac  (0x00000000) 0 bits/channel, 0 bytes/packet, 1024 frames/packet, 0 bytes/frame>",
+        "file_frames": 4410,
+        "processing_format": "<AVAudioFormat 0xa7ff40050:  1 ch,  44100 Hz, Float32>",
+        "written_pcm_frames": 4410
+      },
+      "requested_bit_rate": 32000,
+      "sample_rate": 44100,
+      "stage": "complete",
+      "status": "ok"
+    },
+    {
+      "bit_rate_policy": "explicit",
+      "channels": 1,
+      "duration_seconds": 0.1,
+      "interleaved": false,
+      "pcm_format": "float32",
+      "readback": {
+        "decoded_frames": 4410,
+        "file_bytes": 57372,
+        "file_format": "<AVAudioFormat 0xa7ff400f0:  1 ch,  44100 Hz, aac  (0x00000000) 0 bits/channel, 0 bytes/packet, 1024 frames/packet, 0 bytes/frame>",
+        "file_frames": 4410,
+        "processing_format": "<AVAudioFormat 0xa7ff40050:  1 ch,  44100 Hz, Float32>",
+        "written_pcm_frames": 4410
+      },
+      "requested_bit_rate": 64000,
+      "sample_rate": 44100,
+      "stage": "complete",
+      "status": "ok"
+    },
+    {
+      "bit_rate_policy": "platform_default",
+      "channels": 1,
+      "duration_seconds": 0.1,
+      "interleaved": false,
+      "pcm_format": "float32",
+      "readback": {
+        "decoded_frames": 4410,
+        "file_bytes": 57372,
+        "file_format": "<AVAudioFormat 0xa7ff400f0:  1 ch,  44100 Hz, aac  (0x00000000) 0 bits/channel, 0 bytes/packet, 1024 frames/packet, 0 bytes/frame>",
+        "file_frames": 4410,
+        "processing_format": "<AVAudioFormat 0xa7ff40050:  1 ch,  44100 Hz, Float32>",
+        "written_pcm_frames": 4410
+      },
+      "sample_rate": 44100,
+      "stage": "complete",
+      "status": "ok"
+    },
+    {
+      "bit_rate_policy": "explicit",
+      "channels": 2,
+      "duration_seconds": 0.1,
+      "error_code": 560226676,
+      "error_description": "The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 560226676.)",
+      "error_domain": "com.apple.coreaudio.avfaudio",
+      "interleaved": false,
+      "pcm_format": "float32",
+      "requested_bit_rate": 32000,
+      "sample_rate": 44100,
+      "stage": "creating_writer",
+      "status": "error"
+    },
+    {
+      "bit_rate_policy": "explicit",
+      "channels": 2,
+      "duration_seconds": 0.1,
+      "interleaved": false,
+      "pcm_format": "float32",
+      "readback": {
+        "decoded_frames": 4410,
+        "file_bytes": 57386,
+        "file_format": "<AVAudioFormat 0xa7ff40050:  2 ch,  44100 Hz, aac  (0x00000000) 0 bits/channel, 0 bytes/packet, 1024 frames/packet, 0 bytes/frame>",
+        "file_frames": 4410,
+        "processing_format": "<AVAudioFormat 0xa7ff400f0:  2 ch,  44100 Hz, Float32, deinterleaved>",
+        "written_pcm_frames": 4410
+      },
+      "requested_bit_rate": 64000,
+      "sample_rate": 44100,
+      "stage": "complete",
+      "status": "ok"
+    },
+    {
+      "bit_rate_policy": "platform_default",
+      "channels": 2,
+      "duration_seconds": 0.1,
+      "interleaved": false,
+      "pcm_format": "float32",
+      "readback": {
+        "decoded_frames": 4410,
+        "file_bytes": 57386,
+        "file_format": "<AVAudioFormat 0xa7ff40050:  2 ch,  44100 Hz, aac  (0x00000000) 0 bits/channel, 0 bytes/packet, 1024 frames/packet, 0 bytes/frame>",
+        "file_frames": 4410,
+        "processing_format": "<AVAudioFormat 0xa7ff400f0:  2 ch,  44100 Hz, Float32, deinterleaved>",
+        "written_pcm_frames": 4410
+      },
+      "sample_rate": 44100,
+      "stage": "complete",
+      "status": "ok"
+    },
+    {
+      "bit_rate_policy": "explicit",
+      "channels": 1,
+      "duration_seconds": 0.1,
+      "interleaved": false,
+      "pcm_format": "float32",
+      "readback": {
+        "decoded_frames": 4800,
+        "file_bytes": 61468,
+        "file_format": "<AVAudioFormat 0xa7ff40050:  1 ch,  48000 Hz, aac  (0x00000000) 0 bits/channel, 0 bytes/packet, 1024 frames/packet, 0 bytes/frame>",
+        "file_frames": 4800,
+        "processing_format": "<AVAudioFormat 0xa7ff400f0:  1 ch,  48000 Hz, Float32>",
+        "written_pcm_frames": 4800
+      },
+      "requested_bit_rate": 32000,
+      "sample_rate": 48000,
+      "stage": "complete",
+      "status": "ok"
+    },
+    {
+      "bit_rate_policy": "explicit",
+      "channels": 1,
+      "duration_seconds": 0.1,
+      "interleaved": false,
+      "pcm_format": "float32",
+      "readback": {
+        "decoded_frames": 4800,
+        "file_bytes": 61468,
+        "file_format": "<AVAudioFormat 0xa7ff40050:  1 ch,  48000 Hz, aac  (0x00000000) 0 bits/channel, 0 bytes/packet, 1024 frames/packet, 0 bytes/frame>",
+        "file_frames": 4800,
+        "processing_format": "<AVAudioFormat 0xa7ff400f0:  1 ch,  48000 Hz, Float32>",
+        "written_pcm_frames": 4800
+      },
+      "requested_bit_rate": 64000,
+      "sample_rate": 48000,
+      "stage": "complete",
+      "status": "ok"
+    },
+    {
+      "bit_rate_policy": "platform_default",
+      "channels": 1,
+      "duration_seconds": 0.1,
+      "interleaved": false,
+      "pcm_format": "float32",
+      "readback": {
+        "decoded_frames": 4800,
+        "file_bytes": 61468,
+        "file_format": "<AVAudioFormat 0xa7ff40050:  1 ch,  48000 Hz, aac  (0x00000000) 0 bits/channel, 0 bytes/packet, 1024 frames/packet, 0 bytes/frame>",
+        "file_frames": 4800,
+        "processing_format": "<AVAudioFormat 0xa7ff400f0:  1 ch,  48000 Hz, Float32>",
+        "written_pcm_frames": 4800
+      },
+      "sample_rate": 48000,
+      "stage": "complete",
+      "status": "ok"
+    },
+    {
+      "bit_rate_policy": "explicit",
+      "channels": 2,
+      "duration_seconds": 0.1,
+      "error_code": 560226676,
+      "error_description": "The operation couldn’t be completed. (com.apple.coreaudio.avfaudio error 560226676.)",
+      "error_domain": "com.apple.coreaudio.avfaudio",
+      "interleaved": false,
+      "pcm_format": "float32",
+      "requested_bit_rate": 32000,
+      "sample_rate": 48000,
+      "stage": "creating_writer",
+      "status": "error"
+    },
+    {
+      "bit_rate_policy": "explicit",
+      "channels": 2,
+      "duration_seconds": 0.1,
+      "interleaved": false,
+      "pcm_format": "float32",
+      "readback": {
+        "decoded_frames": 4800,
+        "file_bytes": 61482,
+        "file_format": "<AVAudioFormat 0xa7ff400f0:  2 ch,  48000 Hz, aac  (0x00000000) 0 bits/channel, 0 bytes/packet, 1024 frames/packet, 0 bytes/frame>",
+        "file_frames": 4800,
+        "processing_format": "<AVAudioFormat 0xa7ff40050:  2 ch,  48000 Hz, Float32, deinterleaved>",
+        "written_pcm_frames": 4800
+      },
+      "requested_bit_rate": 64000,
+      "sample_rate": 48000,
+      "stage": "complete",
+      "status": "ok"
+    },
+    {
+      "bit_rate_policy": "platform_default",
+      "channels": 2,
+      "duration_seconds": 0.1,
+      "interleaved": false,
+      "pcm_format": "float32",
+      "readback": {
+        "decoded_frames": 4800,
+        "file_bytes": 61482,
+        "file_format": "<AVAudioFormat 0xa7ff400f0:  2 ch,  48000 Hz, aac  (0x00000000) 0 bits/channel, 0 bytes/packet, 1024 frames/packet, 0 bytes/frame>",
+        "file_frames": 4800,
+        "processing_format": "<AVAudioFormat 0xa7ff40050:  2 ch,  48000 Hz, Float32, deinterleaved>",
+        "written_pcm_frames": 4800
+      },
+      "sample_rate": 48000,
+      "stage": "complete",
+      "status": "ok"
+    }
+  ],
+  "schema_version": 1,
+  "source_commit": "d1bf9d098566e4dc653c50da665e5d8375600e71"
+}

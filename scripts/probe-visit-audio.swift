@@ -29,11 +29,17 @@ func probe(_ url: URL, format: AVAudioFormat, bitRate: Int?, stage: inout String
     let decoded = AVAudioPCMBuffer(pcmFormat: reader.processingFormat, frameCapacity: frames)!
     stage = "decoding_readback"
     try reader.read(into: decoded)
+
     guard decoded.frameLength > 0 else {
-        throw NSError(domain: "HarbourAudioProbe", code: 1,
-                      userInfo: [NSLocalizedDescriptionKey: "Readback decoded no audio frames"])
+        throw NSError(
+            domain: "HarbourAudioProbe",
+            code: 1,
+            userInfo: [NSLocalizedDescriptionKey: "Readback decoded no audio frames"]
+        )
     }
+
     stage = "complete"
+
     return [
         "written_pcm_frames": frames,
         "decoded_frames": decoded.frameLength,
@@ -55,14 +61,20 @@ func run() throws {
     for rate in [16000.0, 44100.0, 48000.0] {
         for channels in channelCounts {
             for bitRate in bitRates {
-                let format = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: rate,
-                                           channels: channels, interleaved: false)!
+                let format = AVAudioFormat(
+                    commonFormat: .pcmFormatFloat32,
+                    sampleRate: rate,
+                    channels: channels,
+                    interleaved: false
+                )!
                 var row: [String: Any] = [
                     "sample_rate": rate, "channels": channels, "pcm_format": "float32",
                     "interleaved": false, "duration_seconds": 0.1,
                     "bit_rate_policy": bitRate == nil ? "platform_default" : "explicit"
                 ]
-                if let bitRate { row["requested_bit_rate"] = bitRate }
+                if let bitRate {
+                    row["requested_bit_rate"] = bitRate
+                }
                 let url = directory.appendingPathComponent(UUID().uuidString + ".m4a")
                 var stage = "creating_writer"
                 do {
@@ -89,6 +101,18 @@ func run() throws {
     ]
     let data = try JSONSerialization.data(withJSONObject: report, options: [.prettyPrinted, .sortedKeys])
     print(String(decoding: data, as: UTF8.self))
+
+    // The recording writer uses the platform default. Explicit rates above are diagnostics.
+    let failedDefaults = results.filter {
+        $0["bit_rate_policy"] as? String == "platform_default" && $0["status"] as? String != "ok"
+    }
+    if !failedDefaults.isEmpty {
+        throw NSError(
+            domain: "HarbourAudioProbe",
+            code: 2,
+            userInfo: [NSLocalizedDescriptionKey: "Default AAC settings failed encode/decode; see format results above"]
+        )
+    }
 }
 
 try run()

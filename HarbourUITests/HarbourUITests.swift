@@ -1545,10 +1545,12 @@ import XCTest
         // All four page stacks stay mounted. Ignore bars translated outside the visible phone.
         let bar = app.navigationBars.allElementsBoundByIndex.first {
             let frame = $0.frame
+
             return frame.width > 0 && frame.height > 0 &&
                 frame.intersection(app.frame).width >= frame.width * 0.9
         }
         XCTAssertNotNil(bar, app.debugDescription)
+
         return bar ?? app.navigationBars.firstMatch
     }
 
