@@ -27,6 +27,7 @@ public struct MedicationVocabulary: Sendable {
     private let searchable: [(index: Int, key: String, sound: String)]
     private let nameKeys: [[String]]
     private let ingredientKeys: [[String]]
+    private let displayKeys: [String]
     public init() {
         let doc = Bundle.module.url(forResource: "medication-vocabulary", withExtension: "json")
             .flatMap { try? Data(contentsOf: $0) }.flatMap { try? JSONDecoder().decode(Document.self, from: $0) }
@@ -71,6 +72,7 @@ public struct MedicationVocabulary: Sendable {
         searchable = search
         nameKeys = names
         ingredientKeys = ingredients
+        displayKeys = entries.map { Self.key($0.name.capitalized) }
     }
 
     /// Translate only an unchanged database label; preserve custom user-entered names.
@@ -120,15 +122,31 @@ public struct MedicationVocabulary: Sendable {
             return []
         }
 
-        return entries.indices.compactMap { index -> (Medicine, Int)? in
+        // Rank cached keys first; only visible results need medicine display formatting.
+        return entries.indices.compactMap { index -> (index: Int, rank: Int)? in
 
             guard let rank = Self.matchRank(query: key, names: nameKeys[index], ingredients: ingredientKeys[index])
             else {
                 return nil
             }
 
-            return (entries[index].medicine, rank)
-        }.sorted { Self.precedes($0, $1) }.prefix(limit).map(\.0)
+            return (index, rank)
+        }.sorted { lhs, rhs in
+            if lhs.rank != rhs.rank {
+                return lhs.rank < rhs.rank
+            }
+            let a = displayKeys[lhs.index], b = displayKeys[rhs.index]
+            if a != b {
+                return a < b
+            }
+            let idA = entries[lhs.index].id, idB = entries[rhs.index].id
+            let officialA = idA.hasPrefix("dpd-"), officialB = idB.hasPrefix("dpd-")
+            if officialA != officialB {
+                return !officialA
+            }
+
+            return idA < idB
+        }.prefix(limit).map { entries[$0.index].medicine }
     }
 
     /// Rank exact names, exact ingredients, prefixes and substrings consistently across both catalogs.

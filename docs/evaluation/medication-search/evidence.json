@@ -1,0 +1,17 @@
+{
+  "baseline": {
+    "source_commit": "a8e9729a4da21560d376874786657f40fa84f189",
+    "run_id": 44275156006,
+    "job_id": 134701288962,
+    "run_url": "https://github.com/harbour-health/harbour/actions/runs/44275156006",
+    "benchmark_step": "success",
+    "run_conclusion": "cancelled after benchmark; duplicate PR validation retained",
+    "report": "baseline-a8e9729.json"
+  },
+  "candidate": {
+    "report_location": "CI artifact harbour-medication-search and job log for the tested PR head; linked from the PR description",
+    "protocol": "Unchanged fixed query matrix, 50 samples, release configuration",
+    "note": "Inspect the actual run and source commit; this manifest does not assert unmeasured candidate latency."
+  },
+  "comparison_limit": "Shared Mac runners are not a controlled identical-host before/after study; no iPhone latency claim."
+}

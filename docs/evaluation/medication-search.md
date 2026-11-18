@@ -40,4 +40,6 @@ Mac/simulator results measure the full dataset and actual matching code; they do
 
 ## Evidence review
 
+The [initial release measurements](medication-search/baseline-a8e9729.json) cover all 8,299 entries: first initialization 435 ms; combined-path medians 16–59 ms and worst p95 69 ms across the fixed query matrix. The benchmark and Core tests completed successfully in [run 44275156006](https://github.com/harbour-health/harbour/actions/runs/44275156006) before that redundant push run was cancelled; PR validation was retained. These values motivated removing repeated display normalization and medicine construction during sorting. The [evidence manifest](medication-search/evidence.json) records the baseline source and candidate-report location. Shared-runner timing comparisons are descriptive, not controlled identical-host experiments.
+
 The PR description should link the passing Core/native runs and the benchmark log, summarizing measured latency and any failures. Preserve remaining device limits and candidate ambiguity. Dataset expansion does not expand interaction-rule coverage or determine the correct treatment.
