@@ -18,6 +18,7 @@ import XCTest
 
             return
         }
+
         back[0].tap()
     }
 
@@ -31,6 +32,7 @@ import XCTest
 
         return
     }
+
     let category = app.buttons["record-category-\(index)"]
     for _ in 0 ..< 6 where !category.isHittable {
         app.swipeUp()
