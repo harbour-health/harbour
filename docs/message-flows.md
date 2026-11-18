@@ -55,8 +55,6 @@ The app responses below specify the expected surface and user action, rather tha
 
 Examples inherit the [user-story preconditions](user-stories.md). Missing saved medicines or dose slots require clarification, not invented records. French display labels can differ while saved IDs/units remain canonical and source quotations remain verbatim.
 
-## Task-specific review paths
-
 ### Illustrative assistant wording for design review
 
 These exchanges propose conversational copy. The current app generates wording and uses native review states; these are not recorded outputs or fixed production responses. The confirmation boundary is the acceptance requirement.
@@ -69,6 +67,8 @@ These exchanges propose conversational copy. The current app generates wording a
 | EN | “Update my metformin to 400 mg.” | “Review the recorded dose change before saving.” | MED-02 review, with one unchanged unit and other directions preserved. |
 | FR | “Mon pouls est de72.” | « Vérifiez la mesure avant de l’enregistrer. » | READ-01 draft shows heart rate 72 bpm; the person can edit or cancel. |
 | EN | “Remind me to book blood work.” | “Choose a date and time for this reminder.” | REM-01 draft requires date/time review; no appointment is booked. |
+
+## Task-specific review paths
 
 | Task | Draft/review path | Correction / cancel boundary |
 | --- | --- | --- |
