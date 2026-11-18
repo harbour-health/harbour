@@ -123,6 +123,7 @@ public struct MedicationVocabulary: Sendable {
         }
 
         // Rank cached keys first; only visible results need medicine display formatting.
+
         return entries.indices.compactMap { index -> (index: Int, rank: Int)? in
 
             guard let rank = Self.matchRank(query: key, names: nameKeys[index], ingredients: ingredientKeys[index])
