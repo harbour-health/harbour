@@ -14,7 +14,7 @@ This protocol covers [#14](https://github.com/harbour-health/harbour/issues/14).
 | Confirmation | Selecting a similar name resets product confirmation and leaves Save disabled until checked. | Native candidate-selection test and existing confirmation tests. |
 | Responsiveness | Measure normal, approximate and combined UI search against the full vocabulary in release mode. | Benchmark JSON/log for the tested CI commit. |
 
-Test definitions are not a claim that the new checks have passed. The PR's CI run contains their actual outcomes.
+Actual Core, focused native and benchmark outcomes are recorded below for the tested source commit. Passing focused checks do not imply the entire CI workflow passed.
 
 ## Reproduce
 
@@ -40,6 +40,25 @@ Mac/simulator results measure the full dataset and actual matching code; they do
 
 ## Evidence review
 
-The [initial release measurements](medication-search/baseline-a8e9729.json) cover all 8,299 entries: first initialization 435 ms; combined-path medians 16–59 ms and worst p95 69 ms across the fixed query matrix. The benchmark and Core tests completed successfully in [run 44275156006](https://github.com/harbour-health/harbour/actions/runs/44275156006) before that redundant push run was cancelled; PR validation was retained. These values motivated removing repeated display normalization and medicine construction during sorting. The [evidence manifest](medication-search/evidence.json) records the baseline source and candidate-report location. Shared-runner timing comparisons are descriptive, not controlled identical-host experiments.
+### Actual verification
 
-The PR description should link the passing Core/native runs and the benchmark log, summarizing measured latency and any failures. Preserve remaining device limits and candidate ambiguity. Dataset expansion does not expand interaction-rule coverage or determine the correct treatment.
+[Run 44279114912, job 134714795439](https://github.com/harbour-health/harbour/actions/runs/44279114912/job/134714795439) tested synthetic merge `6c78227a12e1529099cec08a9fd72701d211b50a`, with PR head `dd09de7db82d560c9099fc49f17ef8f44c643286`. All **159 HarbourCore tests passed**, including all six medication-search methods. Both `MedicationSearchUITests` methods passed: bilingual no-match/stale-result/manual-entry checks (98.266 seconds) and bilingual transposition-selection/product-confirmation checks (48.971 seconds). Each native method exercised English and Canadian French without model inference or speech downloads.
+
+The **overall workflow failed** because other selected native UI test methods failed. The [verification excerpt](medication-search/verification-6c78227.txt) preserves the focused pass results together with other failed-method lines and the final failed-test status; use the linked full job for diagnostics. These results do not certify later source changes or label the full suite green.
+
+### Observed release performance
+
+The [initial report](medication-search/baseline-a8e9729.json) is from source `a8e9729a4da21560d376874786657f40fa84f189`, [run 44275156006](https://github.com/harbour-health/harbour/actions/runs/44275156006). Its benchmark and Core steps succeeded before that duplicate push run was cancelled. Those observations motivated removing repeated medicine construction and display normalization during sorting. The [optimized report](medication-search/optimized-6c78227.json) comes from the completed benchmark step in run 44279114912, at the synthetic merge above. Its raw JSON was recovered from the printed job log; an artifact download was not required.
+
+Both reports use the same 8,299-entry vocabulary dated 2026-11-02, release configuration, twelve queries, three operations and fifty samples per query/operation. All 36 result-count checksums match. Both report macOS 26.7.2 (25G332) and three processors; separate shared-runner executions are still not a controlled identical-host comparison. The merge includes other source changes, so these observations do not isolate one optimization's effect.
+
+| Combined normal-then-fallback path | Initial observation | Optimized observation |
+| --- | ---: | ---: |
+| Median range across twelve queries | 16.4–59.5 ms | 17.0–27.3 ms |
+| Highest query p95 | 68.8 ms | 65.5 ms |
+| Highest individual sample | 94.1 ms | 107.5 ms |
+| First vocabulary initialization | 435.1 ms | 307.6 ms |
+| Broad prefix `met`: median / p95 | 59.5 / 68.8 ms | 17.0 / 22.2 ms |
+| Typo `amoxcillin`: median / p95 | 23.8 / 33.9 ms | 27.3 / 65.5 ms |
+
+The broad-prefix observation improved, while some other timings and the worst individual sample increased. Retain those outliers; no universal speedup or physical-iPhone responsiveness claim follows. The [evidence manifest](medication-search/evidence.json) records source/run provenance, report hashes, focused test results and comparison limits. Dataset expansion does not expand interaction-rule coverage or determine the correct treatment.

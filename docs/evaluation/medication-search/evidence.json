@@ -6,12 +6,88 @@
     "run_url": "https://github.com/harbour-health/harbour/actions/runs/44275156006",
     "benchmark_step": "success",
     "run_conclusion": "cancelled after benchmark; duplicate PR validation retained",
-    "report": "baseline-a8e9729.json"
+    "report": "baseline-a8e9729.json",
+    "report_sha256": "de4f2e9c7e48718aba9ff5f341f160db59170766052b2efe15eb5087786921b7"
   },
-  "candidate": {
-    "report_location": "CI artifact harbour-medication-search and job log for the tested PR head; linked from the PR description",
-    "protocol": "Unchanged fixed query matrix, 50 samples, release configuration",
-    "note": "Inspect the actual run and source commit; this manifest does not assert unmeasured candidate latency."
+  "optimized": {
+    "source_commit": "6c78227a12e1529099cec08a9fd72701d211b50a",
+    "source_kind": "GitHub pull-request synthetic merge",
+    "pull_request_head": "dd09de7db82d560c9099fc49f17ef8f44c643286",
+    "run_id": 44279114912,
+    "job_id": 134714795439,
+    "run_url": "https://github.com/harbour-health/harbour/actions/runs/44279114912",
+    "job_url": "https://github.com/harbour-health/harbour/actions/runs/44279114912/job/134714795439",
+    "benchmark_step": "success",
+    "run_conclusion": "failure",
+    "report": "optimized-6c78227.json",
+    "report_sha256": "45c61059094424cd99eebcf3dd83f3ea80bc52ddbf22a513327a17a65b807e98",
+    "retrieval": "JSON printed by the benchmark step, recovered from the GitHub job log with timestamps removed; no artifact download used"
   },
-  "comparison_limit": "Shared Mac runners are not a controlled identical-host before/after study; no iPhone latency claim."
+  "verification": {
+    "source_commit": "6c78227a12e1529099cec08a9fd72701d211b50a",
+    "run_id": 44279114912,
+    "job_id": 134714795439,
+    "core": {
+      "suite": "HarbourCore",
+      "tests": 159,
+      "failures": 0,
+      "medication_search_tests": 6
+    },
+    "focused_native": {
+      "suite": "MedicationSearchUITests",
+      "tests": 2,
+      "failures": 0,
+      "methods": [
+        {
+          "name": "testBilingualNoMatchClearsPreviousCandidatesAndRetainsManualEntry",
+          "result": "passed",
+          "duration_seconds": 98.266
+        },
+        {
+          "name": "testBilingualTranspositionSuggestionRequiresProductConfirmation",
+          "result": "passed",
+          "duration_seconds": 48.971
+        }
+      ],
+      "languages_per_method": [
+        "en",
+        "fr-CA"
+      ]
+    },
+    "excerpt": "verification-6c78227.txt",
+    "excerpt_sha256": "712134050ce0f9b79700c6a900f0441e739112239866accb3258ca701366e39a",
+    "workflow_passed": false,
+    "workflow_note": "Other selected native UI test methods failed in the same job. Focused medication-search success does not make the overall workflow passing."
+  },
+  "comparison": {
+    "protocol": "Unchanged fixed query matrix; 12 queries x 3 operations x 50 release samples",
+    "vocabulary_entries": 8299,
+    "vocabulary_publication_date": "2026-11-02",
+    "matching_query_operation_rows": 36,
+    "all_result_count_checksums_match": true,
+    "baseline_ui": {
+      "median_range_ms": [
+        16.423771000000002,
+        59.4995
+      ],
+      "worst_p95_ms": 68.805875,
+      "worst_sample_ms": 94.082458,
+      "first_initialization_ms": 435.134792
+    },
+    "optimized_ui": {
+      "median_range_ms": [
+        17.0156455,
+        27.3382705
+      ],
+      "worst_p95_ms": 65.483667,
+      "worst_sample_ms": 107.542625,
+      "first_initialization_ms": 307.617792
+    },
+    "limits": [
+      "Separate shared Mac runner executions, not a controlled identical-host before/after experiment.",
+      "The optimized synthetic merge also contains other source changes; timings do not isolate the effect of one code change.",
+      "Broad-prefix timings improved in these observations, while some other query timings and the worst individual sample increased.",
+      "No physical-iPhone latency, frame-time, battery or clinical correctness claim."
+    ]
+  }
 }
