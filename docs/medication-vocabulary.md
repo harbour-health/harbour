@@ -26,4 +26,6 @@ Importer: Python standard library, official HTTPS ZIP sources, writable cache (d
 
 ## Editor and review state
 
+See [medication search verification](evaluation/medication-search.md) for ranking, typo/ambiguity checks, bilingual no-match/confirmation tests and the full-dataset release benchmark.
+
 Selecting a database candidate dismisses the keyboard and opens the shared confirmation form. Initial values are loaded once per editor instance, so drawer resizing cannot reset the selected product. Camera/photo controls appear during selection and return through Choose another medicine. Previously unresolved named visit items can now resolve exactly (for example, salbutamol); genuinely unknown products retain empty, unconfirmed ingredients. A catalog match never substitutes for the user's product check.

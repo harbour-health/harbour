@@ -66,6 +66,18 @@ jobs:
       - name: Audit localization
         run: python3 scripts/audit-localization.py
 
+      - name: Measure release medication search responsiveness
+        run: |
+          mkdir -p build
+          swift run --package-path HarbourCore --configuration release medication-search-benchmark --output build/medication-search.json
+
+      - name: Upload medication search measurements
+        uses: actions/upload-artifact@v4
+        with:
+          name: harbour-medication-search
+          path: build/medication-search.json
+          if-no-files-found: error
+
       - name: Cache simulator runtime framework
         id: runtime-cache
         uses: actions/cache/restore@v4
@@ -146,6 +158,7 @@ jobs:
             -only-testing:HarbourUITests/HarbourAppointmentUITests \
             -only-testing:HarbourUITests/HarbourMedicationDraftUITests \
             -only-testing:HarbourUITests/SimpleInterfaceUITests \
+            -only-testing:HarbourUITests/MedicationSearchUITests \
             -only-testing:HarbourUITests/HarbourUITests/testMedicineConfirmationAndExport \
             -only-testing:HarbourUITests/HarbourUITests/testRecordsAndPersistence \
             -only-testing:HarbourUITests/HarbourUITests/testChatHintPreservesDraftAndModelSelector \
