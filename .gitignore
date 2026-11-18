@@ -19,3 +19,7 @@ docs/evaluation/**/*.log
 
 # Presentation authoring dependencies
 presentation/node_modules/
+
+# Local Python scoring/test caches
+__pycache__/
+*.py[cod]
