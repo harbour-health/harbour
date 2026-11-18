@@ -47,10 +47,21 @@ for name in ['ios-arm64', 'ios-arm64_x86_64-simulator', 'macos-arm64_x86_64']:
 artifact = vendor / 'OrtStatic.xcframework'
 if artifact.exists(): shutil.rmtree(artifact)
 subprocess.run(['xcodebuild', '-create-xcframework', *libraries, '-output', str(artifact)], check=True)
-source = work / 'source'
-if not source.exists():
-    subprocess.run(['git', 'clone', '--depth', '1', '--branch', '1.24.2', 'https://github.com/microsoft/onnxruntime-swift-package-manager.git', str(source)], check=True)
-assert subprocess.check_output(['git', '-C', str(source), 'rev-parse', 'HEAD'], text=True).strip() == 'b7fb7f7dea8a2469e6335d95a61b8f36d0dc83b2'
+# The old SwiftPM repository is unavailable. Use the official published source
+# pod matching the already-pinned C binary, not a moving branch or third-party mirror.
+# https://trunk.cocoapods.org/api/v1/pods/onnxruntime-objc/specs/1.24.2
+objc_archive = work / 'onnxruntime-objc-1.24.2.zip'
+objc_expected = 'ab102b30f15c44b08dc6fc32683abeafd216ff6bcabdf74fbac37fbb19d80eed'
+if not objc_archive.exists():
+    urllib.request.urlretrieve('https://download.onnxruntime.ai/pod-archive-onnxruntime-objc-1.24.2.zip', objc_archive)
+if hashlib.sha256(objc_archive.read_bytes()).hexdigest() != objc_expected:
+    raise SystemExit('ONNX Runtime Objective-C source checksum mismatch.')
+source = work / 'objc-source-1.24.2'
+if source.exists(): shutil.rmtree(source)
+with zipfile.ZipFile(objc_archive) as bundle:
+    if any(Path(n).is_absolute() or '..' in Path(n).parts for n in bundle.namelist()):
+        raise SystemExit('Unsafe path in ONNX Runtime Objective-C source archive.')
+    bundle.extractall(source)
 bindings = vendor / 'OnnxRuntimeBindings'
 if bindings.exists(): shutil.rmtree(bindings)
 shutil.copytree(source / 'objectivec', bindings)
