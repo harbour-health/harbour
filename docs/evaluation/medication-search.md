@@ -48,7 +48,9 @@ The **overall workflow failed** because other selected native UI test methods fa
 
 The subsequent [run 44287969060](https://github.com/harbour-health/harbour/actions/runs/44287969060), head `df35c38`, again passed all 159 Core tests and both bilingual search UI methods. Its overall UI run failed in parent navigation/saved-record checks and simulator background-assertion errors; it is not recorded as a passing full workflow. The parent corrections are tracked in PR #17.
 
-The [focused medication-search workflow 44295145945](https://github.com/harbour-health/harbour/actions/runs/44295145945), head `46de039`, completed successfully: 159 Core tests and both bilingual native search methods passed. The [excerpt](medication-search/verification-46de039-focused.txt) preserves the exact scope, source and native results. This is a passing focused workflow; the separate full smoke run at that head still failed in parent navigation checks. The latest parent corrections are inherited and require verification at the updated head.
+The [focused medication-search workflow 44295145945](https://github.com/harbour-health/harbour/actions/runs/44295145945), head `46de039`, completed successfully: 159 Core tests and both bilingual native search methods passed. The [excerpt](medication-search/verification-46de039-focused.txt) preserves the exact scope, source and native results. This was a passing focused workflow; the separate full smoke run at that head still failed in parent navigation checks.
+
+After inheriting the final parent application fixes (`df38e19`), [focused workflow 44304344889](https://github.com/harbour-health/harbour/actions/runs/44304344889), head `75b051a`, also completed successfully: all 159 Core tests and both bilingual native search methods passed. Its [raw excerpt](medication-search/verification-75b051a-focused.txt) records the actual source and results. Full smoke validation remains a separate check; later evidence/check-name documentation edits do not change the tested application or test code.
 
 ### Observed release performance
 

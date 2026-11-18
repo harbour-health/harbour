@@ -88,7 +88,24 @@
     "medication_search_ui_tests": 2,
     "medication_search_ui_failures": 0,
     "excerpt": "verification-46de039-focused.txt",
-    "note": "This is the focused search workflow, not a passing full smoke result."
+    "note": "This is the focused search workflow, not a passing full smoke result.",
+    "excerpt_sha256": "3e91e78ac39bac7b1e67dc2c6d20574dc49bd91cac14eb46c9944d3e5a7c3531"
+  },
+  "latest_focused_verification": {
+    "pull_request_head": "75b051a681d2a9d879edd899f26fce6bf65da71e",
+    "parent_application_code": "df38e19ab157079554e0f00d81129261ce09e3c3",
+    "run_id": 44304344889,
+    "job_id": 134801903742,
+    "run_url": "https://github.com/harbour-health/harbour/actions/runs/44304344889",
+    "native_scope": "medication-search",
+    "workflow_passed": true,
+    "core_tests": 159,
+    "core_failures": 0,
+    "medication_search_ui_tests": 2,
+    "medication_search_ui_failures": 0,
+    "excerpt": "verification-75b051a-focused.txt",
+    "note": "Includes the final parent Records/Visits visibility and draft-preservation code; this focused success is separate from full smoke validation.",
+    "excerpt_sha256": "d491f10e875c2f371bbcdb282576f8f9ac53042eb3eab0e90240e7698490e37d"
   },
   "comparison": {
     "protocol": "Unchanged fixed query matrix; 12 queries x 3 operations x 50 release samples",
