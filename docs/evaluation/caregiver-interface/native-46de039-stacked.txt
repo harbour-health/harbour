@@ -1,0 +1,18 @@
+2026-11-18T11:30:37.7188950Z HEAD is now at 4bb0eb1 Merge 46de03965f7e464e12816d2715d48d1dfa0a327f into 5163bad7ab7c7c7d137c62bfafabc0f67d55893f
+2026-11-18T11:30:38.0266330Z Xcode 26.6
+2026-11-18T11:30:38.0268010Z Build version 17F113
+2026-11-18T11:34:13.9988110Z { platform:iOS Simulator, arch:arm64, id:5FE974FE-4710-48D6-A28B-70B8B7CF78CD, OS:26.4.1, name:iPhone 17 Pro }
+2026-11-18T11:54:15.1519570Z /Users/runner/work/harbour/harbour/HarbourUITests/HarbourUITests.swift:1558: error: -[HarbourUITests.HarbourStreamlineTests testMainActionsDraftRetentionAndVisitCreation] : XCTAssertNotNil failed - Attributes: Application, 0x105fc70c0, pid: 31633, label: 'Harbour'
+2026-11-18T11:58:20.7657610Z /Users/runner/work/harbour/harbour/HarbourUITests/HarbourUITests.swift:1101: error: -[HarbourUITests.HarbourVisitTests testMedicineReviewDrawerScreens] : XCTAssertTrue failed
+2026-11-18T12:03:12.6923430Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testConfirmedRecordSurvivesModeSwitchesAndRelaunch]' passed (102.452 seconds).
+2026-11-18T12:03:24.7814420Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testFrenchSimpleHome]' passed (12.089 seconds).
+2026-11-18T12:04:24.2669630Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testInterfaceAccessibilityMetadataInBothLanguages]' passed (59.478 seconds).
+2026-11-18T12:05:28.7289920Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testModeSelectionPersistsAcrossRelaunchWithoutLaunchSeed]' passed (64.465 seconds).
+2026-11-18T12:05:54.3314450Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testSimpleHomeHelpAndCaregiverSwitch]' passed (25.558 seconds).
+2026-11-18T12:07:27.1672980Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testSimpleLargestTextKeepsPrimaryActionsReachable]' passed (92.877 seconds).
+2026-11-18T12:08:27.8433990Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testUnsentChatDraftSurvivesHomeAndBothModeSwitches]' passed (60.665 seconds).
+2026-11-18T12:09:15.5673080Z 	 Executed 27 tests, with 2 failures (0 unexpected) in 1788.693 (1788.745) seconds
+2026-11-18T12:09:15.5674390Z 	 Executed 27 tests, with 2 failures (0 unexpected) in 1788.693 (1788.749) seconds
+2026-11-18T12:09:34.3185270Z 	 Executed 51 tests, with 6 tests skipped and 0 failures (0 unexpected) in 5.524 (5.559) seconds
+2026-11-18T12:09:34.3394460Z 	 Executed 51 tests, with 6 tests skipped and 0 failures (0 unexpected) in 5.524 (5.560) seconds
+2026-11-18T12:10:17.4767660Z ** TEST FAILED **

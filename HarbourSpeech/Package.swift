@@ -11,19 +11,7 @@ let package = Package(
             name: "OnnxRuntimeBindings",
             dependencies: ["OrtStatic"],
             path: "Vendor/OnnxRuntimeBindings",
-            exclude: [
-                "ReadMe.md",
-                "format_objc.sh",
-                "test",
-                "docs",
-                "ort_checkpoint.mm",
-                "ort_checkpoint_internal.h",
-                "ort_training_session_internal.h",
-                "ort_training_session.mm",
-                "include/ort_checkpoint.h",
-                "include/ort_training_session.h",
-                "include/onnxruntime_training.h"
-            ],
+            exclude: ["test"],
             cxxSettings: [.define("SPM_BUILD")],
             linkerSettings: [.linkedFramework("CoreML"), .linkedFramework("Accelerate"), .linkedLibrary("c++")]
         ),

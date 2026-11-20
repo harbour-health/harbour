@@ -736,6 +736,8 @@
 "Simple" = "Simple";
 "Chat and voice" = "Clavardage et voix";
 "Records and tools" = "Dossiers et outils";
+"One person's health records" = "Le dossier de santé d’une personne";
+"Both layouts show and edit the same person's health records on this iPhone. Switching layouts does not select another person." = "Les deux interfaces affichent et modifient le dossier de santé de la même personne sur cet iPhone. Changer d’interface ne change pas de personne.";
 "Home" = "Accueil";
 "Presentation" = "Présentation";
 "Start guided walkthrough" = "Démarrer la visite guidée";
