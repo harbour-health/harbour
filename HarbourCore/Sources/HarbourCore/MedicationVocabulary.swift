@@ -200,25 +200,44 @@ public struct MedicationVocabulary: Sendable {
 
     /// Suggestions are never used by resolve(), validators or automatic transcript replacement.
     public func suggestions(_ input: String, limit: Int = 4) -> [Medicine] {
+        let queryKey = Self.key(input)
         let query = Self.sound(input)
 
         guard
-            query.count >= 5, query.count <= 40, limit > 0,
+            query.count >= 4, query.count <= 40, limit > 0,
             input.split(whereSeparator: \.isWhitespace).count <= 4 else {
             return []
         }
 
         var best: [String: (Medicine, Double)] = [:]
-        func consider(_ sound: String, medicine makeMedicine: () -> Medicine) {
-            guard abs(sound.count - query.count) <= 3, sound.first == query.first else {
+        func consider(key: String, sound: String, medicine makeMedicine: () -> Medicine) {
+            guard abs(sound.count - query.count) <= 3 else {
                 return
             }
 
-            let distance = Self.distance(query, sound)
-            let score = 1 - Double(distance) / Double(max(query.count, sound.count))
+            let score: Double
+            if min(queryKey.count, key.count) <= 5 || min(query.count, sound.count) < 5 {
+                // A short phonetic form loses too much spelling information. Permit one spelling edit only.
 
-            guard score >= 0.78 else {
-                return
+                guard min(queryKey.count, key.count) >= 4 else {
+                    return
+                }
+                let distance = Self.distance(queryKey, key, maximum: 1)
+
+                guard distance <= 1 else {
+                    return
+                }
+                score = 1 - Double(distance) / Double(max(queryKey.count, key.count))
+            } else {
+                let length = max(query.count, sound.count)
+                // Leading substitutions/transpositions are suggestions, with a tighter one-edit budget.
+                let maximum = sound.first == query.first ? Int(Double(length) * 0.22) : 1
+                let distance = Self.distance(query, sound, maximum: maximum)
+                score = 1 - Double(distance) / Double(length)
+
+                guard distance <= maximum, score >= 0.78 else {
+                    return
+                }
             }
 
             let medicine = makeMedicine()
@@ -235,11 +254,11 @@ public struct MedicationVocabulary: Sendable {
             }
         }
         for item in searchable {
-            consider(item.sound) { entries[item.index].medicine }
+            consider(key: item.key, sound: item.sound) { entries[item.index].medicine }
         }
         for medicine in Catalog.medicines {
             for name in Catalog.names(for: medicine) {
-                consider(Self.sound(name)) { medicine }
+                consider(key: Self.key(name), sound: Self.sound(name)) { medicine }
             }
         }
 
@@ -252,18 +271,28 @@ public struct MedicationVocabulary: Sendable {
         }.prefix(limit).map(\.0)
     }
 
-    private static func distance(_ a: String, _ b: String) -> Int {
+    private static func distance(_ a: String, _ b: String, maximum: Int) -> Int {
         let a = Array(a), b = Array(b)
+
+        guard abs(a.count - b.count) <= maximum else {
+            return maximum + 1
+        }
         var previous = Array(0 ... b.count)
         var beforePrevious = previous
         for i in a.indices {
             var next = [i + 1]
+            var rowMinimum = next[0]
             for j in b
                 .indices {
                 next.append(min(next[j] + 1, previous[j + 1] + 1, previous[j] + (a[i] == b[j] ? 0 : 1)))
                 if i > 0, j > 0, a[i] == b[j - 1], a[i - 1] == b[j] {
                     next[j + 1] = min(next[j + 1], beforePrevious[j - 1] + 1)
                 }
+                rowMinimum = min(rowMinimum, next[j + 1])
+            }
+
+            guard rowMinimum <= maximum else {
+                return maximum + 1
             }
             beforePrevious = previous
             previous = next

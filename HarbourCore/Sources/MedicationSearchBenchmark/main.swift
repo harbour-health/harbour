@@ -68,7 +68,11 @@ func run() throws {
         ("acetaminophene", "unaccented_alias"),
         ("hydroclorothiazide", "generic_deletion"),
         ("metfomrin", "generic_transposition"),
+        ("netformin", "generic_initial_substitution"),
+        ("emtformin", "generic_initial_transposition"),
         ("tylneol", "brand_transposition"),
+        ("aleev", "short_brand_final_transposition"),
+        ("alvee", "short_brand_middle_transposition"),
         ("amoxcillin", "generic_typo"),
         ("zzqvxxmedication", "unrelated")
     ]
@@ -98,7 +102,7 @@ func run() throws {
     #endif
     let report: [String: Any] = [
         "schema_version": 1,
-        "benchmark": "harbour-medication-search-v1",
+        "benchmark": "harbour-medication-search-v2",
         "configuration": configuration,
         "source_commit": ProcessInfo.processInfo.environment["GITHUB_SHA"] ?? "unrecorded-local-run",
         "os": ProcessInfo.processInfo.operatingSystemVersionString,

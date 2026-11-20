@@ -18,6 +18,10 @@ final class MedicationSearchTests: XCTestCase {
             ("metfornin", "metformin"),
             ("metforminn", "metformin"),
             ("metfomin", "metformin"),
+            ("netformin", "metformin"),
+            ("emtformin", "metformin"),
+            ("aleev", "Aleve"),
+            ("alvee", "Aleve"),
             ("advli", "Advil"),
             ("tyelnol", "Tylenol"),
             ("ibuprofne", "ibuprofen"),
@@ -36,6 +40,18 @@ final class MedicationSearchTests: XCTestCase {
                 .init(tool: .addMedicine), original: "Add \(query)", records: Records()
             ), query)
         }
+    }
+
+    func testShortNameSuggestionsRequireAtMostOneSpellingEditAndPreserveAmbiguity() {
+        let vocabulary = MedicationVocabulary(entries: [
+            entry("z", name: "Zelma", ingredients: ["ingredient one"]),
+            entry("a", name: "Zelma", ingredients: ["ingredient two"])
+        ], publicationDate: "fixture")
+        XCTAssertEqual(vocabulary.suggestions("ezlma").map(\.id), ["a", "z"])
+        XCTAssertNil(vocabulary.resolve("ezlma"))
+        XCTAssertNil(vocabulary.resolve("zelma"))
+        XCTAssertTrue(vocabulary.suggestions("ezmla").isEmpty)
+        XCTAssertTrue(vocabulary.suggestions("zel").isEmpty)
     }
 
     func testOfficialFrenchAliasesAndIngredientOnlySearchAreRanked() {
@@ -78,7 +94,7 @@ final class MedicationSearchTests: XCTestCase {
 
     func testUnrelatedAndOutOfBoundsQueriesDoNotCreateCandidates() {
         let vocabulary = MedicationVocabulary.shared
-        for query in ["zzzzzzzzzzzz", "garden furniture", "bicycle helmet"] {
+        for query in ["zzqx", "zzqvx", "zzzzzzzzzzzz", "garden furniture", "bicycle helmet"] {
             XCTAssertTrue(Catalog.search(query).isEmpty, query)
             XCTAssertTrue(vocabulary.suggestions(query).isEmpty, query)
         }

@@ -7,7 +7,7 @@ This protocol covers [#14](https://github.com/harbour-health/harbour/issues/14).
 | Area | Expected result | Evidence |
 | --- | --- | --- |
 | Normal ranking | Exact name, exact ingredient, name prefix, ingredient prefix, name substring, then ingredient substring; ties are stable. All normal matches precede approximate suggestions. | Core medication-search tests. |
-| Minor typos | Phonetic folding plus optimal string alignment handles adjacent transpositions, deletion, insertion, substitution and spacing variants for generic and curated familiar brand names. | Published query tables in the Core tests. |
+| Minor typos | Phonetic folding plus optimal string alignment handles adjacent transpositions, deletion, insertion, substitution and spacing variants for generic and curated familiar brand names. Leading-letter errors have a one-edit budget; short names require at most one normalized spelling edit. | Published query tables in the Core tests, including `netformin`, `emtformin`, `aleev` and `alvee`. |
 | Ambiguity | Preserve distinct candidates; a suggestion never enables exact resolution or a validated write. | Custom-entry alias-conflict and confirmation tests. |
 | English/French | Case/diacritic folding and official aliases behave consistently. | Core fixtures and bilingual native UI checks. |
 | No matches | Clear no-match text appears when both normal and similar-name lists are empty; manual unconfirmed entry remains possible. | Native no-match/stale-result tests. |
@@ -15,6 +15,8 @@ This protocol covers [#14](https://github.com/harbour-health/harbour/issues/14).
 | Responsiveness | Measure normal, approximate and combined UI search against the full vocabulary in release mode. | Benchmark JSON/log for the tested CI commit. |
 
 Actual Core, focused native and benchmark outcomes are recorded below for the tested source commit. Passing focused checks do not imply the entire CI workflow passed.
+
+The current leading-letter/short-name revision adds four typo regressions and a short-name ambiguity/two-edit rejection test. These changes preserve exact resolution and the editor's selection/confirmation flow. The historical native and release measurements below predate this matcher revision; Swift/Core tests, native checks and the version 2 benchmark must run again before claiming the revised matcher is verified. Local Python reproduction checked the intended candidates against the bundled data, unrelated inputs, short-name ambiguity, and bounded edit-distance equivalence; it does not replace Swift execution.
 
 ## Reproduce
 
@@ -30,7 +32,7 @@ The native `MedicationSearchUITests` suite is selected by CI. It uses the common
 
 ## Performance protocol
 
-The benchmark first initializes the actual bundled vocabulary and records the entry count/publication date. It then measures twelve fixed query categories with fifty samples each for normal search, suggestions, and the UI's normal-then-fallback path. The matrix includes exact generic/brand names, broad/ambiguous prefixes, French accents/aliases, generic/brand typos and unrelated input.
+The version 2 benchmark first initializes the actual bundled vocabulary and records the entry count/publication date. It then measures sixteen fixed query categories with fifty samples each for normal search, suggestions, and the UI's normal-then-fallback path. The matrix includes exact generic/brand names, broad/ambiguous prefixes, French accents/aliases, generic/brand typos, leading-letter errors, short-brand transpositions and unrelated input. This produces 48 query/operation rows; the historical version 1 reports below contain twelve queries and 36 rows.
 
 Each operation is warmed once. The report retains raw milliseconds, median, p95, maximum and a result-count checksum. First initialization is measured separately; it is not an uncached-disk claim. JSON includes compiled debug/release configuration, source commit when run in CI, OS and processor count. The CLI refuses to overwrite an existing result file.
 
