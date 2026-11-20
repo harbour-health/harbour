@@ -12,10 +12,16 @@ Record a visit immediately starts the shared recorder in a full-screen view. Ret
 
 Settings → Interface switches layouts. Caregiver preserves four-page navigation, records, technical preferences and Developer tools. This is a presentation preference, **not a second user, permission boundary, remote caregiver account or data isolation mechanism**. App lock protects both layouts equally. Switching returns Home without deleting records or changing the selected model. Recording Live Activity links reopen the shared recorder as a Simple full-screen view; an expired recording link returns Home instead of starting a new visit.
 
+The interface picker explains in English and Canadian French that both layouts show and edit the same person's health records on this iPhone. It does not select another person or infer the record owner's identity from the phone. Each choice is one accessible button with a translated name, description and selected state; the decorative symbol and checkmark are hidden from accessibility. The picker scrolls when larger text needs more room.
+
+The existing ChatView stays mounted when the layout changes. Returning Home and switching layouts preserve an unsent typed message; ending a voice session restores its pre-voice draft only when such a backup exists. The mode preference and saved records persist across app relaunches. Unsent chat drafts are view state and are not promised to survive termination. Both layouts continue using the same editors and confirmation gates.
+
+See [caregiver interface verification](evaluation/caregiver-interface-verification.md) for the exact native test coverage, pending run evidence and the physical-iPhone VoiceOver checklist. Automated accessibility metadata audits are separate from actual VoiceOver testing.
+
 ## How to change it
 
 Edit `SimpleHomeView` for the main actions/guide, `AppInterface` for choices, and `RootView` in `HarbourApp` for navigation. Keep one manual editor per record type; chat opens those same editors. Advanced records remain in caregiver mode. Add both language catalog entries and native UI assertions for every new action.
 
 ## Configuration and dependencies
 
-`interfaceMode` defaults to `simple`; no environment variables. `startVoiceOnOpen` is a consumed voice-entry request. Uses SwiftUI, the shared AppStore, VisitRecorder, VoiceService, local model manager and existing floating drawers. No new service or network account.
+`interfaceMode` defaults to `simple`. The developer/test variable `HARBOUR_INITIAL_INTERFACE=simple|caregiver` seeds that persisted value at launch; remove it before relaunching to test persistence. It does not override later in-app choices. `startVoiceOnOpen` is a consumed voice-entry request. Uses SwiftUI, the shared AppStore, VisitRecorder, VoiceService, local model manager and existing floating drawers. No new service or network account.

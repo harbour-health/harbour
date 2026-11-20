@@ -35,7 +35,7 @@ Keep microphone tap work off the main actor and lock writer ownership. Invalidat
 
 ## Configuration
 
-The app still targets iOS 18. Live modern transcription is guarded by iOS 26 availability; English uses `en-CA` or Apple's compatible locale. Audio is AAC at 32 kbps with the microphone's sample rate/channel count, approximately 14 MB/hour before container overhead. The recording limit is 90 minutes; the checkpoint interval is ten seconds. Manual transcripts are limited to 200,000 characters. Summary output has a 1,536-token budget per chunk within the runtime's 4,096-token context. Selected model/download/effort settings remain managed by `ModelManager`; visit extraction uses its own budget independent of chat effort.
+The app still targets iOS 18. Live modern transcription is guarded by iOS 26 availability; English uses `en-CA` or Apple's compatible locale. Audio uses AAC with the microphone's sample rate/channel count and a platform-selected bit rate; file size varies with the input format and encoder settings. The recording limit is 90 minutes; the checkpoint interval is ten seconds. Manual transcripts are limited to 200,000 characters. Summary output has a 1,536-token budget per chunk within the runtime's 4,096-token context. Selected model/download/effort settings remain managed by `ModelManager`; visit extraction uses its own budget independent of chat effort.
 
 `Info.plist` explains microphone and speech use for both chat and visits. These permission requests happen on explicit use. Recording cancellation resolves the app's pending permission waiter and invalidates its session ID, so a later system reply cannot start a cancelled recording.
 

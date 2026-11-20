@@ -736,6 +736,8 @@
 "Simple" = "Simple";
 "Chat and voice" = "Chat and voice";
 "Records and tools" = "Records and tools";
+"One person's health records" = "One person's health records";
+"Both layouts show and edit the same person's health records on this iPhone. Switching layouts does not select another person." = "Both layouts show and edit the same person's health records on this iPhone. Switching layouts does not select another person.";
 "Home" = "Home";
 "Presentation" = "Presentation";
 "Start guided walkthrough" = "Start guided walkthrough";

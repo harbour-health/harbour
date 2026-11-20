@@ -36,6 +36,8 @@ Kokoro-82M is Apache-2.0; ONNX Runtime 1.24.2 is MIT. eSpeak NG 1.52.0 is GPL-3.
 
 ## Distribution metadata
 
+The Objective-C preparation uses the official [1.24.2 source pod](https://trunk.cocoapods.org/api/v1/pods/onnxruntime-objc/specs/1.24.2), whose dependency is exactly `onnxruntime-c 1.24.2`. Its source ZIP is pinned to SHA-256 `ab102b30f15c44b08dc6fc32683abeafd216ff6bcabdf74fbac37fbb19d80eed` and its MIT license is retained. This replaces an unavailable SwiftPM Git repository; byte identity with that former Git commit is not asserted. The C binary version and checksum remain unchanged.
+
 `prepare-speech.py` writes `MinimumOSVersion = 18.0` into both iOS eSpeak framework slices, matching their compiler targets. The macOS slice uses `LSMinimumSystemVersion = 14.0`. Apple rejects uploads when an embedded iOS dynamic framework omits its minimum OS, even if local archive/export succeeded. `testflight.py` checks every embedded dynamic framework's minimum-OS metadata before export/upload. Existing prepared artifacts need their matching plist metadata refreshed or must be rebuilt after changing this packaging code; do not change the compiled minimum version by editing metadata alone.
 
 The current eSpeak and upstream llama artifacts do not include matching dSYMs, so Xcode can report non-blocking symbol-upload warnings. App-owned dSYMs are present; complete native speech/runtime crash symbolication is not claimed.
