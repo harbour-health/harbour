@@ -222,11 +222,13 @@ public struct MedicationVocabulary: Sendable {
                 guard min(queryKey.count, key.count) >= 4 else {
                     return
                 }
+
                 let distance = Self.distance(queryKey, key, maximum: 1)
 
                 guard distance <= 1 else {
                     return
                 }
+
                 score = 1 - Double(distance) / Double(max(queryKey.count, key.count))
             } else {
                 let length = max(query.count, sound.count)
@@ -277,6 +279,7 @@ public struct MedicationVocabulary: Sendable {
         guard abs(a.count - b.count) <= maximum else {
             return maximum + 1
         }
+
         var previous = Array(0 ... b.count)
         var beforePrevious = previous
         for i in a.indices {
@@ -294,6 +297,7 @@ public struct MedicationVocabulary: Sendable {
             guard rowMinimum <= maximum else {
                 return maximum + 1
             }
+
             beforePrevious = previous
             previous = next
         }
