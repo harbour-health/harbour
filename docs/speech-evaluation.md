@@ -12,6 +12,8 @@ Freeze the plan before recognition. Changing any script, target, variant, or pla
 
 Repository speech plan/status JSON files use LF line endings through `.gitattributes`, so their byte hashes remain consistent across Windows, macOS and Linux checkouts. Preserve those exact plan bytes with the collection evidence; the scorer continues to hash the original file rather than normalizing it.
 
+Existing Windows working trees may retain previously converted CRLF files until unchanged plan/status files are refreshed from Git under the new attributes. Preserve local edits first; do not change bound hashes to match converted bytes.
+
 Validate the plan:
 
 ```sh
