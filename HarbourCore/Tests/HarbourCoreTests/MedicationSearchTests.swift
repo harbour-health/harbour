@@ -23,6 +23,7 @@ final class MedicationSearchTests: XCTestCase {
             ("aleev", "Aleve"),
             ("alvee", "Aleve"),
             ("advli", "Advil"),
+            ("adveel", "Advil"),
             ("tyelnol", "Tylenol"),
             ("ibuprofne", "ibuprofen"),
             ("hydroclorothiazide", "hydrochlorothiazide"),
@@ -42,7 +43,7 @@ final class MedicationSearchTests: XCTestCase {
         }
     }
 
-    func testShortNameSuggestionsRequireAtMostOneSpellingEditAndPreserveAmbiguity() {
+    func testBoundedSuggestionsPreserveAmbiguityAndRejectLargerErrors() {
         let vocabulary = MedicationVocabulary(entries: [
             entry("z", name: "Zelma", ingredients: ["ingredient one"]),
             entry("a", name: "Zelma", ingredients: ["ingredient two"])
@@ -52,6 +53,15 @@ final class MedicationSearchTests: XCTestCase {
         XCTAssertNil(vocabulary.resolve("zelma"))
         XCTAssertTrue(vocabulary.suggestions("ezmla").isEmpty)
         XCTAssertTrue(vocabulary.suggestions("zel").isEmpty)
+
+        let shortForms = MedicationVocabulary(entries: [
+            entry("z", name: "Zella", ingredients: ["ingredient one"]),
+            entry("a", name: "Zella", ingredients: ["ingredient two"])
+        ], publicationDate: "fixture")
+        XCTAssertEqual(shortForms.suggestions("ezlla").map(\.id), ["a", "z"])
+        XCTAssertNil(shortForms.resolve("ezlla"))
+        XCTAssertNil(shortForms.resolve("zella"))
+        XCTAssertTrue(shortForms.suggestions("ezla").isEmpty)
     }
 
     func testOfficialFrenchAliasesAndIngredientOnlySearchAreRanked() {

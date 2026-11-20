@@ -216,8 +216,8 @@ public struct MedicationVocabulary: Sendable {
             }
 
             let score: Double
-            if min(queryKey.count, key.count) <= 5 || min(query.count, sound.count) < 5 {
-                // A short phonetic form loses too much spelling information. Permit one spelling edit only.
+            if query.count < 5 {
+                // Newly admitted four-letter phonetic queries permit one spelling edit only.
 
                 guard min(queryKey.count, key.count) >= 4 else {
                     return
