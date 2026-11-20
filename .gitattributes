@@ -9,3 +9,6 @@ docs/presentation/** linguist-generated=true
 docs/screenshots/** linguist-generated=true
 HarbourCore/Sources/HarbourCore/Resources/medication-vocabulary.json linguist-generated=true
 docs/evaluation/medication-names-*.json linguist-generated=true
+
+# Frozen speech plans/status bind SHA-256 to the same bytes on every checkout.
+docs/evaluation/speech-*.json text eol=lf

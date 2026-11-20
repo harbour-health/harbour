@@ -10,6 +10,8 @@ Read each script faithfully. A reviewer must listen and confirm the actual utter
 
 Freeze the plan before recognition. Changing any script, target, variant, or planned coverage changes its SHA-256 and requires new bound manifests/results. Do not add accepted spellings after observing outputs.
 
+Repository speech plan/status JSON files use LF line endings through `.gitattributes`, so their byte hashes remain consistent across Windows, macOS and Linux checkouts. Preserve those exact plan bytes with the collection evidence; the scorer continues to hash the original file rather than normalizing it.
+
 Validate the plan:
 
 ```sh

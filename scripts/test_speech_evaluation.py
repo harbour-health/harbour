@@ -300,6 +300,39 @@ class SpeechEvaluationTests(unittest.TestCase):
         self.assertEqual(subprocess.run(command, capture_output=True).returncode, 2)
         self.assertEqual(destination.read_bytes(), original)
 
+    def test_frozen_plan_hashes_survive_windows_git_checkout(self):
+        source = Path(__file__).resolve().parent.parent
+        plans = sorted(path for path in (source / "docs/evaluation").glob("speech-*.json")
+                       if not path.name.endswith("-status.json"))
+        self.assertTrue(plans, "The checkout regression must exercise repository speech plans")
+        repository = self.root / "repository"
+        repository.mkdir()
+
+        def git(*arguments, directory=repository):
+            return subprocess.run(
+                ["git", "-c", "core.attributesFile=", "-c", "core.autocrlf=false", *arguments],
+                cwd=directory, check=True, capture_output=True).stdout
+
+        git("init", "--quiet")
+        (repository / ".gitattributes").write_bytes((source / ".gitattributes").read_bytes())
+        committed = {}
+        for plan in plans:
+            relative = plan.relative_to(source).as_posix()
+            # Use committed blobs, not the host checkout's possibly converted bytes.
+            committed[relative] = git("show", "HEAD:" + relative, directory=source)
+            destination = repository / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(committed[relative])
+        git("add", ".gitattributes", *committed)
+        checkout = self.root / "windows-checkout"
+        checkout.mkdir()
+        git("-c", "core.autocrlf=true", "checkout-index", "--all",
+            "--prefix=" + checkout.as_posix() + "/")
+        for relative, original in committed.items():
+            with self.subTest(plan=relative):
+                self.assertEqual(evaluation.sha256(checkout / relative),
+                                 hashlib.sha256(original).hexdigest())
+
 
 if __name__ == "__main__":
     unittest.main()
