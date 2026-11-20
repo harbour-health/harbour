@@ -53,13 +53,13 @@ final class VisitAudioWriter: @unchecked Sendable {
         failure: @escaping @Sendable (String) -> Void
     ) throws {
         self.url = url
+        // Let AAC choose a valid bit rate for the microphone's sample rate and channel count.
         file = try AVAudioFile(
             forWriting: url,
             settings: [
                 AVFormatIDKey: kAudioFormatMPEG4AAC,
                 AVSampleRateKey: format.sampleRate,
-                AVNumberOfChannelsKey: format.channelCount,
-                AVEncoderBitRateKey: 32_000
+                AVNumberOfChannelsKey: format.channelCount
             ],
             commonFormat: format.commonFormat,
             interleaved: format.isInterleaved
