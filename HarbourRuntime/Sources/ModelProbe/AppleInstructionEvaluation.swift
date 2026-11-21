@@ -69,7 +69,7 @@
                         to: user,
                         generating: AppleInstructionEnvelope.self,
                         options: GenerationOptions(
-                            samplingMode: .greedy,
+                            sampling: .greedy,
                             maximumResponseTokens: 2048
                         )
                     )

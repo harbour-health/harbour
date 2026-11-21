@@ -68,6 +68,69 @@ import HarbourCore
         XCTAssertEqual(models.selection, .small)
     }
 
+    private func assertAACWriterDecodes(sampleRate: Double, channels: AVAudioChannelCount) throws {
+        let path = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".m4a")
+        defer { try? FileManager.default.removeItem(at: path) }
+        let format = try XCTUnwrap(AVAudioFormat(
+            commonFormat: .pcmFormatFloat32,
+            sampleRate: sampleRate,
+            channels: channels,
+            interleaved: false
+        ))
+        let frames = AVAudioFrameCount(sampleRate / 10)
+        let buffer = try XCTUnwrap(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frames))
+        buffer.frameLength = frames
+        let samples = try XCTUnwrap(buffer.floatChannelData)
+        for channel in 0 ..< Int(channels) {
+            samples[channel].initialize(repeating: 0, count: Int(frames))
+        }
+        let writer = try VisitAudioWriter(
+            url: path,
+            format: format,
+            speech: { _ in },
+            meter: { _ in },
+            failure: { _ in XCTFail("AAC writing failed for \(sampleRate) Hz / \(channels) channels") }
+        )
+        defer { writer.close() }
+        writer.append(buffer)
+        writer.close()
+
+        let size = try XCTUnwrap(try FileManager.default.attributesOfItem(atPath: path.path)[.size] as? NSNumber)
+        XCTAssertGreaterThan(size.int64Value, 0)
+        let reader = try AVAudioFile(forReading: path)
+        XCTAssertEqual(reader.fileFormat.streamDescription.pointee.mFormatID, kAudioFormatMPEG4AAC)
+        XCTAssertEqual(reader.fileFormat.sampleRate, sampleRate, accuracy: 0.5)
+        XCTAssertEqual(reader.fileFormat.channelCount, channels)
+        XCTAssertGreaterThan(reader.length, 0)
+        let decoded = try XCTUnwrap(AVAudioPCMBuffer(pcmFormat: reader.processingFormat, frameCapacity: frames))
+        try reader.read(into: decoded)
+        XCTAssertGreaterThan(decoded.frameLength, 0, "AAC readback must decode audio, not just create a file")
+    }
+
+    func testVisitAACWriterDecodes16000HzMono() throws {
+        try assertAACWriterDecodes(sampleRate: 16_000, channels: 1)
+    }
+
+    func testVisitAACWriterDecodes16000HzStereo() throws {
+        try assertAACWriterDecodes(sampleRate: 16_000, channels: 2)
+    }
+
+    func testVisitAACWriterDecodes44100HzMono() throws {
+        try assertAACWriterDecodes(sampleRate: 44_100, channels: 1)
+    }
+
+    func testVisitAACWriterDecodes44100HzStereo() throws {
+        try assertAACWriterDecodes(sampleRate: 44_100, channels: 2)
+    }
+
+    func testVisitAACWriterDecodes48000HzMono() throws {
+        try assertAACWriterDecodes(sampleRate: 48_000, channels: 1)
+    }
+
+    func testVisitAACWriterDecodes48000HzStereo() throws {
+        try assertAACWriterDecodes(sampleRate: 48_000, channels: 2)
+    }
+
     func testActiveAudioProtectionIsRestoredWhenWriterCloses() throws {
         let path = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".m4a")
         defer { try? FileManager.default.removeItem(at: path) }

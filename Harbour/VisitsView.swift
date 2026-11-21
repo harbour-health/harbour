@@ -106,15 +106,21 @@ struct VisitsView: View {
         }.contentMargins(.bottom, dockClearance, for: .scrollContent)
             .background(Palette.canvas).foregroundStyle(Palette.ink).navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar(.visible, for: .navigationBar)
             .toolbar {
-                if !showRecorder && destination == nil {
-                    ToolbarItem(placement: .topBarLeading) {
+                // Keep item containers stable so the root actions return after Back.
+                ToolbarItem(placement: .topBarLeading) {
+                    if !showRecorder && destination == nil {
                         Button { newVisit = DoctorVisit(title: L10n.string("Visit notes")) } label: {
                             ToolbarGlyph(symbol: "square.and.pencil") }
                             .disabled(recorder.active).accessibilityLabel("Add notes")
                             .accessibilityIdentifier("addVisitNotes")
                     }
-                    ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    if !showRecorder && destination == nil {
+                        SettingsButton(sheet: $sheet)
+                    }
                 }
             }
             .onAppear {
