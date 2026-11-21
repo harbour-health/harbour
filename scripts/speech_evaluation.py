@@ -110,11 +110,22 @@ def _digest(value, label):
 
 
 def validate_plan(plan):
-    _fields(plan, ["schema_version", "suite_id", "kind", "minimum_speakers", "conditions", "cases"], label="plan")
+    _fields(plan, ["schema_version", "suite_id", "kind", "minimum_speakers", "conditions", "cases"],
+            ["minimum_accents", "required_groups"], "plan")
     _integer(plan["schema_version"], 1, 1, "schema_version")
     _identifier(plan["suite_id"], "suite_id")
     if plan["kind"] not in ("medication", "personal_name"):
         raise EvaluationError("kind must be medication or personal_name")
+    if plan["kind"] != "personal_name" and ({"minimum_accents", "required_groups"} & plan.keys()):
+        raise EvaluationError("minimum_accents and required_groups belong to personal-name studies")
+    if "minimum_accents" in plan:
+        _integer(plan["minimum_accents"], 2, 1000, "minimum_accents")
+    if "required_groups" in plan:
+        _list(plan["required_groups"], "required_groups", nonempty=True)
+        for group in plan["required_groups"]:
+            _identifier(group, "required group")
+        if len(set(plan["required_groups"])) != len(plan["required_groups"]):
+            raise EvaluationError("Duplicate required group")
     _integer(plan["minimum_speakers"], 2, 1000, "minimum_speakers")
     _list(plan["conditions"], "conditions", nonempty=True)
     for condition in plan["conditions"]:
@@ -132,6 +143,11 @@ def validate_plan(plan):
         if case_id in cases:
             raise EvaluationError("Duplicate case: " + case_id)
         _locale(case["locale"], "case.locale")
+        if plan["kind"] == "personal_name":
+            if "group" not in case:
+                raise EvaluationError("Every personal-name case requires a naming-tradition group")
+            if case["locale"] not in ("en-CA", "fr-CA"):
+                raise EvaluationError("Personal-name study covers names within en-CA/fr-CA utterances only")
         if case["utterance_type"] not in ("isolated", "sentence"):
             raise EvaluationError("utterance_type must be isolated or sentence")
         utterance_types.add(case["utterance_type"])
@@ -165,6 +181,9 @@ def validate_plan(plan):
         cases[case_id] = case
     if utterance_types != {"isolated", "sentence"}:
         raise EvaluationError("Plan must include isolated and sentence utterances")
+    represented = {case["group"] for case in cases.values() if "group" in case}
+    if not set(plan.get("required_groups", [])).issubset(represented):
+        raise EvaluationError("Plan omits one or more required naming-tradition groups")
     return cases
 
 
@@ -192,6 +211,11 @@ def _wav(path):
         raise EvaluationError(f"Invalid WAV {path}: {error}") from error
 
 
+def _accent(value):
+    # Collector-supplied description only; names never infer a speaker's accent.
+    return " ".join(unicodedata.normalize("NFKC", value).casefold().split())
+
+
 def validate_recordings(document, plan, plan_digest, directory):
     _fields(document, ["schema_version", "suite_id", "plan_sha256", "recordings"], label="recordings manifest")
     _integer(document["schema_version"], 1, 1, "recordings.schema_version")
@@ -200,7 +224,7 @@ def validate_recordings(document, plan, plan_digest, directory):
     _list(document["recordings"], "recordings")
     cases = {case["id"]: case for case in plan["cases"]}
     root = Path(directory).resolve()
-    recordings, hashes = {}, set()
+    recordings, hashes, speaker_accents = {}, set(), {}
     for recording in document["recordings"]:
         _fields(recording, ["id", "case_id", "speaker_id", "condition", "locale", "audio_path",
                             "audio_sha256", "reference", "reference_verified", "provenance"], label="recording")
@@ -229,6 +253,13 @@ def validate_recordings(document, plan, plan_digest, directory):
         for field in ("accent", "notes"):
             if field in provenance:
                 _text(provenance[field], "provenance." + field)
+        if plan.get("minimum_accents"):
+            _text(provenance.get("accent"), "provenance.accent")
+            speaker_locale = (recording["speaker_id"], recording["locale"])
+            accent = _accent(provenance["accent"])
+            if speaker_locale in speaker_accents and speaker_accents[speaker_locale] != accent:
+                raise EvaluationError("A speaker's self-described accent must be consistent within each locale")
+            speaker_accents[speaker_locale] = accent
         try:
             when = datetime.fromisoformat(provenance["recorded_at"].replace("Z", "+00:00"))
             if when.utcoffset() is None:
@@ -414,6 +445,7 @@ def evaluate(plan_path, recordings_path, result_paths):
             row = {"recording_id": recording_id, "case_id": case["id"], "speaker_id": recording["speaker_id"],
                    "locale": case["locale"], "condition": recording["condition"],
                    "utterance_type": case["utterance_type"], "group": case.get("group", "ungrouped"),
+                   "accent": _accent(recording["provenance"].get("accent", "unspecified")),
                    "audio_sha256": recording["audio_sha256"], "audio_format": recording["audio_format"],
                    "provenance": recording["provenance"],
                    "reference": recording["reference"], "status": status, "transcript": transcript,
@@ -421,7 +453,7 @@ def evaluate(plan_path, recordings_path, result_paths):
             if raw and "latency_ms" in raw:
                 row["latency_ms"] = raw["latency_ms"]
             rows.append(row)
-            for dimension in ("case_id", "speaker_id", "locale", "condition", "utterance_type", "group"):
+            for dimension in ("case_id", "speaker_id", "locale", "condition", "utterance_type", "group", "accent"):
                 grouped[dimension][row[dimension]].append(row)
         systems.append({"system": system, "configuration_sha256": fingerprint,
                         "results_sha256": sha256(result_path),
@@ -432,12 +464,15 @@ def evaluate(plan_path, recordings_path, result_paths):
     missing_cells = []
     for case_id in cases:
         for condition in plan["conditions"]:
-            speakers = {r["speaker_id"] for r in recordings.values()
-                        if r["case_id"] == case_id and r["condition"] == condition}
-            if len(speakers) < plan["minimum_speakers"]:
-                missing_cells.append({"case_id": case_id, "condition": condition,
-                                      "speakers_observed": len(speakers),
-                                      "speakers_required": plan["minimum_speakers"]})
+            cell = [r for r in recordings.values() if r["case_id"] == case_id and r["condition"] == condition]
+            speakers = {r["speaker_id"] for r in cell}
+            accents = {_accent(r["provenance"]["accent"]) for r in cell} if plan.get("minimum_accents") else set()
+            if len(speakers) < plan["minimum_speakers"] or len(accents) < plan.get("minimum_accents", 0):
+                missing = {"case_id": case_id, "condition": condition,
+                           "speakers_observed": len(speakers), "speakers_required": plan["minimum_speakers"]}
+                if plan.get("minimum_accents"):
+                    missing.update(accents_observed=len(accents), accents_required=plan["minimum_accents"])
+                missing_cells.append(missing)
     paired = []
     for left_index, left in enumerate(systems):
         for right in systems[left_index + 1:]:

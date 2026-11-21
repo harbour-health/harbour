@@ -1,0 +1,395 @@
+{
+  "schema_version": 1,
+  "suite_id": "harbour-personal-name-asr-v1",
+  "kind": "personal_name",
+  "minimum_speakers": 2,
+  "minimum_accents": 2,
+  "required_groups": [
+    "arabic",
+    "spanish",
+    "punjabi",
+    "chinese"
+  ],
+  "conditions": [
+    "quiet",
+    "background_noise"
+  ],
+  "cases": [
+    {
+      "id": "name-01-en-isolated",
+      "group": "arabic",
+      "locale": "en-CA",
+      "utterance_type": "isolated",
+      "reference": "Amira Hassan",
+      "targets": [
+        {
+          "text": "Amira Hassan",
+          "start": 0,
+          "end": 2,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "name-01-en-sentence",
+      "group": "arabic",
+      "locale": "en-CA",
+      "utterance_type": "sentence",
+      "reference": "I met Amira Hassan.",
+      "targets": [
+        {
+          "text": "Amira Hassan",
+          "start": 2,
+          "end": 4,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "name-01-fr-isolated",
+      "group": "arabic",
+      "locale": "fr-CA",
+      "utterance_type": "isolated",
+      "reference": "Amira Hassan",
+      "targets": [
+        {
+          "text": "Amira Hassan",
+          "start": 0,
+          "end": 2,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "name-01-fr-sentence",
+      "group": "arabic",
+      "locale": "fr-CA",
+      "utterance_type": "sentence",
+      "reference": "Je connais Amira Hassan.",
+      "targets": [
+        {
+          "text": "Amira Hassan",
+          "start": 2,
+          "end": 4,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "name-02-en-isolated",
+      "group": "arabic",
+      "locale": "en-CA",
+      "utterance_type": "isolated",
+      "reference": "Omar Al-Khatib",
+      "targets": [
+        {
+          "text": "Omar Al-Khatib",
+          "start": 0,
+          "end": 3,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "name-02-en-sentence",
+      "group": "arabic",
+      "locale": "en-CA",
+      "utterance_type": "sentence",
+      "reference": "I met Omar Al-Khatib.",
+      "targets": [
+        {
+          "text": "Omar Al-Khatib",
+          "start": 2,
+          "end": 5,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "name-02-fr-isolated",
+      "group": "arabic",
+      "locale": "fr-CA",
+      "utterance_type": "isolated",
+      "reference": "Omar Al-Khatib",
+      "targets": [
+        {
+          "text": "Omar Al-Khatib",
+          "start": 0,
+          "end": 3,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "name-02-fr-sentence",
+      "group": "arabic",
+      "locale": "fr-CA",
+      "utterance_type": "sentence",
+      "reference": "Je connais Omar Al-Khatib.",
+      "targets": [
+        {
+          "text": "Omar Al-Khatib",
+          "start": 2,
+          "end": 5,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "name-03-en-isolated",
+      "group": "spanish",
+      "locale": "en-CA",
+      "utterance_type": "isolated",
+      "reference": "María José García López",
+      "targets": [
+        {
+          "text": "María José García López",
+          "start": 0,
+          "end": 4,
+          "variants": [
+            "Maria Jose Garcia Lopez"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "name-03-en-sentence",
+      "group": "spanish",
+      "locale": "en-CA",
+      "utterance_type": "sentence",
+      "reference": "I met María José García López.",
+      "targets": [
+        {
+          "text": "María José García López",
+          "start": 2,
+          "end": 6,
+          "variants": [
+            "Maria Jose Garcia Lopez"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "name-03-fr-isolated",
+      "group": "spanish",
+      "locale": "fr-CA",
+      "utterance_type": "isolated",
+      "reference": "María José García López",
+      "targets": [
+        {
+          "text": "María José García López",
+          "start": 0,
+          "end": 4,
+          "variants": [
+            "Maria Jose Garcia Lopez"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "name-03-fr-sentence",
+      "group": "spanish",
+      "locale": "fr-CA",
+      "utterance_type": "sentence",
+      "reference": "Je connais María José García López.",
+      "targets": [
+        {
+          "text": "María José García López",
+          "start": 2,
+          "end": 6,
+          "variants": [
+            "Maria Jose Garcia Lopez"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "name-04-en-isolated",
+      "group": "spanish",
+      "locale": "en-CA",
+      "utterance_type": "isolated",
+      "reference": "José Luis Rodríguez",
+      "targets": [
+        {
+          "text": "José Luis Rodríguez",
+          "start": 0,
+          "end": 3,
+          "variants": [
+            "Jose Luis Rodriguez"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "name-04-en-sentence",
+      "group": "spanish",
+      "locale": "en-CA",
+      "utterance_type": "sentence",
+      "reference": "I met José Luis Rodríguez.",
+      "targets": [
+        {
+          "text": "José Luis Rodríguez",
+          "start": 2,
+          "end": 5,
+          "variants": [
+            "Jose Luis Rodriguez"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "name-04-fr-isolated",
+      "group": "spanish",
+      "locale": "fr-CA",
+      "utterance_type": "isolated",
+      "reference": "José Luis Rodríguez",
+      "targets": [
+        {
+          "text": "José Luis Rodríguez",
+          "start": 0,
+          "end": 3,
+          "variants": [
+            "Jose Luis Rodriguez"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "name-04-fr-sentence",
+      "group": "spanish",
+      "locale": "fr-CA",
+      "utterance_type": "sentence",
+      "reference": "Je connais José Luis Rodríguez.",
+      "targets": [
+        {
+          "text": "José Luis Rodríguez",
+          "start": 2,
+          "end": 5,
+          "variants": [
+            "Jose Luis Rodriguez"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "name-05-en-isolated",
+      "group": "punjabi",
+      "locale": "en-CA",
+      "utterance_type": "isolated",
+      "reference": "Gurpreet Singh",
+      "targets": [
+        {
+          "text": "Gurpreet Singh",
+          "start": 0,
+          "end": 2,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "name-05-en-sentence",
+      "group": "punjabi",
+      "locale": "en-CA",
+      "utterance_type": "sentence",
+      "reference": "I met Gurpreet Singh.",
+      "targets": [
+        {
+          "text": "Gurpreet Singh",
+          "start": 2,
+          "end": 4,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "name-05-fr-isolated",
+      "group": "punjabi",
+      "locale": "fr-CA",
+      "utterance_type": "isolated",
+      "reference": "Gurpreet Singh",
+      "targets": [
+        {
+          "text": "Gurpreet Singh",
+          "start": 0,
+          "end": 2,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "name-05-fr-sentence",
+      "group": "punjabi",
+      "locale": "fr-CA",
+      "utterance_type": "sentence",
+      "reference": "Je connais Gurpreet Singh.",
+      "targets": [
+        {
+          "text": "Gurpreet Singh",
+          "start": 2,
+          "end": 4,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "name-06-en-isolated",
+      "group": "chinese",
+      "locale": "en-CA",
+      "utterance_type": "isolated",
+      "reference": "Wei Chen",
+      "targets": [
+        {
+          "text": "Wei Chen",
+          "start": 0,
+          "end": 2,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "name-06-en-sentence",
+      "group": "chinese",
+      "locale": "en-CA",
+      "utterance_type": "sentence",
+      "reference": "I met Wei Chen.",
+      "targets": [
+        {
+          "text": "Wei Chen",
+          "start": 2,
+          "end": 4,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "name-06-fr-isolated",
+      "group": "chinese",
+      "locale": "fr-CA",
+      "utterance_type": "isolated",
+      "reference": "Wei Chen",
+      "targets": [
+        {
+          "text": "Wei Chen",
+          "start": 0,
+          "end": 2,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "name-06-fr-sentence",
+      "group": "chinese",
+      "locale": "fr-CA",
+      "utterance_type": "sentence",
+      "reference": "Je connais Wei Chen.",
+      "targets": [
+        {
+          "text": "Wei Chen",
+          "start": 2,
+          "end": 4,
+          "variants": []
+        }
+      ]
+    }
+  ]
+}
