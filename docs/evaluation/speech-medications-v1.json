@@ -1,0 +1,348 @@
+{
+  "schema_version": 1,
+  "suite_id": "harbour-medication-asr-v1",
+  "kind": "medication",
+  "minimum_speakers": 2,
+  "conditions": [
+    "quiet",
+    "background_noise"
+  ],
+  "cases": [
+    {
+      "id": "med-01-en-isolated",
+      "locale": "en-CA",
+      "utterance_type": "isolated",
+      "reference": "acetaminophen",
+      "targets": [
+        {
+          "text": "acetaminophen",
+          "start": 0,
+          "end": 1,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-01-en-sentence",
+      "locale": "en-CA",
+      "utterance_type": "sentence",
+      "reference": "I take acetaminophen.",
+      "targets": [
+        {
+          "text": "acetaminophen",
+          "start": 2,
+          "end": 3,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-01-fr-isolated",
+      "locale": "fr-CA",
+      "utterance_type": "isolated",
+      "reference": "acétaminophène",
+      "targets": [
+        {
+          "text": "acétaminophène",
+          "start": 0,
+          "end": 1,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-01-fr-sentence",
+      "locale": "fr-CA",
+      "utterance_type": "sentence",
+      "reference": "Je prends acétaminophène.",
+      "targets": [
+        {
+          "text": "acétaminophène",
+          "start": 2,
+          "end": 3,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-02-en-isolated",
+      "locale": "en-CA",
+      "utterance_type": "isolated",
+      "reference": "amlodipine",
+      "targets": [
+        {
+          "text": "amlodipine",
+          "start": 0,
+          "end": 1,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-02-en-sentence",
+      "locale": "en-CA",
+      "utterance_type": "sentence",
+      "reference": "I take amlodipine.",
+      "targets": [
+        {
+          "text": "amlodipine",
+          "start": 2,
+          "end": 3,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-02-fr-isolated",
+      "locale": "fr-CA",
+      "utterance_type": "isolated",
+      "reference": "amlodipine",
+      "targets": [
+        {
+          "text": "amlodipine",
+          "start": 0,
+          "end": 1,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-02-fr-sentence",
+      "locale": "fr-CA",
+      "utterance_type": "sentence",
+      "reference": "Je prends amlodipine.",
+      "targets": [
+        {
+          "text": "amlodipine",
+          "start": 2,
+          "end": 3,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-03-en-isolated",
+      "locale": "en-CA",
+      "utterance_type": "isolated",
+      "reference": "apixaban",
+      "targets": [
+        {
+          "text": "apixaban",
+          "start": 0,
+          "end": 1,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-03-en-sentence",
+      "locale": "en-CA",
+      "utterance_type": "sentence",
+      "reference": "I take apixaban.",
+      "targets": [
+        {
+          "text": "apixaban",
+          "start": 2,
+          "end": 3,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-03-fr-isolated",
+      "locale": "fr-CA",
+      "utterance_type": "isolated",
+      "reference": "apixaban",
+      "targets": [
+        {
+          "text": "apixaban",
+          "start": 0,
+          "end": 1,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-03-fr-sentence",
+      "locale": "fr-CA",
+      "utterance_type": "sentence",
+      "reference": "Je prends apixaban.",
+      "targets": [
+        {
+          "text": "apixaban",
+          "start": 2,
+          "end": 3,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-04-en-isolated",
+      "locale": "en-CA",
+      "utterance_type": "isolated",
+      "reference": "levothyroxine",
+      "targets": [
+        {
+          "text": "levothyroxine",
+          "start": 0,
+          "end": 1,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-04-en-sentence",
+      "locale": "en-CA",
+      "utterance_type": "sentence",
+      "reference": "I take levothyroxine.",
+      "targets": [
+        {
+          "text": "levothyroxine",
+          "start": 2,
+          "end": 3,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-04-fr-isolated",
+      "locale": "fr-CA",
+      "utterance_type": "isolated",
+      "reference": "lévothyroxine",
+      "targets": [
+        {
+          "text": "lévothyroxine",
+          "start": 0,
+          "end": 1,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-04-fr-sentence",
+      "locale": "fr-CA",
+      "utterance_type": "sentence",
+      "reference": "Je prends lévothyroxine.",
+      "targets": [
+        {
+          "text": "lévothyroxine",
+          "start": 2,
+          "end": 3,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-05-en-isolated",
+      "locale": "en-CA",
+      "utterance_type": "isolated",
+      "reference": "hydrochlorothiazide",
+      "targets": [
+        {
+          "text": "hydrochlorothiazide",
+          "start": 0,
+          "end": 1,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-05-en-sentence",
+      "locale": "en-CA",
+      "utterance_type": "sentence",
+      "reference": "I take hydrochlorothiazide.",
+      "targets": [
+        {
+          "text": "hydrochlorothiazide",
+          "start": 2,
+          "end": 3,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-05-fr-isolated",
+      "locale": "fr-CA",
+      "utterance_type": "isolated",
+      "reference": "hydrochlorothiazide",
+      "targets": [
+        {
+          "text": "hydrochlorothiazide",
+          "start": 0,
+          "end": 1,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-05-fr-sentence",
+      "locale": "fr-CA",
+      "utterance_type": "sentence",
+      "reference": "Je prends hydrochlorothiazide.",
+      "targets": [
+        {
+          "text": "hydrochlorothiazide",
+          "start": 2,
+          "end": 3,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-06-en-isolated",
+      "locale": "en-CA",
+      "utterance_type": "isolated",
+      "reference": "warfarin",
+      "targets": [
+        {
+          "text": "warfarin",
+          "start": 0,
+          "end": 1,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-06-en-sentence",
+      "locale": "en-CA",
+      "utterance_type": "sentence",
+      "reference": "I take warfarin.",
+      "targets": [
+        {
+          "text": "warfarin",
+          "start": 2,
+          "end": 3,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-06-fr-isolated",
+      "locale": "fr-CA",
+      "utterance_type": "isolated",
+      "reference": "warfarine",
+      "targets": [
+        {
+          "text": "warfarine",
+          "start": 0,
+          "end": 1,
+          "variants": []
+        }
+      ]
+    },
+    {
+      "id": "med-06-fr-sentence",
+      "locale": "fr-CA",
+      "utterance_type": "sentence",
+      "reference": "Je prends warfarine.",
+      "targets": [
+        {
+          "text": "warfarine",
+          "start": 2,
+          "end": 3,
+          "variants": []
+        }
+      ]
+    }
+  ]
+}

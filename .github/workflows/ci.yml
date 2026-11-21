@@ -84,6 +84,11 @@ jobs:
       - name: Test Core rules and evaluation cases
         run: swift test --package-path HarbourCore
 
+      - name: Test human speech evaluation scoring
+        run: |
+          python3 -m unittest discover -s scripts -p 'test_speech_evaluation.py'
+          python3 scripts/speech_evaluation.py --plan docs/evaluation/speech-medications-v1.json --validate-plan
+
       - name: Audit localization
         run: python3 scripts/audit-localization.py
 

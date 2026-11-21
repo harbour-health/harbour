@@ -1,5 +1,7 @@
 # Developer documentation
 
+- [Human speech evaluation](speech-evaluation.md) — frozen recording plans, audio provenance, raw recognizer outputs and scoring; awaiting human recordings.
+
 - [Appointments](appointments.md) - records, shared drafts, transcript sources, and migration.
 
 - [Architecture](architecture.md) — modules, persistence, tool execution, and change points.
