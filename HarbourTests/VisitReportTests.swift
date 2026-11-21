@@ -92,7 +92,11 @@ import HarbourReports
 
 @MainActor final class CondensedReportTests: XCTestCase {
     func testSummaryReportIsBoundedAndKeepsEveryCurrentMedication() async throws {
-        let now = Date.now, demo = DemoData.make(now: now, french: false)
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "America/Toronto")!
+        // Today's demo readings are timestamped at 07:00 in the fixture calendar.
+        let now = calendar.date(from: DateComponents(year: 2026, month: 11, day: 2, hour: 12))!
+        let demo = DemoData.make(now: now, french: false, calendar: calendar)
         let start = now.addingTimeInterval(-60 * 86400)
         let summary = VisitReportSnapshot(
             records: demo.records,
@@ -101,7 +105,8 @@ import HarbourReports
             from: start,
             through: now,
             selected: Set(VisitReportSection.allCases),
-            now: now
+            now: now,
+            calendar: calendar
         )
         let complete = VisitReportSnapshot(
             records: demo.records,
@@ -111,7 +116,8 @@ import HarbourReports
             through: now,
             selected: Set(VisitReportSection.allCases),
             detailed: true,
-            now: now
+            now: now,
+            calendar: calendar
         )
         XCTAssertEqual(summary.sections[0].items.count, 3)
         XCTAssertEqual(complete.sections[0].items.count, 126)
