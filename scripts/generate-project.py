@@ -18,7 +18,7 @@ def refs(items):
     return '(' + ', '.join(items) + ',)'
 
 source_refs, builds = [], []
-for path in sorted((root / 'Harbour').glob('*.swift')):
+for path in sorted((root / 'Harbour').glob('*.swift'), key=lambda path: path.name):
     ref = add(path.name, f'isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "{path.name}"; sourceTree = "<group>";')
     source_refs.append(ref)
     builds.append(add('build-' + path.name, f'isa = PBXBuildFile; fileRef = {ref};'))
@@ -46,7 +46,7 @@ for filename, filetype in [('Info.plist', 'text.plist.xml'), ('Harbour.entitleme
 app = add('AppProduct', 'isa = PBXFileReference; explicitFileType = wrapper.application; path = Harbour.app; sourceTree = BUILT_PRODUCTS_DIR;')
 test_product = add('TestProduct', 'isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = HarbourUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR;')
 test_refs, test_builds = [], []
-for path in sorted((root / 'HarbourUITests').glob('*.swift')):
+for path in sorted((root / 'HarbourUITests').glob('*.swift'), key=lambda path: path.name):
     ref = add('UITestSource-' + path.name, f'isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "{path.name}"; sourceTree = "<group>";')
     test_refs.append(ref)
     test_builds.append(add('UITestBuild-' + path.name, f'isa = PBXBuildFile; fileRef = {ref};'))
@@ -85,7 +85,7 @@ dependency = add('TestDependency', f'isa = PBXTargetDependency; target = {target
 test_target = add('TestTarget', f'isa = PBXNativeTarget; buildConfigurationList = {test_configs}; buildPhases = {refs([test_sources, test_frameworks])}; buildRules = (); dependencies = {refs([dependency])}; name = HarbourUITests; productName = HarbourUITests; productReference = {test_product}; productType = "com.apple.product-type.bundle.ui-testing";')
 unit_product = add('UnitProduct', 'isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = HarbourTests.xctest; sourceTree = BUILT_PRODUCTS_DIR;')
 unit_refs, unit_builds = [], []
-for path in sorted((root / 'HarbourTests').glob('*.swift')):
+for path in sorted((root / 'HarbourTests').glob('*.swift'), key=lambda path: path.name):
     unit_ref = add('UnitSource-' + path.name, f'isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "{path.name}"; sourceTree = "<group>";')
     unit_refs.append(unit_ref)
     unit_builds.append(add('UnitBuild-' + path.name, f'isa = PBXBuildFile; fileRef = {unit_ref};'))

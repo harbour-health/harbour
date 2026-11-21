@@ -1,3 +1,7 @@
+# Preserve the recorded SHA-256 values on Windows and macOS checkouts.
+docs/evaluation/medication-search/*.json text eol=lf
+docs/evaluation/medication-search/*.txt text eol=lf
+
 # Generated media must never be treated as source text or newline-normalized.
 *.pdf binary
 *.mp4 binary

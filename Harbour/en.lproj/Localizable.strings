@@ -764,6 +764,8 @@
 "Flow %lld/%lld" = "Flow %lld/%lld";
 "Magnified actual app interface" = "Magnified actual app interface";
 "Similar names" = "Similar names";
+"No matching medications" = "No matching medications";
+"Check the spelling or add the name with unconfirmed ingredients." = "Check the spelling or add the name with unconfirmed ingredients.";
 "Talk" = "Talk";
 "How to use Harbour" = "How to use Harbour";
 "Try a message" = "Try a message";

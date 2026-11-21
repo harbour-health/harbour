@@ -427,7 +427,12 @@ struct MedicineEditor: View {
     }
 
     var body: some View {
-        Form {
+        let hasQuery = !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let matches = chosen == nil ? Catalog.search(query) : []
+        let suggestions = chosen == nil && hasQuery && matches.isEmpty
+            ? MedicationVocabulary.shared.suggestions(query) : []
+
+        return Form {
             if initial == nil && reviewSource == nil && chosen == nil {
                 Section("Medication label") {
                     MedicineScanButtons(scanner: scanner)
@@ -500,9 +505,9 @@ struct MedicineEditor: View {
                         prompt: Text("Medication name").foregroundStyle(Palette.muted)
                     ).autocorrectionDisabled().focused($editing).accessibilityIdentifier("medicineSearch")
                 }
-                if Catalog.search(query).isEmpty && !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                if !suggestions.isEmpty {
                     Section("Similar names") {
-                        ForEach(MedicationVocabulary.shared.suggestions(query)) { candidate in
+                        ForEach(suggestions) { candidate in
                             Button { chosen = candidate
                                 editing = false
                                 confirmed = false } label: { Text(L10n.medicineName(candidate)).font(.title3) }
@@ -511,7 +516,13 @@ struct MedicineEditor: View {
                     }
                 }
                 Section("Medications") {
-                    ForEach(Catalog.search(query)) { medicine in
+                    if hasQuery && matches.isEmpty && suggestions.isEmpty {
+                        Text(L10n.string("No matching medications"))
+                            .accessibilityIdentifier("medicineSearchNoMatches")
+                        Text(L10n.string("Check the spelling or add the name with unconfirmed ingredients."))
+                            .foregroundStyle(Palette.muted)
+                    }
+                    ForEach(matches) { medicine in
                         Button { chosen = medicine
                             editing = false
                             confirmed = false } label: {

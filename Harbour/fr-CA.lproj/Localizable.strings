@@ -764,6 +764,8 @@
 "Flow %lld/%lld" = "Étape %lld/%lld";
 "Magnified actual app interface" = "Interface réelle de l’app agrandie";
 "Similar names" = "Noms semblables";
+"No matching medications" = "Aucun médicament correspondant";
+"Check the spelling or add the name with unconfirmed ingredients." = "Vérifiez l’orthographe ou ajoutez le nom avec des ingrédients non confirmés.";
 "Talk" = "Parler";
 "How to use Harbour" = "Utiliser Harbour";
 "Try a message" = "Essayer un message";
