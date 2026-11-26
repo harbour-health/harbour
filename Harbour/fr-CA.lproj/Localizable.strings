@@ -642,3 +642,7 @@
 "Dots show recorded values. Lines connect consecutive readings; gaps do not imply measurements." = "Les points représentent les valeurs enregistrées. Les lignes relient les mesures consécutives; les intervalles ne représentent pas des mesures.";
 "Blue: systolic. Coral: diastolic." = "Bleu : systolique. Corail : diastolique.";
 "No transcript saved." = "Aucune transcription enregistrée.";
+
+"Log a symptom" = "Noter un symptôme";
+"My medicines" = "Mes médicaments";
+"Reminders and doses" = "Rappels et doses";

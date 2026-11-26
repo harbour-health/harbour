@@ -54,10 +54,9 @@ struct AgendaView: View {
     private var reminders: [CareReminder] { store.care.reminders.sorted { $0.due < $1.due } }
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Text("Coming up").font(.title2.weight(.semibold)); Spacer()
-                Button { sheet = .reminder(CareReminder()) } label: { ToolbarGlyph(symbol: "plus") }.accessibilityLabel("Add reminder")
-            }
+            Button { sheet = .reminder(CareReminder()) } label: {
+                PrimaryActionRow(title: "Add reminder", symbol: "plus")
+            }.buttonStyle(PressFeedback())
             if reminders.isEmpty && store.care.schedules.isEmpty && store.records.appointments.isEmpty { Text("Nothing scheduled").font(.body).foregroundStyle(Palette.muted) }
             ForEach(store.records.appointments.filter { $0.date >= Calendar.current.startOfDay(for: .now) }.sorted { $0.date < $1.date }.prefix(5)) { appointment in
                 Button { sheet = .appointment(appointment) } label: { AppointmentRow(appointment: appointment) }.buttonStyle(.plain)

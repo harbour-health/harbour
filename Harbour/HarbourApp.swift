@@ -51,7 +51,7 @@ struct RootView: View {
     @State private var keyboardVisible = false
     var body: some View {
         TabView(selection: $tab) {
-            NavigationStack { TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1; tab = 2 }, openSymptoms: { recordCategory = 0; tab = 2 }, openVisits: { tab = 3 }).toolbar(.hidden, for: .tabBar) }
+            NavigationStack { TodayView(sheet: $sheet, openMedicines: { recordCategory = 1; tab = 2 }).toolbar(.hidden, for: .tabBar) }
                 .tabItem { Label("Today", systemImage: tab == 0 ? "house.fill" : "house") }.tag(0)
             NavigationStack { ChatView(sheet: $sheet).toolbar(.hidden, for: .tabBar) }
                 .tabItem { Label("Chat", systemImage: tab == 1 ? "bubble.left.and.bubble.right.fill" : "bubble.left.and.bubble.right") }.tag(1)
@@ -61,13 +61,11 @@ struct RootView: View {
                 .tabItem { Label("Visits", systemImage: tab == 3 ? "person.2.fill" : "person.2") }.tag(3)
         }
         .toolbar(.hidden, for: .tabBar)
-        .environment(\.floatingDockClearance, keyboardVisible ? 0 : 86)
-        .overlay(alignment: .bottom) {
-            NavigationDock(selection: $tab)
-                .opacity(keyboardVisible ? 0 : 1)
-                .allowsHitTesting(!keyboardVisible)
-                .accessibilityHidden(keyboardVisible)
-                .transaction { $0.disablesAnimations = true }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if !keyboardVisible {
+                NavigationDock(selection: $tab)
+                    .transaction { $0.disablesAnimations = true }
+            }
         }
         .background(Palette.canvas)
         .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardVisible = true }
@@ -164,74 +162,53 @@ struct SettingsButton: View {
     var body: some View { Button { sheet = .settings } label: { ToolbarGlyph(symbol: "gearshape") }.accessibilityLabel("Settings") }
 }
 struct TodayView: View {
-    @EnvironmentObject var store: AppStore
-    @Environment(\.dynamicTypeSize) private var typeSize
-    @Environment(\.floatingDockClearance) private var dockClearance
     @Binding var sheet: AppSheet?
-    var openChat: () -> Void
     var openMedicines: () -> Void
-    var openSymptoms: () -> Void
-    var openVisits: () -> Void
+
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: AppLayout.sectionSpacing) {
-                Text(Date.now, format: .dateTime.weekday(.wide).month(.wide).day()).font(.body).foregroundStyle(Palette.muted).padding(.top, 2)
-                VStack(spacing: 14) {
-                    ReadingSummary(readings: store.records.readings)
-                    NavigationLink { HealthTrendsView() } label: {
-                        FeatureRow(title: "Trends", subtitle: "Readings and symptoms over time", symbol: "chart.xyaxis.line", colour: Palette.blue)
-                    }.buttonStyle(.plain).accessibilityIdentifier("openTrends")
-                    if typeSize.isAccessibilitySize { VStack(spacing: 16) { shortcuts } }
-                    else { HStack(alignment: .top, spacing: 14) { shortcuts } }
-                }
-                Button(action: openChat) {
-                    HStack(spacing: 18) {
-                        HarbourMark(size: 30).foregroundStyle(Palette.blue)
-                        Text("Ask Harbour").font(.title3.weight(.medium))
-                        Spacer(); Image(systemName: "arrow.up.right").font(.title3)
-                    }.foregroundStyle(Palette.ink).padding(.vertical, 16).contentShape(Rectangle())
-                }.buttonStyle(PressFeedback())
-                if store.records.readings.contains(where: { $0.kind != store.records.readings.first?.kind }) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text("Readings").font(.title2.weight(.semibold)).frame(maxWidth: .infinity, alignment: .leading).padding(.bottom, 16)
-                        ForEach(ReadingKind.allCases, id: \.self) { kind in
-                            if kind != store.records.readings.first?.kind, let reading = store.records.readings.first(where: { $0.kind == kind }) { ReadingRow(reading: reading); Divider().overlay(Palette.line) }
-                        }
-                    }
-                }
-                AgendaView(sheet: $sheet)
-                NavigationLink { HealthHistoryView() } label: { FeatureRow(title: "Timeline", subtitle: nil, symbol: "clock.arrow.circlepath", colour: Palette.blue) }.buttonStyle(.plain)
-            }.padding(.horizontal, AppLayout.screenInset).padding(.bottom, 32).frame(maxWidth: AppLayout.contentWidth).frame(maxWidth: .infinity)
-        }.contentMargins(.bottom, dockClearance, for: .scrollContent)
-            .background(Palette.canvas).foregroundStyle(Palette.ink)
-            .navigationTitle("Today").toolbar { ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) } }
+        ViewThatFits(in: .vertical) {
+            actions.fixedSize(horizontal: false, vertical: true)
+                .frame(maxHeight: .infinity, alignment: .top)
+            ScrollView { actions }
+        }
+        .background(Palette.canvas)
+        .navigationTitle("Today")
+        .toolbar { ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) } }
     }
-    @ViewBuilder private var shortcuts: some View {
-        illustratedShortcut("Medications", detail: L10n.format("%lld recorded", Int64(store.records.medicines.count)), kind: .medicines, colour: Palette.blueWash, action: openMedicines).accessibilityIdentifier("openMedicines")
-        illustratedShortcut("Symptoms", detail: L10n.format("%lld recorded", Int64(store.records.symptoms.count)), kind: .symptoms, colour: Palette.coralWash, action: openSymptoms)
-            .accessibilityIdentifier("addSymptom")
-    }
-    private func illustratedShortcut(_ title: String, detail: String, kind: IllustrationKind, colour: Color, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            ZStack(alignment: .topLeading) {
-                colour
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(L10n.string(title)).font(.system(.title3, design: .rounded, weight: .bold))
-                    Text(detail).font(.body).lineLimit(2)
-                }.padding(18)
-            }.frame(maxWidth: .infinity).frame(height: typeSize.isAccessibilitySize ? 320 : 190)
-                .overlay(alignment: .bottomTrailing) {
-                HarbourIllustration(kind: kind).frame(width: 180, height: 150).offset(x: 56, y: 32)
+
+    private var actions: some View {
+        VStack(spacing: 12) {
+            Button { sheet = .reading(nil) } label: {
+                PrimaryActionRow(title: "Add a reading", symbol: "waveform.path.ecg", prominent: true)
+            }.accessibilityIdentifier("openReadings")
+            Button { sheet = .symptom("") } label: {
+                PrimaryActionRow(title: "Log a symptom", symbol: "cross.case", prominent: true)
+            }.accessibilityIdentifier("addSymptom")
+            Button(action: openMedicines) {
+                PrimaryActionRow(title: "My medicines", symbol: "pills")
+            }.accessibilityIdentifier("openMedicines")
+            NavigationLink {
+                ScrollView {
+                    AgendaView(sheet: $sheet)
+                        .padding(AppLayout.screenInset)
+                        .frame(maxWidth: AppLayout.contentWidth)
+                        .frame(maxWidth: .infinity)
                 }
-                .overlay(alignment: .bottomLeading) {
-                Image(systemName: "arrow.up.right").font(.body.weight(.semibold)).foregroundStyle(Palette.canvas)
-                    .frame(width: 44, height: 44).background(Palette.ink, in: Circle()).padding(18)
-                }.foregroundStyle(Palette.ink)
-                .clipShape(RoundedRectangle(cornerRadius: 28))
-                .contentShape(RoundedRectangle(cornerRadius: 28))
-        }.buttonStyle(PressFeedback())
+                .background(Palette.canvas)
+                .navigationTitle("Reminders and doses")
+                .navigationBarTitleDisplayMode(.inline)
+            } label: {
+                PrimaryActionRow(title: "Reminders and doses", symbol: "calendar")
+            }.accessibilityIdentifier("openAgenda")
+        }
+        .buttonStyle(PressFeedback())
+        .padding(.horizontal, AppLayout.screenInset)
+        .padding(.vertical, 10)
+        .frame(maxWidth: AppLayout.contentWidth)
+        .frame(maxWidth: .infinity)
     }
 }
+
 struct ReadingRow: View {
     let reading: Reading
     var body: some View {

@@ -88,7 +88,7 @@ import XCTest
         XCTAssertTrue(app.staticTexts["Health811"].waitForExistence(timeout: 5)); app.buttons["saveSymptom"].tap()
         XCTAssertTrue(app.staticTexts["Sore knee since Tuesday"].firstMatch.waitForExistence(timeout: 5))
         app.terminate(); app.launch()
-        app.buttons["nav-today"].tap()
+        app.buttons["nav-records"].tap(); selectRecords(app, "Readings")
         XCTAssertTrue(app.staticTexts["72"].firstMatch.waitForExistence(timeout: 5))
         app.buttons["nav-records"].tap(); selectRecords(app, "Symptoms")
         XCTAssertTrue(app.staticTexts["Sore knee since Tuesday"].firstMatch.exists)
@@ -308,6 +308,32 @@ import XCTest
 
 
 @MainActor final class HarbourNavigationTests: XCTestCase {
+    func testTodayActionsFitAndOpenDirectly() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
+        app.launch()
+        let navigation = app.buttons["nav-today"]
+        XCTAssertTrue(navigation.waitForExistence(timeout: 5))
+        for (id, height) in [("openReadings", 72.0), ("addSymptom", 72.0), ("openMedicines", 58.0), ("openAgenda", 58.0)] {
+            let action = app.buttons[id]
+            XCTAssertTrue(action.isHittable, id)
+            XCTAssertGreaterThanOrEqual(action.frame.height, height, id)
+            XCTAssertLessThanOrEqual(action.frame.maxY, navigation.frame.minY, id)
+        }
+        let today = XCTAttachment(screenshot: app.screenshot())
+        today.name = "Simplified Today"
+        today.lifetime = .keepAlways
+        add(today)
+        app.buttons["openReadings"].tap()
+        XCTAssertTrue(app.textFields["readingValue"].waitForExistence(timeout: 5))
+        app.buttons["Cancel"].tap()
+        app.buttons["addSymptom"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["symptomText"].firstMatch.waitForExistence(timeout: 5))
+        app.buttons["Cancel"].tap()
+        app.buttons["openAgenda"].tap()
+        XCTAssertTrue(app.buttons["Add reminder"].waitForExistence(timeout: 5))
+    }
+
     func testDashboardNavigationAndSystemAppearance() {
         let app = XCUIApplication(); app.launchArguments = ["--ui-test-unlocked"]; app.launch()
         app.buttons["openMedicines"].tap()
@@ -343,10 +369,12 @@ import XCTest
         app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
         app.launch()
 
+        app.buttons["nav-records"].tap()
         let openTrends = app.buttons["openTrends"]
         XCTAssertTrue(openTrends.waitForExistence(timeout: 10), app.debugDescription)
         openTrends.tap()
         XCTAssertTrue(app.navigationBars["Trends"].waitForExistence(timeout: 5), app.debugDescription)
+        app.segmentedControls.buttons["All time"].tap()
         XCTAssertTrue(app.otherElements["readingTrendChart"].waitForExistence(timeout: 5), app.debugDescription)
         let readings = XCTAttachment(screenshot: app.screenshot())
         readings.name = "Trends - readings"
@@ -467,10 +495,8 @@ import XCTest
         let medicine = app.buttons["openMedicines"], symptoms = app.buttons["addSymptom"]
         XCTAssertEqual(medicine.frame.height, symptoms.frame.height, accuracy: 1)
         XCTAssertEqual(medicine.frame.width, symptoms.frame.width, accuracy: 1)
-        // Decorative overlay bounds include the cropped artwork; visible headings retain the margins.
-        XCTAssertGreaterThanOrEqual(app.staticTexts["Medications"].firstMatch.frame.minX, 32)
-        XCTAssertLessThanOrEqual(app.staticTexts["Symptoms"].firstMatch.frame.maxX, app.frame.width - 32)
-        XCTAssertTrue(app.otherElements["readingSummary"].exists)
+        XCTAssertGreaterThanOrEqual(medicine.frame.height, 58)
+        XCTAssertTrue(app.buttons["openReadings"].isHittable)
         XCTAssertFalse(app.tabBars.firstMatch.exists)
         capture("01-today")
         app.buttons["Settings"].tap(); app.buttons["Appearance"].tap(); app.buttons["appearance-dark"].tap(); app.navigationBars["Appearance"].buttons.firstMatch.tap(); app.buttons["Done"].tap(); capture("31-today-dark")
@@ -514,6 +540,7 @@ import XCTest
         app.buttons["Settings"].tap(); app.buttons["Appearance"].tap(); app.buttons["appearance-light"].tap()
         app.navigationBars["Appearance"].buttons.firstMatch.tap(); app.buttons["Done"].tap()
         XCTAssertFalse(app.tabBars.firstMatch.exists)
+        app.buttons["nav-records"].tap()
         let note = app.buttons["Timeline"]
         for _ in 0..<4 {
             if note.isHittable && note.frame.maxY < app.buttons["nav-today"].frame.minY { break }
@@ -756,7 +783,7 @@ import XCTest
         XCUIDevice.shared.orientation = .portrait
         let app = XCUIApplication(); app.launchArguments = ["--verify-drawers"]; app.launch()
         app.buttons["nav-today"].tap(); app.swipeDown(); app.swipeDown()
-        let summary = app.descendants(matching: .any)["readingSummary"].firstMatch
+        let summary = app.buttons["openReadings"]
         XCTAssertTrue(summary.exists); XCTAssertLessThanOrEqual(summary.frame.maxX, app.frame.width)
         let dashboard = XCTAttachment(screenshot: XCUIScreen.main.screenshot()); dashboard.name = "116-today-large-text"; dashboard.lifetime = .keepAlways; add(dashboard)
         app.buttons["nav-records"].tap(); app.swipeUp(); selectRecords(app, "Readings"); app.buttons["Add record"].tap()
@@ -919,7 +946,7 @@ import XCTest
         let addTime = app.buttons["addDoseTime"]; reveal(app, addTime); addTime.tap(); let firstTime = app.descendants(matching: .any)["doseTime-0"].firstMatch; reveal(app, firstTime); XCTAssertTrue(firstTime.exists); capture("92-medicine-schedule")
         let confirmed = app.buttons["confirmMedicine"]; reveal(app, confirmed); confirmed.tap(); app.buttons["saveMedicine"].tap()
         XCTAssertTrue(app.navigationBars["Medications"].waitForExistence(timeout: 5))
-        app.buttons["nav-today"].tap(); let addReminder = app.buttons["Add reminder"]; reveal(app, addReminder); addReminder.tap()
+        app.buttons["nav-today"].tap(); app.buttons["openAgenda"].tap(); let addReminder = app.buttons["Add reminder"]; reveal(app, addReminder); addReminder.tap()
         let title = app.textFields["reminderTitle"]; XCTAssertTrue(title.waitForExistence(timeout: 5)); title.tap(); title.typeText("Book blood work")
         app.buttons["Done"].tap(); app.buttons["confirmReminderDate"].tap(); capture("93-reminder")
         XCTAssertTrue(app.buttons["saveReminder"].isEnabled); app.buttons["saveReminder"].tap()
@@ -927,7 +954,9 @@ import XCTest
         let dose = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "dose-metformin-")).firstMatch
         reveal(app, dose); dose.tap(); XCTAssertTrue(app.buttons["doseStatus-Taken"].waitForExistence(timeout: 5)); capture("94-dose-log")
         app.buttons["saveDose"].tap(); XCTAssertTrue(app.staticTexts["Taken"].firstMatch.waitForExistence(timeout: 5))
-        let timeline = app.buttons["Timeline"]; reveal(app, timeline); capture("95-agenda"); timeline.tap(); capture("96-timeline")
+        capture("95-agenda"); app.navigationBars["Reminders and doses"].buttons.firstMatch.tap()
+        app.buttons["nav-records"].tap()
+        let timeline = app.buttons["Timeline"]; timeline.tap(); capture("96-timeline")
         let search = app.searchFields.firstMatch; XCTAssertTrue(search.waitForExistence(timeout: 5)); search.tap(); search.typeText("Metformin"); capture("97-timeline-search")
         app.navigationBars["Timeline"].buttons.firstMatch.tap(); app.buttons["nav-visits"].tap(); app.buttons["prepareAppointment"].tap()
         let question = app.textFields["appointmentQuestion"]; XCTAssertTrue(question.waitForExistence(timeout: 5)); question.tap(); question.typeText("Should I repeat my blood test?")
@@ -935,12 +964,12 @@ import XCTest
         app.buttons["Done"].tap(); app.terminate(); app.launch(); app.buttons["nav-visits"].tap(); app.buttons["prepareAppointment"].tap()
         XCTAssertTrue(app.buttons["Should I repeat my blood test?"].exists); app.buttons["Done"].tap()
         appearance(app, dark: true)
-        reveal(app, app.buttons["Timeline"]); capture("99-agenda-dark")
-        app.buttons["Timeline"].tap(); capture("100-timeline-dark"); app.navigationBars["Timeline"].buttons.firstMatch.tap()
+        app.buttons["openAgenda"].tap(); capture("99-agenda-dark"); app.navigationBars["Reminders and doses"].buttons.firstMatch.tap()
+        app.buttons["nav-records"].tap(); app.buttons["Timeline"].tap(); capture("100-timeline-dark"); app.navigationBars["Timeline"].buttons.firstMatch.tap()
         app.buttons["nav-visits"].tap(); app.buttons["prepareAppointment"].tap(); capture("101-preparation-dark"); app.buttons["Done"].tap()
         app.buttons["nav-records"].tap(); selectRecords(app, "Medications"); app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Metformin")).firstMatch.tap()
         reveal(app, app.buttons["addDoseTime"]); capture("102-schedule-dark"); app.buttons["Cancel"].tap()
-        app.buttons["nav-today"].tap(); reveal(app, dose); dose.tap(); app.buttons["doseStatus-Remind later"].tap(); capture("103-dose-later-dark"); app.buttons["Cancel"].tap()
+        app.buttons["nav-today"].tap(); app.buttons["openAgenda"].tap(); reveal(app, dose); dose.tap(); app.buttons["doseStatus-Remind later"].tap(); capture("103-dose-later-dark"); app.buttons["Cancel"].tap()
         app.buttons["nav-chat"].tap(); app.buttons["New chat"].tap(); app.buttons["Voice options"].tap(); capture("104-voice-options"); app.tap()
         appearance(app, dark: false); app.swipeDown(); app.swipeDown(); capture("01-today")
         app.buttons["nav-chat"].tap(); capture("11-chat-empty"); app.buttons["nav-records"].tap(); selectRecords(app, "Medications"); capture("03-medicines")
@@ -1038,6 +1067,7 @@ import XCTest
     }
     func testNotificationPermissionAndVoiceAvailability() {
         let app = XCUIApplication(); app.launch(); app.buttons["nav-today"].tap()
+        app.buttons["openAgenda"].tap()
         let add = app.buttons["Add reminder"]
         for _ in 0..<5 { if add.isHittable { break }; app.swipeUp() }; add.tap()
         let title = app.textFields["reminderTitle"]; XCTAssertTrue(title.waitForExistence(timeout: 5)); title.tap(); title.typeText("Reminder notification test"); app.buttons["Done"].tap()

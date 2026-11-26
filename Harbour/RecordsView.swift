@@ -2,39 +2,45 @@ import SwiftUI
 import HarbourCore
 
 struct RecordsView: View {
-    @EnvironmentObject var store: AppStore
-    @Environment(\.floatingDockClearance) private var dockClearance
     @Binding var sheet: AppSheet?
     @Binding var category: Int?
     var body: some View {
-        List {
-            categoryRow("Symptoms", count: store.records.symptoms.count, symbol: "cross.case.fill", colour: Palette.coral, index: 0)
-            categoryRow("Medications", count: store.records.medicines.count, symbol: "pills.fill", colour: Palette.blue, index: 1)
-            categoryRow("Readings", count: store.records.readings.count, symbol: "waveform.path.ecg", colour: Palette.coral, index: 2)
-            categoryRow("Appointments", count: store.records.appointments.count, symbol: "calendar", colour: Palette.blue, index: 3)
+        ViewThatFits(in: .vertical) {
+            actions.fixedSize(horizontal: false, vertical: true)
+                .frame(maxHeight: .infinity, alignment: .top)
+            ScrollView { actions }
         }
-        .contentMargins(.bottom, dockClearance, for: .scrollContent)
-        .listStyle(.plain).scrollContentBackground(.hidden).background(Palette.canvas)
+        .background(Palette.canvas)
         .navigationTitle("Records")
         .toolbar { if category == nil { ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) } } }
         .navigationDestination(item: $category) { selected in
             RecordList(sheet: $sheet, category: selected)
         }
     }
-    private func categoryRow(_ title: String, count: Int, symbol: String, colour: Color, index: Int) -> some View {
+    private var actions: some View {
+        VStack(spacing: 8) {
+            categoryRow("Symptoms", symbol: "cross.case", index: 0)
+            categoryRow("Medications", symbol: "pills", index: 1)
+            categoryRow("Readings", symbol: "waveform.path.ecg", index: 2)
+            categoryRow("Appointments", symbol: "calendar", index: 3)
+            NavigationLink { HealthTrendsView() } label: {
+                PrimaryActionRow(title: "Trends", symbol: "chart.xyaxis.line")
+            }.accessibilityIdentifier("openTrends")
+            NavigationLink { HealthHistoryView() } label: {
+                PrimaryActionRow(title: "Timeline", symbol: "clock.arrow.circlepath")
+            }
+        }
+        .buttonStyle(PressFeedback())
+        .padding(.horizontal, AppLayout.screenInset)
+        .padding(.vertical, 10)
+        .frame(maxWidth: AppLayout.contentWidth)
+        .frame(maxWidth: .infinity)
+    }
+
+    private func categoryRow(_ title: String, symbol: String, index: Int) -> some View {
         Button { category = index } label: {
-            HStack(spacing: 18) {
-                Image(systemName: symbol).font(.system(size: 27, weight: .medium)).foregroundStyle(colour).frame(width: 36)
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(L10n.string(title)).font(.title2.weight(.semibold)).foregroundStyle(Palette.ink)
-                    Text(L10n.format(count == 1 ? "%d record" : "%d records", count)).font(.body).foregroundStyle(Palette.muted)
-                }
-                Spacer(minLength: 12)
-                Image(systemName: "chevron.right").font(.body.weight(.medium)).foregroundStyle(Palette.muted)
-            }.padding(.vertical, 22).contentShape(Rectangle())
-        }.buttonStyle(.plain).accessibilityIdentifier("record-category-\(index)")
-            .listRowInsets(EdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24))
-            .listRowBackground(Color.clear)
+            PrimaryActionRow(title: title, symbol: symbol)
+        }.accessibilityIdentifier("record-category-\(index)")
     }
 }
 
