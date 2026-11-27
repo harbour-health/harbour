@@ -1,0 +1,413 @@
+{
+  "description": "Preregistered authored bilingual contrastive engineering cases. Prompts and expected fields frozen before inference. No clinical review. Paired translations are related cases, not independent samples.",
+  "cases": [
+    {
+      "id": "switch-en",
+      "language": "en",
+      "group": "switch",
+      "input": "Stop naproxen and begin acetaminophen 325 mg every six hours as needed for pain.",
+      "expected": [
+        {
+          "subject": "naproxen",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 1,
+          "required": [
+            "Stop naproxen"
+          ],
+          "action": "stop"
+        },
+        {
+          "subject": "acetaminophen",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 1,
+          "required": [
+            "325 mg",
+            "every six hours",
+            "as needed for pain"
+          ],
+          "action": "start",
+          "repetitions": [
+            "every six hours"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "switch-fr",
+      "language": "fr",
+      "group": "switch",
+      "input": "Arrêtez le naproxène et commencez l’acétaminophène 325 mg toutes les six heures au besoin pour la douleur.",
+      "expected": [
+        {
+          "subject": "naproxène",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 1,
+          "required": [
+            "Arrêtez le naproxène"
+          ],
+          "action": "stop"
+        },
+        {
+          "subject": "acétaminophène",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 1,
+          "required": [
+            "325 mg",
+            "toutes les six heures",
+            "au besoin pour la douleur"
+          ],
+          "action": "start",
+          "repetitions": [
+            "toutes les six heures"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "taper-en",
+      "language": "en",
+      "group": "taper",
+      "input": "Take prednisone 25 mg each morning for two days, then 15 mg each morning for three days, then stop.",
+      "expected": [
+        {
+          "subject": "prednisone",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 3,
+          "required": [
+            "25 mg",
+            "two days",
+            "15 mg",
+            "three days",
+            "stop"
+          ],
+          "repetitions": [
+            "each morning"
+          ],
+          "durations": [
+            "for two days",
+            "for three days"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "taper-fr",
+      "language": "fr",
+      "group": "taper",
+      "input": "Prenez la prednisone 25 mg chaque matin pendant deux jours, puis 15 mg chaque matin pendant trois jours, puis arrêtez.",
+      "expected": [
+        {
+          "subject": "prednisone",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 3,
+          "required": [
+            "25 mg",
+            "deux jours",
+            "15 mg",
+            "trois jours",
+            "arrêtez"
+          ],
+          "repetitions": [
+            "chaque matin"
+          ],
+          "durations": [
+            "pendant deux jours",
+            "pendant trois jours"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "conditional-course-en",
+      "language": "en",
+      "group": "conditional-course",
+      "input": "Start insulin 9 units at bedtime. After four days, increase to 11 units only if morning glucose remains above 10 mmol/L.",
+      "expected": [
+        {
+          "subject": "insulin",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 2,
+          "required": [
+            "9 units",
+            "at bedtime",
+            "four days",
+            "11 units",
+            "only if morning glucose remains above 10 mmol/L"
+          ],
+          "action": "start",
+          "conditions": [
+            "only if morning glucose remains above 10 mmol/L"
+          ],
+          "timings": [
+            "at bedtime",
+            "After four days"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "conditional-course-fr",
+      "language": "fr",
+      "group": "conditional-course",
+      "input": "Commencez l’insuline à 9 unités au coucher. Après quatre jours, augmentez à 11 unités seulement si la glycémie du matin reste supérieure à 10 mmol/L.",
+      "expected": [
+        {
+          "subject": "insuline",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 2,
+          "required": [
+            "9 unités",
+            "au coucher",
+            "quatre jours",
+            "11 unités",
+            "seulement si la glycémie du matin reste supérieure à 10 mmol/L"
+          ],
+          "action": "start",
+          "conditions": [
+            "seulement si la glycémie du matin reste supérieure à 10 mmol/L"
+          ],
+          "timings": [
+            "au coucher",
+            "Après quatre jours"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "followups-en",
+      "language": "en",
+      "group": "followups",
+      "input": "Repeat the potassium test in nine days. Call our nurse the same day if ankle swelling increases.",
+      "expected": [
+        {
+          "subject": "",
+          "kind": "followUp",
+          "scope": "affirmed",
+          "steps": 1,
+          "required": [
+            "potassium",
+            "in nine days"
+          ],
+          "timings": [
+            "in nine days"
+          ]
+        },
+        {
+          "subject": "",
+          "kind": "followUp",
+          "scope": "conditional",
+          "steps": 1,
+          "required": [
+            "Call our nurse",
+            "the same day",
+            "if ankle swelling increases"
+          ],
+          "action": "call",
+          "conditions": [
+            "if ankle swelling increases"
+          ],
+          "timings": [
+            "the same day"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "followups-fr",
+      "language": "fr",
+      "group": "followups",
+      "input": "Refaites le dosage du potassium dans neuf jours. Appelez notre infirmière le jour même si l’enflure des chevilles augmente.",
+      "expected": [
+        {
+          "subject": "",
+          "kind": "followUp",
+          "scope": "affirmed",
+          "steps": 1,
+          "required": [
+            "potassium",
+            "dans neuf jours"
+          ],
+          "timings": [
+            "dans neuf jours"
+          ]
+        },
+        {
+          "subject": "",
+          "kind": "followUp",
+          "scope": "conditional",
+          "steps": 1,
+          "required": [
+            "Appelez notre infirmière",
+            "le jour même",
+            "si l’enflure des chevilles augmente"
+          ],
+          "action": "call",
+          "conditions": [
+            "si l’enflure des chevilles augmente"
+          ],
+          "timings": [
+            "le jour même"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "negation-en",
+      "language": "en",
+      "group": "negation",
+      "input": "Do not stop ramipril unless the clinic calls you.",
+      "expected": [
+        {
+          "subject": "ramipril",
+          "kind": "medication",
+          "scope": "conditional",
+          "steps": 1,
+          "required": [
+            "Do not stop",
+            "unless the clinic calls you"
+          ],
+          "action": "stop",
+          "conditions": [
+            "unless the clinic calls you"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "negation-fr",
+      "language": "fr",
+      "group": "negation",
+      "input": "N’arrêtez pas le ramipril sauf si la clinique vous appelle.",
+      "expected": [
+        {
+          "subject": "ramipril",
+          "kind": "medication",
+          "scope": "conditional",
+          "steps": 1,
+          "required": [
+            "N’arrêtez pas",
+            "sauf si la clinique vous appelle"
+          ],
+          "action": "stop",
+          "conditions": [
+            "sauf si la clinique vous appelle"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "approval-en",
+      "language": "en",
+      "group": "approval",
+      "input": "Increase metformin to 750 mg with breakfast only after your pharmacist confirms the change.",
+      "expected": [
+        {
+          "subject": "metformin",
+          "kind": "medication",
+          "scope": "conditional",
+          "steps": 1,
+          "required": [
+            "750 mg",
+            "with breakfast",
+            "only after your pharmacist confirms the change"
+          ],
+          "action": "update",
+          "conditions": [
+            "only after your pharmacist confirms the change"
+          ],
+          "timings": [
+            "with breakfast"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "approval-fr",
+      "language": "fr",
+      "group": "approval",
+      "input": "Augmentez la metformine à 750 mg avec le déjeuner seulement après confirmation du changement par votre pharmacien.",
+      "expected": [
+        {
+          "subject": "metformine",
+          "kind": "medication",
+          "scope": "conditional",
+          "steps": 1,
+          "required": [
+            "750 mg",
+            "avec le déjeuner",
+            "seulement après confirmation du changement par votre pharmacien"
+          ],
+          "action": "update",
+          "conditions": [
+            "seulement après confirmation du changement par votre pharmacien"
+          ],
+          "timings": [
+            "avec le déjeuner"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alternating-en",
+      "language": "en",
+      "group": "alternating",
+      "input": "Take warfarin 1 mg on Monday and Saturday and 2 mg on all other days.",
+      "expected": [
+        {
+          "subject": "warfarin",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 1,
+          "required": [
+            "1 mg",
+            "Monday and Saturday",
+            "2 mg",
+            "all other days"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alternating-fr",
+      "language": "fr",
+      "group": "alternating",
+      "input": "Prenez la warfarine 1 mg le lundi et le samedi et 2 mg tous les autres jours.",
+      "expected": [
+        {
+          "subject": "warfarine",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 1,
+          "required": [
+            "1 mg",
+            "le lundi et le samedi",
+            "2 mg",
+            "tous les autres jours"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "empty-en",
+      "language": "en",
+      "group": "empty",
+      "input": "The patient enjoyed the walk and has no questions today.",
+      "expected": []
+    },
+    {
+      "id": "empty-fr",
+      "language": "fr",
+      "group": "empty",
+      "input": "La patiente a apprécié sa promenade et n’a aucune question aujourd’hui.",
+      "expected": []
+    }
+  ]
+}

@@ -22,20 +22,50 @@ final class FrenchRecordsTests: XCTestCase {
     }
 
     func testFrenchInputKeepsExistingReadingBounds() {
-        for input in ["tension80/120", "tension999/80", "tension120//80", "tension120/80/90", "température nan", "température inf", "température36,8,9", "température -36,8", "pouls 12345", "pouls 1e72", "poulsons72", "J’ai 72 ans et je veux noter mon pouls"] {
+        for input in [
+            "tension80/120",
+            "tension999/80",
+            "tension120//80",
+            "tension120/80/90",
+            "température nan",
+            "température inf",
+            "température36,8,9",
+            "température -36,8",
+            "pouls 12345",
+            "pouls 1e72",
+            "poulsons72",
+            "J’ai 72 ans et je veux noter mon pouls"
+        ] {
             XCTAssertNil(ReadingParser.parse(input), input)
         }
         XCTAssertNil(ReadingParser.parse("pouls\n72"))
         XCTAssertNil(ReadingParser.parse("pouls " + String(repeating: "mot ", count: 12) + "72"))
-        for input in ["nan", "inf", "-36,8", "36,8.4", "36,8,4"] { XCTAssertFalse(ReadingParser.valid(input, kind: .temperature), input) }
-        for input in ["120//80", "120/80/", "80/120", "120/80/90"] { XCTAssertFalse(ReadingParser.valid(input, kind: .bloodPressure), input) }
+        for input in ["nan", "inf", "-36,8", "36,8.4", "36,8,4"] {
+            XCTAssertFalse(
+                ReadingParser.valid(input, kind: .temperature),
+                input
+            ) }
+        for input in ["120//80", "120/80/", "80/120", "120/80/90"] {
+            XCTAssertFalse(
+                ReadingParser.valid(input, kind: .bloodPressure),
+                input
+            ) }
         XCTAssertTrue(ReadingParser.valid("36,8", kind: .temperature))
         XCTAssertEqual(ReadingParser.normalizedValue(" 36,8 "), "36.8")
         XCTAssertEqual(ReadingParser.normalizedValue("120 / 80"), "120/80")
     }
 
     func testFrenchAliasesResolveToCanonicalFacts() {
-        let fixtures = ["warfarine": "warfarin", "ibuprofène": "ibuprofen", "aspirine": "aspirin", "AAS": "aspirin", "acide acétylsalicylique": "aspirin", "naproxène": "naproxen", "acétaminophène": "acetaminophen", "metformine": "metformin"]
+        let fixtures = [
+            "warfarine": "warfarin",
+            "ibuprofène": "ibuprofen",
+            "aspirine": "aspirin",
+            "AAS": "aspirin",
+            "acide acétylsalicylique": "aspirin",
+            "naproxène": "naproxen",
+            "acétaminophène": "acetaminophen",
+            "metformine": "metformin"
+        ]
         for (alias, id) in fixtures {
             let expected = Catalog.medicines.first { $0.id == id }
             XCTAssertEqual(Catalog.resolve(alias), expected, alias)

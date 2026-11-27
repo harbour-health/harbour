@@ -10,6 +10,30 @@ import subprocess
 import tempfile
 
 TITLES = {
+    '250-guided-caregiver-home': 'Walkthrough · Caregiver home',
+    '248-simple-largest-text': 'Simple home · Largest text',
+    '249-guided-visit-magnified': 'Actual visit summary · Magnified',
+
+    '226-simple-home': 'Simple home', '227-simple-guide': 'Simple guide',
+    '228-simple-chat': 'Simple chat', '229-simple-settings': 'Simple settings',
+    '230-caregiver-home': 'Caregiver home', '231-simple-french': 'Accueil simple · Français',
+    '232-simple-guide-french': 'Guide · Français',
+    '233-guided-simple-home': 'Guided walkthrough · Home',
+    '234-guided-home-magnified': 'Actual home · Magnified',
+    '235-guided-talk-magnified': 'Actual voice entry · Magnified',
+    '236-guided-real-request': 'Walkthrough · Real chat request',
+    '237-guided-readings': 'Walkthrough · Saved readings',
+    '238-guided-readings-magnified': 'Actual readings · Magnified',
+    '239-guided-live-state': 'Walkthrough · Live model and tool state',
+    '240-guided-caregiver-records': 'Walkthrough · Caregiver records',
+    '241-guided-records-magnified': 'Actual record browser · Magnified',
+    '242-guided-medicines': 'Walkthrough · Medications',
+    '243-guided-phonetic-suggestions': 'Medication name suggestions',
+    '244-guided-medicine-confirmation': 'Suggested medicine · Confirmation required',
+    '245-guided-visit-summary': 'Walkthrough · Saved visit summary',
+    '246-guided-visit-followups': 'Walkthrough · Follow-ups',
+    '247-guided-visit-review': 'Walkthrough · Medication review',
+
     '01-today': 'Today', '02-symptoms': 'Symptoms', '03-medicines': 'Medicines',
     '04-readings': 'Readings', '05-add-reading': 'Add a reading',
     '06-medicine-catalog': 'Medicine catalogue', '07-medicine-details': 'Medicine confirmation',
@@ -47,7 +71,7 @@ TITLES = {
     '66-floating-navigation': 'Floating navigation · scrolled',
     '67-visits': 'Visits', '68-visit-recorder': 'Visit recorder',
     '69-visit-notes': 'Visit notes', '70-visit-summary': 'Local visit summary',
-    '71-visit-medicine-review': 'Visit medicine confirmation', '72-visit-transcript': 'Visit transcript',
+    '71-visit-medicine-review': 'Visit medicine confirmation', '72-visit-summary-saved': 'Saved visit summary',
     '142-visit-medicine-review-dark': 'Visit medicine confirmation · Dark',
     '73-visit-recording': 'Recording · audio-only simulator', '74-visit-paused': 'Paused · audio-only simulator',
     '75-visit-audio': 'Playback · audio-only simulator', '76-visits-dark': 'Visits · Dark',
@@ -68,7 +92,7 @@ TITLES = {
     '106-chat-reminders': 'Reminders in chat', '107-chat-schedule-review': 'Chat · Schedule confirmation',
     '108-chat-dose-review': 'Chat · Dose confirmation', '109-chat-history': 'Health history in chat',
     '110-chat-question-review': 'Chat · Appointment question', '111-chat-label-scan': 'Chat · Label entry',
-    '112-label-entry': 'Medicine label entry', '113-voice-mode': 'Voice conversation',
+    '112-label-entry': 'Medicine label entry', '113-voice-mode': 'Voice conversation · Previous interface',
     '114-voice-input-error': 'On-device voice unavailable', '115-notification-setting': 'Reminder notifications', '116-today-large-text': 'Today · Largest text',
     '117-french-today': 'Aujourd’hui · Français', '118-french-chat': 'Conversation · Français',
     '119-french-records': 'Dossier · Français', '120-french-visits': 'Consultations · Français',
@@ -89,6 +113,84 @@ TITLES = {
     '144-voice': 'Voice selection and preview',
     '145-french-voice': 'Voix et aperçu · Français',
     '146-chat-loading': 'Chat · Compact loading mark',
+    '147-report-options': 'Doctor visit report · Options',
+    '148-report-preview': 'Doctor visit report · PDF preview',
+    '149-report-sharing': 'Doctor visit report · Sharing',
+    '150-french-report-preview': 'Rapport · Aperçu PDF',
+    '151-appointments-refresh': 'Appointments',
+    '152-trends-readings': 'Reading trends', '153-trends-symptoms': 'Symptom trends',
+    '154-one-tap-recording': 'Recording a visit', '155-recording-system-activity': 'Recording · Dynamic Island',
+    '156-recording-paused': 'Recording · Paused', '157-evaluation-progress': 'Evaluation · Progress',
+    '158-model-only-visit-summary': 'Model-generated visit summary',
+    '159-model-only-medication-review': 'Extracted medication · Confirmation',
+    '160-chat-compact-navigation': 'Chat · Compact navigation',
+    '161-trends-dark': 'Reading trends · Dark',
+    '162-medications-dark': 'Medications · Dark',
+    '163-voice-dark': 'Voice selection · Dark',
+    '164-voice-conversation-light': 'Full-screen voice',
+    '165-voice-conversation-history': 'Chat after voice',
+    '166-voice-conversation-french-dark': 'Conversation vocale · Sombre',
+    '167-voice-conversation-landscape': 'Voice · Landscape',
+    '168-voice-conversation-large-text': 'Voice · Largest text',
+    '169-developer-settings': 'Developer settings',
+    '170-demo-replacement-confirmation': 'Replace demo data · Confirmation',
+    '171-demo-today': 'Demo · Today',
+    '172-demo-visit-summary': 'Demo · Visit summary',
+    '173-developer-french': 'Développement · Données de démo',
+    '174-flat-symptoms-light': 'Symptoms · Flat list · Light',
+    '175-flat-medications-light': 'Medications · Flat list · Light',
+    '176-flat-readings-light': 'Readings · Flat list · Light',
+    '177-flat-appointments-light': 'Appointments · Flat list · Light',
+    '178-flat-preparation-light': 'Preparation · Flat list · Light',
+    '179-flat-chat-history-light': 'Chat history · Flat list · Light',
+    '180-flat-symptom-detail-light': 'Symptom detail · Flat list · Light',
+    '181-flat-symptoms-dark': 'Symptoms · Flat list · Dark',
+    '182-flat-medications-dark': 'Medications · Flat list · Dark',
+    '183-flat-readings-dark': 'Readings · Flat list · Dark',
+    '184-flat-appointments-dark': 'Appointments · Flat list · Dark',
+    '185-flat-preparation-dark': 'Preparation · Flat list · Dark',
+    '186-flat-chat-history-dark': 'Chat history · Flat list · Dark',
+    '187-flat-symptom-detail-dark': 'Symptom detail · Flat list · Dark',
+    '188-open-symptoms-light': 'Symptoms · Open layout · Light',
+    '189-open-medications-light': 'Medications · Open layout · Light',
+    '190-open-readings-light': 'Readings · Open layout · Light',
+    '191-open-appointments-light': 'Appointments · Open layout · Light',
+    '192-flat-preparation-light': 'Preparation · Open layout · Light',
+    '193-flat-chat-history-light': 'Chat history · Open layout · Light',
+    '194-flat-symptom-detail-light': 'Symptom detail · Open layout · Light',
+    '195-open-symptoms-dark': 'Symptoms · Open layout · Dark',
+    '196-open-medications-dark': 'Medications · Open layout · Dark',
+    '197-open-readings-dark': 'Readings · Open layout · Dark',
+    '198-open-appointments-dark': 'Appointments · Open layout · Dark',
+    '199-flat-preparation-dark': 'Preparation · Open layout · Dark',
+    '200-flat-chat-history-dark': 'Chat history · Open layout · Dark',
+    '201-flat-symptom-detail-dark': 'Symptom detail · Open layout · Dark',
+    '202-unconfirmed-review-action': 'Visit medication · Review action',
+    '203-unconfirmed-review-draft': 'Visit medication · Confirmation',
+    '204-unconfirmed-review-saved': 'Visit medication · Saved',
+    '205-chat-dose-correction-review': 'Chat dose correction · Previous editor layout',
+    '206-chat-removal-confirmation': 'Chat · Removal confirmation',
+    '207-existing-medication-editor': 'Medication editor',
+    '208-open-timeline': 'Timeline · Open layout',
+    '209-optional-7b-model': 'Optional Qwen 7B model',
+    '210-7b-chat-selector': 'Chat · Qwen 7B selection',
+    '211-switches-light': 'Settings · Switch contrast · Light',
+    '212-switches-dark': 'Settings · Switch contrast · Dark',
+    '213-short-drawer-light': 'Compact drawer · Light',
+    '214-short-drawer-dark': 'Compact drawer · Dark',
+    '215-inline-voice-light': 'Voice preview · Loading · Light',
+    '216-inline-voice-dark': 'Voice preview · Loading · Dark',
+    '217-named-models': 'Alex, Sam and Camille',
+    '218-compact-readings-chat': 'Chat · Compact saved readings',
+    '219-balanced-visit-follow-up': 'Visit · Follow-up actions',
+    '220-blood-pressure-chat-table': 'Chat · Blood pressure table',
+    '221-home-with-records': 'Today · Saved records',
+    '222-condensed-report-page-one': 'Condensed report · Page 1',
+    '223-condensed-report-page-two': 'Condensed report · Page 2',
+    '224-condensed-report-page-three': 'Condensed report · Page 3',
+    '225-condensed-report-page-four': 'Condensed report · Page 4',
+
+
 
 }
 
@@ -109,10 +211,21 @@ for result in args.results:
         subprocess.run(['xcrun', 'xcresulttool', 'export', 'attachments', '--path', str(result), '--output-path', temporary], check=True, stdout=subprocess.DEVNULL)
         for test in json.loads((Path(temporary) / 'manifest.json').read_text()):
             for attachment in test['attachments']:
-                match = re.match(r'(\d{2,3}-[a-z-]+)_', attachment['suggestedHumanReadableName'])
-                if not match or not attachment['exportedFileName'].endswith('.png'):
+                match = re.match(r'(\d{2,3}-[a-z0-9-]+)_', attachment['suggestedHumanReadableName'])
+                report_names = {
+                    'condensed-report-page-1_': '222-condensed-report-page-one',
+                    'condensed-report-page-2_': '223-condensed-report-page-two',
+                    'condensed-report-page-3_': '224-condensed-report-page-three',
+                    'condensed-report-page-4_': '225-condensed-report-page-four',
+                    'Report - options_': '147-report-options',
+                    'Report - PDF preview_': '148-report-preview',
+                    'Report - sharing_': '149-report-sharing',
+                    'Rapport - aperçu PDF_': '150-french-report-preview',
+                }
+                report_stem = next((stem for prefix, stem in report_names.items() if attachment['suggestedHumanReadableName'].startswith(prefix)), None)
+                if (not match and not report_stem) or not attachment['exportedFileName'].endswith('.png'):
                     continue
-                stem = match.group(1)
+                stem = report_stem or match.group(1)
                 if stem == '26-health-access' and 'testHealthPermissionScreenshot' in test['testIdentifier']:
                     stem = '30-health-permission'
                 shutil.copyfile(Path(temporary) / attachment['exportedFileName'], args.output / (stem + '.png'))
@@ -127,7 +240,7 @@ for entry in entries:
 figures = ''.join(f'<figure><button class="capture" data-index="{i}" aria-label="Open {html.escape(entry["title"])}"><img src="{entry["src"]}" alt="{html.escape(entry["title"])}" loading="lazy"></button><figcaption>{html.escape(entry["title"])}</figcaption><a href="{entry["file"]}" download>Download PNG</a></figure>' for i, entry in enumerate(entries))
 page = '''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Harbour — iOS screenshots</title>
 <style> *{box-sizing:border-box}body{margin:0;background:#f7f7f7;color:#141414;font:16px -apple-system,BlinkMacSystemFont,sans-serif}header{padding:48px 5vw 28px}h1{margin:0 0 12px;font-size:34px;font-weight:650}header p{color:#666;line-height:1.6}main{display:flex;flex-wrap:wrap;gap:48px 32px;padding:16px 5vw 64px}figure{margin:0;width:260px;max-width:100%}.capture{display:block;width:100%;padding:0;border:0;background:transparent;cursor:zoom-in}.capture img{display:block;width:100%;border-radius:24px}figcaption{font-weight:600;margin:16px 0 8px}a{color:#666;font-size:14px}button{font:inherit}dialog{border:0;border-radius:20px;padding:16px;background:#fff;max-width:96vw;max-height:96vh}dialog::backdrop{background:#000b}.viewer-controls{display:flex;gap:12px;align-items:center;margin-bottom:12px;position:sticky;top:0;background:white;padding:4px 0}.viewer-controls strong{flex:1}.viewer-controls button{border:0;border-radius:10px;padding:10px;background:#eee;cursor:pointer}#full{display:block;max-width:88vw;width:500px;height:auto;margin:auto}button:focus-visible,a:focus-visible{outline:3px solid #555;outline-offset:4px}@media(max-width:600px){header{padding-top:28px}main{justify-content:center}figure{width:320px}} </style>
-<header><h1>Harbour for iOS</h1><p>COUNT native screenshots · iPhone simulators<br>Fictional records. Select a screen to view it larger or download the original.</p></header><main>FIGURES</main>
+<header><h1>Harbour for iOS</h1><p>COUNT app captures and rendered report pages · iPhone simulators<br>Fictional records. Select a screen to view it larger or download the original.</p></header><main>FIGURES</main>
 <dialog id="viewer"><div class="viewer-controls"><button id="previous" aria-label="Previous screenshot">←</button><strong id="name"></strong><button id="next" aria-label="Next screenshot">→</button><button id="close">Close</button></div><img id="full" alt=""></dialog>
 <script>const entries=ENTRIES;let selected=0;const viewer=document.getElementById('viewer');function show(index){selected=(index+entries.length)%entries.length;const entry=entries[selected];document.getElementById('name').textContent=entry.title;const full=document.getElementById('full');full.src=entry.src;full.alt=entry.title;}document.querySelectorAll('.capture').forEach(button=>button.addEventListener('click',()=>{show(Number(button.dataset.index));viewer.showModal();}));document.getElementById('close').onclick=()=>viewer.close();document.getElementById('previous').onclick=()=>show(selected-1);document.getElementById('next').onclick=()=>show(selected+1);document.addEventListener('keydown',event=>{if(viewer.open&&event.key==='ArrowRight')show(selected+1);if(viewer.open&&event.key==='ArrowLeft')show(selected-1);});</script></html>'''
 (args.output / 'index.html').write_text(page.replace('COUNT', str(len(entries))).replace('FIGURES', figures).replace('ENTRIES', json.dumps(entries)))
@@ -169,18 +282,22 @@ except ImportError:
     print('Pillow not installed; full-resolution gallery exported without overview sheets.')
 if args.update_readme:
     groups = {
-        'Today': {1, 31, 43, 66, 116},
-        'Chat': {10, 11, 12, 13, 28, 32, 36, 42, 44, 45, 46, 47, 53, 58, 89, 146},
-        'Records': {2, 3, 4, 22, 33, 34, 35, 64, 65},
+        'Simple interface and live walkthrough': set(range(226, 251)),
+        'Chat, voice and report refinements': set(range(211, 226)),
+        'Open records and medicine review': set(range(188, 209)),
+        'Flat record lists': set(range(174, 188)),
+        'Today': {1, 31, 43, 66, 116, 152, 153},
+        'Chat': {10, 11, 12, 13, 28, 32, 36, 42, 44, 45, 46, 47, 53, 58, 89, 146, 160},
+        'Records': {2, 3, 4, 22, 33, 34, 35, 64, 65, 151},
         'Entry and review': {5, 6, 7, 8, 9, 20, 21, 23, 24, 25, 48, 49, 50, 51, 52, 79, 81, 82, 84, 85, 90},
-        'Doctor visits': set(range(67, 79)) | {83, 87, 88, 142},
-        'Settings, models, and notes': {14, 15, 16, 18, 19, 27, 37, 38, 39, 40, 41, 60},
+        'Doctor visits': set(range(67, 79)) | {83, 87, 88, 142, 147, 148, 149, 154, 155, 156, 158, 159},
+        'Settings, models, and notes': {209, 210, 14, 15, 16, 18, 19, 27, 37, 38, 39, 40, 41, 60, 169, 170, 171, 172, 173},
         'App lock': {54, 55, 56, 57, 59, 61, 62, 80},
         'Health permissions': {26, 30, 63},
-        'Evaluation': {17, 29, 86},
+        'Evaluation': {17, 29, 86, 157},
         'Reminders, schedules, and preparation': set(range(91, 104)),
         'Voice and care tools in chat': set(range(104, 116)) | {143, 144},
-        'Canadian French': set(range(117, 142)) | {145},
+        'Canadian French': set(range(117, 142)) | {145, 150},
     }
     sections = {name: [] for name in groups}
     for entry in entries:
@@ -189,7 +306,7 @@ if args.update_readme:
         sections.setdefault(group, []).append(entry)
     start = '<!-- screenshot-gallery:start -->'
     end = '<!-- screenshot-gallery:end -->'
-    lines = [start, '## All screens', '', f'{len(entries)} native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).', '']
+    lines = [start, '## All screens', '', f'{len(entries)} app captures and rendered report pages. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).', '']
     for name, captures in sections.items():
         if not captures:
             continue

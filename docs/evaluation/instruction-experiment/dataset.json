@@ -1,0 +1,275 @@
+{
+  "description": "Synthetic English/French contrastive development set; authored before any typed-plan model run. No clinical review. Paired templates are not independent holdout samples.",
+  "cases": [
+    {
+      "id": "en-start",
+      "language": "en",
+      "group": "fresh-contrastive",
+      "input": "Start amlodipine 5 mg every morning for 14 days.",
+      "expected": [
+        {
+          "subject": "amlodipine",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 1,
+          "required": [
+            "5 mg",
+            "every morning",
+            "14 days"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en-no-start",
+      "language": "en",
+      "group": "fresh-contrastive",
+      "input": "Do not start amlodipine 5 mg every morning for 14 days.",
+      "expected": [
+        {
+          "subject": "amlodipine",
+          "kind": "medication",
+          "scope": "negated",
+          "steps": 1,
+          "required": [
+            "Do not"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr-start",
+      "language": "fr",
+      "group": "fresh-contrastive",
+      "input": "Commencez amlodipine 5 mg chaque matin pendant 14 jours.",
+      "expected": [
+        {
+          "subject": "amlodipine",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 1,
+          "required": [
+            "5 mg",
+            "chaque matin",
+            "14 jours"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr-no-start",
+      "language": "fr",
+      "group": "fresh-contrastive",
+      "input": "Ne commencez pas amlodipine 5 mg chaque matin pendant 14 jours.",
+      "expected": [
+        {
+          "subject": "amlodipine",
+          "kind": "medication",
+          "scope": "negated",
+          "steps": 1,
+          "required": [
+            "Ne commencez pas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en-condition",
+      "language": "en",
+      "group": "fresh-contrastive",
+      "input": "Stop ramipril only if your clinician confirms the change after the blood test.",
+      "expected": [
+        {
+          "subject": "ramipril",
+          "kind": "medication",
+          "scope": "conditional",
+          "steps": 1,
+          "required": [
+            "only if your clinician confirms the change after the blood test"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr-condition",
+      "language": "fr",
+      "group": "fresh-contrastive",
+      "input": "Arrêtez ramipril seulement si votre médecin confirme le changement après la prise de sang.",
+      "expected": [
+        {
+          "subject": "ramipril",
+          "kind": "medication",
+          "scope": "conditional",
+          "steps": 1,
+          "required": [
+            "seulement si votre médecin confirme le changement après la prise de sang"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en-history",
+      "language": "en",
+      "group": "fresh-contrastive",
+      "input": "Last year my father stopped ramipril after a blood test.",
+      "expected": [
+        {
+          "subject": "ramipril",
+          "kind": "medication",
+          "scope": "historical",
+          "steps": 1,
+          "required": [
+            "Last year",
+            "my father"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr-history",
+      "language": "fr",
+      "group": "fresh-contrastive",
+      "input": "L’année dernière, mon père a arrêté ramipril après une prise de sang.",
+      "expected": [
+        {
+          "subject": "ramipril",
+          "kind": "medication",
+          "scope": "historical",
+          "steps": 1,
+          "required": [
+            "L’année dernière",
+            "mon père"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en-course",
+      "language": "en",
+      "group": "fresh-contrastive",
+      "input": "Take prednisone 20 mg each morning for 3 days. Then take 10 mg each morning for 2 days. Then stop.",
+      "expected": [
+        {
+          "subject": "prednisone",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 3,
+          "required": [
+            "20 mg",
+            "3 days",
+            "10 mg",
+            "2 days",
+            "Then stop"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr-course",
+      "language": "fr",
+      "group": "fresh-contrastive",
+      "input": "Prenez prednisone 20 mg chaque matin pendant 3 jours. Ensuite prenez 10 mg chaque matin pendant 2 jours. Ensuite arrêtez.",
+      "expected": [
+        {
+          "subject": "prednisone",
+          "kind": "medication",
+          "scope": "affirmed",
+          "steps": 3,
+          "required": [
+            "20 mg",
+            "3 jours",
+            "10 mg",
+            "2 jours",
+            "Ensuite arrêtez"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en-call",
+      "language": "en",
+      "group": "fresh-contrastive",
+      "input": "Call the clinic in 48 hours if the ankle swelling is still present.",
+      "expected": [
+        {
+          "subject": "",
+          "kind": "followUp",
+          "scope": "conditional",
+          "steps": 1,
+          "required": [
+            "in 48 hours",
+            "if the ankle swelling is still present"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr-call",
+      "language": "fr",
+      "group": "fresh-contrastive",
+      "input": "Appelez la clinique dans 48 heures si la cheville est encore enflée.",
+      "expected": [
+        {
+          "subject": "",
+          "kind": "followUp",
+          "scope": "conditional",
+          "steps": 1,
+          "required": [
+            "dans 48 heures",
+            "si la cheville est encore enflée"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en-question",
+      "language": "en",
+      "group": "fresh-contrastive",
+      "input": "Should I stop metformin before my scan next week?",
+      "expected": [
+        {
+          "subject": "metformin",
+          "kind": "medication",
+          "scope": "uncertain",
+          "steps": 1,
+          "required": [
+            "Should I",
+            "next week"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fr-question",
+      "language": "fr",
+      "group": "fresh-contrastive",
+      "input": "Est-ce que je devrais arrêter metformin avant mon examen la semaine prochaine?",
+      "expected": [
+        {
+          "subject": "metformin",
+          "kind": "medication",
+          "scope": "uncertain",
+          "steps": 1,
+          "required": [
+            "Est-ce que",
+            "la semaine prochaine"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "en-empty",
+      "language": "en",
+      "group": "fresh-contrastive",
+      "input": "Good morning. I brought my umbrella today.",
+      "expected": []
+    },
+    {
+      "id": "fr-empty",
+      "language": "fr",
+      "group": "fresh-contrastive",
+      "input": "Bonjour. J’ai apporté mon parapluie aujourd’hui.",
+      "expected": []
+    }
+  ]
+}

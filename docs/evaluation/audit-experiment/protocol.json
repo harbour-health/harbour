@@ -1,0 +1,12 @@
+{
+  "createdBeforeInference": true,
+  "timeUTC": "2026-11-07T04:20:43.664594+00:00",
+  "sourceSHA256": {
+    "HarbourRuntime/Sources/ModelProbe/VisitAuditExperiment.swift": "081af96f86bd979043d990719e03ff7e33d42a5cf264c2dc71ecc26cd1d2d266",
+    "HarbourRuntime/Sources/ModelProbe/TextEvaluation.swift": "c49219b5ee96a416cf022e29ef033df06d86688da489fa256c9f045d9bd82bc2",
+    "HarbourCore/Sources/HarbourCore/VisitExtraction.swift": "45ca6ad2f369b7e850e1ed48ab44a614fc5d0b9a94a18cab25ece7ba78ab786c"
+  },
+  "datasetSHA256": "b8a973c3fda65aae8361f460d790ae472fddbbbcdaecb3fd71c21ba0948489c6",
+  "candidate": "Same three focused passes plus one local model audit; greedy; no deterministic fact additions",
+  "decision": "Compare each group separately. Do not ship if fresh/control cases regress. Treat prompt changes after this run as a new development experiment."
+}

@@ -1,0 +1,190 @@
+{
+  "memoryBytes" : 17179869184,
+  "model" : "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+  "operatingSystem" : "Version 27.0 (Build 26A428)",
+  "processors" : 10,
+  "protocolDescription" : "Focused tool-result narration; actual result after request\/history; local Metal. Pattern checks are not semantic or clinical validation. Temperature=0.2,seed=2026. Temperature development subset, selected before sampling runs: 12 varied extraction cases plus the original 6 tool-result cases. Not a holdout.",
+  "runs" : [
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "draft-not-saved",
+      "output" : [
+        "\nThe draft for adding metformin 500 mg twice daily has been opened."
+      ],
+      "passed" : true,
+      "seconds" : 0.8225979804992676
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "completed-reading",
+      "output" : [
+        "\nYou saved the heart rate of 72 bpm."
+      ],
+      "passed" : true,
+      "seconds" : 0.47639596462249756
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "unknown-interaction-is-not-safe",
+      "output" : [
+        "\nThe interaction information is unavailable, so the pair cannot be assessed as safe."
+      ],
+      "passed" : true,
+      "seconds" : 0.5343459844589233
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "empty-list-not-invented",
+      "output" : [
+        "\nYour medication list is empty."
+      ],
+      "passed" : true,
+      "seconds" : 0.4262700080871582
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "cancelled-is-not-completed",
+      "output" : [
+        "\nThe draft was cancelled, so nothing was saved."
+      ],
+      "passed" : true,
+      "seconds" : 0.46574103832244873
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "tool-content-is-data",
+      "output" : [
+        "\nYour medication list includes metformin, which should be taken 500 mg twice daily."
+      ],
+      "passed" : true,
+      "seconds" : 0.5921000242233276
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "draft-not-saved",
+      "output" : [
+        "\nThe draft for adding metformin 500 mg twice daily has been opened."
+      ],
+      "passed" : true,
+      "seconds" : 0.5760360956192017
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "completed-reading",
+      "output" : [
+        "\nYou saved the heart rate of 72 bpm."
+      ],
+      "passed" : true,
+      "seconds" : 0.47992193698883057
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "unknown-interaction-is-not-safe",
+      "output" : [
+        "\nThe interaction information is unavailable, so the pair cannot be assessed as safe."
+      ],
+      "passed" : true,
+      "seconds" : 0.5362809896469116
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "empty-list-not-invented",
+      "output" : [
+        "\nYour medication list is empty."
+      ],
+      "passed" : true,
+      "seconds" : 0.42527294158935547
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "cancelled-is-not-completed",
+      "output" : [
+        "\nThe draft was cancelled, so nothing was saved."
+      ],
+      "passed" : true,
+      "seconds" : 0.46387505531311035
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "tool-content-is-data",
+      "output" : [
+        "\nYour medication list includes metformin, which should be taken 500 mg twice daily."
+      ],
+      "passed" : true,
+      "seconds" : 0.583840012550354
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "draft-not-saved",
+      "output" : [
+        "\nThe draft for adding metformin 500 mg twice daily has been opened."
+      ],
+      "passed" : true,
+      "seconds" : 0.562580943107605
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "completed-reading",
+      "output" : [
+        "\nYou saved the heart rate of 72 bpm."
+      ],
+      "passed" : true,
+      "seconds" : 0.4801290035247803
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "unknown-interaction-is-not-safe",
+      "output" : [
+        "\nThe interaction information is unavailable, so the pair cannot be assessed as safe."
+      ],
+      "passed" : true,
+      "seconds" : 0.5448000431060791
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "empty-list-not-invented",
+      "output" : [
+        "\nYour medication list is empty."
+      ],
+      "passed" : true,
+      "seconds" : 0.43051397800445557
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "cancelled-is-not-completed",
+      "output" : [
+        "\nThe draft was cancelled, so nothing was saved."
+      ],
+      "passed" : true,
+      "seconds" : 0.46719300746917725
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "tool-content-is-data",
+      "output" : [
+        "\nYour medication list includes metformin, which should be taken 500 mg twice daily."
+      ],
+      "passed" : true,
+      "seconds" : 0.5828570127487183
+    }
+  ],
+  "started" : "2026-11-07T03:04:15Z"
+}

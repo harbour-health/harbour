@@ -1,0 +1,120 @@
+{
+  "mode": "focused",
+  "temperature": 0,
+  "seed": 42,
+  "runnerSHA256": "4669a28bb2494d58457526500eb6b0586a721214745d8fc39fc5e7aae47b8c6c",
+  "host": "macOS-27.0-arm64-arm-64bit",
+  "datasetSHA256": "b463b78b58805cb47d953e70002e88143139f454577c589010e2d3403b7120ba",
+  "executableSHA256": "10d7380a5bebbc1c0603d293a9c62159ac77bd38188e67afbc6c6f5d05e32b24",
+  "sourceSHA256": {
+    "HarbourCore/Sources/HarbourCore/ToolPlanner.swift": "6f4585cf8406e8f960e43c75ff075bb9e54a601df334a84f3458efa577cfb2a0",
+    "HarbourCore/Sources/HarbourCore/Visits.swift": "a114aa74b5e7a389ac296a046a87549f4c67ec211771218cde10db36babdb9e2",
+    "HarbourCore/Sources/HarbourCore/VisitDirections.swift": "843114cc53d8ed01ab67e43c82c2f9677ef7f3cf60c5e895de86569d8739b108",
+    "HarbourCore/Sources/HarbourCore/VisitExtraction.swift": "45ca6ad2f369b7e850e1ed48ab44a614fc5d0b9a94a18cab25ece7ba78ab786c",
+    "HarbourRuntime/Sources/ModelProbe/TextEvaluation.swift": "510111ea4afb755e593a9cbb41c252e3714e07e8e9e9b2a41c4926db356a0441",
+    "HarbourRuntime/Sources/ModelProbe/LegacySourceRecovery.swift": "0dcd9e3af0f942b53c261185a89115e756729987c3c7a9b6522cd63bb205c65c",
+    "HarbourRuntime/Sources/ModelProbe/BaselineVisitPrompt.swift": "c9ba9ede281502f9dacd06737eac04090df144352eb97979c9b17c3b06ec75d9",
+    "HarbourRuntime/Sources/ModelProbe/BaselineVisitGrammar.swift": "2f497994b47231e3eb0b9f7f4a91ba5b982ff559d1ffdf58c4864e30ffd43a7e",
+    "HarbourRuntime/Sources/HarbourRuntime/VisitSummaryOutputGrammar.swift": "cc175d613ac3d97b0fe8adb6b2bcb30bdf58fc79777e27ca823d1cf3a26fe071",
+    "HarbourRuntime/Sources/HarbourRuntime/LocalModel.swift": "c2b3836c0c99a27df42f124c6b11313b2311d3deb23124aab34abdffea0a680d"
+  },
+  "sourceSnapshotOrigin": "docs/evaluation/focused-development-round2",
+  "models": [
+    {
+      "file": "qwen2.5-0.5b-instruct-q4_k_m.gguf",
+      "bytes": 491400032,
+      "sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+      "exitCode": 0,
+      "summary": {
+        "medical/focused": {
+          "passed": 4,
+          "total": 20,
+          "errors": 0,
+          "seconds": 24.521215081214905,
+          "rawFacts": {
+            "correctFacts": 0,
+            "expectedFacts": 21,
+            "extraFacts": 0,
+            "exactCases": 4
+          },
+          "validatedFacts": {
+            "correctFacts": 0,
+            "expectedFacts": 16,
+            "extraFacts": 0,
+            "exactCases": 9
+          },
+          "completedFacts": {
+            "correctFacts": 0,
+            "expectedFacts": 16,
+            "extraFacts": 0,
+            "exactCases": 9
+          }
+        }
+      }
+    },
+    {
+      "file": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+      "bytes": 1117320736,
+      "sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+      "exitCode": 0,
+      "summary": {
+        "medical/focused": {
+          "passed": 11,
+          "total": 20,
+          "errors": 0,
+          "seconds": 79.14195930957794,
+          "rawFacts": {
+            "correctFacts": 12,
+            "expectedFacts": 21,
+            "extraFacts": 20,
+            "exactCases": 8
+          },
+          "validatedFacts": {
+            "correctFacts": 10,
+            "expectedFacts": 16,
+            "extraFacts": 1,
+            "exactCases": 14
+          },
+          "completedFacts": {
+            "correctFacts": 10,
+            "expectedFacts": 16,
+            "extraFacts": 1,
+            "exactCases": 14
+          }
+        }
+      }
+    },
+    {
+      "file": "qwen2.5-3b-instruct-q4_k_m.gguf",
+      "bytes": 2104932768,
+      "sha256": "626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d",
+      "exitCode": 0,
+      "summary": {
+        "medical/focused": {
+          "passed": 12,
+          "total": 20,
+          "errors": 0,
+          "seconds": 104.25240886211395,
+          "rawFacts": {
+            "correctFacts": 13,
+            "expectedFacts": 21,
+            "extraFacts": 18,
+            "exactCases": 5
+          },
+          "validatedFacts": {
+            "correctFacts": 10,
+            "expectedFacts": 16,
+            "extraFacts": 0,
+            "exactCases": 15
+          },
+          "completedFacts": {
+            "correctFacts": 10,
+            "expectedFacts": 16,
+            "extraFacts": 0,
+            "exactCases": 15
+          }
+        }
+      }
+    }
+  ]
+}

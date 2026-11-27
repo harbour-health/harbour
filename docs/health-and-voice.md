@@ -1,5 +1,7 @@
 # Health and voice
 
+Current speech output uses the on-device Kokoro voices described in [Neural speech](neural-speech.md). The Apple voice-selection/output notes below describe the earlier implementation; speech recognition and HealthKit permissions remain current.
+
 ## What it is
 
 Native adapters provide read-only HealthKit import and on-device English or Canadian French speech recognition. Both are optional; manual records and typed chat work independently.

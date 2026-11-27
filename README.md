@@ -1,6 +1,6 @@
 # Harbour for iOS
 
-Native SwiftUI companion with local-model chat, voice conversation, editable dictation, follow-up reminders, medicine schedules and dose logs, refill reminders, label scanning, searchable history, saved appointment questions, symptom records, medicine comparison, readings, appointment notes, read-only Apple Health import, and doctor visit recording with editable transcripts and reviewed medicine changes. The app has no web view, inference server, analytics, or account requirement.
+Native SwiftUI companion with local-model chat, voice conversation, editable dictation, follow-up reminders, medicine schedules and dose logs, refill reminders, label scanning, searchable history, saved appointment questions, symptom records, medicine comparison, readings, appointment notes, read-only Apple Health import, and doctor visit recording with structured summaries and reviewed medicine changes. The app has no web view, inference server, analytics, or account requirement.
 
 ## Screenshots
 
@@ -35,6 +35,8 @@ Requires a Mac, Xcode with an iOS SDK, and CMake for the simulator inference lib
 ```sh
 bash scripts/prepare-runtime.sh
 bash scripts/prepare-reports.sh
+python3 scripts/prepare-speech.py
+python3 scripts/prepare-onnx.py
 open Harbour.xcodeproj
 ```
 
@@ -42,7 +44,9 @@ Select the shared `Harbour` scheme and an iPhone simulator, then Run. The prepar
 
 The report renderer requires Rust/Cargo and builds a pinned, embedded Typst compiler with bundled fonts for offline PDF generation. See [doctor visit reports](docs/visit-reports.md).
 
-Qwen Small downloads when the first chat message is sent, or from **Settings → Models**. The download is about 491 MB; Balanced is about 1.12 GB. Progress and cancellation are available. Verified models work without a network connection. Voice requires an available on-device recognizer for the app’s language; it never silently switches to server transcription.
+Neural speech preparation also requires CMake and Ninja. Playback downloads Kokoro once (about 327 MB), then works offline with Female (`af_heart`, default) or Male (`am_liam`). See [neural speech](docs/neural-speech.md) for asset verification, build setup and third-party notices.
+
+The selected local model downloads when the first chat message is sent, or from **Settings → Models**. Automatic selects Small or Balanced using device resources; visit summaries require at least Balanced. Small is about 491 MB and Balanced about 1.12 GB. Progress and cancellation are available. Verified models work without a network connection. Voice input requires an available on-device recognizer for the app’s language; it never silently switches to server transcription.
 
 English and Canadian French follow the iOS app language setting. French includes permission prompts, voice controls, notifications, structured notes, medicine search, decimal-comma readings, and bounded French chat/visit input. Original notes and source quotations keep their language. See [localization](docs/localization.md) for coverage and verification limits.
 
@@ -87,10 +91,71 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | --- | --- | --- | --- |
 | [<img src="docs/screenshots/05-add-reading.png" width="220" alt="Compact floating reading drawer">](docs/screenshots/05-add-reading.png) | [<img src="docs/screenshots/12-topics.png" width="220" alt="Floating topic picker">](docs/screenshots/12-topics.png) | [<img src="docs/screenshots/41-appearance-dark.png" width="220" alt="Compact appearance drawer in dark mode">](docs/screenshots/41-appearance-dark.png) | [<img src="docs/screenshots/71-visit-medicine-review.png" width="220" alt="Floating visit medicine confirmation">](docs/screenshots/71-visit-medicine-review.png) |
 
+## Presentation
+
+[Open the 10-minute presentation](docs/presentation/index.html) · [Widescreen app walkthrough](docs/presentation/harbour-demo.mp4) · [Static PDF backup](docs/presentation/harbour.pdf)
+
+The HTML presentation lifts actual captured UI sections out of the phone with explanation lines. It plays offline and includes a local live-capture option. Edit [the Touying source](presentation/harbour.typ), [notes and timing](presentation/slides.json), and [the animation source](presentation/player.js), then run the [build script](scripts/build-presentation.py). See [presentation instructions](docs/presentation-walkthrough.md).
+
 <!-- screenshot-gallery:start -->
 ## All screens
 
-145 native captures. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
+241 app captures and rendered report pages. Select any image to open the original PNG. Capture dates and workflow provenance are in [the screenshot manifest](docs/screenshots/manifest.json).
+
+### Simple interface and live walkthrough
+
+| | |
+| :---: | :---: |
+| <strong>Simple home</strong><br>[<img src="docs/screenshots/226-simple-home.png" alt="Simple home" width="220">](docs/screenshots/226-simple-home.png) | <strong>Simple guide</strong><br>[<img src="docs/screenshots/227-simple-guide.png" alt="Simple guide" width="220">](docs/screenshots/227-simple-guide.png) |
+| <strong>Simple chat</strong><br>[<img src="docs/screenshots/228-simple-chat.png" alt="Simple chat" width="220">](docs/screenshots/228-simple-chat.png) | <strong>Simple settings</strong><br>[<img src="docs/screenshots/229-simple-settings.png" alt="Simple settings" width="220">](docs/screenshots/229-simple-settings.png) |
+| <strong>Caregiver home</strong><br>[<img src="docs/screenshots/230-caregiver-home.png" alt="Caregiver home" width="220">](docs/screenshots/230-caregiver-home.png) | <strong>Accueil simple · Français</strong><br>[<img src="docs/screenshots/231-simple-french.png" alt="Accueil simple · Français" width="220">](docs/screenshots/231-simple-french.png) |
+| <strong>Guide · Français</strong><br>[<img src="docs/screenshots/232-simple-guide-french.png" alt="Guide · Français" width="220">](docs/screenshots/232-simple-guide-french.png) | <strong>Guided walkthrough · Home</strong><br>[<img src="docs/screenshots/233-guided-simple-home.png" alt="Guided walkthrough · Home" width="220">](docs/screenshots/233-guided-simple-home.png) |
+| <strong>Walkthrough · Real chat request</strong><br>[<img src="docs/screenshots/236-guided-real-request.png" alt="Walkthrough · Real chat request" width="220">](docs/screenshots/236-guided-real-request.png) | <strong>Walkthrough · Saved readings</strong><br>[<img src="docs/screenshots/237-guided-readings.png" alt="Walkthrough · Saved readings" width="220">](docs/screenshots/237-guided-readings.png) |
+| <strong>Walkthrough · Caregiver records</strong><br>[<img src="docs/screenshots/240-guided-caregiver-records.png" alt="Walkthrough · Caregiver records" width="220">](docs/screenshots/240-guided-caregiver-records.png) | <strong>Walkthrough · Medications</strong><br>[<img src="docs/screenshots/242-guided-medicines.png" alt="Walkthrough · Medications" width="220">](docs/screenshots/242-guided-medicines.png) |
+| <strong>Medication name suggestions</strong><br>[<img src="docs/screenshots/243-guided-phonetic-suggestions.png" alt="Medication name suggestions" width="220">](docs/screenshots/243-guided-phonetic-suggestions.png) | <strong>Suggested medicine · Confirmation required</strong><br>[<img src="docs/screenshots/244-guided-medicine-confirmation.png" alt="Suggested medicine · Confirmation required" width="220">](docs/screenshots/244-guided-medicine-confirmation.png) |
+| <strong>Walkthrough · Saved visit summary</strong><br>[<img src="docs/screenshots/245-guided-visit-summary.png" alt="Walkthrough · Saved visit summary" width="220">](docs/screenshots/245-guided-visit-summary.png) | <strong>Walkthrough · Follow-ups</strong><br>[<img src="docs/screenshots/246-guided-visit-followups.png" alt="Walkthrough · Follow-ups" width="220">](docs/screenshots/246-guided-visit-followups.png) |
+| <strong>Walkthrough · Medication review</strong><br>[<img src="docs/screenshots/247-guided-visit-review.png" alt="Walkthrough · Medication review" width="220">](docs/screenshots/247-guided-visit-review.png) | <strong>Simple home · Largest text</strong><br>[<img src="docs/screenshots/248-simple-largest-text.png" alt="Simple home · Largest text" width="220">](docs/screenshots/248-simple-largest-text.png) |
+| <strong>Walkthrough · Caregiver home</strong><br>[<img src="docs/screenshots/250-guided-caregiver-home.png" alt="Walkthrough · Caregiver home" width="220">](docs/screenshots/250-guided-caregiver-home.png) |  |
+
+### Chat, voice and report refinements
+
+| | |
+| :---: | :---: |
+| <strong>Settings · Switch contrast · Light</strong><br>[<img src="docs/screenshots/211-switches-light.png" alt="Settings · Switch contrast · Light" width="220">](docs/screenshots/211-switches-light.png) | <strong>Settings · Switch contrast · Dark</strong><br>[<img src="docs/screenshots/212-switches-dark.png" alt="Settings · Switch contrast · Dark" width="220">](docs/screenshots/212-switches-dark.png) |
+| <strong>Compact drawer · Light</strong><br>[<img src="docs/screenshots/213-short-drawer-light.png" alt="Compact drawer · Light" width="220">](docs/screenshots/213-short-drawer-light.png) | <strong>Compact drawer · Dark</strong><br>[<img src="docs/screenshots/214-short-drawer-dark.png" alt="Compact drawer · Dark" width="220">](docs/screenshots/214-short-drawer-dark.png) |
+| <strong>Voice preview · Loading · Light</strong><br>[<img src="docs/screenshots/215-inline-voice-light.png" alt="Voice preview · Loading · Light" width="220">](docs/screenshots/215-inline-voice-light.png) | <strong>Voice preview · Loading · Dark</strong><br>[<img src="docs/screenshots/216-inline-voice-dark.png" alt="Voice preview · Loading · Dark" width="220">](docs/screenshots/216-inline-voice-dark.png) |
+| <strong>Alex, Sam and Camille</strong><br>[<img src="docs/screenshots/217-named-models.png" alt="Alex, Sam and Camille" width="220">](docs/screenshots/217-named-models.png) | <strong>Chat · Compact saved readings</strong><br>[<img src="docs/screenshots/218-compact-readings-chat.png" alt="Chat · Compact saved readings" width="220">](docs/screenshots/218-compact-readings-chat.png) |
+| <strong>Visit · Follow-up actions</strong><br>[<img src="docs/screenshots/219-balanced-visit-follow-up.png" alt="Visit · Follow-up actions" width="220">](docs/screenshots/219-balanced-visit-follow-up.png) | <strong>Chat · Blood pressure table</strong><br>[<img src="docs/screenshots/220-blood-pressure-chat-table.png" alt="Chat · Blood pressure table" width="220">](docs/screenshots/220-blood-pressure-chat-table.png) |
+| <strong>Today · Saved records</strong><br>[<img src="docs/screenshots/221-home-with-records.png" alt="Today · Saved records" width="220">](docs/screenshots/221-home-with-records.png) | <strong>Condensed report · Page 1</strong><br>[<img src="docs/screenshots/222-condensed-report-page-one.png" alt="Condensed report · Page 1" width="220">](docs/screenshots/222-condensed-report-page-one.png) |
+| <strong>Condensed report · Page 2</strong><br>[<img src="docs/screenshots/223-condensed-report-page-two.png" alt="Condensed report · Page 2" width="220">](docs/screenshots/223-condensed-report-page-two.png) |  |
+
+### Open records and medicine review
+
+| | |
+| :---: | :---: |
+| <strong>Symptoms · Open layout · Light</strong><br>[<img src="docs/screenshots/188-open-symptoms-light.png" alt="Symptoms · Open layout · Light" width="220">](docs/screenshots/188-open-symptoms-light.png) | <strong>Medications · Open layout · Light</strong><br>[<img src="docs/screenshots/189-open-medications-light.png" alt="Medications · Open layout · Light" width="220">](docs/screenshots/189-open-medications-light.png) |
+| <strong>Readings · Open layout · Light</strong><br>[<img src="docs/screenshots/190-open-readings-light.png" alt="Readings · Open layout · Light" width="220">](docs/screenshots/190-open-readings-light.png) | <strong>Appointments · Open layout · Light</strong><br>[<img src="docs/screenshots/191-open-appointments-light.png" alt="Appointments · Open layout · Light" width="220">](docs/screenshots/191-open-appointments-light.png) |
+| <strong>Preparation · Open layout · Light</strong><br>[<img src="docs/screenshots/192-flat-preparation-light.png" alt="Preparation · Open layout · Light" width="220">](docs/screenshots/192-flat-preparation-light.png) | <strong>Chat history · Open layout · Light</strong><br>[<img src="docs/screenshots/193-flat-chat-history-light.png" alt="Chat history · Open layout · Light" width="220">](docs/screenshots/193-flat-chat-history-light.png) |
+| <strong>Symptom detail · Open layout · Light</strong><br>[<img src="docs/screenshots/194-flat-symptom-detail-light.png" alt="Symptom detail · Open layout · Light" width="220">](docs/screenshots/194-flat-symptom-detail-light.png) | <strong>Symptoms · Open layout · Dark</strong><br>[<img src="docs/screenshots/195-open-symptoms-dark.png" alt="Symptoms · Open layout · Dark" width="220">](docs/screenshots/195-open-symptoms-dark.png) |
+| <strong>Medications · Open layout · Dark</strong><br>[<img src="docs/screenshots/196-open-medications-dark.png" alt="Medications · Open layout · Dark" width="220">](docs/screenshots/196-open-medications-dark.png) | <strong>Readings · Open layout · Dark</strong><br>[<img src="docs/screenshots/197-open-readings-dark.png" alt="Readings · Open layout · Dark" width="220">](docs/screenshots/197-open-readings-dark.png) |
+| <strong>Appointments · Open layout · Dark</strong><br>[<img src="docs/screenshots/198-open-appointments-dark.png" alt="Appointments · Open layout · Dark" width="220">](docs/screenshots/198-open-appointments-dark.png) | <strong>Preparation · Open layout · Dark</strong><br>[<img src="docs/screenshots/199-flat-preparation-dark.png" alt="Preparation · Open layout · Dark" width="220">](docs/screenshots/199-flat-preparation-dark.png) |
+| <strong>Chat history · Open layout · Dark</strong><br>[<img src="docs/screenshots/200-flat-chat-history-dark.png" alt="Chat history · Open layout · Dark" width="220">](docs/screenshots/200-flat-chat-history-dark.png) | <strong>Symptom detail · Open layout · Dark</strong><br>[<img src="docs/screenshots/201-flat-symptom-detail-dark.png" alt="Symptom detail · Open layout · Dark" width="220">](docs/screenshots/201-flat-symptom-detail-dark.png) |
+| <strong>Visit medication · Review action</strong><br>[<img src="docs/screenshots/202-unconfirmed-review-action.png" alt="Visit medication · Review action" width="220">](docs/screenshots/202-unconfirmed-review-action.png) | <strong>Visit medication · Confirmation</strong><br>[<img src="docs/screenshots/203-unconfirmed-review-draft.png" alt="Visit medication · Confirmation" width="220">](docs/screenshots/203-unconfirmed-review-draft.png) |
+| <strong>Visit medication · Saved</strong><br>[<img src="docs/screenshots/204-unconfirmed-review-saved.png" alt="Visit medication · Saved" width="220">](docs/screenshots/204-unconfirmed-review-saved.png) | <strong>Chat dose correction · Previous editor layout</strong><br>[<img src="docs/screenshots/205-chat-dose-correction-review.png" alt="Chat dose correction · Previous editor layout" width="220">](docs/screenshots/205-chat-dose-correction-review.png) |
+| <strong>Chat · Removal confirmation</strong><br>[<img src="docs/screenshots/206-chat-removal-confirmation.png" alt="Chat · Removal confirmation" width="220">](docs/screenshots/206-chat-removal-confirmation.png) | <strong>Medication editor</strong><br>[<img src="docs/screenshots/207-existing-medication-editor.png" alt="Medication editor" width="220">](docs/screenshots/207-existing-medication-editor.png) |
+| <strong>Timeline · Open layout</strong><br>[<img src="docs/screenshots/208-open-timeline.png" alt="Timeline · Open layout" width="220">](docs/screenshots/208-open-timeline.png) |  |
+
+### Flat record lists
+
+| | |
+| :---: | :---: |
+| <strong>Symptoms · Flat list · Light</strong><br>[<img src="docs/screenshots/174-flat-symptoms-light.png" alt="Symptoms · Flat list · Light" width="220">](docs/screenshots/174-flat-symptoms-light.png) | <strong>Medications · Flat list · Light</strong><br>[<img src="docs/screenshots/175-flat-medications-light.png" alt="Medications · Flat list · Light" width="220">](docs/screenshots/175-flat-medications-light.png) |
+| <strong>Readings · Flat list · Light</strong><br>[<img src="docs/screenshots/176-flat-readings-light.png" alt="Readings · Flat list · Light" width="220">](docs/screenshots/176-flat-readings-light.png) | <strong>Appointments · Flat list · Light</strong><br>[<img src="docs/screenshots/177-flat-appointments-light.png" alt="Appointments · Flat list · Light" width="220">](docs/screenshots/177-flat-appointments-light.png) |
+| <strong>Preparation · Flat list · Light</strong><br>[<img src="docs/screenshots/178-flat-preparation-light.png" alt="Preparation · Flat list · Light" width="220">](docs/screenshots/178-flat-preparation-light.png) | <strong>Chat history · Flat list · Light</strong><br>[<img src="docs/screenshots/179-flat-chat-history-light.png" alt="Chat history · Flat list · Light" width="220">](docs/screenshots/179-flat-chat-history-light.png) |
+| <strong>Symptom detail · Flat list · Light</strong><br>[<img src="docs/screenshots/180-flat-symptom-detail-light.png" alt="Symptom detail · Flat list · Light" width="220">](docs/screenshots/180-flat-symptom-detail-light.png) | <strong>Symptoms · Flat list · Dark</strong><br>[<img src="docs/screenshots/181-flat-symptoms-dark.png" alt="Symptoms · Flat list · Dark" width="220">](docs/screenshots/181-flat-symptoms-dark.png) |
+| <strong>Medications · Flat list · Dark</strong><br>[<img src="docs/screenshots/182-flat-medications-dark.png" alt="Medications · Flat list · Dark" width="220">](docs/screenshots/182-flat-medications-dark.png) | <strong>Readings · Flat list · Dark</strong><br>[<img src="docs/screenshots/183-flat-readings-dark.png" alt="Readings · Flat list · Dark" width="220">](docs/screenshots/183-flat-readings-dark.png) |
+| <strong>Appointments · Flat list · Dark</strong><br>[<img src="docs/screenshots/184-flat-appointments-dark.png" alt="Appointments · Flat list · Dark" width="220">](docs/screenshots/184-flat-appointments-dark.png) | <strong>Preparation · Flat list · Dark</strong><br>[<img src="docs/screenshots/185-flat-preparation-dark.png" alt="Preparation · Flat list · Dark" width="220">](docs/screenshots/185-flat-preparation-dark.png) |
+| <strong>Chat history · Flat list · Dark</strong><br>[<img src="docs/screenshots/186-flat-chat-history-dark.png" alt="Chat history · Flat list · Dark" width="220">](docs/screenshots/186-flat-chat-history-dark.png) | <strong>Symptom detail · Flat list · Dark</strong><br>[<img src="docs/screenshots/187-flat-symptom-detail-dark.png" alt="Symptom detail · Flat list · Dark" width="220">](docs/screenshots/187-flat-symptom-detail-dark.png) |
 
 ### Today
 
@@ -98,7 +163,8 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | :---: | :---: |
 | <strong>Today</strong><br>[<img src="docs/screenshots/01-today.png" alt="Today" width="220">](docs/screenshots/01-today.png) | <strong>Today · Dark</strong><br>[<img src="docs/screenshots/31-today-dark.png" alt="Today · Dark" width="220">](docs/screenshots/31-today-dark.png) |
 | <strong>System appearance · Dark</strong><br>[<img src="docs/screenshots/43-system-dark.png" alt="System appearance · Dark" width="220">](docs/screenshots/43-system-dark.png) | <strong>Floating navigation · scrolled</strong><br>[<img src="docs/screenshots/66-floating-navigation.png" alt="Floating navigation · scrolled" width="220">](docs/screenshots/66-floating-navigation.png) |
-| <strong>Today · Largest text</strong><br>[<img src="docs/screenshots/116-today-large-text.png" alt="Today · Largest text" width="220">](docs/screenshots/116-today-large-text.png) |  |
+| <strong>Today · Largest text</strong><br>[<img src="docs/screenshots/116-today-large-text.png" alt="Today · Largest text" width="220">](docs/screenshots/116-today-large-text.png) | <strong>Reading trends</strong><br>[<img src="docs/screenshots/152-trends-readings.png" alt="Reading trends" width="220">](docs/screenshots/152-trends-readings.png) |
+| <strong>Symptom trends</strong><br>[<img src="docs/screenshots/153-trends-symptoms.png" alt="Symptom trends" width="220">](docs/screenshots/153-trends-symptoms.png) |  |
 
 ### Chat
 
@@ -112,6 +178,7 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | <strong>Readings in chat</strong><br>[<img src="docs/screenshots/46-chat-readings.png" alt="Readings in chat" width="220">](docs/screenshots/46-chat-readings.png) | <strong>Readings in chat · Dark</strong><br>[<img src="docs/screenshots/47-chat-readings-dark.png" alt="Readings in chat · Dark" width="220">](docs/screenshots/47-chat-readings-dark.png) |
 | <strong>Selected topic · Dark</strong><br>[<img src="docs/screenshots/53-selected-topic-dark.png" alt="Selected topic · Dark" width="220">](docs/screenshots/53-selected-topic-dark.png) | <strong>Generated chat title</strong><br>[<img src="docs/screenshots/58-generated-chat-title.png" alt="Generated chat title" width="220">](docs/screenshots/58-generated-chat-title.png) |
 | <strong>Chat · Small phone</strong><br>[<img src="docs/screenshots/89-chat-small-phone.png" alt="Chat · Small phone" width="220">](docs/screenshots/89-chat-small-phone.png) | <strong>Chat · Compact loading mark</strong><br>[<img src="docs/screenshots/146-chat-loading.png" alt="Chat · Compact loading mark" width="220">](docs/screenshots/146-chat-loading.png) |
+| <strong>Chat · Compact navigation</strong><br>[<img src="docs/screenshots/160-chat-compact-navigation.png" alt="Chat · Compact navigation" width="220">](docs/screenshots/160-chat-compact-navigation.png) |  |
 
 ### Records
 
@@ -121,7 +188,7 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | <strong>Readings</strong><br>[<img src="docs/screenshots/04-readings.png" alt="Readings" width="220">](docs/screenshots/04-readings.png) | <strong>Saved symptom</strong><br>[<img src="docs/screenshots/22-symptom-detail.png" alt="Saved symptom" width="220">](docs/screenshots/22-symptom-detail.png) |
 | <strong>Symptoms · Dark</strong><br>[<img src="docs/screenshots/33-symptoms-dark.png" alt="Symptoms · Dark" width="220">](docs/screenshots/33-symptoms-dark.png) | <strong>Medicines · Dark</strong><br>[<img src="docs/screenshots/34-medicines-dark.png" alt="Medicines · Dark" width="220">](docs/screenshots/34-medicines-dark.png) |
 | <strong>Readings · Dark</strong><br>[<img src="docs/screenshots/35-readings-dark.png" alt="Readings · Dark" width="220">](docs/screenshots/35-readings-dark.png) | <strong>Records</strong><br>[<img src="docs/screenshots/64-records.png" alt="Records" width="220">](docs/screenshots/64-records.png) |
-| <strong>Records · Dark</strong><br>[<img src="docs/screenshots/65-records-dark.png" alt="Records · Dark" width="220">](docs/screenshots/65-records-dark.png) |  |
+| <strong>Records · Dark</strong><br>[<img src="docs/screenshots/65-records-dark.png" alt="Records · Dark" width="220">](docs/screenshots/65-records-dark.png) | <strong>Appointments</strong><br>[<img src="docs/screenshots/151-appointments-refresh.png" alt="Appointments" width="220">](docs/screenshots/151-appointments-refresh.png) |
 
 ### Entry and review
 
@@ -145,12 +212,16 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | :---: | :---: |
 | <strong>Visits</strong><br>[<img src="docs/screenshots/67-visits.png" alt="Visits" width="220">](docs/screenshots/67-visits.png) | <strong>Visit recorder</strong><br>[<img src="docs/screenshots/68-visit-recorder.png" alt="Visit recorder" width="220">](docs/screenshots/68-visit-recorder.png) |
 | <strong>Visit notes</strong><br>[<img src="docs/screenshots/69-visit-notes.png" alt="Visit notes" width="220">](docs/screenshots/69-visit-notes.png) | <strong>Local visit summary</strong><br>[<img src="docs/screenshots/70-visit-summary.png" alt="Local visit summary" width="220">](docs/screenshots/70-visit-summary.png) |
-| <strong>Visit medicine confirmation</strong><br>[<img src="docs/screenshots/71-visit-medicine-review.png" alt="Visit medicine confirmation" width="220">](docs/screenshots/71-visit-medicine-review.png) | <strong>Visit transcript</strong><br>[<img src="docs/screenshots/72-visit-transcript.png" alt="Visit transcript" width="220">](docs/screenshots/72-visit-transcript.png) |
+| <strong>Visit medicine confirmation</strong><br>[<img src="docs/screenshots/71-visit-medicine-review.png" alt="Visit medicine confirmation" width="220">](docs/screenshots/71-visit-medicine-review.png) | <strong>Saved visit summary</strong><br>[<img src="docs/screenshots/72-visit-summary-saved.png" alt="Saved visit summary" width="220">](docs/screenshots/72-visit-summary-saved.png) |
 | <strong>Recording · audio-only simulator</strong><br>[<img src="docs/screenshots/73-visit-recording.png" alt="Recording · audio-only simulator" width="220">](docs/screenshots/73-visit-recording.png) | <strong>Paused · audio-only simulator</strong><br>[<img src="docs/screenshots/74-visit-paused.png" alt="Paused · audio-only simulator" width="220">](docs/screenshots/74-visit-paused.png) |
 | <strong>Playback · audio-only simulator</strong><br>[<img src="docs/screenshots/75-visit-audio.png" alt="Playback · audio-only simulator" width="220">](docs/screenshots/75-visit-audio.png) | <strong>Visits · Dark</strong><br>[<img src="docs/screenshots/76-visits-dark.png" alt="Visits · Dark" width="220">](docs/screenshots/76-visits-dark.png) |
 | <strong>Visit recorder · Dark</strong><br>[<img src="docs/screenshots/77-visit-recorder-dark.png" alt="Visit recorder · Dark" width="220">](docs/screenshots/77-visit-recorder-dark.png) | <strong>Visit summary · Dark</strong><br>[<img src="docs/screenshots/78-visit-summary-dark.png" alt="Visit summary · Dark" width="220">](docs/screenshots/78-visit-summary-dark.png) |
 | <strong>Visit notes drawer</strong><br>[<img src="docs/screenshots/83-visit-notes-drawer.png" alt="Visit notes drawer" width="220">](docs/screenshots/83-visit-notes-drawer.png) | <strong>New visit notes</strong><br>[<img src="docs/screenshots/87-new-visit-notes.png" alt="New visit notes" width="220">](docs/screenshots/87-new-visit-notes.png) |
 | <strong>New visit notes · Dark</strong><br>[<img src="docs/screenshots/88-new-visit-notes-dark.png" alt="New visit notes · Dark" width="220">](docs/screenshots/88-new-visit-notes-dark.png) | <strong>Visit medicine confirmation · Dark</strong><br>[<img src="docs/screenshots/142-visit-medicine-review-dark.png" alt="Visit medicine confirmation · Dark" width="220">](docs/screenshots/142-visit-medicine-review-dark.png) |
+| <strong>Doctor visit report · Options</strong><br>[<img src="docs/screenshots/147-report-options.png" alt="Doctor visit report · Options" width="220">](docs/screenshots/147-report-options.png) | <strong>Doctor visit report · PDF preview</strong><br>[<img src="docs/screenshots/148-report-preview.png" alt="Doctor visit report · PDF preview" width="220">](docs/screenshots/148-report-preview.png) |
+| <strong>Doctor visit report · Sharing</strong><br>[<img src="docs/screenshots/149-report-sharing.png" alt="Doctor visit report · Sharing" width="220">](docs/screenshots/149-report-sharing.png) | <strong>Recording a visit</strong><br>[<img src="docs/screenshots/154-one-tap-recording.png" alt="Recording a visit" width="220">](docs/screenshots/154-one-tap-recording.png) |
+| <strong>Recording · Dynamic Island</strong><br>[<img src="docs/screenshots/155-recording-system-activity.png" alt="Recording · Dynamic Island" width="220">](docs/screenshots/155-recording-system-activity.png) | <strong>Recording · Paused</strong><br>[<img src="docs/screenshots/156-recording-paused.png" alt="Recording · Paused" width="220">](docs/screenshots/156-recording-paused.png) |
+| <strong>Model-generated visit summary</strong><br>[<img src="docs/screenshots/158-model-only-visit-summary.png" alt="Model-generated visit summary" width="220">](docs/screenshots/158-model-only-visit-summary.png) | <strong>Extracted medication · Confirmation</strong><br>[<img src="docs/screenshots/159-model-only-medication-review.png" alt="Extracted medication · Confirmation" width="220">](docs/screenshots/159-model-only-medication-review.png) |
 
 ### Settings, models, and notes
 
@@ -162,6 +233,10 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | <strong>Models · Dark</strong><br>[<img src="docs/screenshots/37-models-dark.png" alt="Models · Dark" width="220">](docs/screenshots/37-models-dark.png) | <strong>Settings · Dark</strong><br>[<img src="docs/screenshots/38-settings-dark.png" alt="Settings · Dark" width="220">](docs/screenshots/38-settings-dark.png) |
 | <strong>Appointment note · Dark</strong><br>[<img src="docs/screenshots/39-note-dark.png" alt="Appointment note · Dark" width="220">](docs/screenshots/39-note-dark.png) | <strong>Appearance · Light</strong><br>[<img src="docs/screenshots/40-appearance-light.png" alt="Appearance · Light" width="220">](docs/screenshots/40-appearance-light.png) |
 | <strong>Appearance · Dark</strong><br>[<img src="docs/screenshots/41-appearance-dark.png" alt="Appearance · Dark" width="220">](docs/screenshots/41-appearance-dark.png) | <strong>Import records</strong><br>[<img src="docs/screenshots/60-import-records.png" alt="Import records" width="220">](docs/screenshots/60-import-records.png) |
+| <strong>Developer settings</strong><br>[<img src="docs/screenshots/169-developer-settings.png" alt="Developer settings" width="220">](docs/screenshots/169-developer-settings.png) | <strong>Replace demo data · Confirmation</strong><br>[<img src="docs/screenshots/170-demo-replacement-confirmation.png" alt="Replace demo data · Confirmation" width="220">](docs/screenshots/170-demo-replacement-confirmation.png) |
+| <strong>Demo · Today</strong><br>[<img src="docs/screenshots/171-demo-today.png" alt="Demo · Today" width="220">](docs/screenshots/171-demo-today.png) | <strong>Demo · Visit summary</strong><br>[<img src="docs/screenshots/172-demo-visit-summary.png" alt="Demo · Visit summary" width="220">](docs/screenshots/172-demo-visit-summary.png) |
+| <strong>Développement · Données de démo</strong><br>[<img src="docs/screenshots/173-developer-french.png" alt="Développement · Données de démo" width="220">](docs/screenshots/173-developer-french.png) | <strong>Optional Qwen 7B model</strong><br>[<img src="docs/screenshots/209-optional-7b-model.png" alt="Optional Qwen 7B model" width="220">](docs/screenshots/209-optional-7b-model.png) |
+| <strong>Chat · Qwen 7B selection</strong><br>[<img src="docs/screenshots/210-7b-chat-selector.png" alt="Chat · Qwen 7B selection" width="220">](docs/screenshots/210-7b-chat-selector.png) |  |
 
 ### App lock
 
@@ -184,7 +259,7 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | | |
 | :---: | :---: |
 | <strong>Evaluation</strong><br>[<img src="docs/screenshots/17-evaluation.png" alt="Evaluation" width="220">](docs/screenshots/17-evaluation.png) | <strong>Evaluation results</strong><br>[<img src="docs/screenshots/29-evaluation-results.png" alt="Evaluation results" width="220">](docs/screenshots/29-evaluation-results.png) |
-| <strong>Evaluation drawer · Dark</strong><br>[<img src="docs/screenshots/86-evaluation-drawer-dark.png" alt="Evaluation drawer · Dark" width="220">](docs/screenshots/86-evaluation-drawer-dark.png) |  |
+| <strong>Evaluation drawer · Dark</strong><br>[<img src="docs/screenshots/86-evaluation-drawer-dark.png" alt="Evaluation drawer · Dark" width="220">](docs/screenshots/86-evaluation-drawer-dark.png) | <strong>Evaluation · Progress</strong><br>[<img src="docs/screenshots/157-evaluation-progress.png" alt="Evaluation · Progress" width="220">](docs/screenshots/157-evaluation-progress.png) |
 
 ### Reminders, schedules, and preparation
 
@@ -227,5 +302,15 @@ See the [native screenshot gallery](docs/screenshots/index.html) for the current
 | <strong>Écrire un message · Français</strong><br>[<img src="docs/screenshots/137-french-chat-controls.png" alt="Écrire un message · Français" width="220">](docs/screenshots/137-french-chat-controls.png) | <strong>Médicaments et titre local · Français</strong><br>[<img src="docs/screenshots/138-french-model-medicines-title.png" alt="Médicaments et titre local · Français" width="220">](docs/screenshots/138-french-model-medicines-title.png) |
 | <strong>Relevés dans la conversation · Français</strong><br>[<img src="docs/screenshots/139-french-model-readings.png" alt="Relevés dans la conversation · Français" width="220">](docs/screenshots/139-french-model-readings.png) | <strong>Symptôme dans la conversation · Français</strong><br>[<img src="docs/screenshots/140-french-model-symptom-review.png" alt="Symptôme dans la conversation · Français" width="220">](docs/screenshots/140-french-model-symptom-review.png) |
 | <strong>Rappel dans la conversation · Français</strong><br>[<img src="docs/screenshots/141-french-model-reminder-review.png" alt="Rappel dans la conversation · Français" width="220">](docs/screenshots/141-french-model-reminder-review.png) | <strong>Voix et aperçu · Français</strong><br>[<img src="docs/screenshots/145-french-voice.png" alt="Voix et aperçu · Français" width="220">](docs/screenshots/145-french-voice.png) |
+| <strong>Rapport · Aperçu PDF</strong><br>[<img src="docs/screenshots/150-french-report-preview.png" alt="Rapport · Aperçu PDF" width="220">](docs/screenshots/150-french-report-preview.png) |  |
+
+### Additional screens
+
+| | |
+| :---: | :---: |
+| <strong>Reading trends · Dark</strong><br>[<img src="docs/screenshots/161-trends-dark.png" alt="Reading trends · Dark" width="220">](docs/screenshots/161-trends-dark.png) | <strong>Medications · Dark</strong><br>[<img src="docs/screenshots/162-medications-dark.png" alt="Medications · Dark" width="220">](docs/screenshots/162-medications-dark.png) |
+| <strong>Voice selection · Dark</strong><br>[<img src="docs/screenshots/163-voice-dark.png" alt="Voice selection · Dark" width="220">](docs/screenshots/163-voice-dark.png) | <strong>Full-screen voice</strong><br>[<img src="docs/screenshots/164-voice-conversation-light.png" alt="Full-screen voice" width="220">](docs/screenshots/164-voice-conversation-light.png) |
+| <strong>Chat after voice</strong><br>[<img src="docs/screenshots/165-voice-conversation-history.png" alt="Chat after voice" width="220">](docs/screenshots/165-voice-conversation-history.png) | <strong>Conversation vocale · Sombre</strong><br>[<img src="docs/screenshots/166-voice-conversation-french-dark.png" alt="Conversation vocale · Sombre" width="220">](docs/screenshots/166-voice-conversation-french-dark.png) |
+| <strong>Voice · Landscape</strong><br>[<img src="docs/screenshots/167-voice-conversation-landscape.png" alt="Voice · Landscape" width="220">](docs/screenshots/167-voice-conversation-landscape.png) | <strong>Voice · Largest text</strong><br>[<img src="docs/screenshots/168-voice-conversation-large-text.png" alt="Voice · Largest text" width="220">](docs/screenshots/168-voice-conversation-large-text.png) |
 
 <!-- screenshot-gallery:end -->

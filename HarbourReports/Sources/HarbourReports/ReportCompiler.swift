@@ -7,21 +7,41 @@ public enum ReportCompilerError: Error { case missingTemplate, invalidInput, com
 public actor ReportCompiler {
     public static let shared = ReportCompiler()
     public func compile(json: Data) throws -> Data {
-        guard !json.isEmpty, json.count <= 5_000_000 else { throw ReportCompilerError.invalidInput }
-        guard let url = Bundle.module.url(forResource: "visit-report", withExtension: "typ") else { throw ReportCompilerError.missingTemplate }
+        guard !json.isEmpty, json.count <= 5_000_000 else {
+            throw ReportCompilerError.invalidInput
+        }
+        guard let url = Bundle.module.url(forResource: "visit-report", withExtension: "typ")
+        else {
+            throw ReportCompilerError.missingTemplate
+        }
+
         let template = try Data(contentsOf: url)
         var output: UnsafeMutablePointer<UInt8>?
         var count = 0
         let status = template.withUnsafeBytes { source in
             json.withUnsafeBytes { input in
-                harbour_typst_compile(source.bindMemory(to: UInt8.self).baseAddress!, template.count,
-                                      input.bindMemory(to: UInt8.self).baseAddress!, json.count, &output, &count)
+                harbour_typst_compile(
+                    source.bindMemory(to: UInt8.self).baseAddress!,
+                    template.count,
+                    input.bindMemory(to: UInt8.self).baseAddress!,
+                    json.count,
+                    &output,
+                    &count
+                )
             }
         }
-        guard let output else { throw ReportCompilerError.compilation("No report produced") }
+
+        guard let output else {
+            throw ReportCompilerError.compilation("No report produced")
+        }
+
         defer { harbour_typst_free(output, count) }
         let data = Data(bytes: output, count: count)
-        guard status == 0 else { throw ReportCompilerError.compilation(String(decoding: data, as: UTF8.self)) }
+
+        guard status == 0 else {
+            throw ReportCompilerError.compilation(String(decoding: data, as: UTF8.self))
+        }
+
         return data
     }
 }

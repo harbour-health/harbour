@@ -2,7 +2,7 @@
 
 ## What it is
 
-`scripts/app-store-screenshots.sh` produces ten native portrait iPhone screenshots in light mode, separately from the existing README and QA gallery. Saved health inputs are fictional; visit notes are manually seeded and chat is empty. This workflow does not run model inference or establish model correctness.
+`scripts/app-store-screenshots.sh` produces ten native portrait iPhone screenshots in light mode, separately from the existing README and QA gallery. Saved health inputs are fictional; visit notes and structured summaries are manually seeded and chat is empty. This workflow does not run model inference or establish model correctness.
 
 ## How it works
 
@@ -17,7 +17,7 @@ The script checks the installed iOS 26.5 runtime, iPhone 17 Pro Max device type,
 
 The `--app-store-screenshots` launch argument enables a Debug-only fixture in `AppStore`, stores it in its own `AppStoreScreenshots` subfolder, resets it on each launch, and selects Light appearance. The fixture contains two medicines, three readings, one symptom, one manual visit note, and one appointment question. No personal data or previous simulator state is copied. Release builds exclude this fixture and its launch-argument handling.
 
-The captures are Today, Records, Medicines, Readings, Symptoms, Visits, saved visit transcript, Appointment preparation, Timeline, and empty Chat. UI assertions check navigation, expected content, and absence of keyboard/alerts before capture. XCTest failures stop the shell pipeline. The exporter also requires exactly one passed test, exactly ten uniquely named captures, and native 1320 × 2868 dimensions. PNGs are converted to RGB without resampling to remove alpha.
+The captures are Today, Records, Medicines, Readings, Symptoms, Visits, saved visit summary, Appointment preparation, Timeline, and empty Chat. UI assertions check navigation, expected content, and absence of keyboard/alerts before capture. XCTest failures stop the shell pipeline. The exporter also requires exactly one passed test, exactly ten uniquely named captures, and native 1320 × 2868 dimensions. PNGs are converted to RGB without resampling to remove alpha.
 
 The default output is a new `build/app-store-screenshots/<locale>/<UTC timestamp>/` directory. Its ten numbered PNGs are the upload candidates. `manifest.json` records device/test/attachment timestamps, Xcode version, fixture provenance, dimensions, and SHA-256 hashes. `contact-sheet.jpg` is a review aid; `run/` retains the result bundle, build log, and simulator UUID. Existing output directories are rejected. A failed run retains available diagnostics and cannot produce a complete manifest.
 
@@ -51,3 +51,5 @@ Edit `scripts/export-app-store-screenshots.py` for validation, provenance, or th
 ## Dependencies
 
 macOS, installed Xcode command-line tools, the already installed iOS 26.5 simulator runtime, Python 3 with Pillow, and `HarbourRuntime/Vendor/llama.xcframework` are required. Prepare the native runtime using [Local models](local-models.md) before running this script. The workflow uses `xcodebuild`, `simctl`, `xcresulttool`, the native app, and its XCTest UI target; it needs no account, signing identity, Apple Health grant, notification permission, network download, or model cache.
+
+The summary capture uses an explicitly authored DEBUG fixture, not inference. It does not expose the raw recorded transcript. Prepare neural speech dependencies as described in [neural speech](neural-speech.md) before running the capture build.

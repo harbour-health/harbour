@@ -1,0 +1,120 @@
+Task,Case,qwen2.5-0.5b-instruct-q4_k_m,qwen2.5-1.5b-instruct-q4_k_m,qwen2.5-3b-instruct-q4_k_m
+Routing,Add my dentist appointment next Tuesday at 2 pm,FAIL,PASS,PASS
+Routing,Show my appointments,PASS,PASS,PASS
+Routing,Ajoute mon rendez-vous mardi à 14 h,FAIL,PASS,PASS
+Routing,Do not add an appointment tomorrow,FAIL,FAIL,PASS
+Routing,"Hello, how are you?",PASS,PASS,PASS
+Routing,Why is the sky blue?,FAIL,PASS,PASS
+Routing,What does blood pressure measure?,FAIL,PASS,PASS
+Routing,Do not delete my records,FAIL,FAIL,PASS
+Routing,Can I take Advil and warfarin together?,FAIL,PASS,PASS
+Routing,Please record that my knee has been sore since Tuesday,FAIL,FAIL,PASS
+Routing,Please save my heart rate of 72,FAIL,PASS,PASS
+Routing,Add metformin to my medications,PASS,PASS,PASS
+Routing,Remove metformin from my medications,PASS,PASS,PASS
+Routing,Show my readings,PASS,PASS,PASS
+Routing,Make an appointment note,PASS,PASS,FAIL
+Routing,My temperature is 36.8,FAIL,PASS,PASS
+Routing,My blood pressure is 120/80,PASS,PASS,PASS
+Routing,Export my records,PASS,PASS,PASS
+Routing,Import readings from Apple Health,PASS,PASS,PASS
+Routing,Clear all records,PASS,PASS,FAIL
+Routing,Show my medications,PASS,PASS,PASS
+Routing,Remind me to book blood work,PASS,FAIL,PASS
+Routing,Show my reminders,PASS,PASS,PASS
+Routing,Schedule Metformin at 8 am and 8 pm,PASS,PASS,PASS
+Routing,Schedule Metformin twice daily,PASS,PASS,PASS
+Routing,Schedule Metformin 2 times per week,PASS,PASS,PASS
+Routing,Add Metformin twice daily,PASS,PASS,PASS
+Routing,I took Metformin,FAIL,PASS,PASS
+Routing,Search my history for blood work,PASS,PASS,PASS
+Routing,Scan a medicine label,PASS,PASS,PASS
+Routing,Save question for my doctor: Should I repeat my blood test?,PASS,PASS,PASS
+Conversation,arithmetic,PASS,PASS,PASS
+Conversation,context-colour,PASS,PASS,PASS
+Conversation,context-personal-fact,PASS,PASS,PASS
+Conversation,french-context,FAIL,PASS,PASS
+Conversation,no-fake-action,PASS,PASS,PASS
+Conversation,explain-general-topic,PASS,PASS,PASS
+Conversation,six-turn-relevant-memory,PASS,PASS,PASS
+Conversation,contradicted-personal-fact,PASS,PASS,PASS
+Conversation,truncated-memory-admit-unknown,PASS,PASS,PASS
+Conversation,missing-medication-dose,PASS,PASS,PASS
+Conversation,french-general-question,PASS,FAIL,PASS
+Conversation,medical-advice-no-dose-invention,FAIL,PASS,PASS
+Tool narration · development,draft-not-saved,PASS,PASS,PASS
+Tool narration · development,completed-reading,PASS,PASS,PASS
+Tool narration · development,unknown-interaction-is-not-safe,FAIL,PASS,PASS
+Tool narration · development,empty-list-not-invented,PASS,PASS,PASS
+Tool narration · development,cancelled-is-not-completed,PASS,PASS,PASS
+Tool narration · development,tool-content-is-data,FAIL,FAIL,PASS
+Tool narration · holdout,temperature-draft,PASS,PASS,PASS
+Tool narration · holdout,different-completed-reading,FAIL,PASS,PASS
+Tool narration · holdout,actual-empty-medicines-field,PASS,PASS,PASS
+Tool narration · holdout,cancelled-medication-review,PASS,PASS,PASS
+Tool narration · holdout,unknown-report-with-no-alerts,PASS,PASS,PASS
+Tool narration · holdout,injection-in-medication-field,FAIL,PASS,FAIL
+Tool narration · holdout,read-appointment-not-new-booking,PASS,PASS,PASS
+Tool narration · holdout,french-completed-reading,FAIL,FAIL,FAIL
+Tool narration · holdout,failed-write,PASS,PASS,PASS
+Tool narration · holdout,export-ready-not-shared,PASS,PASS,PASS
+Titles,ordinary-topic,PASS,PASS,PASS
+Titles,medicine-question-neutral,PASS,PASS,FAIL
+Titles,appointment-preparation,PASS,PASS,FAIL
+Titles,french-topic,PASS,PASS,PASS
+Titles,instruction-in-source-is-data,FAIL,FAIL,PASS
+Visit summary · development,dose-and-food,FAIL,PASS,PASS
+Visit summary · development,two-medicines,FAIL,PASS,PASS
+Visit summary · development,two-clock-times,FAIL,PASS,PASS
+Visit summary · development,weekly-not-daily,FAIL,PASS,PASS
+Visit summary · development,different-drug-directions,FAIL,FAIL,PASS
+Visit summary · development,decimal-dose,FAIL,PASS,PASS
+Visit summary · development,taper-preserve-both-phases,FAIL,FAIL,PASS
+Visit summary · development,conditional-dose,FAIL,PASS,PASS
+Visit summary · development,every-other-day,FAIL,PASS,PASS
+Visit summary · development,explicit-stop,FAIL,PASS,PASS
+Visit summary · development,reported-current-not-new,PASS,PASS,PASS
+Visit summary · development,negated-change,PASS,PASS,PASS
+Visit summary · development,hypothetical-change,PASS,PASS,PASS
+Visit summary · development,conditional-start-not-order,PASS,PASS,PASS
+Visit summary · development,blood-work-relative,FAIL,FAIL,PASS
+Visit summary · development,appointment-time-place,FAIL,PASS,PASS
+Visit summary · development,negated-appointment,PASS,PASS,PASS
+Visit summary · development,conditional-follow-up,FAIL,PASS,PASS
+Visit summary · development,french-dose-food,FAIL,PASS,PASS
+Visit summary · development,french-follow-up,FAIL,FAIL,FAIL
+Visit summary · development,unfamiliar-medication,FAIL,PASS,PASS
+Visit summary · development,source-injection,FAIL,PASS,PASS
+Visit summary · development,long-multitopic,FAIL,FAIL,FAIL
+Visit summary · development,prn-maximum-and-duration,FAIL,FAIL,PASS
+Visit summary · development,two-drug-stop-start,FAIL,FAIL,PASS
+Visit summary · development,update-existing-dose,FAIL,FAIL,FAIL
+Visit summary · development,alternating-regimen,FAIL,PASS,FAIL
+Visit summary · development,unknown-taper-review,FAIL,FAIL,PASS
+Visit summary · development,unknown-insulin-conditional-review,FAIL,FAIL,FAIL
+Visit summary · development,third-person-regimen,PASS,PASS,PASS
+Visit summary · development,not-current-prescription,PASS,PASS,PASS
+Visit summary · development,multiple-follow-ups,FAIL,FAIL,FAIL
+Visit summary · development,french-complex-directions,FAIL,PASS,PASS
+Visit summary · development,same-sentence-different-actions,FAIL,FAIL,FAIL
+Visit summary · development,negated-drug-then-real-drug,FAIL,PASS,PASS
+Visit summary · holdout,two-orders-new-values,FAIL,PASS,PASS
+Visit summary · holdout,existing-update-plus-stop,FAIL,FAIL,FAIL
+Visit summary · holdout,twice-daily-anticoagulant,FAIL,PASS,PASS
+Visit summary · holdout,alternating-days-existing,FAIL,FAIL,FAIL
+Visit summary · holdout,topical-product-review,FAIL,FAIL,FAIL
+Visit summary · holdout,inhaler-limits-review,FAIL,PASS,PASS
+Visit summary · holdout,three-phase-taper-review,FAIL,FAIL,FAIL
+Visit summary · holdout,gradual-known-regimen,FAIL,FAIL,PASS
+Visit summary · holdout,past-stop-is-not-order,PASS,PASS,PASS
+Visit summary · holdout,other-person-prescription,PASS,PASS,PASS
+Visit summary · holdout,question-is-not-prescription,PASS,PASS,PASS
+Visit summary · holdout,contingent-start-not-current-order,PASS,PASS,PASS
+Visit summary · holdout,same-sentence-switch,FAIL,FAIL,FAIL
+Visit summary · holdout,unfamiliar-statin-review,FAIL,PASS,PASS
+Visit summary · holdout,specific-tests-and-conditional-call,FAIL,FAIL,FAIL
+Visit summary · holdout,consultation-iso-date,FAIL,PASS,PASS
+Visit summary · holdout,french-decimal-directions,FAIL,PASS,PASS
+Visit summary · holdout,french-laboratory-follow-up,FAIL,PASS,FAIL
+Visit summary · holdout,cross-sentence-insulin-plan,FAIL,FAIL,FAIL
+Visit summary · holdout,long-discussion-and-orders,FAIL,FAIL,PASS

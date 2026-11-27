@@ -467,7 +467,7 @@
 "The visit couldn’t be saved. Recording has not started." = "The visit couldn’t be saved. Recording has not started.";
 "The visit note has changed. Choose the follow-up again." = "The visit note has changed. Choose the follow-up again.";
 "The visit was removed, but its audio couldn’t be deleted. %@" = "The visit was removed, but its audio couldn’t be deleted. %@";
-"There isn’t enough memory to start this model. Choose Qwen Small." = "There isn’t enough memory to start this model. Choose Qwen Small.";
+"There isn’t enough memory to start this model. Choose Alex." = "There isn’t enough memory to start this model. Choose Alex.";
 "Thinking" = "Thinking";
 "Thinking…" = "Thinking…";
 "This dose is scheduled for later today." = "This dose is scheduled for later today.";
@@ -642,6 +642,148 @@
 "Dots show recorded values. Lines connect consecutive readings; gaps do not imply measurements." = "Dots show recorded values. Lines connect consecutive readings; gaps do not imply measurements.";
 "Blue: systolic. Coral: diastolic." = "Blue: systolic. Coral: diastolic.";
 "No transcript saved." = "No transcript saved.";
+
+"Live Activities" = "Live Activities";
+
+"Chats" = "Chats";
+"No chats" = "No chats";
+
+"Recording was interrupted. Review the saved audio." = "Recording was interrupted. Review the saved audio.";
+"Follow-up appointment" = "Follow-up appointment";
+"Instructions" = "Instructions";
+"Unconfirmed medications" = "Unconfirmed medications";
+"No summary yet" = "No summary yet";
+"%d of %d cases" = "%d of %d cases";
+
+"Response unavailable" = "Response unavailable";
+
+"No details extracted." = "No details extracted.";
+
+"The model sampling settings are invalid." = "The model sampling settings are invalid.";
+
+"Female" = "Female";
+"Male" = "Male";
+"Downloading voice" = "Downloading voice";
+"Cancel download" = "Cancel download";
+"Preparing voice…" = "Preparing voice…";
+"Couldn’t prepare speech pronunciation." = "Couldn’t prepare speech pronunciation.";
+"Couldn’t pronounce this text." = "Couldn’t pronounce this text.";
+"The downloaded voice files are incomplete. Download them again." = "The downloaded voice files are incomplete. Download them again.";
+"Couldn’t generate voice audio." = "Couldn’t generate voice audio.";
+
+"Connecting…" = "Connecting…";
+
+"Pause microphone" = "Pause microphone";
+
+"Interrupt response" = "Interrupt response";
+
+"Speak" = "Speak";
+
+"Resume" = "Resume";
+
+"Pause" = "Pause";
+
+"End" = "End";
+
+/* Developer demo data */
+"Developer" = "Developer";
+"Replace with demo data" = "Replace with demo data";
+"Demo data loaded" = "Demo data loaded";
+"Demo data" = "Demo data";
+"Demo visit · preset transcript, no audio" = "Demo visit · preset transcript, no audio";
+"Fictional records, trends, schedules, appointments, chat history and completed visit summaries. Visits use preset transcripts without audio. Notifications are off for demo records." = "Fictional records, trends, schedules, appointments, chat history and completed visit summaries. Visits use preset transcripts without audio. Notifications are off for demo records.";
+"Models and app settings are kept" = "Models and app settings are kept";
+"Export any records you want to keep before replacing them. This removes existing records, chat and visit recordings from this device." = "Export any records you want to keep before replacing them. This removes existing records, chat and visit recordings from this device.";
+"Replace all local data?" = "Replace all local data?";
+"Your records, chat history and visit recordings will be deleted and replaced with fictional demo data. This cannot be undone." = "Your records, chat history and visit recordings will be deleted and replaced with fictional demo data. This cannot be undone.";
+"Couldn’t finish replacing local data. %@" = "Couldn’t finish replacing local data. %@";
+
+/* Visit review and chat confirmation */
+"Review medication" = "Review medication";
+"Medication saved" = "Medication saved";
+"Review requested change" = "Review requested change";
+"This visit item changed or was already reviewed. Reopen the visit before saving." = "This visit item changed or was already reviewed. Reopen the visit before saving.";
+
+"Correct my saved metformin dose to 250 mg" = "Correct my saved metformin dose to 250 mg";
+
+"Recorded instructions" = "Recorded instructions";
+
+"Qwen 7B uses more memory and may not run on every device." = "Qwen 7B uses more memory and may not run on every device.";
+
+"Camille uses more memory and may not run on every device." = "Camille uses more memory and may not run on every device.";
+
+"Systolic: %@; diastolic: %@ mmHg" = "Systolic: %@; diastolic: %@ mmHg";
+
+"Range: %@ %@" = "Range: %@ %@";
+
+"Latest: %@ (%@)" = "Latest: %@ (%@)";
+
+"%lld symptoms recorded" = "%lld symptoms recorded";
+
+"%lld visits recorded" = "%lld visits recorded";
+
+"Showing the %lld most recent entries. Enable Full history to include every entry." = "Showing the %lld most recent entries. Enable Full history to include every entry.";
+
+"%lld additional questions" = "%lld additional questions";
+
+"Enable Full history to include every entry." = "Enable Full history to include every entry.";
+
+"Full history" = "Full history";
+
+/* Simple interface, medication vocabulary and guided presentation. */
+"Interface" = "Interface";
+"Caregiver" = "Caregiver";
+"Simple" = "Simple";
+"Chat and voice" = "Chat and voice";
+"Records and tools" = "Records and tools";
+"Home" = "Home";
+"Presentation" = "Presentation";
+"Start guided walkthrough" = "Start guided walkthrough";
+"Open the highlighted screen first" = "Open the highlighted screen first";
+"Live app state" = "Live app state";
+"On-device model" = "On-device model";
+"Generation" = "Generation";
+"Idle" = "Idle";
+"Working" = "Working";
+"Last tool" = "Last tool";
+"No tool call yet" = "No tool call yet";
+"Speech hints" = "Speech hints";
+"Medication vocabulary" = "Medication vocabulary";
+"Data flow" = "Data flow";
+"Your request → local model" = "Your request → local model";
+"Tool choice → source checks" = "Tool choice → source checks";
+"Changes → review before saving" = "Changes → review before saving";
+"Saved data → native interface" = "Saved data → native interface";
+"The magnified image is captured from the actual app. No replacement interface is drawn. Saved demo visit summaries are authored fixtures; live chat requests use the selected local model." = "The magnified image is captured from the actual app. No replacement interface is drawn. Saved demo visit summaries are authored fixtures; live chat requests use the selected local model.";
+"Behind the scenes" = "Behind the scenes";
+"Enlarge actual UI" = "Enlarge actual UI";
+"Previous step" = "Previous step";
+"End walkthrough" = "End walkthrough";
+"Flow %lld/%lld" = "Flow %lld/%lld";
+"Magnified actual app interface" = "Magnified actual app interface";
+"Similar names" = "Similar names";
+"Talk" = "Talk";
+"How to use Harbour" = "How to use Harbour";
+"Try a message" = "Try a message";
+"Message" = "Message";
+"Resume visit" = "Resume visit";
+"Talk naturally" = "Talk naturally";
+"Type a message" = "Type a message";
+"Review before saving" = "Review before saving";
+"Tap Talk and say what you need." = "Tap Talk and say what you need.";
+"Ask about a reading, a medicine, or how you feel." = "Ask about a reading, a medicine, or how you feel.";
+"Check the details when Harbour offers to update a record." = "Check the details when Harbour offers to update a record.";
+"Simple home" = "Simple home";
+"Start on the simple home screen." = "Start on the simple home screen.";
+"Enlarge Talk to explain the voice entry point." = "Enlarge Talk to explain the voice entry point.";
+"A real request" = "A real request";
+"Open Message and ask to see recent blood pressure readings." = "Open Message and ask to see recent blood pressure readings.";
+"Saved readings" = "Saved readings";
+"Wait for the actual result, then enlarge the table." = "Wait for the actual result, then enlarge the table.";
+"Caregiver tools" = "Caregiver tools";
+"Use Settings → Interface → Caregiver, then open Records." = "Use Settings → Interface → Caregiver, then open Records.";
+"Visit review" = "Visit review";
+"Open a saved visit and its medication review." = "Open a saved visit and its medication review.";
 
 "Log a symptom" = "Log a symptom";
 "My medicines" = "My medicines";

@@ -1,0 +1,10 @@
+{
+  "createdBeforeInference": true,
+  "timeUTC": "2026-11-07T04:45:06.004680+00:00",
+  "datasetSHA256": "4e5f654dff6094013efb928ea963cc572dbb5d7b296bd0cd1631064f7e870429",
+  "sourceSHA256": {
+    "HarbourCore/Sources/HarbourCore/InstructionPlans.swift": "472b4a90a8c359204bcdfe605778f3553708814b34f22f7dcab40ace783f1082",
+    "HarbourRuntime/Sources/ModelProbe/InstructionEvaluation.swift": "4b5d562bc417f09edd61cb69191c4cac1bc6d3946c39651342f2a588cf7f0ea2"
+  },
+  "decision": "Development experiment only. Report source validation separately from scope/phase/detail accuracy. Do not deploy or compare percentage directly with legacy flat summaries. No rule-based fact recovery; no training."
+}

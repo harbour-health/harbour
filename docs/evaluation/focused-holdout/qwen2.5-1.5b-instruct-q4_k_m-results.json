@@ -1,0 +1,578 @@
+{
+  "memoryBytes" : 17179869184,
+  "model" : "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+  "operatingSystem" : "Version 27.0 (Build 26A428)",
+  "processors" : 10,
+  "protocolDescription" : "Focused model-only extraction: medicines, followUps\/appointments, highlights, per source chunk. Greedy Metal,4096 context,1536\/1024\/768 token limits. No source recovery; validators only reject candidates. Raw facts and accepted facts are separate. Exact-field scoring is not clinical validation. Development results are not held-out results. Dataset role and description: Separate authored holdout for focused prompts. Gold labels are engineering references, not clinician-reviewed. Run after prompt freeze; do not tune prompts on these results. No source-recovery additions are allowed.",
+  "runs" : [
+    {
+      "category" : "medical",
+      "completedFacts" : [
+        "medicine|start|amlodipine|2.5 mg every morning",
+        "medicine|start|metformin|250 mg with the evening meal"
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "medicine|start|amlodipine|2.5 mg every morning",
+        "medicine|start|metformin|250 mg with the evening meal"
+      ],
+      "expectedFacts" : [
+        "medicine|start|amlodipine|2.5 mg every morning",
+        "medicine|start|metformin|250 mg with the evening meal"
+      ],
+      "name" : "two-orders-new-values",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Begin metformin 250 mg with the evening meal.\",\"name\":\"metformin\",\"action\":\"start\",\"instructions\":\"250 mg with the evening meal\"},{\"quote\":\"Begin amlodipine 2.5 mg every morning.\",\"name\":\"amlodipine\",\"action\":\"start\",\"instructions\":\"2.5 mg every morning\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Begin metformin 250 mg with the evening meal. Begin amlodipine 2.5 mg every morning.\",\"text\":\"Start metformin 250 mg with evening meal. Start amlodipine 2.5 mg daily.\"}]}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+        "medicine|start|amlodipine|2.5 mg every morning",
+        "medicine|start|metformin|250 mg with the evening meal"
+      ],
+      "seconds" : 4.140147924423218,
+      "validatedFacts" : [
+        "medicine|start|amlodipine|2.5 mg every morning",
+        "medicine|start|metformin|250 mg with the evening meal"
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+        "medicine|stop|aspirin|",
+        "medicine|update|metformin|850 mg twice daily with meals"
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "medicine|stop|aspirin|",
+        "medicine|update|metformin|to 850 mg twice daily with meals"
+      ],
+      "expectedFacts" : [
+        "medicine|stop|aspirin|",
+        "medicine|update|metformin|to 850 mg twice daily with meals"
+      ],
+      "name" : "existing-update-plus-stop",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Increase metformin to 850 mg twice daily with meals.\",\"name\":\"metformin\",\"action\":\"update\",\"instructions\":\"850 mg twice daily with meals\"},{\"quote\":\"Stop aspirin.\",\"name\":\"aspirin\",\"action\":\"stop\",\"instructions\":\"\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Increase metformin to 850 mg twice daily with meals. Stop aspirin.\",\"text\":\"Increase metformin to 850 mg twice daily with meals, stop aspirin.\"}]}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+        "medicine|stop|aspirin|",
+        "medicine|update|metformin|850 mg twice daily with meals"
+      ],
+      "seconds" : 3.2507030963897705,
+      "validatedFacts" : [
+        "medicine|stop|aspirin|",
+        "medicine|update|metformin|850 mg twice daily with meals"
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+        "medicine|start|apixaban|2.5 mg twice daily at 7 am and 7 pm"
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "medicine|start|apixaban|2.5 mg twice daily at 7 am and 7 pm"
+      ],
+      "expectedFacts" : [
+        "medicine|start|apixaban|2.5 mg twice daily at 7 am and 7 pm"
+      ],
+      "name" : "twice-daily-anticoagulant",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Start apixaban 2.5 mg twice daily at 7 am and 7 pm.\",\"name\":\"apixaban\",\"action\":\"start\",\"instructions\":\"2.5 mg twice daily at 7 am and 7 pm\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Start apixaban 2.5 mg twice daily at 7 am and 7 pm.\",\"text\":\"Start apixaban 2.5 mg twice daily at 7 am and 7 pm.\"}]}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+        "medicine|start|apixaban|2.5 mg twice daily at 7 am and 7 pm"
+      ],
+      "seconds" : 3.1600509881973267,
+      "validatedFacts" : [
+        "medicine|start|apixaban|2.5 mg twice daily at 7 am and 7 pm"
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "medicine|update|warfarin|2 mg on tuesday and thursday and 3 mg on the other days"
+      ],
+      "expectedFacts" : [
+        "medicine|update|warfarin|2 mg on tuesday and thursday and 3 mg on the other days"
+      ],
+      "name" : "alternating-days-existing",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Take warfarin 2 mg on Tuesday and Thursday and 3 mg on the other days.\",\"name\":\"warfarin\",\"action\":\"update\",\"instructions\":\"2 mg on Tuesday and Thursday, 3 mg on the other days\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Take warfarin 2 mg on Tuesday and Thursday and 3 mg on the other days.\",\"text\":\"Take warfarin 2 mg on Tuesday and Thursday, and 3 mg on the other days.\"}]}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+        "medicine|update|warfarin|2 mg on tuesday and thursday, 3 mg on the other days"
+      ],
+      "seconds" : 3.184697985649109,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+        "medicine|start|hydrocortisone|1% cream twice daily on the affected area for seven days"
+      ],
+      "name" : "topical-product-review",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Start hydrocortisone 1% cream twice daily on the affected area for seven days.\",\"name\":\"hydrocortisone\",\"action\":\"start\",\"instructions\":\"twice daily on the affected area for seven days\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Start hydrocortisone 1% cream twice daily on the affected area for seven days.\",\"text\":\"Start hydrocortisone 1% cream twice daily on the affected area for seven days.\"}]}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+        "medicine|start|hydrocortisone|twice daily on the affected area for seven days"
+      ],
+      "seconds" : 3.1344850063323975,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+        "medicine|start|salbutamol|2 puffs every 4 to 6 hours if needed for wheezing, maximum 8 puffs in 24 hours"
+      ],
+      "name" : "inhaler-limits-review",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Start salbutamol 2 puffs every 4 to 6 hours if needed for wheezing, maximum 8 puffs in 24 hours.\",\"name\":\"salbutamol\",\"action\":\"start\",\"instructions\":\"2 puffs every 4 to 6 hours if needed for wheezing, maximum 8 puffs in 24 hours\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Start salbutamol 2 puffs every 4 to 6 hours if needed for wheezing, maximum 8 puffs in 24 hours.\",\"text\":\"Start salbutamol 2 puffs every 4 to 6 hours if needed for wheezing, maximum 8 puffs in 24 hours.\"}]}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+        "medicine|start|salbutamol|2 puffs every 4 to 6 hours if needed for wheezing, maximum 8 puffs in 24 hours"
+      ],
+      "seconds" : 4.410710096359253,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+        "medicine|start|prednisone|40 mg each morning for two days then 20 mg each morning for two days then 10 mg each morning for two days then stop"
+      ],
+      "name" : "three-phase-taper-review",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Begin prednisone 40 mg each morning for two days.\",\"name\":\"prednisone\",\"action\":\"start\",\"instructions\":\"40 mg each morning for two days\"},{\"quote\":\"Then 20 mg each morning for two days.\",\"name\":\"prednisone\",\"action\":\"update\",\"instructions\":\"20 mg each morning for two days\"},{\"quote\":\"Then 10 mg each morning for two days.\",\"name\":\"prednisone\",\"action\":\"update\",\"instructions\":\"10 mg each morning for two days\"},{\"quote\":\"Then stop.\",\"name\":\"prednisone\",\"action\":\"stop\",\"instructions\":\"\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Begin prednisone 40 mg each morning for two days then 20 mg each morning for two days then 10 mg each morning for two days then stop.\",\"text\":\"Start prednisone at 40 mg daily for two days, followed by 20 mg daily for two days, then 10 mg daily for two days, and finally stop.\"}]}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+        "medicine|start|prednisone|40 mg each morning for two days",
+        "medicine|stop|prednisone|",
+        "medicine|update|prednisone|10 mg each morning for two days",
+        "medicine|update|prednisone|20 mg each morning for two days"
+      ],
+      "seconds" : 5.372114062309265,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "medicine|start|metformin|250 mg once daily for four days then 500 mg once daily for four days"
+      ],
+      "expectedFacts" : [
+        "medicine|start|metformin|250 mg once daily for four days then 500 mg once daily for four days"
+      ],
+      "name" : "gradual-known-regimen",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Start metformin 250 mg once daily for four days.\",\"name\":\"metformin\",\"action\":\"start\",\"instructions\":\"250 mg once daily for four days\"},{\"quote\":\"Start metformin 500 mg once daily for four days.\",\"name\":\"metformin\",\"action\":\"start\",\"instructions\":\"500 mg once daily for four days\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Start metformin 250 mg once daily for four days then 500 mg once daily for four days.\",\"text\":\"Start metformin 250 mg once daily for four days, then 500 mg once daily for four days.\"}]}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+        "medicine|start|metformin|250 mg once daily for four days",
+        "medicine|start|metformin|500 mg once daily for four days"
+      ],
+      "seconds" : 4.1775349378585815,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+
+      ],
+      "name" : "past-stop-is-not-order",
+      "output" : [
+        "{\"medicines\":[]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"I stopped warfarin last month. We discussed why it had been prescribed.\",\"text\":\"Stopped warfarin last month, discussed its prescription reason.\"}]}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+
+      ],
+      "seconds" : 2.646443009376526,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+
+      ],
+      "name" : "other-person-prescription",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"My brother was prescribed amlodipine 5 mg yesterday.\",\"name\":\"amlodipine\",\"action\":\"start\",\"instructions\":\"5 mg every morning\"}]}",
+        "{\"followUps\":[{\"quote\":\"My brother was prescribed amlodipine 5 mg yesterday.\",\"text\":\"Discuss sleep with brother.\"}],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"My brother was prescribed amlodipine 5 mg yesterday.\",\"text\":\"Brother was prescribed amlodipine 5 mg yesterday.\"}]}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+        "followUp|my brother was prescribed amlodipine 5 mg yesterday",
+        "medicine|start|amlodipine|5 mg every morning"
+      ],
+      "seconds" : 3.4862279891967773,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+
+      ],
+      "name" : "question-is-not-prescription",
+      "output" : [
+        "{\"medicines\":[]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Would naproxen 250 mg help my shoulder? No medication changes were agreed.\",\"text\":\"Naproxen 250 mg may help shoulder pain, but no medication changes were agreed.\"}]}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+
+      ],
+      "seconds" : 2.293760061264038,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+
+      ],
+      "name" : "contingent-start-not-current-order",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"If your prescriber agrees, start amlodipine 2.5 mg once daily.\",\"name\":\"amlodipine\",\"action\":\"start\",\"instructions\":\"2.5 mg once daily\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"If your prescriber agrees, start amlodipine 2.5 mg once daily.\",\"text\":\"If the prescriber agrees, start amlodipine 2.5 mg once daily.\"}]}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+        "medicine|start|amlodipine|2.5 mg once daily"
+      ],
+      "seconds" : 3.1145859956741333,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+        "medicine|start|apixaban|2.5 mg twice daily"
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "medicine|start|apixaban|2.5 mg twice daily",
+        "medicine|stop|aspirin|"
+      ],
+      "expectedFacts" : [
+        "medicine|start|apixaban|2.5 mg twice daily",
+        "medicine|stop|aspirin|"
+      ],
+      "name" : "same-sentence-switch",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Discontinue aspirin and begin apixaban 2.5 mg twice daily.\",\"name\":\"apixaban\",\"action\":\"start\",\"instructions\":\"2.5 mg twice daily\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Discontinue aspirin and begin apixaban 2.5 mg twice daily.\",\"text\":\"Stop aspirin, start apixaban 2.5 mg twice daily.\"}]}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+        "medicine|start|apixaban|2.5 mg twice daily"
+      ],
+      "seconds" : 2.8296830654144287,
+      "validatedFacts" : [
+        "medicine|start|apixaban|2.5 mg twice daily"
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+        "medicine|start|rosuvastatin|5 mg at night"
+      ],
+      "name" : "unfamiliar-statin-review",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Start rosuvastatin 5 mg at night.\",\"name\":\"rosuvastatin\",\"action\":\"start\",\"instructions\":\"5 mg at night\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Start rosuvastatin 5 mg at night.\",\"text\":\"Start rosuvastatin 5 mg at night.\"}]}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+        "medicine|start|rosuvastatin|5 mg at night"
+      ],
+      "seconds" : 2.4098840951919556,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+        "followUp|repeat the kidney blood test in ten days"
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "followUp|call the clinic if the swelling gets worse",
+        "followUp|repeat the kidney blood test in ten days"
+      ],
+      "expectedFacts" : [
+        "followUp|call the clinic if the swelling gets worse",
+        "followUp|repeat the kidney blood test in ten days"
+      ],
+      "name" : "specific-tests-and-conditional-call",
+      "output" : [
+        "{\"medicines\":[]}",
+        "{\"followUps\":[{\"quote\":\"Repeat the kidney blood test in ten days.\",\"text\":\"Repeat the kidney blood test in ten days.\"}],\"appointments\":[{\"quote\":\"Call the clinic if the swelling gets worse.\",\"text\":\"Call the clinic if the swelling gets worse.\"}]}",
+        "{\"highlights\":[{\"quote\":\"Repeat the kidney blood test in ten days. Call the clinic if the swelling gets worse.\",\"text\":\"Repeat kidney blood test in ten days, call clinic if swelling worsens.\"}]}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+        "appointment|call the clinic if the swelling gets worse",
+        "followUp|repeat the kidney blood test in ten days"
+      ],
+      "seconds" : 3.005934000015259,
+      "validatedFacts" : [
+        "followUp|repeat the kidney blood test in ten days"
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+        "appointment|your cardiology consultation is on 2026-12-03 at 11:30 am at clinic c"
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "appointment|your cardiology consultation is on 2026-12-03 at 11:30 am at clinic c"
+      ],
+      "expectedFacts" : [
+        "appointment|your cardiology consultation is on 2026-12-03 at 11:30 am at clinic c"
+      ],
+      "name" : "consultation-iso-date",
+      "output" : [
+        "{\"medicines\":[]}",
+        "{\"followUps\":[],\"appointments\":[{\"quote\":\"Your cardiology consultation is on 2026-12-03 at 11:30 am at Clinic C.\",\"text\":\"Cardiology consultation on 2026-12-03 at 11:30 am at Clinic C.\"}]}",
+        "{\"highlights\":[{\"quote\":\"Your cardiology consultation is on 2026-12-03 at 11:30 am at Clinic C.\",\"text\":\"Cardiology consultation scheduled for December 3, 2026, at 11:30 am at Clinic C.\"}]}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+        "appointment|your cardiology consultation is on 2026-12-03 at 11:30 am at clinic c"
+      ],
+      "seconds" : 3.8086479902267456,
+      "validatedFacts" : [
+        "appointment|your cardiology consultation is on 2026-12-03 at 11:30 am at clinic c"
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+        "medicine|start|amlodipine|2,5 mg une fois par jour au coucher"
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "medicine|start|amlodipine|2,5 mg une fois par jour au coucher"
+      ],
+      "expectedFacts" : [
+        "medicine|start|amlodipine|2,5 mg une fois par jour au coucher"
+      ],
+      "name" : "french-decimal-directions",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Commencez amlodipine 2,5 mg une fois par jour au coucher.\",\"name\":\"amlodipine\",\"action\":\"start\",\"instructions\":\"2,5 mg une fois par jour au coucher\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Commencez amlodipine 2,5 mg une fois par jour au coucher.\",\"text\":\"Start amlodipine 2.5 mg once daily at bedtime.\"}]}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+        "medicine|start|amlodipine|2,5 mg une fois par jour au coucher"
+      ],
+      "seconds" : 3.1973730325698853,
+      "validatedFacts" : [
+        "medicine|start|amlodipine|2,5 mg une fois par jour au coucher"
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+        "followUp|planifiez une analyse sanguine dans quatre semaines"
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "followUp|planifiez une analyse sanguine dans quatre semaines"
+      ],
+      "expectedFacts" : [
+        "followUp|planifiez une analyse sanguine dans quatre semaines"
+      ],
+      "name" : "french-laboratory-follow-up",
+      "output" : [
+        "{\"medicines\":[]}",
+        "{\"followUps\":[{\"quote\":\"Planifiez une analyse sanguine dans quatre semaines.\",\"text\":\"Planifiez une analyse sanguine dans quatre semaines.\"}],\"appointments\":[{\"quote\":\"Planifiez une analyse sanguine dans quatre semaines.\",\"text\":\"Planifiez une analyse sanguine dans quatre semaines.\"}]}",
+        "{\"highlights\":[{\"quote\":\"Planifiez une analyse sanguine dans quatre semaines.\",\"text\":\"Schedule a blood test in four weeks.\"}]}"
+      ],
+      "passed" : true,
+      "rawFacts" : [
+        "appointment|planifiez une analyse sanguine dans quatre semaines",
+        "followUp|planifiez une analyse sanguine dans quatre semaines"
+      ],
+      "seconds" : 2.98717999458313,
+      "validatedFacts" : [
+        "followUp|planifiez une analyse sanguine dans quatre semaines"
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+
+      ],
+      "expectedFacts" : [
+        "medicine|start|insulin glargine|8 units each night. after three days, increase to 10 units each night if fasting glucose remains above 9 mmol\/l"
+      ],
+      "name" : "cross-sentence-insulin-plan",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"Start insulin glargine 8 units each night.\",\"name\":\"insulin glargine\",\"action\":\"start\",\"instructions\":\"8 units each night\"},{\"quote\":\"After three days, increase to 10 units each night if fasting glucose remains above 9 mmol\/L.\",\"name\":\"insulin glargine\",\"action\":\"update\",\"instructions\":\"10 units each night if fasting glucose remains above 9 mmol\/L\"}]}",
+        "{\"followUps\":[],\"appointments\":[]}",
+        "{\"highlights\":[{\"quote\":\"Start insulin glargine 8 units each night. After three days, increase to 10 units each night if fasting glucose remains above 9 mmol\/L.\",\"text\":\"Start insulin glargine 8 units each night. After three days, increase to 10 units each night if fasting glucose remains above 9 mmol\/L.\"}]}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+        "medicine|start|insulin glargine|8 units each night",
+        "medicine|update|insulin glargine|10 units each night if fasting glucose remains above 9 mmol\/l"
+      ],
+      "seconds" : 4.5219069719314575,
+      "validatedFacts" : [
+
+      ]
+    },
+    {
+      "category" : "medical",
+      "completedFacts" : [
+        "medicine|start|acetaminophen|325 mg every 8 hours if needed for pain for two days"
+      ],
+      "effort" : "focused",
+      "expectedCompletedFacts" : [
+        "followUp|arrange blood work in three weeks",
+        "medicine|start|acetaminophen|325 mg every 8 hours if needed for pain for two days"
+      ],
+      "expectedFacts" : [
+        "followUp|arrange blood work in three weeks",
+        "medicine|start|acetaminophen|325 mg every 8 hours if needed for pain for two days"
+      ],
+      "name" : "long-discussion-and-orders",
+      "output" : [
+        "{\"medicines\":[{\"quote\":\"The patient reports shoulder soreness without a fall. Sleep and daily activities were discussed.\",\"name\":\"acetaminophen\",\"action\":\"start\",\"instructions\":\"325 mg every 8 hours if needed for pain for two days\"},{\"quote\":\"Begin acetaminophen 325 mg every 8 hours if needed for pain for two days.\",\"name\":\"acetaminophen\",\"action\":\"start\",\"instructions\":\"325 mg every 8 hours if needed for pain for two days\"},{\"quote\":\"Arrange blood work in three weeks.\",\"name\":\"blood work\",\"action\":\"start\",\"instructions\":\"three weeks\"},{\"quote\":\"Begin acetaminophen 325 mg every 8 hours if needed for pain for two days.\",\"name\":\"acetaminophen\",\"action\":\"start\",\"instructions\":\"325 mg every 8 hours if needed for pain for two days\"}]}",
+        "{\"followUps\":[{\"quote\":\"The patient reports shoulder soreness without a fall.\",\"text\":\"The patient reports shoulder soreness without a fall.\"},{\"quote\":\"Sleep and daily activities were discussed.\",\"text\":\"Sleep and daily activities were discussed.\"},{\"quote\":\"The patient reports shoulder soreness without a fall.\",\"text\":\"The patient reports shoulder soreness without a fall.\"},{\"quote\":\"Sleep and daily activities were discussed.\",\"text\":\"Sleep and daily activities were discussed.\"},{\"quote\":\"The patient reports shoulder soreness without a fall.\",\"text\":\"The patient reports shoulder soreness without a fall.\"},{\"quote\":\"Sleep and daily activities were discussed.\",\"text\":\"Sleep and daily activities were discussed.\"},{\"quote\":\"The patient reports shoulder soreness without a fall.\",\"text\":\"The patient reports shoulder soreness without a fall.\"},{\"quote\":\"Sleep and daily activities were discussed.\",\"text\":\"Sleep and daily activities were discussed.\"},{\"quote\":\"The patient reports shoulder soreness without a fall.\",\"text\":\"The patient reports shoulder soreness without a fall.\"},{\"quote\":\"Sleep and daily activities were discussed.\",\"text\":\"Sleep and daily activities were discussed.\"},{\"quote\":\"The patient reports shoulder soreness without a fall.\",\"text\":\"The patient reports shoulder soreness without a fall.\"},{\"quote\":\"Sleep and daily activities were discussed.\",\"text\":\"Sleep and daily activities were discussed.\"}],\"appointments\":[{\"quote\":\"Arrange blood work in three weeks.\",\"text\":\"Blood work in three weeks.\"}]}",
+        "{\"highlights\":[{\"quote\":\"The patient reports shoulder soreness without a fall.\",\"text\":\"Patient reports shoulder soreness without a fall.\"},{\"quote\":\"Sleep and daily activities were discussed.\",\"text\":\"Sleep and daily activities were discussed.\"},{\"quote\":\"Begin acetaminophen 325 mg every 8 hours if needed for pain for two days.\",\"text\":\"Begin acetaminophen 325 mg every 8 hours if needed for pain for two days.\"}]}"
+      ],
+      "passed" : false,
+      "rawFacts" : [
+        "appointment|arrange blood work in three weeks",
+        "followUp|sleep and daily activities were discussed",
+        "followUp|the patient reports shoulder soreness without a fall",
+        "medicine|start|acetaminophen|325 mg every 8 hours if needed for pain for two days",
+        "medicine|start|blood work|three weeks"
+      ],
+      "seconds" : 14.009889006614685,
+      "validatedFacts" : [
+        "medicine|start|acetaminophen|325 mg every 8 hours if needed for pain for two days"
+      ]
+    }
+  ],
+  "started" : "2026-11-07T02:51:06Z"
+}

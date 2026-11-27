@@ -467,7 +467,7 @@
 "The visit couldn’t be saved. Recording has not started." = "Impossible de sauvegarder la consultation. L’enregistrement n’a pas commencé.";
 "The visit note has changed. Choose the follow-up again." = "La note de consultation a changé. Sélectionnez de nouveau le suivi.";
 "The visit was removed, but its audio couldn’t be deleted. %@" = "La consultation a été supprimée, mais son audio n’a pas pu être supprimé. %@";
-"There isn’t enough memory to start this model. Choose Qwen Small." = "La mémoire est insuffisante pour démarrer ce modèle. Choisissez Qwen Petit.";
+"There isn’t enough memory to start this model. Choose Alex." = "La mémoire est insuffisante pour démarrer ce modèle. Choisissez Alex.";
 "Thinking" = "Réflexion";
 "Thinking…" = "Réflexion…";
 "This dose is scheduled for later today." = "Cette dose est prévue plus tard aujourd’hui.";
@@ -642,6 +642,148 @@
 "Dots show recorded values. Lines connect consecutive readings; gaps do not imply measurements." = "Les points représentent les valeurs enregistrées. Les lignes relient les mesures consécutives; les intervalles ne représentent pas des mesures.";
 "Blue: systolic. Coral: diastolic." = "Bleu : systolique. Corail : diastolique.";
 "No transcript saved." = "Aucune transcription enregistrée.";
+
+"Live Activities" = "Activités en direct";
+
+"Chats" = "Conversations";
+"No chats" = "Aucune conversation";
+
+"Recording was interrupted. Review the saved audio." = "L’enregistrement a été interrompu. Vérifiez l’audio sauvegardé.";
+"Follow-up appointment" = "Rendez-vous de suivi";
+"Instructions" = "Instructions";
+"Unconfirmed medications" = "Médicaments non confirmés";
+"No summary yet" = "Aucun résumé pour le moment";
+"%d of %d cases" = "%d cas sur %d";
+
+"Response unavailable" = "Réponse indisponible";
+
+"No details extracted." = "Aucun renseignement extrait.";
+
+"The model sampling settings are invalid." = "Les paramètres d’échantillonnage du modèle sont invalides.";
+
+"Female" = "Féminine";
+"Male" = "Masculine";
+"Downloading voice" = "Téléchargement de la voix";
+"Cancel download" = "Annuler le téléchargement";
+"Preparing voice…" = "Préparation de la voix…";
+"Couldn’t prepare speech pronunciation." = "Impossible de préparer la prononciation.";
+"Couldn’t pronounce this text." = "Impossible de prononcer ce texte.";
+"The downloaded voice files are incomplete. Download them again." = "Les fichiers de voix téléchargés sont incomplets. Téléchargez-les de nouveau.";
+"Couldn’t generate voice audio." = "Impossible de générer la voix.";
+
+"Connecting…" = "Connexion…";
+
+"Pause microphone" = "Mettre le microphone en pause";
+
+"Interrupt response" = "Interrompre la réponse";
+
+"Speak" = "Parler";
+
+"Resume" = "Reprendre";
+
+"Pause" = "Pause";
+
+"End" = "Terminer";
+
+/* Developer demo data */
+"Developer" = "Développement";
+"Replace with demo data" = "Remplacer par les données de démo";
+"Demo data loaded" = "Données de démo chargées";
+"Demo data" = "Données de démo";
+"Demo visit · preset transcript, no audio" = "Consultation de démo · transcription prédéfinie, sans audio";
+"Fictional records, trends, schedules, appointments, chat history and completed visit summaries. Visits use preset transcripts without audio. Notifications are off for demo records." = "Dossiers fictifs, tendances, horaires, rendez-vous, historique de clavardage et résumés de consultation complets. Les consultations utilisent des transcriptions prédéfinies sans audio. Les notifications des données de démo sont désactivées.";
+"Models and app settings are kept" = "Les modèles et les réglages sont conservés";
+"Export any records you want to keep before replacing them. This removes existing records, chat and visit recordings from this device." = "Exportez les dossiers à conserver avant de les remplacer. Les dossiers, le clavardage et les enregistrements de consultation existants seront supprimés de cet appareil.";
+"Replace all local data?" = "Remplacer toutes les données locales?";
+"Your records, chat history and visit recordings will be deleted and replaced with fictional demo data. This cannot be undone." = "Vos dossiers, votre historique de clavardage et vos enregistrements de consultation seront supprimés et remplacés par des données de démo fictives. Cette action est irréversible.";
+"Couldn’t finish replacing local data. %@" = "Impossible de terminer le remplacement des données locales. %@";
+
+/* Visit review and chat confirmation */
+"Review medication" = "Réviser le médicament";
+"Medication saved" = "Médicament enregistré";
+"Review requested change" = "Vérifier la modification demandée";
+"This visit item changed or was already reviewed. Reopen the visit before saving." = "Cet élément de consultation a changé ou a déjà été révisé. Rouvrez la consultation avant d’enregistrer.";
+
+"Correct my saved metformin dose to 250 mg" = "Corrige la dose de metformine enregistrée à 250 mg";
+
+"Recorded instructions" = "Consignes enregistrées";
+
+"Qwen 7B uses more memory and may not run on every device." = "Qwen 7B utilise plus de mémoire et pourrait ne pas fonctionner sur tous les appareils.";
+
+"Camille uses more memory and may not run on every device." = "Camille utilise plus de mémoire et pourrait ne pas fonctionner sur tous les appareils.";
+
+"Systolic: %@; diastolic: %@ mmHg" = "Systolique : %@; diastolique : %@ mmHg";
+
+"Range: %@ %@" = "Étendue : %@ %@";
+
+"Latest: %@ (%@)" = "Dernière mesure : %@ (%@)";
+
+"%lld symptoms recorded" = "%lld symptômes consignés";
+
+"%lld visits recorded" = "%lld consultations consignées";
+
+"Showing the %lld most recent entries. Enable Full history to include every entry." = "Les %lld entrées les plus récentes sont présentées. Activez Historique complet pour inclure toutes les entrées.";
+
+"%lld additional questions" = "%lld autres questions";
+
+"Enable Full history to include every entry." = "Activez Historique complet pour inclure toutes les entrées.";
+
+"Full history" = "Historique complet";
+
+/* Simple interface, medication vocabulary and guided presentation. */
+"Interface" = "Interface";
+"Caregiver" = "Proche aidant";
+"Simple" = "Simple";
+"Chat and voice" = "Clavardage et voix";
+"Records and tools" = "Dossiers et outils";
+"Home" = "Accueil";
+"Presentation" = "Présentation";
+"Start guided walkthrough" = "Démarrer la visite guidée";
+"Open the highlighted screen first" = "Ouvrez d’abord l’écran indiqué";
+"Live app state" = "État actuel de l’app";
+"On-device model" = "Modèle sur l’appareil";
+"Generation" = "Génération";
+"Idle" = "Au repos";
+"Working" = "En cours";
+"Last tool" = "Dernier outil";
+"No tool call yet" = "Aucun appel d’outil";
+"Speech hints" = "Indices de reconnaissance vocale";
+"Medication vocabulary" = "Vocabulaire des médicaments";
+"Data flow" = "Flux des données";
+"Your request → local model" = "Votre demande → modèle local";
+"Tool choice → source checks" = "Choix de l’outil → vérification des sources";
+"Changes → review before saving" = "Modifications → révision avant l’enregistrement";
+"Saved data → native interface" = "Données enregistrées → interface native";
+"The magnified image is captured from the actual app. No replacement interface is drawn. Saved demo visit summaries are authored fixtures; live chat requests use the selected local model." = "L’image agrandie provient de l’app réelle. Aucune interface de remplacement n’est dessinée. Les résumés de visite de démonstration sont préparés à l’avance; les demandes de clavardage utilisent le modèle local sélectionné.";
+"Behind the scenes" = "En coulisses";
+"Enlarge actual UI" = "Agrandir l’interface réelle";
+"Previous step" = "Étape précédente";
+"End walkthrough" = "Terminer la visite";
+"Flow %lld/%lld" = "Étape %lld/%lld";
+"Magnified actual app interface" = "Interface réelle de l’app agrandie";
+"Similar names" = "Noms semblables";
+"Talk" = "Parler";
+"How to use Harbour" = "Utiliser Harbour";
+"Try a message" = "Essayer un message";
+"Message" = "Message";
+"Resume visit" = "Reprendre la visite";
+"Talk naturally" = "Parlez naturellement";
+"Type a message" = "Écrivez un message";
+"Review before saving" = "Vérifiez avant d’enregistrer";
+"Tap Talk and say what you need." = "Touchez Parler et dites ce dont vous avez besoin.";
+"Ask about a reading, a medicine, or how you feel." = "Posez une question sur une mesure, un médicament ou votre état.";
+"Check the details when Harbour offers to update a record." = "Vérifiez les détails lorsque Harbour propose de modifier un dossier.";
+"Simple home" = "Accueil simple";
+"Start on the simple home screen." = "Commencez sur l’écran d’accueil simple.";
+"Enlarge Talk to explain the voice entry point." = "Agrandissez Parler pour présenter le mode vocal.";
+"A real request" = "Une vraie demande";
+"Open Message and ask to see recent blood pressure readings." = "Ouvrez Message et demandez les mesures de tension récentes.";
+"Saved readings" = "Mesures enregistrées";
+"Wait for the actual result, then enlarge the table." = "Attendez le résultat réel, puis agrandissez le tableau.";
+"Caregiver tools" = "Outils du proche aidant";
+"Use Settings → Interface → Caregiver, then open Records." = "Choisissez Réglages → Interface → Proche aidant, puis ouvrez Dossiers.";
+"Visit review" = "Révision de la visite";
+"Open a saved visit and its medication review." = "Ouvrez une visite enregistrée et la révision de ses médicaments.";
 
 "Log a symptom" = "Noter un symptôme";
 "My medicines" = "Mes médicaments";

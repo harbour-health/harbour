@@ -10,21 +10,41 @@ import HarbourCore
     func removePending(_ ids: [String])
     func removeDelivered(_ ids: [String])
 }
+
 @MainActor final class NativeCareNotificationDelivery: CareNotificationDelivery {
     private let center = UNUserNotificationCenter.current()
     func authorized() async -> Bool {
         let settings = await center.notificationSettings()
+
         return settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional
     }
-    func pending() async -> [String] { await center.pendingNotificationRequests().map(\.identifier) }
-    func delivered() async -> [(id: String, date: Date)] { await center.deliveredNotifications().map { ($0.request.identifier, $0.date) } }
+
+    func pending() async -> [String] {
+        await center.pendingNotificationRequests().map(\.identifier)
+    }
+
+    func delivered() async -> [(id: String, date: Date)] {
+        await center.deliveredNotifications().map { (
+            $0.request.identifier,
+            $0.date
+        ) } }
+
     func add(_ plan: CareNotificationPlan) async throws {
-        let content = UNMutableNotificationContent(); content.title = "Harbour"; content.body = L10n.string("You have a reminder. Open Harbour to view it."); content.sound = .default
+        let content = UNMutableNotificationContent()
+        content.title = "Harbour"
+        content.body = L10n.string("You have a reminder. Open Harbour to view it.")
+        content.sound = .default
         let trigger = UNCalendarNotificationTrigger(dateMatching: plan.components, repeats: plan.repeating)
         try await center.add(UNNotificationRequest(identifier: plan.id, content: content, trigger: trigger))
     }
-    func removePending(_ ids: [String]) { center.removePendingNotificationRequests(withIdentifiers: ids) }
-    func removeDelivered(_ ids: [String]) { center.removeDeliveredNotifications(withIdentifiers: ids) }
+
+    func removePending(_ ids: [String]) {
+        center.removePendingNotificationRequests(withIdentifiers: ids)
+    }
+
+    func removeDelivered(_ ids: [String]) {
+        center.removeDeliveredNotifications(withIdentifiers: ids)
+    }
 }
 
 @MainActor final class CareNotifications: ObservableObject {
@@ -35,16 +55,27 @@ import HarbourCore
     private var queued: (care: CareData, medicines: [Medicine], generation: UUID)?
     private var syncing = false
     init(delivery: (any CareNotificationDelivery)? = nil, prefix: String = "harbour-care-") {
-        self.delivery = delivery ?? NativeCareNotificationDelivery(); self.prefix = prefix
+        self.delivery = delivery ?? NativeCareNotificationDelivery()
+        self.prefix = prefix
     }
+
     func requestAccess() async {
-        do { let allowed = try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]); status = allowed ? L10n.string("Notifications enabled") : L10n.string("Notifications are off. Enable them in iPhone Settings.") }
+        do { let allowed = try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound])
+            status = allowed ? L10n.string("Notifications enabled") : L10n
+                .string("Notifications are off. Enable them in iPhone Settings.") }
         catch { status = L10n.format("Couldn’t enable notifications. %@", error.localizedDescription) }
     }
+
     func sync(care: CareData, medicines: [Medicine]) async {
-        generation = UUID(); queued = (care, medicines, generation)
-        guard !syncing else { return }
-        syncing = true; defer { syncing = false }
+        generation = UUID()
+        queued = (care, medicines, generation)
+
+        guard !syncing else {
+            return
+        }
+
+        syncing = true
+        defer { syncing = false }
         // One worker owns all center mutations. A superseded add must finish before
         // the next snapshot removes its requests; generation checks alone cannot do that.
         while let snapshot = queued {
@@ -52,35 +83,81 @@ import HarbourCore
             await reconcile(care: snapshot.care, medicines: snapshot.medicines, current: snapshot.generation)
         }
     }
+
     private func reconcile(care: CareData, medicines: [Medicine], current: UUID) async {
         let allowed = await delivery.authorized()
-        guard generation == current else { return }
-        let pending = await delivery.pending()
-        guard generation == current else { return }
-        delivery.removePending(pending.filter { $0.hasPrefix(prefix) })
-        guard allowed else {
-            if care.reminders.contains(where: \.notify) || care.schedules.contains(where: \.notify) || care.doses.contains(where: { $0.status == .later }) { status = L10n.string("Notifications are off. Enable them in iPhone Settings.") }
+
+        guard generation == current else {
             return
         }
-        let plans = CareNotificationPlan.make(care: care, medicineIDs: Set(medicines.map(\.id))).map { plan in
-            var plan = plan; plan.id = prefix + plan.id.dropFirst("harbour-care-".count); return plan
+
+        let pending = await delivery.pending()
+
+        guard generation == current else {
+            return
         }
-        status = plans.count >= 60 ? L10n.string("The next 60 notifications are scheduled.") : L10n.string("Notifications enabled")
+
+        delivery.removePending(pending.filter { $0.hasPrefix(prefix) })
+
+        guard allowed else {
+            if
+                care.reminders.contains(where: \.notify) || care.schedules.contains(where: \.notify) || care.doses
+                    .contains(where: { $0.status == .later }) {
+                status = L10n.string("Notifications are off. Enable them in iPhone Settings.") }
+
+            return
+        }
+
+        let plans = CareNotificationPlan.make(care: care, medicineIDs: Set(medicines.map(\.id))).map { plan in
+            var plan = plan
+            plan.id = prefix + plan.id.dropFirst("harbour-care-".count)
+
+            return plan
+        }
+        status = plans.count >= 60 ? L10n.string("The next 60 notifications are scheduled.") : L10n
+            .string("Notifications enabled")
         for plan in plans {
-            guard generation == current else { return }
+            guard generation == current else {
+                return
+            }
+
             do { try await delivery.add(plan) }
-            catch { if generation == current { status = L10n.format("Couldn’t schedule a notification. %@", error.localizedDescription) } }
+            catch {
+                if generation == current {
+                    status = L10n.format(
+                        "Couldn’t schedule a notification. %@",
+                        error.localizedDescription
+                    ) }
+            }
         }
         let delivered = await delivery.delivered()
-        guard generation == current else { return }
+
+        guard generation == current else {
+            return
+        }
+
         let active = Set(plans.map(\.id))
         let calendar = Calendar.current
         let removed = delivered.filter { item in
-            guard item.id.hasPrefix(prefix) else { return false }
-            if !active.contains(item.id) { return true }
+
+            guard item.id.hasPrefix(prefix) else {
+                return false
+            }
+
+            if !active.contains(item.id) {
+                return true
+            }
+
             return care.doses.contains { log in
-                guard log.status != .later, calendar.isDate(log.scheduled, inSameDayAs: item.date) else { return false }
-                return item.id == prefix + "dose-" + log.medicineID + "-" + String(calendar.component(.hour, from: log.scheduled)) + ":" + String(calendar.component(.minute, from: log.scheduled))
+
+                guard log.status != .later, calendar.isDate(log.scheduled, inSameDayAs: item.date) else {
+                    return false
+                }
+
+                return item.id == prefix + "dose-" + log.medicineID + "-" + String(calendar.component(
+                    .hour,
+                    from: log.scheduled
+                )) + ":" + String(calendar.component(.minute, from: log.scheduled))
             }
         }
         delivery.removeDelivered(removed.map(\.id))

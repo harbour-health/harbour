@@ -3,6 +3,7 @@ import SwiftUI
 private struct FloatingDockClearance: EnvironmentKey {
     static let defaultValue: CGFloat = 0
 }
+
 extension EnvironmentValues {
     var floatingDockClearance: CGFloat {
         get { self[FloatingDockClearance.self] }
@@ -14,6 +15,10 @@ struct NavigationDock: View {
     @EnvironmentObject private var recorder: VisitRecorder
     @Binding var selection: Int
 
+    private var compact: Bool {
+        selection == 1
+    }
+
     var body: some View {
         HStack(spacing: 4) {
             tab(0, title: "Today", symbol: "house")
@@ -23,35 +28,37 @@ struct NavigationDock: View {
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
-        .frame(maxWidth: AppLayout.contentWidth)
+        .frame(maxWidth: compact ? 270 : AppLayout.contentWidth)
         .frame(maxWidth: .infinity)
         .background(alignment: .top) {
             Palette.canvas.ignoresSafeArea(edges: .bottom)
                 .overlay(alignment: .top) { Divider() }
         }
+        .offset(y: compact ? 22 : 0)
     }
 
     private func tab(_ index: Int, title: String, symbol: String) -> some View {
         let selected = index == selection
+
         return Button {
             selection = index
         } label: {
             VStack(spacing: 3) {
                 Image(systemName: selected ? symbol + ".fill" : symbol)
-                    .font(.title3.weight(.semibold))
+                    .font((compact ? Font.body : .title3).weight(.semibold))
                     .overlay(alignment: .topTrailing) {
                         if index == 3 && recorder.active {
                             Circle().fill(Palette.coral).frame(width: 8, height: 8).offset(x: 5, y: -3)
                         }
                     }
                 Text(L10n.string(title))
-                    .font(.subheadline.weight(.semibold))
+                    .font((compact ? Font.caption : .subheadline).weight(.semibold))
                     .lineLimit(1)
                     .minimumScaleFactor(0.65)
                     .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
             }
             .foregroundStyle(selected ? Palette.blue : Palette.ink)
-            .frame(maxWidth: .infinity, minHeight: 58)
+            .frame(maxWidth: .infinity, minHeight: compact ? 46 : 58)
             .background(selected ? Palette.blueWash : .clear, in: RoundedRectangle(cornerRadius: 14))
             .contentShape(Rectangle())
         }

@@ -25,7 +25,7 @@ if device.get("modelName") != "iPhone 17 Pro Max" or device.get("osVersion") != 
 expected_test = {"en-CA": "testCaptureEnglish", "fr-CA": "testCaptureFrench"}.get(locale)
 if expected_test is None:
     raise SystemExit("Unsupported locale.")
-names = ["01-today", "02-records", "03-medicines", "04-readings", "05-symptoms", "06-visits", "07-visit-notes", "08-appointment-preparation", "09-timeline", "10-chat"]
+names = ["01-today", "02-records", "03-medicines", "04-readings", "05-symptoms", "06-visits", "07-visit-summary", "08-appointment-preparation", "09-timeline", "10-chat"]
 entries = {}
 with tempfile.TemporaryDirectory(prefix="harbour-store-export-") as temporary:
     subprocess.run(["xcrun", "xcresulttool", "export", "attachments", "--path", str(result), "--output-path", temporary], check=True, stdout=subprocess.DEVNULL)
@@ -56,7 +56,7 @@ if set(entries) != set(names):
 manifest = {
     "locale": locale, "appearance": "Light", "deviceType": "iPhone 17 Pro Max", "runtime": "iOS 26.5",
     "resultBundle": str(result), "simulator": device, "xcodeVersion": (output / "run/xcode-version.txt").read_text().strip(),
-    "fixture": "DEBUG-only --app-store-screenshots; fictional saved records, manual visit notes, empty chat; no model requests or model downloads",
+    "fixture": "DEBUG-only --app-store-screenshots; fictional saved records, authored visit notes and summary, empty chat; no model requests or model downloads",
     "fixtureDate": "2026-10-01T13:00:00Z", "statusBarTime": "9:41", "dateHeading": "Actual capture date",
     "testResult": summary["result"], "captures": [entries[name] for name in names]
 }

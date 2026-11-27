@@ -1,0 +1,52 @@
+{
+  "mode": "narration",
+  "temperature": 0.2,
+  "seed": 42,
+  "runnerSHA256": "b929943a3dadea77e305d02b5987e0932a41a9f37d50d6df3129d3eb54ac7f4c",
+  "host": "macOS-27.0-arm64-arm-64bit",
+  "datasetSHA256": "50303f5ad17f1337ff7d3a80a689e1a10ec23d26d7124d67e0f4abb139a2156f",
+  "executableSHA256": "6055c90d86ac2d2e28e6ebcbd0b7d999abe2637d448574ef1c37af28be18510b",
+  "sourceSHA256": {
+    "HarbourCore/Sources/HarbourCore/ToolPlanner.swift": "6f4585cf8406e8f960e43c75ff075bb9e54a601df334a84f3458efa577cfb2a0",
+    "HarbourCore/Sources/HarbourCore/Visits.swift": "a114aa74b5e7a389ac296a046a87549f4c67ec211771218cde10db36babdb9e2",
+    "HarbourCore/Sources/HarbourCore/VisitDirections.swift": "843114cc53d8ed01ab67e43c82c2f9677ef7f3cf60c5e895de86569d8739b108",
+    "HarbourCore/Sources/HarbourCore/VisitExtraction.swift": "45ca6ad2f369b7e850e1ed48ab44a614fc5d0b9a94a18cab25ece7ba78ab786c",
+    "HarbourCore/Sources/HarbourCore/ChatTitles.swift": "59403c09a72386aa41408c86ee711da9ce4abcee503e08e02f067a0c41ba4990",
+    "HarbourRuntime/Sources/ModelProbe/TextEvaluation.swift": "1b7971bc79e2b1bf71f53edc299d7db5944a83b28149899841a555a48c7f5abd",
+    "HarbourRuntime/Sources/ModelProbe/LegacySourceRecovery.swift": "0dcd9e3af0f942b53c261185a89115e756729987c3c7a9b6522cd63bb205c65c",
+    "HarbourRuntime/Sources/ModelProbe/BaselineVisitPrompt.swift": "c9ba9ede281502f9dacd06737eac04090df144352eb97979c9b17c3b06ec75d9",
+    "HarbourRuntime/Sources/ModelProbe/BaselineVisitGrammar.swift": "2f497994b47231e3eb0b9f7f4a91ba5b982ff559d1ffdf58c4864e30ffd43a7e",
+    "HarbourRuntime/Sources/HarbourRuntime/VisitSummaryOutputGrammar.swift": "cc175d613ac3d97b0fe8adb6b2bcb30bdf58fc79777e27ca823d1cf3a26fe071",
+    "HarbourRuntime/Sources/HarbourRuntime/LocalModel.swift": "0f535fd64c2cdf34e590e6fe4d1096ad3e69ae776216f01da155ef523af383c3",
+    "HarbourRuntime/Sources/HarbourRuntime/ModelSampling.swift": "e01789ff3c643735ad05302d1495fdf39da19ece88580efc5a4110f94d72908d"
+  },
+  "sourceSnapshotOrigin": "docs/evaluation/chat-titles",
+  "models": [
+    {
+      "file": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+      "bytes": 1117320736,
+      "sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+      "exitCode": 0,
+      "summary": {
+        "tool-result/Quick": {
+          "passed": 9,
+          "total": 10,
+          "errors": 0,
+          "seconds": 6.048404932022095
+        },
+        "tool-result/Standard": {
+          "passed": 9,
+          "total": 10,
+          "errors": 0,
+          "seconds": 5.582072138786316
+        },
+        "tool-result/Extended": {
+          "passed": 9,
+          "total": 10,
+          "errors": 0,
+          "seconds": 5.392228841781616
+        }
+      }
+    }
+  ]
+}

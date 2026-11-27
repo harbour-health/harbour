@@ -1,0 +1,114 @@
+[
+  {
+    "name": "Amira Hassan EN",
+    "input": "My name is Amira Hassan. Add hydrochlorothiazide to my medication list.",
+    "tool": "add_medication",
+    "medicine": "Hydrochlorothiazide",
+    "mustReject": false
+  },
+  {
+    "name": "Amira Hassan FR",
+    "input": "Je m’appelle Amira Hassan. Ajoute la rosuvastatine à ma liste de médicaments.",
+    "tool": "add_medication",
+    "medicine": "Rosuvastatin",
+    "mustReject": false
+  },
+  {
+    "name": "Jean-François Nguyen EN",
+    "input": "My name is Jean-François Nguyen. Add hydrochlorothiazide to my medication list.",
+    "tool": "add_medication",
+    "medicine": "Hydrochlorothiazide",
+    "mustReject": false
+  },
+  {
+    "name": "Jean-François Nguyen FR",
+    "input": "Je m’appelle Jean-François Nguyen. Ajoute la rosuvastatine à ma liste de médicaments.",
+    "tool": "add_medication",
+    "medicine": "Rosuvastatin",
+    "mustReject": false
+  },
+  {
+    "name": "Gurpreet Singh EN",
+    "input": "My name is Gurpreet Singh. Add hydrochlorothiazide to my medication list.",
+    "tool": "add_medication",
+    "medicine": "Hydrochlorothiazide",
+    "mustReject": false
+  },
+  {
+    "name": "Gurpreet Singh FR",
+    "input": "Je m’appelle Gurpreet Singh. Ajoute la rosuvastatine à ma liste de médicaments.",
+    "tool": "add_medication",
+    "medicine": "Rosuvastatin",
+    "mustReject": false
+  },
+  {
+    "name": "Aïcha Diallo EN",
+    "input": "My name is Aïcha Diallo. Add hydrochlorothiazide to my medication list.",
+    "tool": "add_medication",
+    "medicine": "Hydrochlorothiazide",
+    "mustReject": false
+  },
+  {
+    "name": "Aïcha Diallo FR",
+    "input": "Je m’appelle Aïcha Diallo. Ajoute la rosuvastatine à ma liste de médicaments.",
+    "tool": "add_medication",
+    "medicine": "Rosuvastatin",
+    "mustReject": false
+  },
+  {
+    "name": "levothyroxine EN",
+    "input": "Add levothyroxine to my medication list.",
+    "tool": "add_medication",
+    "medicine": "Levothyroxine Sodium",
+    "mustReject": false
+  },
+  {
+    "name": "empagliflozin FR",
+    "input": "Ajoute l’empagliflozine à ma liste de médicaments.",
+    "tool": "add_medication",
+    "medicine": "Empagliflozin",
+    "mustReject": false
+  },
+  {
+    "name": "rivaroxaban EN",
+    "input": "Put rivaroxaban on my medication list.",
+    "tool": "add_medication",
+    "medicine": "Rivaroxaban",
+    "mustReject": false
+  },
+  {
+    "name": "pantoprazole FR",
+    "input": "Ajoute le pantoprazole à ma liste de médicaments.",
+    "tool": "add_medication",
+    "medicine": "Pantoprazole",
+    "mustReject": false
+  },
+  {
+    "name": "negative EN",
+    "input": "Do not add gliclazide to my medicine list.",
+    "tool": "reply",
+    "medicine": null,
+    "mustReject": false
+  },
+  {
+    "name": "negative FR",
+    "input": "N’ajoute pas de candésartan à ma liste de médicaments.",
+    "tool": "reply",
+    "medicine": null,
+    "mustReject": false
+  },
+  {
+    "name": "uncertain phonetic EN",
+    "input": "Add hydroclorothiazide to my medication list.",
+    "tool": "add_medication",
+    "medicine": null,
+    "mustReject": true
+  },
+  {
+    "name": "personal name only FR",
+    "input": "Je m’appelle Wei Chen.",
+    "tool": "reply",
+    "medicine": null,
+    "mustReject": false
+  }
+]

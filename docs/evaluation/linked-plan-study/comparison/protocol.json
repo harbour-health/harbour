@@ -1,0 +1,79 @@
+{
+  "frozenAtUTC": "2026-11-07T19:01:55.720243+00:00",
+  "datasetSHA256": "7387c185cd8cde7181939975e06f4192b6226e964662ae202e0e3d6b2026abf2",
+  "executableSHA256": "bca6cfa96f468ed122f41d271eba5ece28b6dd1f37cae3958c73c09adb801c93",
+  "sources": {
+    "HarbourCore/Sources/HarbourCore/Appointments.swift": "542bb88db124d55ff2595afa84a5d77d717aa96668573dd57eeac0f3fd1e54c4",
+    "HarbourCore/Sources/HarbourCore/Care.swift": "2f70e0d19553cbddd2f57a162cec7c23d086b2a1e38b4960ca5120719275a426",
+    "HarbourCore/Sources/HarbourCore/ChatRequestLifecycle.swift": "5c9fe8bc796c53af41de94c80dce82e57c0bfa9291d7a6fa709625cb27acfe94",
+    "HarbourCore/Sources/HarbourCore/ChatTitles.swift": "59403c09a72386aa41408c86ee711da9ce4abcee503e08e02f067a0c41ba4990",
+    "HarbourCore/Sources/HarbourCore/Evaluation.swift": "a58e15b75c50ba35960273f1a2d482a127fc7b1e652c2b46e868b5371aaec648",
+    "HarbourCore/Sources/HarbourCore/HealthRules.swift": "a2b50355544bec339f817e168606f448e5d7ffb1d890696f57f5d344b807834d",
+    "HarbourCore/Sources/HarbourCore/InstructionPlans.swift": "24fb8c98021725ac1b7c31611218d62dd2bc45a1b62854ebe862f3024c9fbe78",
+    "HarbourCore/Sources/HarbourCore/LinkedInstructionPlans.swift": "a986c42d35f8e788dea8e19a3c7135b8e3cc8db3c83e07cae413e1d9cbbf3858",
+    "HarbourCore/Sources/HarbourCore/Records.swift": "f08bac2917a64d3e8e68864be50c5992bc83e98c7640bcd2210f0cf3ad6acd5e",
+    "HarbourCore/Sources/HarbourCore/SpeechVoiceSelection.swift": "464b9678204c435ddc8a6dff209bcef781b6a60041e9a16bba2d808936c419d4",
+    "HarbourCore/Sources/HarbourCore/ToolPlanner.swift": "4cad2d0efb9c114c6cc0787239f2f88ae0d52d7b377efa09ac36a697e5342081",
+    "HarbourCore/Sources/HarbourCore/VisitDirections.swift": "506bdf700560476cb07731a443cdba6f54455010965e6f8456f745d6a6aff907",
+    "HarbourCore/Sources/HarbourCore/VisitExtraction.swift": "45ca6ad2f369b7e850e1ed48ab44a614fc5d0b9a94a18cab25ece7ba78ab786c",
+    "HarbourCore/Sources/HarbourCore/Visits.swift": "b01239335aeed71bfa4967ad9ee2397e32d65aff606edd1177671953c0bcf628",
+    "HarbourCore/Sources/HarbourCore/VoiceTurn.swift": "9b02df88977d7454a8fc626447d0097e5a1043e90b6b2abd30dc76d53175a9e0",
+    "HarbourRuntime/Sources/HarbourRuntime/JSONEnvelope.swift": "d5e6f92463b4870158f9f9b860e9f8520ccc9a84375ce4cbe06dd44347b0b465",
+    "HarbourRuntime/Sources/HarbourRuntime/LocalModel.swift": "0f535fd64c2cdf34e590e6fe4d1096ad3e69ae776216f01da155ef523af383c3",
+    "HarbourRuntime/Sources/HarbourRuntime/ModelSampling.swift": "e01789ff3c643735ad05302d1495fdf39da19ece88580efc5a4110f94d72908d",
+    "HarbourRuntime/Sources/HarbourRuntime/TitleOutputGrammar.swift": "88736de8b3ea4acf7014e72c96f7d375cb0c8639b35a20e97b522acc22792a1c",
+    "HarbourRuntime/Sources/HarbourRuntime/ToolOutputGrammar.swift": "0a8583e6a930b9f57ef45f52a5cda24fd469b2e254b9201770b78bba4a37de0e",
+    "HarbourRuntime/Sources/HarbourRuntime/VisitSummaryOutputGrammar.swift": "cc175d613ac3d97b0fe8adb6b2bcb30bdf58fc79777e27ca823d1cf3a26fe071",
+    "HarbourRuntime/Sources/ModelProbe/BaselineVisitGrammar.swift": "2f497994b47231e3eb0b9f7f4a91ba5b982ff559d1ffdf58c4864e30ffd43a7e",
+    "HarbourRuntime/Sources/ModelProbe/BaselineVisitPrompt.swift": "c9ba9ede281502f9dacd06737eac04090df144352eb97979c9b17c3b06ec75d9",
+    "HarbourRuntime/Sources/ModelProbe/InstructionEvaluation.swift": "0f340f40396033e361d99de67d7d155d0db3c39fb85b2329e5abd1dd247f17d2",
+    "HarbourRuntime/Sources/ModelProbe/LegacySourceRecovery.swift": "0dcd9e3af0f942b53c261185a89115e756729987c3c7a9b6522cd63bb205c65c",
+    "HarbourRuntime/Sources/ModelProbe/LinkedInstructionEvaluation.swift": "a2eddcca7e17ce0b261e5cccd7ba5a29a616b798ae709af77820e556a71471ef",
+    "HarbourRuntime/Sources/ModelProbe/TextEvaluation.swift": "c49219b5ee96a416cf022e29ef033df06d86688da489fa256c9f045d9bd82bc2",
+    "HarbourRuntime/Sources/ModelProbe/VisitAuditExperiment.swift": "081af96f86bd979043d990719e03ff7e33d42a5cf264c2dc71ecc26cd1d2d266",
+    "HarbourRuntime/Sources/ModelProbe/main.swift": "6791d558927cc17c80bec74a2e3bf05dcc40541c35ce86d3fae8fd3ccae85ce0"
+  },
+  "runnerSHA256": "ca3997388e133f668fa6f2a4d2f1f5b6767295cece025278c23bdd519636b98f",
+  "sampling": "greedy, seed 42, 4096 context; no tuning after outputs",
+  "variants": [
+    "one-pass typed plans",
+    "per-unit extraction + linking",
+    "same initial extraction + additive coverage + linking"
+  ],
+  "coverageComparison": "Reuse initial extraction outputs; coverage duration/calls include the initial linked stage. Review flags are not correctness passes.",
+  "limits": "Authored paired bilingual cases, not blinded clinical data or physical-phone benchmarks. One-pass scoring checks fields, not just JSON validity. No expected labels enter inference.",
+  "experimentalPromotionGate": {
+    "gain": "at least 3 additional complete cases out of 16 versus one-pass on each tested model",
+    "languages": "at least 6/8 complete cases in each language",
+    "regressions": "no new failure on empty controls or conditional/negation cases",
+    "extraPlans": "no plan-count excess on any case",
+    "decision": "Meeting this engineering gate only justifies further review; it does not authorize medication writes or establish clinical accuracy."
+  },
+  "models": [
+    {
+      "entry": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+      "shards": [
+        {
+          "name": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+          "bytes": 1117320736,
+          "sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e"
+        }
+      ]
+    },
+    {
+      "entry": "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf",
+      "shards": [
+        {
+          "name": "qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf",
+          "bytes": 3993201344,
+          "sha256": "dfce12e3862a5283ccfb88221b48480e58745165de856439950d0f22590580db"
+        },
+        {
+          "name": "qwen2.5-7b-instruct-q4_k_m-00002-of-00002.gguf",
+          "bytes": 689872288,
+          "sha256": "539cf93f78e887edea1c04e2d7d8cdaca9d01dae9c9025bcb8accbe29df3d72a"
+        }
+      ]
+    }
+  ]
+}

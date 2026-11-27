@@ -1,0 +1,15 @@
+{
+  "startedAtUTC": "2026-11-07T19:10:48.247330+00:00",
+  "host": "macOS-27.0-arm64-arm-64bit",
+  "provider": "SystemLanguageModel.default; on-device only; default guardrails; native guided generation",
+  "modelVersion": "OS managed; framework does not expose a pinned weight hash in this probe",
+  "datasetSHA256": "7387c185cd8cde7181939975e06f4192b6226e964662ae202e0e3d6b2026abf2",
+  "executableSHA256": "132d3b2375dca66b4af53ab8f6252874710bd32734c1eded73ef6a2861f60671",
+  "runnerSHA256": "6f7bf98c7c3395a42ccf61cc3ed4fc3af946a15965c217b1fffeead5b79f8661",
+  "sourceSHA256": {
+    "HarbourCore/Sources/HarbourCore/InstructionPlans.swift": "24fb8c98021725ac1b7c31611218d62dd2bc45a1b62854ebe862f3024c9fbe78",
+    "HarbourRuntime/Sources/ModelProbe/InstructionEvaluation.swift": "0f340f40396033e361d99de67d7d155d0db3c39fb85b2329e5abd1dd247f17d2",
+    "HarbourRuntime/Sources/ModelProbe/AppleInstructionEvaluation.swift": "b8e8d3d25b312986669ec0180cc9c717d703d647c3ce2d0cad75657de20033dc"
+  },
+  "exitCode": 0
+}

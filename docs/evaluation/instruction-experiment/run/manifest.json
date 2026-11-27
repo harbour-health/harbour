@@ -1,0 +1,48 @@
+{
+  "mode": "instructions",
+  "temperature": 0,
+  "seed": 42,
+  "host": "macOS-27.0-arm64-arm-64bit",
+  "datasetSHA256": "4e5f654dff6094013efb928ea963cc572dbb5d7b296bd0cd1631064f7e870429",
+  "executableSHA256": "61d027bb461f648402b148a5d3ece2bfcdc1396d5ecd289b6c96bbbb85d1e2a9",
+  "reconstructionNote": "Inference completed successfully. Original runner failed summarizing instruction-shaped reports (KeyError category). Summary reconstructed without regenerating outputs; the pre-inference snapshot remains authoritative.",
+  "models": [
+    {
+      "file": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+      "bytes": 1117320736,
+      "sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+      "exitCode": 0,
+      "summary": {
+        "instructions/en": {
+          "passed": 3,
+          "total": 8,
+          "errors": 0,
+          "seconds": 13.152538776397705
+        },
+        "instructions/fr": {
+          "passed": 3,
+          "total": 8,
+          "errors": 0,
+          "seconds": 13.694990873336792
+        }
+      }
+    }
+  ],
+  "snapshotSHA256": {
+    "LocalModel.swift": "0f535fd64c2cdf34e590e6fe4d1096ad3e69ae776216f01da155ef523af383c3",
+    "VisitAuditExperiment.swift": "081af96f86bd979043d990719e03ff7e33d42a5cf264c2dc71ecc26cd1d2d266",
+    "ChatTitles.swift": "59403c09a72386aa41408c86ee711da9ce4abcee503e08e02f067a0c41ba4990",
+    "ToolPlanner.swift": "4cad2d0efb9c114c6cc0787239f2f88ae0d52d7b377efa09ac36a697e5342081",
+    "VisitExtraction.swift": "45ca6ad2f369b7e850e1ed48ab44a614fc5d0b9a94a18cab25ece7ba78ab786c",
+    "VisitDirections.swift": "843114cc53d8ed01ab67e43c82c2f9677ef7f3cf60c5e895de86569d8739b108",
+    "InstructionPlans.swift": "472b4a90a8c359204bcdfe605778f3553708814b34f22f7dcab40ace783f1082",
+    "BaselineVisitPrompt.swift": "c9ba9ede281502f9dacd06737eac04090df144352eb97979c9b17c3b06ec75d9",
+    "BaselineVisitGrammar.swift": "2f497994b47231e3eb0b9f7f4a91ba5b982ff559d1ffdf58c4864e30ffd43a7e",
+    "TextEvaluation.swift": "c49219b5ee96a416cf022e29ef033df06d86688da489fa256c9f045d9bd82bc2",
+    "InstructionEvaluation.swift": "4b5d562bc417f09edd61cb69191c4cac1bc6d3946c39651342f2a588cf7f0ea2",
+    "ModelSampling.swift": "e01789ff3c643735ad05302d1495fdf39da19ece88580efc5a4110f94d72908d",
+    "LegacySourceRecovery.swift": "0dcd9e3af0f942b53c261185a89115e756729987c3c7a9b6522cd63bb205c65c",
+    "Visits.swift": "b01239335aeed71bfa4967ad9ee2397e32d65aff606edd1177671953c0bcf628",
+    "VisitSummaryOutputGrammar.swift": "cc175d613ac3d97b0fe8adb6b2bcb30bdf58fc79777e27ca823d1cf3a26fe071"
+  }
+}

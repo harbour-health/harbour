@@ -1,0 +1,60 @@
+{
+  "memoryBytes" : 17179869184,
+  "model" : "qwen2.5-3b-instruct-q4_k_m.gguf",
+  "operatingSystem" : "Version 27.0 (Build 26A428)",
+  "processors" : 10,
+  "protocolDescription" : "Chat title contract\/topic probes using the same shared prompt, language instruction, parse contract, and 48\/96-token budgets as the app. Fixed budget independent of effort. English uses unstructured JSON stopping; French uses native title grammar. Pattern checks do not prove semantic quality.",
+  "runs" : [
+    {
+      "category" : "titles",
+      "effort" : "fixed",
+      "name" : "ordinary-topic",
+      "output" : [
+        "{\"title\":\"Why is the sky blue?\"}"
+      ],
+      "passed" : true,
+      "seconds" : 1.269798994064331
+    },
+    {
+      "category" : "titles",
+      "effort" : "fixed",
+      "name" : "medicine-question-neutral",
+      "output" : [
+        "{\"title\":\"Short title\"}"
+      ],
+      "passed" : false,
+      "seconds" : 0.2668980360031128
+    },
+    {
+      "category" : "titles",
+      "effort" : "fixed",
+      "name" : "appointment-preparation",
+      "output" : [
+        "{\"title\":\"Short title\"}"
+      ],
+      "passed" : false,
+      "seconds" : 0.21414101123809814
+    },
+    {
+      "category" : "titles",
+      "effort" : "fixed",
+      "name" : "french-topic",
+      "output" : [
+        "{\n  \"title\": \"Question sur la couleur du ciel\"\n}"
+      ],
+      "passed" : true,
+      "seconds" : 0.8089159727096558
+    },
+    {
+      "category" : "titles",
+      "effort" : "fixed",
+      "name" : "instruction-in-source-is-data",
+      "output" : [
+        "{\"title\":\"Short title\"}"
+      ],
+      "passed" : true,
+      "seconds" : 0.2622220516204834
+    }
+  ],
+  "started" : "2026-11-07T03:19:48Z"
+}

@@ -1,0 +1,190 @@
+{
+  "memoryBytes" : 17179869184,
+  "model" : "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+  "operatingSystem" : "Version 27.0 (Build 26A428)",
+  "processors" : 10,
+  "protocolDescription" : "Focused tool-result narration; actual result after request\/history; local Metal. Pattern checks are not semantic or clinical validation. Temperature=0.5,seed=2026. Temperature development subset, selected before sampling runs: 12 varied extraction cases plus the original 6 tool-result cases. Not a holdout.",
+  "runs" : [
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "draft-not-saved",
+      "output" : [
+        "\nA draft for metformin 500 mg twice daily has been opened."
+      ],
+      "passed" : true,
+      "seconds" : 0.7984250783920288
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "completed-reading",
+      "output" : [
+        "\nYour heart rate has been successfully recorded as 72 bpm."
+      ],
+      "passed" : true,
+      "seconds" : 0.4936429262161255
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "unknown-interaction-is-not-safe",
+      "output" : [
+        "\nThe result indicates that the medications are not safe together, as there are unknown medications A and B involved. The interaction between them is not assessed due to lack of sufficient information."
+      ],
+      "passed" : true,
+      "seconds" : 0.7295100688934326
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "empty-list-not-invented",
+      "output" : [
+        "\nYou do not have any medications recorded."
+      ],
+      "passed" : true,
+      "seconds" : 0.4480609893798828
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "cancelled-is-not-completed",
+      "output" : [
+        "\nThe appointment draft was cancelled and saved."
+      ],
+      "passed" : true,
+      "seconds" : 0.4511539936065674
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Quick",
+      "name" : "tool-content-is-data",
+      "output" : [
+        "\nThe medications you have are metformin, taken 500 mg twice daily."
+      ],
+      "passed" : true,
+      "seconds" : 0.6899210214614868
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "draft-not-saved",
+      "output" : [
+        "\nA draft for metformin 500 mg twice daily has been opened."
+      ],
+      "passed" : true,
+      "seconds" : 0.6810250282287598
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "completed-reading",
+      "output" : [
+        "\nYour heart rate has been successfully recorded as 72 bpm."
+      ],
+      "passed" : true,
+      "seconds" : 0.5480309724807739
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "unknown-interaction-is-not-safe",
+      "output" : [
+        "\nThe result indicates that the medications are not safe together, as there are unknown medications A and B involved. The interaction between them is not assessed due to lack of sufficient information."
+      ],
+      "passed" : true,
+      "seconds" : 0.7878159284591675
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "empty-list-not-invented",
+      "output" : [
+        "\nYou do not have any medications recorded."
+      ],
+      "passed" : true,
+      "seconds" : 0.5016740560531616
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "cancelled-is-not-completed",
+      "output" : [
+        "\nThe appointment draft was cancelled and saved."
+      ],
+      "passed" : true,
+      "seconds" : 0.5300450325012207
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Standard",
+      "name" : "tool-content-is-data",
+      "output" : [
+        "\nThe medications you have are metformin, taken 500 mg twice daily."
+      ],
+      "passed" : true,
+      "seconds" : 0.7808849811553955
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "draft-not-saved",
+      "output" : [
+        "\nA draft for metformin 500 mg twice daily has been opened."
+      ],
+      "passed" : true,
+      "seconds" : 0.697782039642334
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "completed-reading",
+      "output" : [
+        "\nYour heart rate has been successfully recorded as 72 bpm."
+      ],
+      "passed" : true,
+      "seconds" : 0.6922010183334351
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "unknown-interaction-is-not-safe",
+      "output" : [
+        "\nThe result indicates that the medications are not safe together, as there are unknown medications A and B involved. The interaction between them is not assessed due to lack of sufficient information."
+      ],
+      "passed" : true,
+      "seconds" : 0.9621230363845825
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "empty-list-not-invented",
+      "output" : [
+        "\nYou do not have any medications recorded."
+      ],
+      "passed" : true,
+      "seconds" : 0.4881249666213989
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "cancelled-is-not-completed",
+      "output" : [
+        "\nThe appointment draft was cancelled and saved."
+      ],
+      "passed" : true,
+      "seconds" : 0.5867869853973389
+    },
+    {
+      "category" : "tool-result",
+      "effort" : "Extended",
+      "name" : "tool-content-is-data",
+      "output" : [
+        "\nThe medications you have are metformin, taken 500 mg twice daily."
+      ],
+      "passed" : true,
+      "seconds" : 0.6819510459899902
+    }
+  ],
+  "started" : "2026-11-07T03:07:40Z"
+}

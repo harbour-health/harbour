@@ -26,7 +26,10 @@ impl World for ReportWorld {
 
 fn compile(source: &str, json: &[u8]) -> Result<Vec<u8>, String> {
     static FONTS: OnceLock<Vec<Font>> = OnceLock::new();
-    let fonts = FONTS.get_or_init(|| typst_assets::fonts().flat_map(|data| Font::iter(Bytes::new(data))).collect()).clone();
+    let fonts = FONTS.get_or_init(|| typst_assets::fonts().chain([
+        include_bytes!("../fonts/Lato-Regular.ttf").as_slice(),
+        include_bytes!("../fonts/Lato-Bold.ttf").as_slice(),
+    ]).flat_map(|data| Font::iter(Bytes::new(data))).collect()).clone();
     let world = ReportWorld {
         library: LazyHash::new(Library::builder().build()),
         book: LazyHash::new(FontBook::from_fonts(&fonts)), fonts,

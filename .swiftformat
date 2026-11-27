@@ -1,0 +1,13 @@
+# SwiftFormat 0.64.6. Whitespace/layout rules only; no API or expression rewrites.
+--swift-version 5.9
+--language-mode 5
+--indent 4
+--max-width 120
+--semicolons never
+--wrap-arguments before-first
+--wrap-parameters before-first
+--wrap-collections before-first
+--wrap-conditions before-first
+--line-between-guards false
+--rules spaceAroundBraces,spaceInsideBraces,spaceAroundParens,spaceInsideParens,spaceAroundBrackets,spaceInsideBrackets,spaceAroundOperators,spaceAroundComments,spaceInsideComments,spaceAroundGenerics,spaceInsideGenerics,linebreaks,linebreakAtEndOfFile,trailingSpace,consecutiveSpaces,consecutiveBlankLines,blankLinesBetweenScopes,blankLineAfterImports,blankLinesAfterGuardStatements,indent,semicolons,wrap,wrapArguments,wrapAttributes,wrapFunctionBodies,wrapPropertyBodies,wrapIfStatementBodies,wrapGuardStatementBodies,wrapLoopBodies
+--exclude docs/evaluation,**/Vendor,**/.build,build
