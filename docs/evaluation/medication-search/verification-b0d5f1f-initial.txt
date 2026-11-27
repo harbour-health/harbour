@@ -1,0 +1,33 @@
+Run: 44677252620
+Job: 136091926586
+Source: b0d5f1ff6e60f216eb61f584a8a6a5af483d59ed
+Scope: medication-search
+Result: failure; both UI methods failed at their initial English app launch before search assertions. French iterations were not reached.
+
+2026-11-20T04:52:45.1223970Z Xcode 26.6
+2026-11-20T04:52:45.1251240Z Build version 17F113
+2026-11-20T04:54:30.5383780Z Test Suite 'MedicationSearchTests' started at 2026-11-20 04:54:28.869.
+2026-11-20T04:54:30.5385220Z Test Case '-[HarbourCoreTests.MedicationSearchTests testAmbiguousAliasesReturnCandidatesWithoutResolvingAnIdentity]' started.
+2026-11-20T04:54:30.5386710Z Test Case '-[HarbourCoreTests.MedicationSearchTests testAmbiguousAliasesReturnCandidatesWithoutResolvingAnIdentity]' passed (0.003 seconds).
+2026-11-20T04:54:30.5387690Z Test Case '-[HarbourCoreTests.MedicationSearchTests testCommonGenericAndBrandTyposRemainSuggestionsOnly]' started.
+2026-11-20T04:54:30.5388490Z Test Case '-[HarbourCoreTests.MedicationSearchTests testCommonGenericAndBrandTyposRemainSuggestionsOnly]' passed (0.830 seconds).
+2026-11-20T04:54:30.5389390Z Test Case '-[HarbourCoreTests.MedicationSearchTests testEquivalentSuggestionsDeduplicateAndPreferGenericIdentity]' started.
+2026-11-20T04:54:30.5390200Z Test Case '-[HarbourCoreTests.MedicationSearchTests testEquivalentSuggestionsDeduplicateAndPreferGenericIdentity]' passed (0.003 seconds).
+2026-11-20T04:54:30.5391050Z Test Case '-[HarbourCoreTests.MedicationSearchTests testLimitedSearchIsStableAcrossAliasAndEntryOrder]' started.
+2026-11-20T04:54:30.5391780Z Test Case '-[HarbourCoreTests.MedicationSearchTests testLimitedSearchIsStableAcrossAliasAndEntryOrder]' passed (0.161 seconds).
+2026-11-20T04:54:30.5392550Z Test Case '-[HarbourCoreTests.MedicationSearchTests testOfficialFrenchAliasesAndIngredientOnlySearchAreRanked]' started.
+2026-11-20T04:54:30.5394180Z Test Case '-[HarbourCoreTests.MedicationSearchTests testOfficialFrenchAliasesAndIngredientOnlySearchAreRanked]' passed (0.049 seconds).
+2026-11-20T04:54:30.5395080Z Test Case '-[HarbourCoreTests.MedicationSearchTests testShortNameSuggestionsRequireAtMostOneSpellingEditAndPreserveAmbiguity]' started.
+2026-11-20T04:54:30.5396610Z Test Case '-[HarbourCoreTests.MedicationSearchTests testShortNameSuggestionsRequireAtMostOneSpellingEditAndPreserveAmbiguity]' passed (0.002 seconds).
+2026-11-20T04:54:30.5397510Z Test Case '-[HarbourCoreTests.MedicationSearchTests testUnrelatedAndOutOfBoundsQueriesDoNotCreateCandidates]' started.
+2026-11-20T04:54:30.5398440Z Test Case '-[HarbourCoreTests.MedicationSearchTests testUnrelatedAndOutOfBoundsQueriesDoNotCreateCandidates]' passed (0.188 seconds).
+2026-11-20T04:54:30.5399020Z Test Suite 'MedicationSearchTests' passed at 2026-11-20 04:54:30.106.
+2026-11-20T04:54:30.7761020Z 	 Executed 160 tests, with 0 failures (0 unexpected) in 4.244 (4.281) seconds
+2026-11-20T04:54:30.7761750Z 	 Executed 160 tests, with 0 failures (0 unexpected) in 4.244 (4.284) seconds
+2026-11-20T05:02:49.7510880Z Test Case '-[HarbourUITests.MedicationSearchUITests testBilingualNoMatchClearsPreviousCandidatesAndRetainsManualEntry]' started.
+2026-11-20T05:03:17.1059500Z /Users/runner/work/harbour/harbour/HarbourUITests/MedicationSearchUITests.swift:15: error: -[HarbourUITests.MedicationSearchUITests testBilingualNoMatchClearsPreviousCandidatesAndRetainsManualEntry] : Failed to get background assertion for target app with pid 18161: Timed out while acquiring background assertion.
+2026-11-20T05:03:17.9137490Z Test Case '-[HarbourUITests.MedicationSearchUITests testBilingualNoMatchClearsPreviousCandidatesAndRetainsManualEntry]' failed (28.857 seconds).
+2026-11-20T05:03:17.9269820Z Test Case '-[HarbourUITests.MedicationSearchUITests testBilingualTranspositionSuggestionRequiresProductConfirmation]' started.
+2026-11-20T05:03:32.4485450Z /Users/runner/work/harbour/harbour/HarbourUITests/MedicationSearchUITests.swift:15: error: -[HarbourUITests.MedicationSearchUITests testBilingualTranspositionSuggestionRequiresProductConfirmation] : Failed to get background assertion for target app with pid 18216: Timed out while acquiring background assertion.
+2026-11-20T05:03:35.2060080Z Test Case '-[HarbourUITests.MedicationSearchUITests testBilingualTranspositionSuggestionRequiresProductConfirmation]' failed (17.276 seconds).
+2026-11-20T05:04:25.2530210Z ** TEST FAILED **

@@ -25,15 +25,26 @@ public struct MedicationVocabulary: Sendable {
     private let identities: [String: Int]
     private let exact: [String: Int]
     private let searchable: [(index: Int, key: String, sound: String)]
+    private let nameKeys: [[String]]
+    private let ingredientKeys: [[String]]
+    private let displayKeys: [String]
     public init() {
         let doc = Bundle.module.url(forResource: "medication-vocabulary", withExtension: "json")
             .flatMap { try? Data(contentsOf: $0) }.flatMap { try? JSONDecoder().decode(Document.self, from: $0) }
-        entries = doc?.entries ?? []
-        publicationDate = doc?.publicationDate ?? ""
+        self.init(entries: doc?.entries ?? [], publicationDate: doc?.publicationDate ?? "")
+    }
+
+    init(entries: [Entry], publicationDate: String) {
+        self.entries = entries
+        self.publicationDate = publicationDate
         var exact: [String: Int] = [:], ambiguous = Set<String>()
         var search: [(Int, String, String)] = []
+        var names: [[String]] = [], ingredients: [[String]] = []
         for (index, entry) in entries.enumerated() {
-            for name in Set(entry.aliases + [entry.name, entry.fr]) {
+            let aliases = Set(entry.aliases + [entry.name, entry.fr]).sorted()
+            names.append(aliases.map(Self.key).filter { !$0.isEmpty })
+            ingredients.append(entry.ingredients.map(Self.key).filter { !$0.isEmpty })
+            for name in aliases {
                 let key = Self.key(name)
 
                 guard key.count >= 4 else {
@@ -59,6 +70,9 @@ public struct MedicationVocabulary: Sendable {
         self.exact = exact
         identities = Dictionary(uniqueKeysWithValues: entries.enumerated().map { ($0.element.id, $0.offset) })
         searchable = search
+        nameKeys = names
+        ingredientKeys = ingredients
+        displayKeys = entries.map { Self.key($0.name.capitalized) }
     }
 
     /// Translate only an unchanged database label; preserve custom user-entered names.
@@ -104,64 +118,187 @@ public struct MedicationVocabulary: Sendable {
     public func search(_ input: String, limit: Int = 12) -> [Medicine] {
         let key = Self.key(input)
 
-        guard key.count >= 3, key.count <= 80 else {
+        guard key.count >= 3, key.count <= 80, limit > 0 else {
             return []
         }
 
-        var seen = Set<String>()
+        // Rank cached keys first; only visible results need medicine display formatting.
 
-        return searchable.filter { $0.key.contains(key) }.sorted { lhs, rhs in
-            let a = lhs.key == key ? 0 : lhs.key.hasPrefix(key) ? 1 : 2
-            let b = rhs.key == key ? 0 : rhs.key.hasPrefix(key) ? 1 : 2
+        return entries.indices.compactMap { index -> (index: Int, rank: Int)? in
 
-            return a == b ? lhs.key.count < rhs.key.count : a < b
-        }.compactMap { value in
-            let entry = entries[value.index]
+            guard let rank = Self.matchRank(query: key, names: nameKeys[index], ingredients: ingredientKeys[index])
+            else {
+                return nil
+            }
 
-            return seen.insert(entry.id).inserted ? entry.medicine : nil
-        }.prefix(limit).map { $0 }
+            return (index, rank)
+        }.sorted { lhs, rhs in
+            if lhs.rank != rhs.rank {
+                return lhs.rank < rhs.rank
+            }
+            let a = displayKeys[lhs.index], b = displayKeys[rhs.index]
+            if a != b {
+                return a < b
+            }
+            let idA = entries[lhs.index].id, idB = entries[rhs.index].id
+            let officialA = idA.hasPrefix("dpd-"), officialB = idB.hasPrefix("dpd-")
+            if officialA != officialB {
+                return !officialA
+            }
+
+            return idA < idB
+        }.prefix(limit).map { entries[$0.index].medicine }
+    }
+
+    /// Rank exact names, exact ingredients, prefixes and substrings consistently across both catalogs.
+    static func matchRank(query: String, names: [String], ingredients: [String]) -> Int? {
+        if names.contains(query) {
+            return 0
+        }
+        if ingredients.contains(query) {
+            return 1
+        }
+        if names.contains(where: { $0.hasPrefix(query) }) {
+            return 2
+        }
+        if ingredients.contains(where: { $0.hasPrefix(query) }) {
+            return 3
+        }
+        if names.contains(where: { $0.contains(query) }) {
+            return 4
+        }
+        if ingredients.contains(where: { $0.contains(query) }) {
+            return 5
+        }
+
+        return nil
+    }
+
+    func matchRank(for medicine: Medicine, query: String) -> Int? {
+        guard let index = identities[medicine.id] else {
+            return nil
+        }
+
+        return Self.matchRank(query: query, names: nameKeys[index], ingredients: ingredientKeys[index])
+    }
+
+    static func precedes(_ lhs: (Medicine, Int), _ rhs: (Medicine, Int)) -> Bool {
+        if lhs.1 != rhs.1 {
+            return lhs.1 < rhs.1
+        }
+        let a = key(lhs.0.name), b = key(rhs.0.name)
+        if a != b {
+            return a < b
+        }
+        let officialA = lhs.0.id.hasPrefix("dpd-"), officialB = rhs.0.id.hasPrefix("dpd-")
+        if officialA != officialB {
+            return !officialA
+        }
+
+        return lhs.0.id < rhs.0.id
     }
 
     /// Suggestions are never used by resolve(), validators or automatic transcript replacement.
     public func suggestions(_ input: String, limit: Int = 4) -> [Medicine] {
+        let queryKey = Self.key(input)
         let query = Self.sound(input)
 
         guard
-            query.count >= 5, query.count <= 40,
+            query.count >= 4, query.count <= 40, limit > 0,
             input.split(whereSeparator: \.isWhitespace).count <= 4 else {
             return []
         }
 
         var best: [String: (Medicine, Double)] = [:]
-        for item in searchable where abs(item.sound.count - query.count) <= 3 && item.sound.first == query.first {
-            let distance = Self.distance(query, item.sound)
-            let score = 1 - Double(distance) / Double(max(query.count, item.sound.count))
-
-            guard score >= 0.78 else {
-                continue
+        func consider(key: String, sound: String, medicine makeMedicine: () -> Medicine) {
+            guard abs(sound.count - query.count) <= 3 else {
+                return
             }
 
-            let medicine = entries[item.index].medicine
+            let score: Double
+            if query.count < 5 {
+                // Newly admitted four-letter phonetic queries permit one spelling edit only.
+
+                guard min(queryKey.count, key.count) >= 4 else {
+                    return
+                }
+
+                let distance = Self.distance(queryKey, key, maximum: 1)
+
+                guard distance <= 1 else {
+                    return
+                }
+
+                score = 1 - Double(distance) / Double(max(queryKey.count, key.count))
+            } else {
+                let length = max(query.count, sound.count)
+                // Leading substitutions/transpositions are suggestions, with a tighter one-edit budget.
+                let maximum = sound.first == query.first ? Int(Double(length) * 0.22) : 1
+                let distance = Self.distance(query, sound, maximum: maximum)
+                score = 1 - Double(distance) / Double(length)
+
+                guard distance <= maximum, score >= 0.78 else {
+                    return
+                }
+            }
+
+            let medicine = makeMedicine()
             let identity = Self.key(medicine.name) + "|" + medicine.ingredients.sorted().joined(separator: "|")
-            if
-                score > (best[identity]?.1 ?? 0) ||
-                (score == best[identity]?.1 && medicine.id.hasPrefix("dpd-ingredient:")) {
+            let prior = best[identity]
+            let preferIdentity = prior.map { previous in
+                let generic = medicine.id.hasPrefix("dpd-ingredient:")
+                let priorGeneric = previous.0.id.hasPrefix("dpd-ingredient:")
+
+                return generic != priorGeneric ? generic : medicine.id < previous.0.id
+            } ?? true
+            if score > (prior?.1 ?? 0) || (score == (prior?.1 ?? -1) && preferIdentity) {
                 best[identity] = (medicine, score)
             }
         }
+        for item in searchable {
+            consider(key: item.key, sound: item.sound) { entries[item.index].medicine }
+        }
+        for medicine in Catalog.medicines {
+            for name in Catalog.names(for: medicine) {
+                consider(key: Self.key(name), sound: Self.sound(name)) { medicine }
+            }
+        }
 
-        return best.values.sorted { $0.1 == $1.1 ? $0.0.name < $1.0.name : $0.1 > $1.1 }.prefix(limit).map(\.0)
+        return best.values.sorted { lhs, rhs in
+            if lhs.1 != rhs.1 {
+                return lhs.1 > rhs.1
+            }
+
+            return Self.precedes((lhs.0, 0), (rhs.0, 0))
+        }.prefix(limit).map(\.0)
     }
 
-    private static func distance(_ a: String, _ b: String) -> Int {
+    private static func distance(_ a: String, _ b: String, maximum: Int) -> Int {
         let a = Array(a), b = Array(b)
+
+        guard abs(a.count - b.count) <= maximum else {
+            return maximum + 1
+        }
+
         var previous = Array(0 ... b.count)
+        var beforePrevious = previous
         for i in a.indices {
             var next = [i + 1]
+            var rowMinimum = next[0]
             for j in b
                 .indices {
                 next.append(min(next[j] + 1, previous[j + 1] + 1, previous[j] + (a[i] == b[j] ? 0 : 1)))
+                if i > 0, j > 0, a[i] == b[j - 1], a[i - 1] == b[j] {
+                    next[j + 1] = min(next[j + 1], beforePrevious[j - 1] + 1)
+                }
+                rowMinimum = min(rowMinimum, next[j + 1])
             }
+
+            guard rowMinimum <= maximum else {
+                return maximum + 1
+            }
+
+            beforePrevious = previous
             previous = next
         }
 

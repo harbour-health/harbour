@@ -1,0 +1,34 @@
+Run: 44679170836
+Job: 136098181404
+Source: 9258a93fb0d9e00806c05ef1efc1d0a003062bc9
+Scope: medication-search
+Result: success; 160 Core tests and both bilingual MedicationSearchUITests passed. Each UI method completed its English and Canadian French iterations.
+
+2026-11-20T05:11:05.7776560Z Xcode 26.6
+2026-11-20T05:11:05.7780400Z Build version 17F113
+2026-11-20T05:12:16.9573980Z Test Suite 'MedicationSearchTests' started at 2026-11-20 05:12:15.042.
+2026-11-20T05:12:16.9574540Z Test Case '-[HarbourCoreTests.MedicationSearchTests testAmbiguousAliasesReturnCandidatesWithoutResolvingAnIdentity]' started.
+2026-11-20T05:12:16.9575330Z Test Case '-[HarbourCoreTests.MedicationSearchTests testAmbiguousAliasesReturnCandidatesWithoutResolvingAnIdentity]' passed (0.006 seconds).
+2026-11-20T05:12:16.9576110Z Test Case '-[HarbourCoreTests.MedicationSearchTests testBoundedSuggestionsPreserveAmbiguityAndRejectLargerErrors]' started.
+2026-11-20T05:12:16.9576980Z Test Case '-[HarbourCoreTests.MedicationSearchTests testBoundedSuggestionsPreserveAmbiguityAndRejectLargerErrors]' passed (0.004 seconds).
+2026-11-20T05:12:16.9577810Z Test Case '-[HarbourCoreTests.MedicationSearchTests testCommonGenericAndBrandTyposRemainSuggestionsOnly]' started.
+2026-11-20T05:12:16.9578610Z Test Case '-[HarbourCoreTests.MedicationSearchTests testCommonGenericAndBrandTyposRemainSuggestionsOnly]' passed (0.743 seconds).
+2026-11-20T05:12:16.9579390Z Test Case '-[HarbourCoreTests.MedicationSearchTests testEquivalentSuggestionsDeduplicateAndPreferGenericIdentity]' started.
+2026-11-20T05:12:16.9580220Z Test Case '-[HarbourCoreTests.MedicationSearchTests testEquivalentSuggestionsDeduplicateAndPreferGenericIdentity]' passed (0.002 seconds).
+2026-11-20T05:12:16.9580960Z Test Case '-[HarbourCoreTests.MedicationSearchTests testLimitedSearchIsStableAcrossAliasAndEntryOrder]' started.
+2026-11-20T05:12:16.9581750Z Test Case '-[HarbourCoreTests.MedicationSearchTests testLimitedSearchIsStableAcrossAliasAndEntryOrder]' passed (0.248 seconds).
+2026-11-20T05:12:16.9582600Z Test Case '-[HarbourCoreTests.MedicationSearchTests testOfficialFrenchAliasesAndIngredientOnlySearchAreRanked]' started.
+2026-11-20T05:12:16.9583520Z Test Case '-[HarbourCoreTests.MedicationSearchTests testOfficialFrenchAliasesAndIngredientOnlySearchAreRanked]' passed (0.082 seconds).
+2026-11-20T05:12:16.9584340Z Test Case '-[HarbourCoreTests.MedicationSearchTests testUnrelatedAndOutOfBoundsQueriesDoNotCreateCandidates]' started.
+2026-11-20T05:12:16.9585770Z Test Case '-[HarbourCoreTests.MedicationSearchTests testUnrelatedAndOutOfBoundsQueriesDoNotCreateCandidates]' passed (0.273 seconds).
+2026-11-20T05:12:16.9586400Z Test Suite 'MedicationSearchTests' passed at 2026-11-20 05:12:16.401.
+2026-11-20T05:12:17.2806080Z 	 Executed 160 tests, with 0 failures (0 unexpected) in 4.488 (4.520) seconds
+2026-11-20T05:12:17.2806770Z 	 Executed 160 tests, with 0 failures (0 unexpected) in 4.488 (4.522) seconds
+2026-11-20T05:20:08.7911980Z Test Case '-[HarbourUITests.MedicationSearchUITests testBilingualNoMatchClearsPreviousCandidatesAndRetainsManualEntry]' started.
+2026-11-20T05:22:20.3553310Z Test Case '-[HarbourUITests.MedicationSearchUITests testBilingualNoMatchClearsPreviousCandidatesAndRetainsManualEntry]' passed (148.222 seconds).
+2026-11-20T05:22:20.3673740Z Test Case '-[HarbourUITests.MedicationSearchUITests testBilingualTranspositionSuggestionRequiresProductConfirmation]' started.
+2026-11-20T05:23:36.8532050Z Test Case '-[HarbourUITests.MedicationSearchUITests testBilingualTranspositionSuggestionRequiresProductConfirmation]' passed (76.501 seconds).
+2026-11-20T05:23:36.8862240Z 	 Executed 2 tests, with 0 failures (0 unexpected) in 224.722 (224.732) seconds
+2026-11-20T05:23:36.9069340Z 	 Executed 2 tests, with 0 failures (0 unexpected) in 224.722 (224.736) seconds
+2026-11-20T05:23:36.9273000Z 	 Executed 2 tests, with 0 failures (0 unexpected) in 224.722 (224.739) seconds
+2026-11-20T05:24:33.5102780Z ** TEST SUCCEEDED **

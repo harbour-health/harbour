@@ -12,6 +12,8 @@ The 2026-11-02 source produces 8,299 entries (1,738 ingredients and 6,561 brands
 
 Phonetic suggestions combine a conservative letter fold and edit distance. They are shown only as **Similar names** when normal search finds nothing. Choosing a candidate opens the existing medicine editor with confirmation reset. Validators never use phonetic suggestions and the original transcript/directions are never rewritten. There is no claim that spelling proximity identifies the correct treatment.
 
+Queries with at least five phonetic letters retain the 0.78 phonetic similarity threshold, including existing spelling variants such as `adveel` for `Advil`. A differing initial phonetic letter is allowed with a maximum of one edit, covering leading substitutions and adjacent transpositions such as `netformin` and `emtformin`. Newly supported queries with four phonetic letters instead require at least four normalized letters and at most one normalized spelling edit; this enables `Aleve` suggestions for `aleev` and `alvee` without relaxing the existing phonetic threshold. Queries with fewer than four phonetic letters remain excluded. Bounded edit-distance evaluation rejects candidates as soon as they cannot meet their edit budget.
+
 Speech uses a maximum of 100 short phrases, saved medicine names first, followed by a limited set of difficult common names. It does not load the entire database into recognition. Legacy on-device `SFSpeechRecognitionRequest.contextualStrings` and iOS 26 `SpeechAnalyzer` AnalysisContext receive the hints. Apple describes these as likelihood hints, not guaranteed recognition: [contextualStrings](https://developer.apple.com/documentation/speech/sfspeechrecognitionrequest/contextualstrings), [AnalysisContext](https://developer.apple.com/documentation/speech/analysiscontext).
 
 ## How to change it
@@ -25,5 +27,7 @@ Run `python3 scripts/import-medication-vocabulary.py --source-date YYYY-MM-DD --
 Importer: Python standard library, official HTTPS ZIP sources, writable cache (default ignored `build/dpd`). App: Foundation/SwiftPM resource bundle and Apple Speech; no runtime database request, external recognition service or downloaded model required for vocabulary lookup. Existing interaction coverage remains the small sourced fixture; unknown pairs remain unassessed.
 
 ## Editor and review state
+
+See [medication search verification](evaluation/medication-search.md) for ranking, typo/ambiguity checks, bilingual no-match/confirmation tests and the full-dataset release benchmark.
 
 Selecting a database candidate dismisses the keyboard and opens the shared confirmation form. Initial values are loaded once per editor instance, so drawer resizing cannot reset the selected product. Camera/photo controls appear during selection and return through Choose another medicine. Previously unresolved named visit items can now resolve exactly (for example, salbutamol); genuinely unknown products retain empty, unconfirmed ingredients. A catalog match never substitutes for the user's product check.

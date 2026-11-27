@@ -1,0 +1,37 @@
+2026-11-18T09:47:00.0761900Z HEAD is now at 6c78227 Merge dd09de7db82d560c9099fc49f17ef8f44c643286 into 9fd3339dd607d89acea5c4a6bfeb09727a193ef7
+2026-11-18T09:48:10.0511310Z Test Suite 'MedicationSearchTests' started at 2026-11-18 09:48:08.583.
+2026-11-18T09:48:10.0511960Z Test Case '-[HarbourCoreTests.MedicationSearchTests testAmbiguousAliasesReturnCandidatesWithoutResolvingAnIdentity]' started.
+2026-11-18T09:48:10.0512990Z Test Case '-[HarbourCoreTests.MedicationSearchTests testAmbiguousAliasesReturnCandidatesWithoutResolvingAnIdentity]' passed (0.007 seconds).
+2026-11-18T09:48:10.0565310Z Test Case '-[HarbourCoreTests.MedicationSearchTests testCommonGenericAndBrandTyposRemainSuggestionsOnly]' started.
+2026-11-18T09:48:10.0567460Z Test Case '-[HarbourCoreTests.MedicationSearchTests testCommonGenericAndBrandTyposRemainSuggestionsOnly]' passed (0.445 seconds).
+2026-11-18T09:48:10.0571190Z Test Case '-[HarbourCoreTests.MedicationSearchTests testEquivalentSuggestionsDeduplicateAndPreferGenericIdentity]' started.
+2026-11-18T09:48:10.0577530Z Test Case '-[HarbourCoreTests.MedicationSearchTests testEquivalentSuggestionsDeduplicateAndPreferGenericIdentity]' passed (0.001 seconds).
+2026-11-18T09:48:10.0580670Z Test Case '-[HarbourCoreTests.MedicationSearchTests testLimitedSearchIsStableAcrossAliasAndEntryOrder]' started.
+2026-11-18T09:48:10.0582400Z Test Case '-[HarbourCoreTests.MedicationSearchTests testLimitedSearchIsStableAcrossAliasAndEntryOrder]' passed (0.257 seconds).
+2026-11-18T09:48:10.0584450Z Test Case '-[HarbourCoreTests.MedicationSearchTests testOfficialFrenchAliasesAndIngredientOnlySearchAreRanked]' started.
+2026-11-18T09:48:10.0589130Z Test Case '-[HarbourCoreTests.MedicationSearchTests testOfficialFrenchAliasesAndIngredientOnlySearchAreRanked]' passed (0.070 seconds).
+2026-11-18T09:48:10.0591150Z Test Case '-[HarbourCoreTests.MedicationSearchTests testUnrelatedAndOutOfBoundsQueriesDoNotCreateCandidates]' started.
+2026-11-18T09:48:10.0592550Z Test Case '-[HarbourCoreTests.MedicationSearchTests testUnrelatedAndOutOfBoundsQueriesDoNotCreateCandidates]' passed (0.157 seconds).
+2026-11-18T09:48:10.0594310Z Test Suite 'MedicationSearchTests' passed at 2026-11-18 09:48:09.521.
+2026-11-18T09:48:10.3124950Z 	 Executed 159 tests, with 0 failures (0 unexpected) in 4.265 (4.304) seconds
+2026-11-18T09:48:10.3125680Z 	 Executed 159 tests, with 0 failures (0 unexpected) in 4.265 (4.307) seconds
+2026-11-18T10:00:39.7910010Z Test Case '-[HarbourUITests.HarbourAppearanceTests testScreensAndAppearancePersistence]' failed (144.002 seconds).
+2026-11-18T10:02:55.9764850Z Test Case '-[HarbourUITests.HarbourMedicationDraftUITests testCompactMedicationApprovalAndFrequencyInBothThemes]' failed (63.786 seconds).
+2026-11-18T10:04:36.8928440Z Test Case '-[HarbourUITests.HarbourNativeRefreshTests testOneTapRecordingAndBackgroundReturn]' failed (55.489 seconds).
+2026-11-18T10:08:12.9668130Z Test Case '-[HarbourUITests.HarbourStreamlineTests testMainActionsDraftRetentionAndVisitCreation]' failed (115.128 seconds).
+2026-11-18T10:11:43.6815750Z Test Case '-[HarbourUITests.HarbourVisitTests testAppointmentOnlySummaryDoesNotShowEmptyWarning]' failed (12.476 seconds).
+2026-11-18T10:12:25.8129840Z Test Case '-[HarbourUITests.HarbourVisitTests testMedicineReviewDrawerScreens]' failed (42.026 seconds).
+2026-11-18T10:12:25.8460270Z Test Suite 'MedicationSearchUITests' started at 2026-11-18 10:12:25.706.
+2026-11-18T10:12:25.8593530Z Test Case '-[HarbourUITests.MedicationSearchUITests testBilingualNoMatchClearsPreviousCandidatesAndRetainsManualEntry]' started.
+2026-11-18T10:14:04.0340170Z Test Case '-[HarbourUITests.MedicationSearchUITests testBilingualNoMatchClearsPreviousCandidatesAndRetainsManualEntry]' passed (98.266 seconds).
+2026-11-18T10:14:04.1148000Z Test Case '-[HarbourUITests.MedicationSearchUITests testBilingualTranspositionSuggestionRequiresProductConfirmation]' started.
+2026-11-18T10:14:52.9651780Z Test Case '-[HarbourUITests.MedicationSearchUITests testBilingualTranspositionSuggestionRequiresProductConfirmation]' passed (48.971 seconds).
+2026-11-18T10:14:52.9757910Z Test Suite 'MedicationSearchUITests' passed at 2026-11-18 10:14:52.945.
+2026-11-18T10:14:52.9809840Z 	 Executed 2 tests, with 0 failures (0 unexpected) in 147.237 (147.238) seconds
+2026-11-18T10:16:06.9258160Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testConfirmedRecordSurvivesModeSwitchesAndRelaunch]' failed (45.966 seconds).
+2026-11-18T10:16:36.7241180Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testInterfaceAccessibilityMetadataInBothLanguages]' failed (17.604 seconds).
+2026-11-18T10:17:12.6681660Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testModeSelectionPersistsAcrossRelaunchWithoutLaunchSeed]' failed (35.946 seconds).
+2026-11-18T10:17:31.6087700Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testSimpleHomeHelpAndCaregiverSwitch]' failed (18.938 seconds).
+2026-11-18T10:18:16.5264220Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testSimpleLargestTextKeepsPrimaryActionsReachable]' failed (44.914 seconds).
+2026-11-18T10:19:05.7193940Z Test Case '-[HarbourUITests.SimpleInterfaceUITests testUnsentChatDraftSurvivesHomeAndBothModeSwitches]' failed (49.186 seconds).
+2026-11-18T10:20:10.0566020Z ** TEST FAILED **

@@ -1,0 +1,205 @@
+{
+  "baseline": {
+    "source_commit": "a8e9729a4da21560d376874786657f40fa84f189",
+    "run_id": 44275156006,
+    "job_id": 134701288962,
+    "run_url": "https://github.com/harbour-health/harbour/actions/runs/44275156006",
+    "benchmark_step": "success",
+    "run_conclusion": "cancelled after benchmark; duplicate PR validation retained",
+    "report": "baseline-a8e9729.json",
+    "report_sha256": "de4f2e9c7e48718aba9ff5f341f160db59170766052b2efe15eb5087786921b7"
+  },
+  "optimized": {
+    "source_commit": "6c78227a12e1529099cec08a9fd72701d211b50a",
+    "source_kind": "GitHub pull-request synthetic merge",
+    "pull_request_head": "dd09de7db82d560c9099fc49f17ef8f44c643286",
+    "run_id": 44279114912,
+    "job_id": 134714795439,
+    "run_url": "https://github.com/harbour-health/harbour/actions/runs/44279114912",
+    "job_url": "https://github.com/harbour-health/harbour/actions/runs/44279114912/job/134714795439",
+    "benchmark_step": "success",
+    "run_conclusion": "failure",
+    "report": "optimized-6c78227.json",
+    "report_sha256": "45c61059094424cd99eebcf3dd83f3ea80bc52ddbf22a513327a17a65b807e98",
+    "retrieval": "JSON printed by the benchmark step, recovered from the GitHub job log with timestamps removed; no artifact download used"
+  },
+  "verification": {
+    "source_commit": "6c78227a12e1529099cec08a9fd72701d211b50a",
+    "run_id": 44279114912,
+    "job_id": 134714795439,
+    "native_environment": {
+      "device": "iPhone 17 Pro simulator",
+      "os": "iOS 26.4.1",
+      "xcode": "26.6 (17F113)"
+    },
+    "core": {
+      "suite": "HarbourCore",
+      "tests": 159,
+      "failures": 0,
+      "medication_search_tests": 6
+    },
+    "focused_native": {
+      "suite": "MedicationSearchUITests",
+      "tests": 2,
+      "failures": 0,
+      "methods": [
+        {
+          "name": "testBilingualNoMatchClearsPreviousCandidatesAndRetainsManualEntry",
+          "result": "passed",
+          "duration_seconds": 98.266
+        },
+        {
+          "name": "testBilingualTranspositionSuggestionRequiresProductConfirmation",
+          "result": "passed",
+          "duration_seconds": 48.971
+        }
+      ],
+      "languages_per_method": [
+        "en",
+        "fr-CA"
+      ]
+    },
+    "excerpt": "verification-6c78227.txt",
+    "excerpt_sha256": "712134050ce0f9b79700c6a900f0441e739112239866accb3258ca701366e39a",
+    "workflow_passed": false,
+    "workflow_note": "Other selected native UI test methods failed in the same job. Focused medication-search success does not make the overall workflow passing."
+  },
+  "subsequent_verification": {
+    "pull_request_head": "df35c388c379c0c04d00be1c0ff6b7cc2bbe13f8",
+    "run_id": 44287969060,
+    "job_id": 134745463632,
+    "run_url": "https://github.com/harbour-health/harbour/actions/runs/44287969060",
+    "core_tests": 159,
+    "core_failures": 0,
+    "medication_search_ui_tests": 2,
+    "medication_search_ui_failures": 0,
+    "workflow_passed": false,
+    "note": "Parent navigation/saved-record checks and simulator background-assertion errors failed; parent corrections are tracked in PR #17."
+  },
+  "focused_verification": {
+    "pull_request_head": "46de03965f7e464e12816d2715d48d1dfa0a327f",
+    "run_id": 44295145945,
+    "job_id": 134770160420,
+    "run_url": "https://github.com/harbour-health/harbour/actions/runs/44295145945",
+    "native_scope": "medication-search",
+    "workflow_passed": true,
+    "core_tests": 159,
+    "core_failures": 0,
+    "medication_search_ui_tests": 2,
+    "medication_search_ui_failures": 0,
+    "excerpt": "verification-46de039-focused.txt",
+    "note": "This is the focused search workflow, not a passing full smoke result.",
+    "excerpt_sha256": "3e91e78ac39bac7b1e67dc2c6d20574dc49bd91cac14eb46c9944d3e5a7c3531"
+  },
+  "latest_focused_verification": {
+    "pull_request_head": "75b051a681d2a9d879edd899f26fce6bf65da71e",
+    "parent_application_code": "df38e19ab157079554e0f00d81129261ce09e3c3",
+    "run_id": 44304344889,
+    "job_id": 134801903742,
+    "run_url": "https://github.com/harbour-health/harbour/actions/runs/44304344889",
+    "native_scope": "medication-search",
+    "workflow_passed": true,
+    "core_tests": 159,
+    "core_failures": 0,
+    "medication_search_ui_tests": 2,
+    "medication_search_ui_failures": 0,
+    "excerpt": "verification-75b051a-focused.txt",
+    "note": "Includes the final parent Records/Visits visibility and draft-preservation code; this focused success is separate from full smoke validation.",
+    "excerpt_sha256": "d491f10e875c2f371bbcdb282576f8f9ac53042eb3eab0e90240e7698490e37d"
+  },
+  "comparison": {
+    "protocol": "Unchanged fixed query matrix; 12 queries x 3 operations x 50 release samples",
+    "vocabulary_entries": 8299,
+    "vocabulary_publication_date": "2026-11-02",
+    "matching_query_operation_rows": 36,
+    "all_result_count_checksums_match": true,
+    "baseline_ui": {
+      "median_range_ms": [
+        16.423771000000002,
+        59.4995
+      ],
+      "worst_p95_ms": 68.805875,
+      "worst_sample_ms": 94.082458,
+      "first_initialization_ms": 435.134792
+    },
+    "optimized_ui": {
+      "median_range_ms": [
+        17.0156455,
+        27.3382705
+      ],
+      "worst_p95_ms": 65.483667,
+      "worst_sample_ms": 107.542625,
+      "first_initialization_ms": 307.617792
+    },
+    "limits": [
+      "Separate shared Mac runner executions, not a controlled identical-host before/after experiment.",
+      "The optimized synthetic merge also contains other source changes; timings do not isolate the effect of one code change.",
+      "Broad-prefix timings improved in these observations, while some other query timings and the worst individual sample increased.",
+      "No physical-iPhone latency, frame-time, battery or clinical correctness claim."
+    ]
+  },
+  "expanded_typo_benchmark": {
+    "source_commit": "9258a93fb0d9e00806c05ef1efc1d0a003062bc9",
+    "source_kind": "workflow_dispatch branch head",
+    "run_id": 44679170836,
+    "job_id": 136098181404,
+    "run_url": "https://github.com/harbour-health/harbour/actions/runs/44679170836",
+    "job_url": "https://github.com/harbour-health/harbour/actions/runs/44679170836/job/136098181404",
+    "benchmark_step": "success",
+    "artifact_id": 14604026285,
+    "report": "expanded-9258a93.json",
+    "report_sha256": "38e5b1d626010a5fd9813ca136238b9bfe7248ab9dd9f9180b0c2126baa0f2ec",
+    "benchmark": "harbour-medication-search-v2",
+    "queries": 16,
+    "query_operation_rows": 48,
+    "samples": 2400,
+    "core_tests": 160,
+    "core_failures": 0,
+    "medication_search_core_tests": 7,
+    "note": "Version 2 adds leading-letter and short-brand typos while preserving existing phonetic matches. Shared Mac observations do not establish physical-iPhone latency.",
+    "run_conclusion": "success",
+    "workflow_passed": true,
+    "native_scope": "medication-search",
+    "native_ui_tests": 2,
+    "native_ui_failures": 0,
+    "native_environment": {
+      "device": "iPhone 17 Pro ARM64 simulator",
+      "os": "iOS 26.4.1",
+      "xcode": "26.6 (17F113)"
+    },
+    "native_methods": [
+      {
+        "name": "testBilingualNoMatchClearsPreviousCandidatesAndRetainsManualEntry",
+        "result": "passed",
+        "duration_seconds": 148.222
+      },
+      {
+        "name": "testBilingualTranspositionSuggestionRequiresProductConfirmation",
+        "result": "passed",
+        "duration_seconds": 76.501
+      }
+    ],
+    "languages_per_method": [
+      "en",
+      "fr-CA"
+    ],
+    "excerpt": "verification-9258a93-focused.txt",
+    "excerpt_sha256": "34e194cfeba5fb3aed93cf70c928b77ae2da2105bbc575055c3449a99104319f"
+  },
+  "expanded_typo_initial_attempt": {
+    "source_commit": "b0d5f1ff6e60f216eb61f584a8a6a5af483d59ed",
+    "run_id": 44677252620,
+    "job_id": 136091926586,
+    "run_url": "https://github.com/harbour-health/harbour/actions/runs/44677252620",
+    "job_url": "https://github.com/harbour-health/harbour/actions/runs/44677252620/job/136091926586",
+    "run_conclusion": "failure",
+    "core_tests": 160,
+    "core_failures": 0,
+    "medication_search_core_tests": 7,
+    "native_ui_tests": 2,
+    "native_ui_failures": 2,
+    "native_note": "Both methods failed during the first English app launch with a background-assertion timeout, before search assertions. French iterations were not reached. A fresh-run retry is separate evidence.",
+    "excerpt": "verification-b0d5f1f-initial.txt",
+    "excerpt_sha256": "6c6534928da898ee5ef0dfdbeada3e0de17ba16cf122218dab8e5c3ba8c8c18a"
+  }
+}

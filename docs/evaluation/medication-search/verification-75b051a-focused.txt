@@ -1,0 +1,10 @@
+2026-11-18T12:30:07.3902640Z Xcode 26.6
+2026-11-18T12:30:07.3905750Z Build version 17F113
+2026-11-18T12:31:10.3444430Z 	 Executed 159 tests, with 0 failures (0 unexpected) in 3.831 (3.861) seconds
+2026-11-18T12:31:10.3445150Z 	 Executed 159 tests, with 0 failures (0 unexpected) in 3.831 (3.867) seconds
+2026-11-18T12:33:23.4812490Z   HARBOUR_NATIVE_SCOPE: medication-search
+2026-11-18T12:33:36.9693260Z { platform:iOS Simulator, arch:arm64, id:5FE974FE-4710-48D6-A28B-70B8B7CF78CD, OS:26.4.1, name:iPhone 17 Pro }
+2026-11-18T12:39:44.7625800Z Test Case '-[HarbourUITests.MedicationSearchUITests testBilingualNoMatchClearsPreviousCandidatesAndRetainsManualEntry]' passed (96.927 seconds).
+2026-11-18T12:41:40.1551540Z Test Case '-[HarbourUITests.MedicationSearchUITests testBilingualTranspositionSuggestionRequiresProductConfirmation]' passed (115.389 seconds).
+2026-11-18T12:41:40.1553020Z Test Suite 'MedicationSearchUITests' passed at 2026-11-18 12:41:40.150.
+2026-11-18T12:42:20.3326070Z ** TEST SUCCEEDED **
