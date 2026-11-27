@@ -24,48 +24,31 @@ struct VisitsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppLayout.sectionSpacing) {
                 Text("Visits").font(.largeTitle.bold()).accessibilityAddTraits(.isHeader)
-                Button { returningToSession = false
-                    showRecorder = true } label: {
-                    VStack(spacing: 22) {
-                        VisitWaveform(levels: Array(repeating: 0.12, count: 38), decorative: true).frame(height: 76)
-                            .padding(
-                                .horizontal,
-                                30
-                            )
-                        Image(systemName: "mic.fill").font(.system(size: 34)).foregroundStyle(.white)
-                            .frame(width: 92, height: 92).background(Palette.coral, in: Circle())
-                        Text(L10n.string(recorder.active ? "Recording in progress" : "Record a visit")).font(.system(
-                            .title2,
-                            design: .rounded,
-                            weight: .bold
-                        ))
-                    }.frame(maxWidth: .infinity).padding(.vertical, 36).background(
-                        Palette.coralWash,
-                        in: RoundedRectangle(cornerRadius: 32)
-                    )
-                }.buttonStyle(PressFeedback()).matchedTransitionSource(id: "recorder", in: recorderTransition)
-                    .accessibilityIdentifier("recordVisit")
-                Button { sheet = .note } label: { FeatureRow(
-                    title: "Appointment preparation",
-                    subtitle: nil,
-                    symbol: "text.bubble",
-                    colour: Palette.blue
-                ) }.buttonStyle(.plain).accessibilityIdentifier("prepareAppointment")
-                NavigationLink { VisitReportView() } label: { FeatureRow(
-                    title: "Doctor visit report",
-                    subtitle: nil,
-                    symbol: "doc.richtext",
-                    colour: Palette.blue
-                ) }.buttonStyle(.plain).accessibilityIdentifier("openVisitReport")
+                VStack(spacing: 8) {
+                    Button {
+                        returningToSession = false
+                        showRecorder = true
+                    } label: {
+                        PrimaryActionRow(
+                            title: recorder.active ? "Recording in progress" : "Record a visit",
+                            symbol: "mic.fill"
+                        )
+                    }.matchedTransitionSource(id: "recorder", in: recorderTransition)
+                        .accessibilityIdentifier("recordVisit")
+                    Button { newVisit = DoctorVisit(title: L10n.string("Visit notes")) } label: {
+                        PrimaryActionRow(title: "Add notes", symbol: "square.and.pencil")
+                    }.disabled(recorder.active).accessibilityIdentifier("addVisitNotes")
+                    Button { sheet = .note } label: {
+                        PrimaryActionRow(title: "Appointment preparation", symbol: "text.bubble")
+                    }.accessibilityIdentifier("prepareAppointment")
+                    NavigationLink { VisitReportView() } label: {
+                        PrimaryActionRow(title: "Doctor visit report", symbol: "doc.richtext")
+                    }.accessibilityIdentifier("openVisitReport")
+                }.buttonStyle(PressFeedback())
                 VStack(alignment: .leading, spacing: 0) {
-                    Text("Recent visits").font(.title2.weight(.semibold)).padding(.bottom, 12)
-                    if
-                        store.visits
-                            .isEmpty {
-                        Text("No visits yet").font(.title3).foregroundStyle(Palette.muted).padding(
-                            .vertical,
-                            20
-                        ) }
+                    if !store.visits.isEmpty {
+                        Text("Recent visits").font(.title2.weight(.semibold)).padding(.bottom, 12)
+                    }
                     ForEach(store.visits) { visit in
                         Button {
                             if visit.id == recorder.visitID {
@@ -108,12 +91,6 @@ struct VisitsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 if !showRecorder && destination == nil {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button { newVisit = DoctorVisit(title: L10n.string("Visit notes")) } label: {
-                            ToolbarGlyph(symbol: "square.and.pencil") }
-                            .disabled(recorder.active).accessibilityLabel("Add notes")
-                            .accessibilityIdentifier("addVisitNotes")
-                    }
                     ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) }
                 }
             }

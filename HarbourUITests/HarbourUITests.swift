@@ -147,7 +147,8 @@ import XCTest
         XCTAssertTrue(app.staticTexts["Sore knee since Tuesday"].firstMatch.waitForExistence(timeout: 5))
         app.terminate()
         app.launchCaregiver()
-        app.buttons["nav-today"].tap()
+        app.buttons["nav-records"].tap()
+        selectRecords(app, "Readings")
         XCTAssertTrue(app.staticTexts["72"].firstMatch.waitForExistence(timeout: 5))
         app.buttons["nav-records"].tap()
         selectRecords(app, "Symptoms")
@@ -604,6 +605,37 @@ import XCTest
 }
 
 @MainActor final class HarbourNavigationTests: XCTestCase {
+    func testTodayActionsFitAndOpenDirectly() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
+        app.launchCaregiver()
+        let navigation = app.buttons["nav-today"]
+        XCTAssertTrue(navigation.waitForExistence(timeout: 5))
+        for (id, height) in [
+            ("openReadings", 72.0),
+            ("addSymptom", 72.0),
+            ("openMedicines", 58.0),
+            ("openAgenda", 58.0)
+        ] {
+            let action = app.buttons[id]
+            XCTAssertTrue(action.isHittable, id)
+            XCTAssertGreaterThanOrEqual(action.frame.height, height, id)
+            XCTAssertLessThanOrEqual(action.frame.maxY, navigation.frame.minY, id)
+        }
+        let today = XCTAttachment(screenshot: app.screenshot())
+        today.name = "Simplified Today"
+        today.lifetime = .keepAlways
+        add(today)
+        app.buttons["openReadings"].tap()
+        XCTAssertTrue(app.textFields["readingValue"].waitForExistence(timeout: 5))
+        app.buttons["Cancel"].tap()
+        app.buttons["addSymptom"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["symptomText"].firstMatch.waitForExistence(timeout: 5))
+        app.buttons["Cancel"].tap()
+        app.buttons["openAgenda"].tap()
+        XCTAssertTrue(app.buttons["Add reminder"].waitForExistence(timeout: 5))
+    }
+
     func testDashboardNavigationAndSystemAppearance() {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-unlocked"]
@@ -660,10 +692,13 @@ import XCTest
         app.launchArguments = ["--app-store-screenshots", "-AppleLanguages", "(en)", "-AppleLocale", "en_CA"]
         app.launchCaregiver()
 
+        app.buttons["nav-records"].tap()
+        app.buttons["nav-records"].tap()
         let openTrends = app.buttons["openTrends"]
         XCTAssertTrue(openTrends.waitForExistence(timeout: 10), app.debugDescription)
         openTrends.tap()
         XCTAssertTrue(app.navigationBars["Trends"].waitForExistence(timeout: 5), app.debugDescription)
+        app.segmentedControls.buttons["All time"].tap()
         XCTAssertTrue(app.otherElements["readingTrendChart"].waitForExistence(timeout: 5), app.debugDescription)
         let readings = XCTAttachment(screenshot: app.screenshot())
         readings.name = "Trends - readings"
@@ -873,12 +908,10 @@ import XCTest
         app.navigationBars["Appearance"].buttons.firstMatch.tap()
         app.buttons["Done"].tap()
         let medicine = app.buttons["openMedicines"], symptoms = app.buttons["addSymptom"]
-        XCTAssertEqual(medicine.frame.height, symptoms.frame.height, accuracy: 1)
+        XCTAssertGreaterThan(symptoms.frame.height, medicine.frame.height)
         XCTAssertEqual(medicine.frame.width, symptoms.frame.width, accuracy: 1)
-        // Decorative overlay bounds include the cropped artwork; visible headings retain the margins.
-        XCTAssertGreaterThanOrEqual(app.staticTexts["Medications"].firstMatch.frame.minX, 32)
-        XCTAssertLessThanOrEqual(app.staticTexts["Symptoms"].firstMatch.frame.maxX, app.frame.width - 32)
-        XCTAssertTrue(app.otherElements["readingSummary"].exists)
+        XCTAssertGreaterThanOrEqual(medicine.frame.height, 58)
+        XCTAssertTrue(app.buttons["openReadings"].isHittable)
         XCTAssertFalse(app.tabBars.firstMatch.exists)
         capture("01-today")
         app.buttons["Settings"].tap()
@@ -964,7 +997,9 @@ import XCTest
         app.navigationBars["Appearance"].buttons.firstMatch.tap()
         app.buttons["Done"].tap()
         XCTAssertFalse(app.tabBars.firstMatch.exists)
-        let note = app.buttons["Timeline"]
+        app.buttons["nav-records"].tap()
+        app.buttons["nav-records"].tap()
+        let note = app.buttons["openTimeline"]
         for _ in 0 ..< 4 {
             if note.isHittable && note.frame.maxY < app.buttons["nav-today"].frame.minY {
                 break
@@ -1434,7 +1469,7 @@ import XCTest
         app.buttons["nav-today"].tap()
         app.swipeDown()
         app.swipeDown()
-        let summary = app.descendants(matching: .any)["readingSummary"].firstMatch
+        let summary = app.buttons["openReadings"]
         XCTAssertTrue(summary.exists)
         XCTAssertLessThanOrEqual(summary.frame.maxX, app.frame.width)
         let dashboard = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
@@ -1757,6 +1792,7 @@ import XCTest
         app.buttons["saveMedicine"].tap()
         XCTAssertTrue(app.navigationBars["Medications"].waitForExistence(timeout: 5))
         app.buttons["nav-today"].tap()
+        app.buttons["openAgenda"].tap()
         let addReminder = app.buttons["Add reminder"]
         reveal(app, addReminder)
         addReminder.tap()
@@ -1777,10 +1813,11 @@ import XCTest
         capture("94-dose-log")
         app.buttons["saveDose"].tap()
         XCTAssertTrue(app.staticTexts["Taken"].firstMatch.waitForExistence(timeout: 5))
-        let timeline = app.buttons["Timeline"]
-        reveal(app, timeline)
         capture("95-agenda")
-        timeline.tap()
+        app.navigationBars["Reminders and doses"].buttons.firstMatch.tap()
+        app.buttons["nav-records"].tap()
+        app.navigationBars["Medications"].buttons.firstMatch.tap()
+        app.buttons["openTimeline"].tap()
         capture("96-timeline")
         let search = app.searchFields.firstMatch
         XCTAssertTrue(search.waitForExistence(timeout: 5))
@@ -1804,9 +1841,11 @@ import XCTest
         XCTAssertTrue(app.buttons["Should I repeat my blood test?"].exists)
         app.buttons["Done"].tap()
         appearance(app, dark: true)
-        reveal(app, app.buttons["Timeline"])
+        app.buttons["openAgenda"].tap()
         capture("99-agenda-dark")
-        app.buttons["Timeline"].tap()
+        app.navigationBars["Reminders and doses"].buttons.firstMatch.tap()
+        app.buttons["nav-records"].tap()
+        app.buttons["openTimeline"].tap()
         capture("100-timeline-dark")
         app.navigationBars["Timeline"].buttons.firstMatch.tap()
         app.buttons["nav-visits"].tap()
@@ -1820,6 +1859,7 @@ import XCTest
         capture("102-schedule-dark")
         app.buttons["Cancel"].tap()
         app.buttons["nav-today"].tap()
+        app.buttons["openAgenda"].tap()
         reveal(app, dose)
         dose.tap()
         app.buttons["doseStatus-Remind later"].tap()
@@ -2029,6 +2069,7 @@ import XCTest
         let app = XCUIApplication()
         app.launchCaregiver()
         app.buttons["nav-today"].tap()
+        app.buttons["openAgenda"].tap()
         let add = app.buttons["Add reminder"]
         for _ in 0 ..< 5 {
             if add.isHittable {
@@ -2504,12 +2545,8 @@ import XCTest
         XCTAssertTrue(app.staticTexts["appointmentNoteContent"].waitForExistence(timeout: 5))
         capture("08-appointment-preparation")
         app.buttons[word("Done", "Terminé")].tap()
-        app.buttons["nav-today"].tap()
-        XCTAssertTrue(app.buttons["openTrends"].waitForExistence(timeout: 5))
-        RunLoop.current.run(until: Date().addingTimeInterval(0.8))
-        app.swipeUp()
-        RunLoop.current.run(until: Date().addingTimeInterval(0.8))
-        let timeline = app.buttons[word("Timeline", "Historique")].firstMatch
+        app.buttons["nav-records"].tap()
+        let timeline = app.buttons["openTimeline"]
         XCTAssertTrue(timeline.waitForExistence(timeout: 5))
         timeline.tap()
         XCTAssertTrue(app.navigationBars[word("Timeline", "Historique")].waitForExistence(timeout: 5))
@@ -2627,6 +2664,7 @@ import XCTest
         app.navigationBars["Appearance"].buttons.firstMatch.tap()
         app.buttons["Done"].tap()
         capture("31-today-dark")
+        app.buttons["nav-records"].tap()
         app.buttons["openTrends"].tap()
         capture("161-trends-dark")
         app.navigationBars.buttons.firstMatch.tap()
@@ -2686,7 +2724,7 @@ import XCTest
             thenHoldForDuration: 0.3
         )
         XCTAssertTrue(app.buttons["nav-today"].isSelected)
-        XCTAssertTrue(app.buttons["openTrends"].isHittable)
+        XCTAssertTrue(app.buttons["openReadings"].isHittable)
         // The first page also resists dragging beyond the beginning.
         start.press(
             forDuration: 0.05,
@@ -2695,7 +2733,7 @@ import XCTest
             thenHoldForDuration: 0.3
         )
         XCTAssertTrue(app.buttons["nav-today"].isSelected)
-        XCTAssertTrue(app.buttons["openTrends"].isHittable)
+        XCTAssertTrue(app.buttons["openReadings"].isHittable)
     }
 
     func testSwipeBetweenMainPagesKeepsDockSelectionInSync() {
@@ -2704,7 +2742,7 @@ import XCTest
         app.launchCaregiver()
         XCTAssertTrue(app.buttons["nav-today"].waitForExistence(timeout: 10))
         app.swipeUp()
-        XCTAssertTrue(app.buttons["Timeline"].isHittable)
+        XCTAssertTrue(app.buttons["openAgenda"].isHittable)
         XCTAssertTrue(app.buttons["nav-today"].isSelected)
         app.swipeDown()
         app.swipeLeft()
@@ -2751,7 +2789,7 @@ import XCTest
         XCTAssertTrue(app.textFields["chatInput"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["nav-chat"].isSelected)
         app.buttons["nav-today"].tap()
-        XCTAssertTrue(app.buttons["openTrends"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["openReadings"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["nav-today"].isSelected)
         app.buttons["nav-chat"].tap()
         app.textFields["chatInput"].tap()
@@ -2777,7 +2815,7 @@ import XCTest
         app.navigationBars.buttons.firstMatch.tap()
         app.buttons["nav-visits"].tap()
         capture("67-visits")
-        app.buttons["nav-today"].tap()
+        app.buttons["nav-records"].tap()
         app.buttons["openTrends"].tap()
         XCTAssertTrue(app.otherElements["readingTrendChart"].waitForExistence(timeout: 5))
         capture("152-trends-readings")

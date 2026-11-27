@@ -1,7 +1,4 @@
 import SwiftUI
-import UIKit
-import Charts
-import HarbourCore
 
 private struct FloatingDockClearance: EnvironmentKey {
     static let defaultValue: CGFloat = 0
@@ -16,333 +13,59 @@ extension EnvironmentValues {
 
 struct NavigationDock: View {
     @EnvironmentObject private var recorder: VisitRecorder
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Binding var selection: Int
-    var body: some View {
-        NativeNavigationDock(
-            selection: $selection,
-            recording: recorder.active,
-            reduceMotion: reduceMotion,
-            compact: selection == 1
-        )
-        .frame(width: 254, height: 62)
-        .shadow(color: .black.opacity(0.18), radius: 12, y: 6)
-        .scaleEffect(selection == 1 ? 0.72 : 1, anchor: .bottom)
-        .offset(y: selection == 1 ? 32 : 0)
-        .padding(.bottom, 12)
-        .animation(reduceMotion ? nil : .spring(response: 0.55, dampingFraction: 0.9), value: selection == 1)
-    }
-}
 
-private struct NativeNavigationDock: UIViewRepresentable {
-    @Environment(\.colorScheme) private var colorScheme
-    @Binding var selection: Int
-    let recording: Bool
-    let reduceMotion: Bool
-    let compact: Bool
-    func makeCoordinator() -> Coordinator {
-        Coordinator(selection: $selection)
-    }
-
-    func makeUIView(context: Context) -> DockView {
-        let view = DockView()
-        for button in view.buttons {
-            button.addTarget(
-                context.coordinator,
-                action: #selector(Coordinator.select(_:)),
-                for: .touchUpInside
-            ) }
-
-        return view
-    }
-
-    func updateUIView(_ view: DockView, context: Context) {
-        context.coordinator.selection = $selection
-        view.update(
-            selection: selection,
-            recording: recording,
-            reduceMotion: reduceMotion,
-            dark: colorScheme == .dark,
-            compact: compact
-        )
-    }
-
-    @MainActor final class Coordinator: NSObject {
-        var selection: Binding<Int>
-        init(selection: Binding<Int>) {
-            self.selection = selection
-        }
-
-        @objc func select(_ sender: UIButton) {
-            selection.wrappedValue = sender.tag
-        }
-    }
-}
-
-private final class DockButton: UIButton {
-    var reduceMotion = false
-    override var isHighlighted: Bool {
-        didSet {
-            let changes = {
-                self.alpha = self.isHighlighted ? 0.75 : 1
-                self.transform = self.isHighlighted && !self
-                    .reduceMotion ? CGAffineTransform(scaleX: 0.98, y: 0.98) : .identity
-            }
-            if reduceMotion {
-                changes()
-            }
-            else {
-                UIView.animate(
-                    withDuration: 0.18,
-                    delay: 0,
-                    options: [.beginFromCurrentState, .allowUserInteraction],
-                    animations: changes
-                ) }
-        }
-    }
-}
-
-private final class DockSymbols: UIImageView {
-    private var renderedSize = CGSize.zero
-    var images: [UIImage] = [] {
-        didSet { render() }
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        if bounds.size != renderedSize {
-            render()
-        } }
-
-    private func render() {
-        guard bounds.width > 0, bounds.height > 0 else {
-            return
-        }
-
-        renderedSize = bounds.size
-        let rendered = UIGraphicsImageRenderer(size: bounds.size).image { _ in
-            for (index, image) in images.enumerated() {
-                let size = image.size
-                let cellWidth = (bounds.width - 8) / 4
-                let centre = CGPoint(x: 4 + cellWidth * (CGFloat(index) + 0.5), y: bounds.midY)
-                image.draw(in: CGRect(
-                    x: centre.x - size.width / 2,
-                    y: centre.y - size.height / 2,
-                    width: size.width,
-                    height: size.height
-                ))
-            }
-        }
-        image = rendered
-    }
-}
-
-private final class DockView: UIView {
-    private static let titles = ["Today", "Chat", "Records", "Visits"]
-    private static let symbols = ["house", "bubble.left.and.bubble.right", "heart.text.clipboard", "person.2"]
-    private let marker = UIView()
-    private let symbols = DockSymbols()
-    private let recordingDot = UIView()
-    private var selectedIndex = 0
-    private var isCompact = false
-    private var configured = false
-    let buttons = (0 ..< 4).map { index in let button = DockButton(type: .custom)
-        button.tag = index
-
-        return button }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        layer.cornerRadius = 31
-        layer.borderWidth = 0.8
-        marker.layer.cornerRadius = 27
-        marker.isUserInteractionEnabled = false
-        marker.isAccessibilityElement = false
-        addSubview(marker)
-        symbols.backgroundColor = .clear
-        symbols.isOpaque = false
-        symbols.isUserInteractionEnabled = false
-        symbols.isAccessibilityElement = false
-        addSubview(symbols)
-        for button in buttons {
-            button.imageView?.contentMode = .center
-            button.accessibilityIdentifier = "nav-" + Self.titles[button.tag].lowercased()
-            button.showsLargeContentViewer = true
-            addSubview(button)
-        }
-        addInteraction(UILargeContentViewerInteraction())
-        recordingDot.backgroundColor = UIColor(Palette.coral)
-        recordingDot.layer.cornerRadius = 3
-        recordingDot.isUserInteractionEnabled = false
-        recordingDot.isAccessibilityElement = false
-        addSubview(recordingDot)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("DockView is created programmatically")
-    }
-
-    override var intrinsicContentSize: CGSize {
-        CGSize(width: 254, height: 62)
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        symbols.frame = bounds
-        let cellWidth = (bounds.width - 8) / 4
-        for button in buttons {
-            button.frame = CGRect(
-                x: 4 + CGFloat(button.tag) * cellWidth,
-                y: 4,
-                width: cellWidth,
-                height: isCompact ? bounds.height : bounds.height - 8
-            )
-            if isCompact {
-                button.frame.origin.y = 0
-            } }
-        layer.cornerRadius = bounds.height / 2
-        marker.layer.cornerRadius = (bounds.height - 8) / 2
-        if marker.layer.animationKeys()?.isEmpty != false {
-            marker.frame = markerFrame(selectedIndex)
-        }
-        recordingDot.frame = CGRect(x: bounds.width - 27, y: compactDotY, width: 6, height: 6)
-    }
-
-    private var compactDotY: CGFloat {
-        bounds.height < 60 ? 9 : 11
-    }
-
-    private func markerFrame(_ index: Int) -> CGRect {
-        let cellWidth = (bounds.width - 8) / 4
-        let width: CGFloat = isCompact ? 54 : 60
-
-        return CGRect(
-            x: 4 + CGFloat(index) * cellWidth + (cellWidth - width) / 2,
-            y: 4,
-            width: width,
-            height: bounds.height - 8
-        )
-    }
-
-    func update(selection: Int, recording: Bool, reduceMotion: Bool, dark: Bool, compact: Bool) {
-        let traits = UITraitCollection(userInterfaceStyle: dark ? .dark : .light)
-        func resolved(_ color: Color) -> UIColor {
-            UIColor(color).resolvedColor(with: traits)
-        }
-        backgroundColor = resolved(Palette.dockBackground)
-        marker.backgroundColor = resolved(Palette.dockSelection)
-        layer.borderColor = (dark ? UIColor.white.withAlphaComponent(0.11) : UIColor.black.withAlphaComponent(0.07))
-            .cgColor
-        recordingDot.backgroundColor = resolved(Palette.coral)
-        let changed = selection != selectedIndex
-        isCompact = compact
-        selectedIndex = selection
-        let configuration = UIImage.SymbolConfiguration(pointSize: 22, weight: .regular)
-        var images: [UIImage] = []
-        for button in buttons {
-            let selected = button.tag == selection
-            let symbol = Self.symbols[button.tag] + (selected ? ".fill" : "")
-            let tint = resolved(selected ? Palette.dockActive : Palette.dockInactive)
-            let image = UIImage(systemName: symbol, withConfiguration: configuration)?.withTintColor(
-                tint,
-                renderingMode: .alwaysOriginal
-            )
-            if let image {
-                images.append(image)
-            }
-            button.accessibilityLabel = L10n.string(Self.titles[button.tag])
-            button.accessibilityTraits = selected ? [.button, .selected] : [.button]
-            button.accessibilityValue = button.tag == 3 && recording ? L10n.string("Recording") : ""
-            button.largeContentTitle = L10n.string(Self.titles[button.tag])
-            button.largeContentImage = image
-            button.reduceMotion = reduceMotion
-        }
-        symbols.images = images
-        recordingDot.isHidden = !recording
-        if configured && changed && !reduceMotion {
-            UIView.animate(
-                withDuration: 0.5,
-                delay: 0,
-                usingSpringWithDamping: 0.9,
-                initialSpringVelocity: 0,
-                options: [.beginFromCurrentState, .allowUserInteraction]
-            ) { self.marker.frame = self.markerFrame(selection) }
-        } else {
-            marker.frame = markerFrame(selection)
-        }
-        configured = true
-        setNeedsLayout()
-    }
-}
-
-struct ReadingSummary: View {
-    let readings: [Reading]
-    @Environment(\.dynamicTypeSize) private var typeSize
-    @ScaledMetric(relativeTo: .largeTitle) private var valueSize: CGFloat = 46
-    private var latest: Reading? {
-        readings.first
-    }
-
-    private var samples: [Reading] {
-        guard let kind = latest?.kind else {
-            return []
-        }
-
-        return readings.filter { $0.kind == kind }.prefix(30).sorted { $0.date < $1.date } }
-
-    private func numeric(_ reading: Reading)
-        -> Double? {
-        Double(reading.value.split(separator: "/").first.map(String.init) ?? reading.value)
+    private var compact: Bool {
+        selection == 1
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            HStack {
-                Label(
-                    L10n.string(latest?.kind.rawValue ?? "Readings"),
-                    systemImage: latest?.kind.symbol ?? "waveform.path.ecg"
-                ).font(.body.weight(.semibold))
-                Spacer()
-            }
-            if let latest {
-                let valueLayout = typeSize.isAccessibilitySize
-                    ? AnyLayout(VStackLayout(alignment: .leading, spacing: 2))
-                    : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 6))
-                valueLayout {
-                    Text(L10n.readingValue(latest)).font(.system(size: valueSize, weight: .bold, design: .rounded))
-                        .lineLimit(1).minimumScaleFactor(0.7)
-                    Text(latest.kind.unit).font(.title3.weight(.medium))
-                }.foregroundStyle(Palette.ink).frame(maxWidth: .infinity, alignment: .leading)
-                if samples.count > 1 {
-                    if
-                        latest
-                            .kind == .bloodPressure {
-                        Text("Systolic").font(.subheadline).foregroundStyle(Palette.muted)
-                    }
-                    Chart(samples) { reading in
-                        if let value = numeric(reading) {
-                            LineMark(
-                                x: .value("Recorded", reading.date),
-                                y: .value(latest.kind == .bloodPressure ? "Systolic" : latest.kind.rawValue, value)
-                            ).foregroundStyle(Palette.blue)
-                            PointMark(x: .value("Recorded", reading.date), y: .value("Value", value))
-                                .foregroundStyle(Palette.blue)
+        HStack(spacing: 4) {
+            tab(0, title: "Today", symbol: "house")
+            tab(1, title: "Chat", symbol: "bubble.left")
+            tab(2, title: "Records", symbol: "list.clipboard")
+            tab(3, title: "Visits", symbol: "person.2")
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .frame(maxWidth: compact ? 270 : AppLayout.contentWidth)
+        .frame(maxWidth: .infinity)
+        .background(alignment: .top) {
+            Palette.canvas.ignoresSafeArea(edges: .bottom)
+                .overlay(alignment: .top) { Divider() }
+        }
+        .offset(y: compact ? 22 : 0)
+    }
+
+    private func tab(_ index: Int, title: String, symbol: String) -> some View {
+        let selected = index == selection
+
+        return Button {
+            selection = index
+        } label: {
+            VStack(spacing: 3) {
+                Image(systemName: selected ? symbol + ".fill" : symbol)
+                    .font((compact ? Font.body : .title3).weight(.semibold))
+                    .overlay(alignment: .topTrailing) {
+                        if index == 3 && recorder.active {
+                            Circle().fill(Palette.coral).frame(width: 8, height: 8).offset(x: 5, y: -3)
                         }
-                    }.chartXAxis(.hidden).chartYAxis(.hidden).chartYScale(domain: .automatic(includesZero: false))
-                        .frame(height: 58)
-                        .accessibilityLabel(latest.kind == .bloodPressure ? L10n
-                            .string("Recorded systolic blood pressure over time") : L10n.format(
-                                "Recorded %@ over time",
-                                L10n.string(latest.kind.rawValue)
-                            ))
-                }
-                Text(latest.date, format: .dateTime.month(.abbreviated).day().hour().minute()).font(.body)
-                    .foregroundStyle(Palette.muted)
-            } else {
-                Text("No readings yet").font(.title2.weight(.medium))
+                    }
+                Text(L10n.string(title))
+                    .font((compact ? Font.caption : .subheadline).weight(.semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.65)
+                    .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
             }
-        }.padding(AppLayout.surfaceInset)
-            .background(Palette.surface, in: RoundedRectangle(cornerRadius: 28))
-            .accessibilityIdentifier("readingSummary")
+            .foregroundStyle(selected ? Palette.blue : Palette.ink)
+            .frame(maxWidth: .infinity, minHeight: compact ? 46 : 58)
+            .background(selected ? Palette.blueWash : .clear, in: RoundedRectangle(cornerRadius: 14))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(PressFeedback())
+        .accessibilityLabel(L10n.string(title))
+        .accessibilityIdentifier("nav-" + title.lowercased())
+        .accessibilityAddTraits(selected ? .isSelected : [])
+        .accessibilityValue(index == 3 && recorder.active ? L10n.string("Recording") : "")
     }
 }

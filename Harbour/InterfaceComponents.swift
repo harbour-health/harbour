@@ -18,6 +18,35 @@ struct ToolbarGlyph: View {
     }
 }
 
+struct PrimaryActionRow: View {
+    let title: String
+    let symbol: String
+    var prominent = false
+
+    var body: some View {
+        HStack(spacing: 14) {
+            Image(systemName: symbol)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(Palette.blue)
+                .frame(width: 28)
+                .accessibilityHidden(true)
+            Text(L10n.string(title))
+                .font((prominent ? Font.title2 : .title3).weight(.semibold))
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 4)
+            Image(systemName: "chevron.right")
+                .font(.body.weight(.medium))
+                .accessibilityHidden(true)
+        }
+        .foregroundStyle(Palette.ink)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+        .frame(minHeight: prominent ? 72 : 58)
+        .background(prominent ? Palette.blueWash : Palette.surface, in: RoundedRectangle(cornerRadius: 16))
+        .contentShape(Rectangle())
+    }
+}
+
 struct SelectionIndicator: View {
     let selected: Bool
     var colour: Color = Palette.blue

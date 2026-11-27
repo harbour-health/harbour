@@ -140,9 +140,10 @@ struct RootView: View {
                             tab = 1
                         }, record: { simpleRecording = true })
                     } else {
-                        TodayView(sheet: $sheet, openChat: { tab = 1 }, openMedicines: { recordCategory = 1
-                            tab = 2 }, openSymptoms: { recordCategory = 0
-                            tab = 2 }, openVisits: { tab = 3 })
+                        TodayView(sheet: $sheet, openMedicines: {
+                            recordCategory = 1
+                            tab = 2
+                        })
                     }
                 }
                 .frame(width: pageSize.width, height: pageSize.height)
@@ -199,7 +200,8 @@ struct RootView: View {
         .clipped()
         .environment(
             \.floatingDockClearance,
-            interfaceMode == AppInterface.simple.rawValue ? 0 : keyboardVisible ? 0 : (tab == 1 ? 34 : 86)
+            interfaceMode == AppInterface.caregiver
+                .rawValue && !keyboardVisible && !voiceMode ? (tab == 1 ? 58 : 86) : 0
         )
         .overlay(alignment: .bottom) {
             if interfaceMode == AppInterface.caregiver.rawValue && !keyboardVisible && !voiceMode {
@@ -414,125 +416,52 @@ struct SettingsButton: View {
 }
 
 struct TodayView: View {
-    @State private var showHistory = false
-    @State private var showTrends = false
-    @EnvironmentObject var store: AppStore
-    @Environment(\.dynamicTypeSize) private var typeSize
     @Environment(\.floatingDockClearance) private var dockClearance
     @Binding var sheet: AppSheet?
-    var openChat: () -> Void
     var openMedicines: () -> Void
-    var openSymptoms: () -> Void
-    var openVisits: () -> Void
+
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: AppLayout.sectionSpacing) {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("Today").font(.largeTitle.bold()).accessibilityAddTraits(.isHeader)
-                        Spacer()
-                    }
-                    Text(Date.now, format: .dateTime.weekday(.wide).month(.wide).day()).font(.body)
-                        .foregroundStyle(Palette.muted)
-                }.padding(.top, 14)
-                VStack(spacing: 14) {
-                    ReadingSummary(readings: store.records.readings)
-                    Button { showTrends = true } label: {
-                        FeatureRow(
-                            title: "Trends",
-                            subtitle: "Readings and symptoms over time",
-                            symbol: "chart.xyaxis.line",
-                            colour: Palette.blue
-                        )
-                    }.buttonStyle(.plain).accessibilityIdentifier("openTrends")
-                    if typeSize.isAccessibilitySize {
-                        VStack(spacing: 16) { shortcuts }
-                    }
-                    else {
-                        HStack(alignment: .top, spacing: 14) { shortcuts }
-                    }
-                }
-                Button(action: openChat) {
-                    HStack(spacing: 18) {
-                        HarbourMark(size: 30).foregroundStyle(Palette.blue)
-                        Text("Ask Harbour").font(.title3.weight(.medium))
-                        Spacer()
-                        Image(systemName: "arrow.up.right").font(.title3)
-                    }.foregroundStyle(Palette.ink).padding(.vertical, 16).contentShape(Rectangle())
-                }.buttonStyle(PressFeedback())
-                if store.records.readings.contains(where: { $0.kind != store.records.readings.first?.kind }) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text("Readings").font(.title2.weight(.semibold)).frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(
-                                .bottom,
-                                16
-                            )
-                        ForEach(ReadingKind.allCases, id: \.self) { kind in
-                            if
-                                kind != store.records.readings.first?.kind,
-                                let reading = store.records.readings
-                                    .first(where: { $0.kind == kind }) {
-                                ReadingRow(reading: reading)
-                                Divider().overlay(Palette.line) }
-                        }
-                    }
-                }
-                AgendaView(sheet: $sheet)
-                Button { showHistory = true } label: { FeatureRow(
-                    title: "Timeline",
-                    subtitle: nil,
-                    symbol: "clock.arrow.circlepath",
-                    colour: Palette.blue
-                ) }.buttonStyle(.plain).accessibilityIdentifier("openTimeline")
-            }.padding(.horizontal, AppLayout.screenInset).padding(.bottom, 32).frame(maxWidth: AppLayout.contentWidth)
-                .frame(maxWidth: .infinity).mainPageSwipes(0)
-        }.contentMargins(.bottom, dockClearance, for: .scrollContent)
-            .background(Palette.canvas).foregroundStyle(Palette.ink)
-            .navigationTitle("").navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) } }
-            .navigationDestination(isPresented: $showHistory) { HealthHistoryView() }
-            .navigationDestination(isPresented: $showTrends) { HealthTrendsView() }
+            actions.mainPageSwipes(0)
+        }
+        .scrollBounceBehavior(.basedOnSize)
+        .contentMargins(.bottom, dockClearance, for: .scrollContent)
+        .background(Palette.canvas)
+        .navigationTitle("Today")
+        .toolbar { ToolbarItem(placement: .topBarTrailing) { SettingsButton(sheet: $sheet) } }
     }
 
-    @ViewBuilder private var shortcuts: some View {
-        illustratedShortcut(
-            "Medications",
-            kind: .medicines,
-            colour: Palette.blueWash,
-            action: openMedicines
-        ).accessibilityIdentifier("openMedicines")
-        illustratedShortcut(
-            "Symptoms",
-            kind: .symptoms,
-            colour: Palette.coralWash,
-            action: openSymptoms
-        )
-        .accessibilityIdentifier("addSymptom")
-    }
-
-    private func illustratedShortcut(
-        _ title: String,
-        kind: IllustrationKind,
-        colour: Color,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            ZStack(alignment: .topLeading) {
-                colour
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(L10n.string(title)).font(.system(.title3, design: .rounded, weight: .bold))
-                }.padding(18)
-            }.frame(maxWidth: .infinity).frame(height: typeSize.isAccessibilitySize ? 320 : 190)
-                .overlay(alignment: .bottomTrailing) {
-                    HarbourIllustration(kind: kind).frame(width: 180, height: 150).offset(x: 56, y: 32)
+    private var actions: some View {
+        VStack(spacing: 12) {
+            Button { sheet = .reading(nil) } label: {
+                PrimaryActionRow(title: "Add a reading", symbol: "waveform.path.ecg", prominent: true)
+            }.accessibilityIdentifier("openReadings")
+            Button { sheet = .symptom("") } label: {
+                PrimaryActionRow(title: "Log a symptom", symbol: "cross.case", prominent: true)
+            }.accessibilityIdentifier("addSymptom")
+            Button(action: openMedicines) {
+                PrimaryActionRow(title: "My medicines", symbol: "pills")
+            }.accessibilityIdentifier("openMedicines")
+            NavigationLink {
+                ScrollView {
+                    AgendaView(sheet: $sheet)
+                        .padding(.bottom, dockClearance)
+                        .padding(AppLayout.screenInset)
+                        .frame(maxWidth: AppLayout.contentWidth)
+                        .frame(maxWidth: .infinity)
                 }
-                .overlay(alignment: .bottomLeading) {
-                    Image(systemName: "arrow.up.right").font(.body.weight(.semibold)).foregroundStyle(Palette.canvas)
-                        .frame(width: 44, height: 44).background(Palette.ink, in: Circle()).padding(18)
-                }.foregroundStyle(Palette.ink)
-                .clipShape(RoundedRectangle(cornerRadius: 28))
-                .contentShape(RoundedRectangle(cornerRadius: 28))
-        }.buttonStyle(PressFeedback())
+                .background(Palette.canvas)
+                .navigationTitle("Reminders and doses")
+                .navigationBarTitleDisplayMode(.inline)
+            } label: {
+                PrimaryActionRow(title: "Reminders and doses", symbol: "calendar")
+            }.accessibilityIdentifier("openAgenda")
+        }
+        .buttonStyle(PressFeedback())
+        .padding(.horizontal, AppLayout.screenInset)
+        .padding(.vertical, 10)
+        .frame(maxWidth: AppLayout.contentWidth)
+        .frame(maxWidth: .infinity)
     }
 }
 

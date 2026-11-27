@@ -111,12 +111,7 @@ import XCTest
         XCTAssertFalse(app.buttons["Camera"].exists)
         capture("207-existing-medication-editor")
         app.navigationBars["Medication"].buttons["Cancel"].tap()
-        app.buttons["nav-today"].tap()
-        for _ in 0 ..< 5 {
-            if app.buttons["openTimeline"].isHittable {
-                break
-            }
-            app.swipeUp() }
+        app.navigationBars["Medications"].buttons.firstMatch.tap()
         app.buttons["openTimeline"].tap()
         XCTAssertTrue(app.navigationBars["Timeline"].waitForExistence(timeout: 5))
         capture("208-open-timeline")
