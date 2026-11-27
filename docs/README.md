@@ -78,8 +78,9 @@ Course context, the project plan, and the preliminary report are maintained sepa
 
 - [Simple and caregiver interfaces](simple-and-caregiver.md) — large actions, shared records and settings.
 - [Medication vocabulary](medication-vocabulary.md) — official bilingual DPD import, exact identities, suggestions and speech context.
-- [User stories](user-stories.md) — goals and acceptance paths.
-- [Message flows](message-flows.md) — inference, source validation and review.
+- [User stories and acceptance paths](user-stories.md) — roles, core tasks, assumptions and open design questions.
+- [Screen and message flows](message-flows.md) — task entry points, example exchanges and review/recovery boundaries.
+- [Prepared usability session](usability-session-plan.md) — selected tasks and blank observation sheet; #13 remains deferred.
 - [Presentation walkthrough](presentation-walkthrough.md) — actual UI magnification, live state and reproducible video.
 - [Medication-name text checks](evaluation/medication-names.md) — bilingual difficult names, fictional identities and separate routing/validation results.
 - [Simple interface and presentation verification](releases/simple-interface-and-presentation.md) — native checks, model subset results and evidence limits.
